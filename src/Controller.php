@@ -87,8 +87,8 @@ class Controller extends BaseController {
 			if (view()->exists('wordpress.'.$suggestion)) {
 				return view('wordpress.'.$suggestion)->with(['post' => $this->post]);
 			}
-			return "Missing templates in views/wordpress.";
 		}
+		return "No template found in views/wordpress/";
     }
 
 }
