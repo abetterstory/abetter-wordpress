@@ -1,4 +1,4 @@
 # labs-abetter-wordpress
 
-ABetter Wordpress integration
+ABetter Wordpress integration for Laravel 5+
 
