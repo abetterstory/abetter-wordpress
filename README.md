@@ -26,7 +26,17 @@ ABetter Wordpress integration for Laravel 5+
 
 ## Install Wordpress and configure
 
+## Install Wordpress plugins
+
 ## Activate ABetter theme
+
+## Add system pages
+Start : start (Front page)
+News : news (Posts page)
+Privacy Policy : privacy-policy
+Search : search
+404 Not Found : not-found
+403 Forbidden : forbidden
 
 ## Setup routes/web.php:
 Route::get('/', '\ABetterWordpressController@handle');

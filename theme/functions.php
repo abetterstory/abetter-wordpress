@@ -4,10 +4,18 @@ Laravel functions and definitions
 */
 
 function _log($message,$data=NULL) {
+	if (empty(WP_DEBUG)) return;
 	openlog("php", LOG_PID | LOG_PERROR, LOG_LOCAL0);
 	$log = (is_string($message)) ? $message : var_export($message,TRUE);
 	if ($data) $log .= ": ".var_export($data,TRUE);
 	syslog(LOG_INFO,$log);
+}
+
+function _debug($message="") {
+	if (empty(WP_DEBUG)) return;
+ 	$trace = debug_backtrace(NULL,1);
+ 	$file = preg_replace('/.*\/abetter\/(.*)\.(.*)$/',"$1",$trace[0]['file']);
+ 	echo "<!-- ".(($message)?"{$message}":"include:".$file)." -->";
 }
 
 // ---
