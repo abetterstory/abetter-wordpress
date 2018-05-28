@@ -29,6 +29,7 @@ class Post extends Model {
 	// ---
 
 	public function prepared() {
+		if (empty(self::$post)) return NULL;
 		self::$post->prepared = TRUE;
 		return self::$post;
 	}

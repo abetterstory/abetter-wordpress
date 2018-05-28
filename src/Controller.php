@@ -82,7 +82,7 @@ class Controller extends BaseController {
 		$this->language = $this->getRequestLanguage();
 		$this->slug = $this->getRequestSlug();
 		$this->post = $this->getPost();
-		if (empty($this->post)) return abort(404);
+		if (empty($this->post->ID)) return abort(404);
 		foreach ($this->getPostTemplateSuggestions() AS $suggestion) {
 			if (view()->exists('wordpress.'.$suggestion)) {
 				return view('wordpress.'.$suggestion)->with(['post' => $this->post]);
