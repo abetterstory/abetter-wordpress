@@ -1,0 +1,29 @@
+{
+    "name": "abetter/wordpress",
+    "description": "ABetter Wordpress integration",
+	"authors": [
+        {
+            "name": "Johan Sjoland",
+            "email": "hello@abetter.app"
+        }
+    ],
+    "type": "library",
+    "minimum-stability": "dev",
+    "require": {},
+	"extra": {
+        "laravel": {
+            "providers": [
+                "ABetter\\Wordpress\\ServiceProvider"
+            ],
+			"aliases": {
+                "ABetterWordpressController": "ABetter\\Wordpress\\Controller",
+				"ABetterWordpressPost": "ABetter\\Wordpress\\Post"
+            }
+        }
+    },
+	"autoload": {
+        "psr-4": {
+            "ABetter\\Wordpress\\": "src/"
+        }
+    }
+}
