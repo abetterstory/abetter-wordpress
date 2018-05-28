@@ -1,7 +1,8 @@
 {
     "name": "abetter/wordpress",
     "description": "ABetter Wordpress integration",
-	"authors": [
+    "license": "MIT",
+    "authors": [
         {
             "name": "Johan Sjoland",
             "email": "hello@abetter.app"
