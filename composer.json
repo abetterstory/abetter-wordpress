@@ -8,9 +8,12 @@
             "email": "hello@abetter.app"
         }
     ],
-    "type": "library",
-    "minimum-stability": "dev",
     "require": {},
+	"autoload": {
+		"psr-4": {
+			"ABetter\\Wordpress\\": "src/"
+		}
+	},
 	"extra": {
         "laravel": {
             "providers": [
@@ -20,11 +23,6 @@
                 "ABetterWordpressController": "ABetter\\Wordpress\\Controller",
 				"ABetterWordpressPost": "ABetter\\Wordpress\\Post"
             }
-        }
-    },
-	"autoload": {
-        "psr-4": {
-            "ABetter\\Wordpress\\": "src/"
         }
     }
 }
