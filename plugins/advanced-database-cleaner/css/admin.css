@@ -1,0 +1,568 @@
+/*---------------------------------------------------------------------------------------------
+*
+*  Global styles
+*
+*---------------------------------------------------------------------------------------------*/
+html {
+    overflow-y: scroll; 
+}
+.aDBc-top-main-msg {
+	border-left: 5px solid pink !important;
+	background: #fff !important;
+	padding: 20px !important;
+}
+.aDBc-top-main-msg > span {
+	font-size: 16px;
+	color: #2E6E9E;
+	font-weight: bold;
+}
+.aDBc-content-max-width {
+	max-width: 840px;
+}
+.aDBc-margin-r-300 {
+	margin-top: 10px;
+	margin-right: 260px;
+}
+.aDBc-margin-t-20 {
+	margin-top: 20px;
+}
+.aDBc-margin-b-20 {
+	margin-bottom: 20px;
+}
+.aDBc-margin-l-3 {
+	margin-left: 3px !important;
+}
+.aDBc-clear-both{
+	clear: both;
+}
+.aDBc-float-left{
+	float: left;
+}
+.aDBc-float-right{
+	float: right;
+}
+#aDBc-please-wait{
+	display: none;
+	height: 34px !important;
+	margin-bottom: 40px;
+	color: #999;
+	font-family: verdana;
+	font-size: 11px;
+	text-align: center;
+}
+.aDBc-loading-gif{
+	height: 45px;
+	background: url("../images/loading_img.gif") no-repeat;
+	background-position: 50% 0% !important;
+	text-align: center;
+	margin: -20px 0px 0px 0px;
+}
+.aDBc-category-counts{
+	background: #fefefe;
+	padding: 10px 0px 20px 0px;
+	text-align: center;
+}
+.aDBc-category-counts a:hover{
+	padding-bottom: 6px;
+	border-bottom: 1px solid #ccc;
+}
+.aDBc-category-counts-links {
+	text-decoration: none !important;
+}
+.aDBc-selected-category{
+	padding-bottom: 6px;	
+	font-weight: bold;
+}
+.aDBc-category-separator{
+	color: #999;
+	padding-left: 10px;
+	padding-right: 10px
+}
+.aDBc-run-new-search{
+	height: 34px !important;
+	min-width: 175px !important;
+	background-image: url("../images/search-icon.png") !important;
+	background-repeat: no-repeat !important;
+	background-position: 8px 50% !important;
+	padding-left: 30px !important;
+}
+.aDBc-category-color{
+	padding: 0px 5px;
+	margin-right: 5px;
+	border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;	
+	display: inline-block;
+	height: 10px
+}
+.aDBc-left-content{
+	float: left;
+	width: 500px;
+	margin-right: 25px
+}
+.aDBc-text-status-db{
+	font-family: verdana;
+	font-size: 11px;
+}
+.aDBc-schedule-text{
+	font-weight: bold;
+	padding: 20px 0px 10px 0px;
+	font-size: 13px;
+}
+.aDBc-schedule-select{
+	width: 200px;
+	font-size:13px;
+}
+.aDBc-schedule-box{
+	border-top: 1px dashed #e1e1e1;
+	margin-top: 30px;
+}
+.aDBc-custom-clean-text{
+	font-size: 15px;
+	margin-top: 15px;
+	margin-bottom: 20px;
+	color: #0992CC;
+}
+/*---------------------------------------------------------------------------------------------
+*
+*  These styles override those of WordPress
+*
+*---------------------------------------------------------------------------------------------*/
+.widefat {
+    border-spacing: 1px;
+}
+.widefat > thead {
+	background: #f1f1f1;
+}
+.widefat thead tr th{
+    color: #666;
+}
+.widefat td, .widefat th {
+    border-bottom: 1px solid #f1f1f1;
+	border-right: 1px solid #f1f1f1;
+	overflow: visible !important;
+}
+.widefat th {
+	font-weight: bold !important;
+	font-size: 13px !important;
+}
+.widefat > tbody > tr:hover {
+	background-color: #f9f9f9;
+}
+.widefat td, .widefat td ol, .widefat td p, .widefat td ul {
+    line-height: 1.5em !important;
+}
+.widefat tbody th.check-column, .widefat tfoot td.check-column, .widefat thead td.check-column {
+    padding: 9px 0 5px 3px !important;
+}
+.widefat th input, .widefat thead td input{
+	margin: 1px 0 0 8px !important;
+}
+/* This style is used by WP tables (WP_List_Table class) for columns, it is not used directly in the code */
+.column-site_id{
+	width: 40px;
+}
+.column-o_table_prefix{
+	width: 12%;
+}
+.column-o_table_name{
+	/*width: 27%;*/
+}
+.column-o_table_name{
+	/*width: 27%;*/
+}
+.column-lost_space{
+	border-right: 0 none !important;
+	width: 15%;
+}
+.column-option_value{
+	width: 27%;
+}
+.column-option_autoload{
+	width: 8%;
+}
+.column-option_belongs_to{
+	width: 25%;
+}
+.column-hook_name{
+	width: 30%;
+}
+.column-next_run{
+	width: 30%;
+	font-size: 12px !important;
+}
+.column-hook_belongs_to{
+	/*width: 32%;*/
+}
+.column-table_prefix{
+	width: 7%;
+}
+.column-table_name{
+	/*width: 100%;*/
+}
+.column-table_rows{
+	width: 7%;
+}
+.column-table_size{
+	width: 10%;
+}
+.column-table_belongs_to{
+	width: 24%;
+	font-size: 13px !important;
+	border-right: 0 none !important;
+}
+.column-view{
+	border-right: 0 none !important;
+	width: 20%;
+	text-align: center;
+}
+#view,
+#count{
+	text-align: center;
+}
+.column-count{
+	width: 20%;
+	text-align: center;
+}
+.column-draft_id,
+.column-revision_id{
+	width: 8%;
+}
+.column-draft_date,
+.column-revision_date{
+	width: 20%;
+}
+.column-comment_id{
+	width: 6%;
+}
+.column-comment_author{
+	width: 14%;
+}
+.column-comment_date{
+	width: 18%;
+}
+.column-commentmeta_id,
+.column-postmeta_id{
+	width: 6%;
+}
+.column-commentmeta_meta_key,
+.column-postmeta_meta_key{
+	width: 22%;
+}
+.column-commentmeta_meta_value{
+	font-size: 12px !important;
+}
+.column-dash_feed_option_id{
+	width: 10%;
+}
+.column-dash_feed_autoload{
+	width: 12%;
+}
+/* To hide tfoot from tables used in the plugin */
+.widefat tfoot {
+	display: none;
+}
+/* To add a space between pagination and the head of tables */
+.tablenav {
+    margin: 8px 0 12px !important;
+}
+/* To color rows of tables in white */
+.alternate, .striped > tbody > *:nth-child(2n), ul.striped > *:nth-child(2n) {
+    background-color: #fff;
+}
+.alternate, .striped > tbody > *:nth-child(2n+1), ul.striped > *:nth-child(2n+1) {
+    background-color: #fefefe;
+}
+/* For paginations of tables */
+.tablenav-pages-navspan {
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+.tablenav .tablenav-pages a, .tablenav-pages-navspan {
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+.tablenav-pages .current-page {
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+.displaying-num{
+	display: none !important;
+}
+/* For tabs */
+h2.nav-tab-wrapper {
+    border-bottom: 0px !important;
+    padding-bottom: 0 !important;
+    padding-left: 0px !important;
+}
+h2 .nav-tab {
+    font-size: 13px;
+    line-height: 24px;
+	font-weight: normal;	
+    padding: 4px 10px !important;
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+}
+.nav-tab-active, .nav-tab-active:hover {
+    background: #fff;
+    font-weight: bold !important;	
+    border-bottom: 0px;
+    color: #000;
+    border-top: 2px solid #1a9ac9;
+    color: #0073aa;	
+}
+/*---------------------------------------------------------------------------------------------
+*
+*  Tabs
+*
+*---------------------------------------------------------------------------------------------*/
+.aDBc-tab-box {
+    float: left;
+	width: 100%;
+}
+.aDBc-tab-box-div {
+	min-height: 400px;
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 30px 20px 20px 20px;
+    border-radius: 0 5px 5px 5px;
+    -moz-border-radius: 0 5px 5px 5px;
+    -webkit-border-radius: 0 5px 5px 5px;	
+}
+
+/*---------------------------------------------------------------------------------------------
+*
+*  Sidebar
+*
+*---------------------------------------------------------------------------------------------*/
+.aDBc-sidebar {
+	float: right;
+	border: 1px solid #ccc;
+	background: #fff;
+	margin-right: -260px;
+	margin-top: 42px;
+	width: 240px;
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+}
+.aDBc-sidebar  > div{
+	padding: 15px;
+}
+.aDBc-sidebar  h2{
+	font-size: 16px;
+	text-align: center;
+	color: #888;
+	line-height: 24px;
+}
+.aDBc-donation-text{
+	text-align:center;
+	color: #555
+}
+.aDBc-donation-gif{
+	background: url("../images/donate.gif") no-repeat;
+	width: 92px;
+	height: 26px;
+	margin: auto;
+}
+.aDBc-grey-row{
+	height: 20px;
+	background-color: #f9f9f9;
+}
+.aDBc-white-row{
+	height: 20px;
+}
+.aDBc-row-text{
+	font-size: 13px;
+	color: #555;
+}
+.aDBc-sidebar-link{
+	text-decoration: none;
+}
+.aDBc-support-us{
+	background: url("../images/rate.png") no-repeat center right;
+	width: 88px;
+	height: 18px;
+	margin-top: 0px;
+}
+
+/*---------------------------------------------------------------------------------------------
+*
+*  Box messages
+*
+*---------------------------------------------------------------------------------------------*/
+.aDBc-box-warning {
+    background: #fff5cc url("../images/warning.png") no-repeat scroll 8px 50%;
+    /*border-bottom: 1px dashed orange;*/
+    color: #404040;
+    padding: 10px 10px 10px 40px;
+	margin-bottom: 20px;
+}
+.aDBc-box-info {
+    background: #f0f5fa url("../images/info.png") no-repeat scroll 8px 50%;
+    border-bottom: 1px dashed #ccc;
+    color: #404040;
+    padding: 10px 10px 10px 40px;
+	margin-bottom: 20px;
+}
+.aDBc-right-box{
+	float:left;
+	padding: 20px 20px 20px 20px;
+	margin-bottom: 5px;
+	margin-top: 49px;
+	border: 1px solid #eee;
+	background: #f9f9f9;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+	font-size: 12px;
+	color: #888;
+}
+.aDBc-jquery-dialog{
+	padding:20px;
+	display:none;
+}
+
+/*---------------------------------------------------------------------------------------------
+*
+*  Tool tip
+*
+*---------------------------------------------------------------------------------------------*/
+a.aDBc-tooltips {
+  position: relative;
+  display: inline;
+  cursor: pointer;
+}
+a.aDBc-tooltips span {
+  position: absolute;
+  color: #fff;
+  background: #333;
+  font-size: 12px;
+  font-weight: normal;
+  padding: 8px;
+  visibility: hidden;
+  width: 200px;
+  text-shadow: 0 0px 0 rgba(255, 255, 255, 0.8);
+}
+a.aDBc-tooltips span:after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  right: 100%;
+  margin-top: -8px;
+  width: 0; height: 0;
+  border-right: 8px solid #333;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+a:hover.aDBc-tooltips span {
+  visibility: visible;
+  opacity: 0.9;
+  left: 100%;
+  top: 50%;
+  margin-top: -20.5px;
+  margin-left: 15px;
+  z-index: 999;
+}
+
+/*---------------------------------------------------------------------------------------------
+*
+*  Premium page style
+*
+*---------------------------------------------------------------------------------------------*/
+.aDBc-upgrade-msg{
+	border-left: 6px solid #D091BE !important;
+	background: #FFFFD4;
+	padding: 1px 8px;
+	margin-bottom: 20px;
+}
+.aDBc-check-list{
+	background: url("../images/check_ok.png") no-repeat;
+	padding-left: 20px;
+	margin-left: 20px;
+}
+.aDBc-vertical-box{
+	float: left;
+	background: #f9f9f9;
+	width: 28%;
+	margin:5px 15px;
+	min-height: 350px;
+}
+.aDBc-vertical-box > a{
+	text-decoration: none;
+}
+.aDBc-vertical-box-head{
+	color: #fff;
+	font-size: 15px;
+	font-weight: bold;
+	text-align: center;
+	padding: 12px;
+	background: #69ADE2;
+	border-radius: 8px;
+}
+.aDBc-vertical-box-line1{
+	text-align: center;
+	margin-top: 20px;
+}
+.aDBc-vertical-box-line2{
+	text-align: center;
+	margin-top: 50px;
+}
+
+/*---------------------------------------------------------------------------------------------
+*
+*  Overview & settings page
+*
+*---------------------------------------------------------------------------------------------*/
+.aDBc-overview-box{
+	float: left;
+	margin: 15px 20px 20px 10px;
+	width: 45%;
+	background: #fff;
+}
+.aDBc-overview-box-head{
+	text-align: center;
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 7px 0px;
+	background: #69ADE2;
+	border: 1px solid #e1e1e1;
+	margin-bottom: 20px;
+}
+.aDBc-overview-box-line{
+	margin-left: 15px;
+}
+.aDBc-overview-box-line > li{
+	line-height: 32px;
+}
+.aDBc-overview-text-left{
+	float: left;
+	background: url("../images/check_ok.png") no-repeat left center;
+	padding-left: 30px;
+	width: 180px;
+}
+.aDBc-overview-text-left-warning{
+	float: left;
+	background: url("../images/small_warning.png") no-repeat left center;
+	padding-left: 30px;
+	width: 180px;
+}
+.aDBc-overview-text-right{
+	float: left;
+}
+.aDBc-overview-setting-desc{
+	padding-left: 24px;
+	color: #999;
+	line-height: 20px;
+}
+.aDBc-save-settings-button{
+	margin-left: 18px !important;
+	height: 30px !important;
+	padding: 1px 20px !important;
+	margin-top: 10px !important;
+}

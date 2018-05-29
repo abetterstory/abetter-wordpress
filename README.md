@@ -9,10 +9,17 @@ ABetter Wordpress integration for Laravel 5+
 > composer require intervention/image
 > composer require itsgoingd/clockwork --dev
 
+## Add script command to root composer.json + update
+"post-update-cmd": [
+	"ABetter\\Wordpress\\ComposerScripts::renameHelperFunctions"
+]
+> composer update
+
 ## Install vanilla Wordpress in resources/wordpress
 
-## Copy default theme to resources/wordpress/wp-content/themes
-> cp -r vendor/abetter/wordpress/theme resources/wordpress/wp-content/themes/abetter
+## Copy theme + plugins to resources/wordpress/wp-content/
+> cp -r vendor/abetter/wordpress/themes resources/wordpress/wp-content/themes
+> cp -r vendor/abetter/wordpress/plugins resources/wordpress/wp-content/plugins
 
 ## Create symlink to public/wp
 > cd public
