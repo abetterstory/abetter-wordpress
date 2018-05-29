@@ -16,27 +16,29 @@ ABetter Wordpress integration for Laravel 5+
 ]
 > composer update
 
-## Install vanilla Wordpress in resources/wordpress
-
-## Copy theme + plugins to resources/wordpress/wp-content/
-> cp -r vendor/abetter/wordpress/theme resources/wordpress/wp-content/themes/abetter
-> cp -r vendor/abetter/wordpress/plugins resources/wordpress/wp-content/plugins
+## Install vanilla Wordpress in resources/wordpress/core
 
 ## Create symlink to public/wp
 > cd public
-> ln -s ../resources/wordpress wp
+> ln -s ../resources/wordpress/core wp
+
+## Create symlink to plugins & themes
+> cd resources/wordpress/wp-content
+> ln -s ../../../../vendor/abetter/wordpress/plugins plugins
+> ln -s ../../../../vendor/abetter/wordpress/themes themes
 
 ## Create symlink to uploads
 > cd resources/wordpress/wp-content
-> ln -s ../../../storage/wordpress/uploads ./uploads
+> ln -s ../../../../storage/wordpress/uploads uploads
 
-## Setup Wordpress wp-config.php
+## Setup Wordpress core/wp-config.php + config.php
+require_once(dirname(__FILE__).'/../config.php');
 
 ## Install Wordpress and configure
 
-## Install Wordpress plugins
+## Activate Wordpress plugins + theme
 
-## Activate ABetter theme
+## Add theme templates in templates.php
 
 ## Add system pages
 Start : start (Front page)
