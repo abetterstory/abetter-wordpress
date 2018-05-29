@@ -22,7 +22,7 @@ ABetter Wordpress integration for Laravel 5+
 > cd public
 > ln -s ../resources/wordpress/core wp
 
-## Create symlink to plugins & themes
+## Create symlink to plugins & themes (first remove default)
 > cd resources/wordpress/wp-content
 > ln -s ../../../../vendor/abetter/wordpress/plugins plugins
 > ln -s ../../../../vendor/abetter/wordpress/themes themes
