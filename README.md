@@ -1,4 +1,5 @@
 # labs-abetter-wordpress
+
 ABetter Wordpress integration for Laravel 5+
 
 ## Install laravel + abetter + requirements
@@ -18,7 +19,7 @@ ABetter Wordpress integration for Laravel 5+
 ## Install vanilla Wordpress in resources/wordpress
 
 ## Copy theme + plugins to resources/wordpress/wp-content/
-> cp -r vendor/abetter/wordpress/themes resources/wordpress/wp-content/themes
+> cp -r vendor/abetter/wordpress/theme resources/wordpress/wp-content/themes/abetter
 > cp -r vendor/abetter/wordpress/plugins resources/wordpress/wp-content/plugins
 
 ## Create symlink to public/wp
