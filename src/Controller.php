@@ -3,6 +3,8 @@
 namespace ABetter\Wordpress;
 
 use Illuminate\Routing\Controller as BaseController;
+use ABetter\Wordpress\Site;
+use ABetter\Wordpress\Post;
 
 class Controller extends BaseController {
 
@@ -59,8 +61,8 @@ class Controller extends BaseController {
 	// ---
 
 	public function getPost() {
-		if ($this->isFront()) return \ABetterWordpressPost::getFront();
-		return \ABetterWordpressPost::getPost($this->slug);
+		if ($this->isFront()) return Post::getFront();
+		return Post::getPost($this->slug);
 	}
 
 	public function getPostTemplateSuggestions() {
@@ -85,7 +87,11 @@ class Controller extends BaseController {
 		if (empty($this->post->ID)) return abort(404);
 		foreach ($this->getPostTemplateSuggestions() AS $suggestion) {
 			if (view()->exists('wordpress.'.$suggestion)) {
-				return view('wordpress.'.$suggestion)->with(['post' => $this->post]);
+				return view('wordpress.'.$suggestion)->with([
+					'site' => Site::getSite(),
+					'post' => $this->post,
+					'template' => $suggestion
+				]);
 			}
 		}
 		return "No template found in views/wordpress/";

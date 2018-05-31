@@ -1,4 +1,13 @@
 <?php
+
+define('ROOTPATH', realpath(dirname(__FILE__).'/../../../'));
+
+require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Dotenv.php');
+require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Loader.php');
+
+$dotenv = new Dotenv\Dotenv(ROOTPATH);
+$dotenv->load();
+
 /**
  * The base configuration for WordPress
  *
@@ -17,14 +26,6 @@
  *
  * @package WordPress
  */
-
-define('ROOTPATH', realpath(dirname(__FILE__).'/../../../'));
-
-require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Dotenv.php');
-require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Loader.php');
-
-$dotenv = new Dotenv\Dotenv(ROOTPATH);
-$dotenv->load();
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
