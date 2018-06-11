@@ -8,6 +8,9 @@ require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Loader.php');
 $dotenv = new Dotenv\Dotenv(ROOTPATH);
 $dotenv->load();
 
+define('WP_HOME', getenv('WP_HOME'));
+define('WP_SITEURL', getenv('WP_HOME'));
+
 /**
  * The base configuration for WordPress
  *
