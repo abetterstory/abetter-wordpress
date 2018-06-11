@@ -37,6 +37,8 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		$trid = $this->maybe_retrive_trid_again( $trid, $post );
 		$needs_second_update = array_key_exists( 'needs_second_update', $_POST ) ? (bool) $_POST['needs_second_update'] : false;
 
+		$this->save_translation_priority( $post_id );
+
 		// is this the original document?
 		$is_original = empty( $trid )
 			? false
@@ -136,8 +138,13 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 			                                                        'admin_override' => false
 		                                                        ) )
 		) {
-			$this->action_helper->get_tm_instance()->add_translator( $user_id,
-			                                                         array( $source_lang => array( $target_lang => 1 ) ) );
+			global $wpdb;
+
+			$user = new WP_User( $user_id );
+			$user->add_cap( WPML_Translator_Role::CAPABILITY );
+
+			$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
+			$language_pair_records->store( $user_id, array( $source_lang => array( $target_lang ) ) );
 		}
 	}
 
@@ -161,5 +168,18 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		}
 
 		return $trid;
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 */
+	public function save_translation_priority( $post_id ) {
+
+		$translation_priority = filter_var(
+			( isset( $_POST['icl_translation_priority'] ) ? $_POST['icl_translation_priority'] : '' ),
+			FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+		wp_set_post_terms( $post_id, array( (int) $translation_priority ), 'translation_priority' );
 	}
 }

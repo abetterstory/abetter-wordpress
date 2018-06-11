@@ -15,6 +15,9 @@ class WPML_Upgrade {
 	/** @var WPML_Upgrade_Command_Factory */
 	private $command_factory;
 
+	/** @var bool $upgrade_in_progress */
+	private $upgrade_in_progress;
+
 	/**
 	 * WPML_Upgrade constructor.
 	 *
@@ -34,15 +37,21 @@ class WPML_Upgrade {
 	}
 
 	public function run() {
+		$result = false;
+
 		if ( $this->sitepress->get_wp_api()->is_admin() ) {
 			if ( $this->sitepress->get_wp_api()->is_ajax() ) {
-				return $this->run_ajax();
+				$result = $this->run_ajax();
 			} else {
-				return $this->run_admin();
+				$result = $this->run_admin();
 			}
 		} elseif ( $this->sitepress->get_wp_api()->is_front_end() ) {
-			return $this->run_front_end();
+			$result = $this->run_front_end();
 		}
+
+		$this->set_upgrade_completed();
+
+		return $result;
 	}
 
 	private function get_commands_by_scope( $scope ) {
@@ -98,6 +107,7 @@ class WPML_Upgrade {
 		}
 
 		if ( ! $this->has_been_command_executed( $command ) ) {
+			$this->set_upgrade_in_progress();
 			$upgrade = $this->command_factory->create( $command->get_class_name(), $command->get_dependencies() );
 			return $this->$method( $upgrade );
 		}
@@ -199,6 +209,20 @@ class WPML_Upgrade {
 		$update_options        = get_option( self::UPDATE_STATUSES_KEY, array() );
 		$update_options[ $id ] = $value;
 		update_option( self::UPDATE_STATUSES_KEY, $update_options, true );
+	}
+
+	private function set_upgrade_in_progress() {
+		if ( ! $this->upgrade_in_progress ) {
+			$this->upgrade_in_progress = true;
+			set_transient( WPML_Upgrade_Loader::TRANSIENT_UPGRADE_IN_PROGRESS, true, MINUTE_IN_SECONDS );
+		}
+	}
+
+	private function set_upgrade_completed() {
+		if ( $this->upgrade_in_progress ) {
+			$this->upgrade_in_progress = false;
+			delete_transient( WPML_Upgrade_Loader::TRANSIENT_UPGRADE_IN_PROGRESS );
+		}
 	}
 }
 

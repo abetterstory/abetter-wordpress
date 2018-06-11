@@ -3,61 +3,12 @@
 {% endfor %}
 <div class="wpml-tm-ts-admin-section">
 
-    {% if active_service %}
-
-    <div class="ts-active-service js-ts-active-service">
-        <input type="hidden" class="active-service-title" value="{{ strings.active_service.modal_title }}">
-        <input type="hidden" class="active-service-header" value="{{ strings.active_service.modal_header }}">
-        <input type="hidden" class="active-service-tip" value="{{ strings.active_service.modal_tip|format( "<a target='_blank' href='" ~ active_service.url ~ "'>" ~ active_service.name ~ "</a>" ) }}">
-        <div class="ts-admin-section-leftcol">
-            <h3>{{ strings.active_service.title }}</h3>
-            <div class="service-logo"><img src="{{ active_service.logo_url }}" alt="{{ active_service.name }}"/></div>
-            <p>
-                <button data-id="{{ active_service.id }}"  class="button-secondary js-deactivate-service">{{ strings.active_service.deactivate }}</button>
-            </p>
-        </div>
-
-        <div class="ts-admin-section-rightcol">
-
-            {% if active_service.has_language_pairs and active_service.custom_fields_data %}
-                <div class="refresh-language-pairs-section">
-                    <div class="spinner"></div>
-                    <div class="wpml_ajax_response"></div>
-                    <a class="button-secondary js-refresh-language-pairs" data-nonce="{{ nonces['wpml-tp-refresh-language-pairs'] }}">
-                        {{ strings.refresh_language_pairs }}
-                    </a>
-                </div>
-            {% endif %}
-
-            <h3>{{ active_service.name }}</h3>
-            <p>{{ active_service.description }}</p>
-
-            <p><a target="_blank" href="{{ active_service.doc_url }}">{{ strings.documentation }}</a></p>
-
-            {% if 1 == active_service.requires_authentication %}
-            <div class="ts-authentication notice notice-warning inline clearfix">
-
-                {% if active_service.custom_fields_data %}
-                    <p>{{ strings.authentication.is_authorized }}</p>
-                    <p class="notice-action-link"><button data-id="{{ active_service.id }}" data-custom-fields="{{ active_service.custom_fields | raw }}" class="js-invalidate-service button-primary">{{ strings.authentication.de_authorize_button }}</button></p>
-                {% else %}
-                    <p>{{ strings.authentication.description|format( active_service.name, '<a target="_blank" href="' ~ active_service.doc_url ~ '">' ~ strings.documentation_lower ~ '</a>' )|raw }}</p>
-                    <p class="notice-action-link"><button class="js-authenticate-service button-primary" data-id="{{ active_service.id }}" data-custom-fields="{{ active_service.custom_fields | raw }}">{{ strings.authentication.authenticate_button }}</button></p>
-                {% endif %}
-                <input type="hidden" name="custom_fields_serialized" id="custom_fields_serialized" value="" />
-
-            </div>
-            {% endif %}
-
-        </div>
-    </div>
-
-    {% endif %}
+    {{ active_service|raw }}
 
     {% if false == has_preferred_service and available_services %}
 
         <div class="listing-table ts-admin-section-inactive-services">
-            <h3>{{ strings.inactive_services_title }}</h3>
+            <h3 class="js-available-title">{{ strings.inactive_services_title }}</h3>
 
             <div class="ts-admin-section-search">
                 <input class="search-string" type="text" value="{{ search_string }}" />
@@ -98,7 +49,20 @@
                             </td>
                         {% endif %}
 
-                        <td class="column-service-actions"><button data-id="{{ service.id }}" {{ service.active == 'active' ? 'disabled' }} class="button-primary js-activate-service-id">{{ strings.activate }}</button></td>
+                        <td class="column-service-actions">
+                            <button class="button-primary js-activate-service-id"
+                                    data-id="{{ service.id }}"
+                                    data-name="{{ service.name }}"
+                                    data-logo="{{ service.logo_url }}"
+                                    data-get-credentials-desc="{{ service.how_to_get_credentials_desc }}"
+                                    data-get-credentials-url="{{ service.how_to_get_credentials_url }}"
+                                    data-create-account-url="{{ service.client_create_account_page_url }}"
+                                    data-custom-fields="{{ service.custom_fields | json_encode }}"
+                                    {{ service.active == 'active' ? 'disabled' }}
+                            >
+                                {{ strings.activate }}
+                            </button>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -109,18 +73,21 @@
             'nav_location': 'bottom'
             } %}
 
-            {% if strings.tms.visible %}
-                <br /><a href="{{ strings.tms.url }}">{{ strings.tms.link }}</a>
-            {% endif %}
+            <div class="js-bottom-section">
+                {% if strings.tms.visible %}
+                    <br /><a href="{{ strings.tms.url }}">{{ strings.tms.link }}</a>
+                {% endif %}
 
-            {% if strings.ts.visible %}
-                <br /><a href="{{ strings.ts.url }}">{{ strings.ts.link }}</a>
-            {% endif %}
-
+                {% if strings.ts.visible %}
+                    <br /><a href="{{ strings.ts.url }}">{{ strings.ts.link }}</a>
+                {% endif %}
+            </div>
         </div>
 
-        <hr class="wpml-margin-top-base">
-        <p>{{ strings.ts.different }} <a target="_blank" class="wpml-external-link" href="{{ strings.ts.tell_us_url }}">{{ strings.ts.tell_us }}</a></p>
+        <div class="js-bottom-section">
+            <hr class="wpml-margin-top-base">
+            <p>{{ strings.ts.different }} <a target="_blank" class="wpml-external-link" href="{{ strings.ts.tell_us_url }}">{{ strings.ts.tell_us }}</a></p>
+        </div>
 
     {% endif %}
 

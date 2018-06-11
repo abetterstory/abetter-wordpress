@@ -2,6 +2,9 @@
 
 class WPML_TM_Translation_Services_Admin_Section_Factory implements IWPML_TM_Admin_Section_Factory {
 
+	const OPTION_ITEMS_PER_PAGE  = 'wpml_tm_services_per_page';
+	const DEFAULT_ITEMS_PER_PAGE = 10;
+
 	/**
 	 * @return WPML_TM_Translation_Services_Admin_Section
 	 */
@@ -24,9 +27,12 @@ class WPML_TM_Translation_Services_Admin_Section_Factory implements IWPML_TM_Adm
 			new WPML_TM_Translation_Services_Admin_Section_No_Site_Key_Template( $twig_loader->get_template() )
 		);
 
+		$screen_options_factory = new WPML_UI_Screen_Options_Factory( $sitepress );
+		$screen_options = $screen_options_factory->create_pagination( self::OPTION_ITEMS_PER_PAGE, self::DEFAULT_ITEMS_PER_PAGE );
+
 		$pagination_factory = new WPML_Admin_Pagination_Factory(
 			count( $section->get_available_services() ),
-			$section->get_items_per_page()
+			$screen_options->get_items_per_page()
 		);
 
 		$pagination = $pagination_factory->create();
@@ -58,14 +64,13 @@ class WPML_TM_Translation_Services_Admin_Section_Factory implements IWPML_TM_Adm
 	 * @return WPML_TM_Translation_Services_Admin_Section_Services_List_Template
 	 */
 	private function create_services_list_template( $section, WPML_Twig_Template_Loader $twig_loader ) {
-		global $sitepress;
-
-		$active_service = $sitepress->get_setting( 'translation_service' );
+		$active_service_factory  = new WPML_TM_Translation_Services_Admin_Active_Template_Factory();
+		$active_service_template = $active_service_factory->create();
 
 		$section_template = new WPML_TM_Translation_Services_Admin_Section_Services_List_Template(
 			array(
 				'template_service'                   => $twig_loader->get_template(),
-				'active_service'                     => $active_service ? new WPML_TP_Service( $active_service ) : null,
+				'active_service_template'            => $active_service_template,
 				'filtered_services'                  => $section->get_paginated_services(),
 				'available_services'                 => $section->get_available_services(),
 				'translation_service_type_requested' => $section->get_translation_service_type_requested(),
@@ -73,7 +78,6 @@ class WPML_TM_Translation_Services_Admin_Section_Factory implements IWPML_TM_Adm
 				'search_string'                      => $section->get_search_string(),
 				'pagination'                         => $section->get_pagination(),
 				'table_sort'                         => new WPML_Admin_Table_Sort(),
-				'items_per_page'                     => $section->get_items_per_page(),
 				'has_preferred_service'              => TranslationProxy::has_preferred_translation_service(),
 			)
 		);

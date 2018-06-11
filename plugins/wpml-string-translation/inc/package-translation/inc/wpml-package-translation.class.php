@@ -89,8 +89,6 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 			add_filter( 'wpml_tm_editor_string_style', array( $this, 'get_editor_string_style' ), 10, 3 );
 
 			/* API Hooks */
-			//TODO: [WPML 3.2] implement the filter based on \WPML_TM_Menus::build_content_dashboard_documents_row
-			add_filter( 'wpml_tm_wpml_package_estimate_word_count', array( $this, 'estimate_word_count' ), 10, 2 );
 			//@deprecated @since 3.2 Use 'wpml_delete_package'
 			add_action( 'wpml_delete_package_action', array( $this, 'delete_package_action' ), 10, 2 );
 			add_action( 'wpml_delete_package', array( $this, 'delete_package_action' ), 10, 2 );
@@ -302,33 +300,6 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 		}
 
 		return $language_names;
-	}
-
-	//TODO: [WPML 3.3] to implement (a 'get' method of WPML_Package, maybe?)
-	/**
-	 * @param int          $word_count
-	 * @param WPML_Package $package
-	 *
-	 * @return int
-	 */
-	function estimate_word_count( $word_count, $package ) {
-		if ( $this->is_a_package( $package ) ) {
-			$word_count = 0;
-
-			$language_code = $package->get_package_language();
-			$strings       = $package->string_data;
-
-			if ( $strings ) {
-				global $WPML_String_Translation;
-				if ( isset( $WPML_String_Translation ) ) {
-					foreach ( $strings as $string_id => $string_value ) {
-						$word_count += $WPML_String_Translation->estimate_word_count( $string_value, $language_code );
-					}
-				}
-			}
-		}
-
-		return $word_count;
 	}
 
 	function is_external( $result, $type ) {

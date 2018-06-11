@@ -58,14 +58,14 @@ var WPML_TM = WPML_TM || {};
 				self.$el.find('.wp-media-buttons').hide();
 			}
 
-			_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self), 1000);
+			_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self, self.translationCompleteCheckbox.is( ':checked' )), 1000);
 		},
 
 		getTextAreaElement: function () {
 			return this.$el.find('textarea#' + this.field.field_type);
 		},
 
-		waitForEditorAndThenInstallHooks: function () {
+		waitForEditorAndThenInstallHooks: function (checked) {
 			var self = this;
 			var editor = tinymce.get(self.field.field_type);
 			if (editor && editor instanceof tinyMCE.Editor) {
@@ -84,6 +84,11 @@ var WPML_TM = WPML_TM || {};
 				self.setRtlAttributes(editor);
 				self.setOriginalBackgroundGray( editor );
 
+				if( checked ) {
+					self.translationCompleteCheckbox.prop('checked', true);
+					self.translationCompleteCheckbox.prop('disabled', false);
+					self.translationCompleteCheckbox.trigger('change');
+				}
 			} else {
 				_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self), 1000);
 			}

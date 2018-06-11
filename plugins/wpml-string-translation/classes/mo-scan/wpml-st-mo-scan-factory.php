@@ -70,7 +70,8 @@ class WPML_ST_MO_Scan_Factory {
 				new WPML_ST_MO_Scan( $charset_filter ),
 				$this->create_storage(),
 				$this->get_language_codes_map(),
-				$this->get_scan_limit()
+				$this->get_scan_limit(),
+				new WPML_Transient()
 			);
 		}
 

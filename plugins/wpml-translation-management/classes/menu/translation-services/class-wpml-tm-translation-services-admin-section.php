@@ -186,13 +186,6 @@ class WPML_TM_Translation_Services_Admin_Section implements IWPML_TM_Admin_Secti
 	}
 
 	/**
-	 * @return int
-	 */
-	public function get_items_per_page() {
-		return isset( $_GET['items_per_page'] ) ? filter_var( $_GET['items_per_page'], FILTER_SANITIZE_NUMBER_INT ) : 10;
-	}
-
-	/**
 	 * @return bool
 	 */
 	private function doing_search() {
@@ -222,10 +215,10 @@ class WPML_TM_Translation_Services_Admin_Section implements IWPML_TM_Admin_Secti
 	}
 
 	/**
-	 * @return string
+	 * @return string|array
 	 */
-	public function get_capability() {
-		return 'list_users';
+	public function get_capabilities() {
+		return array( WPML_Manage_Translations_Role::CAPABILITY, 'manage_options' );
 	}
 
 	/**

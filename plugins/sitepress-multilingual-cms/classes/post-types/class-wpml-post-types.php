@@ -20,12 +20,14 @@ class WPML_Post_Types extends WPML_SP_User {
 
 		$types = array();
 		$tm_settings = $this->sitepress->get_setting( 'translation-management', array() );
-		foreach ( array_keys( $tm_settings['custom-types_readonly_config'] ) as $cp ) {
-			if ( isset( $wp_post_types[ $cp ] ) ) {
-				$types[ $cp ] = $wp_post_types[ $cp ];
+		if ( array_key_exists( 'custom-types_readonly_config', $tm_settings )
+		     && is_array( $tm_settings['custom-types_readonly_config'] ) ) {
+			foreach ( array_keys( $tm_settings['custom-types_readonly_config'] ) as $cp ) {
+				if ( isset( $wp_post_types[ $cp ] ) ) {
+					$types[ $cp ] = $wp_post_types[ $cp ];
+				}
 			}
 		}
-
 		return $types;
 	}
 

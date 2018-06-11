@@ -8,6 +8,7 @@ jQuery(document).ready(function(){
     jQuery(".icl_st_form").submit(icl_st_submit_translation);
     jQuery('select[name="icl_st_filter_status"]').change(icl_st_filter_status);
     jQuery('select[name="icl_st_filter_context"]').change(icl_st_filter_context);
+    jQuery('select[name="icl-st-filter-translation-priority"]').change(icl_st_filter_translation_priority);
     jQuery('#icl_st_filter_search_sb').click(icl_st_filter_search);
 
     jQuery("#icl_st_filter_search").keyup(function(event) {
@@ -139,6 +140,11 @@ function icl_st_filter_status(){
 function icl_st_filter_context(){
     var qs = jQuery(this).val() != '' ? '&context=' + encodeURIComponent(jQuery(this).val()) : '';
     location.href=location.href.replace(/#(.*)$/,'').replace(/&paged=([0-9]+)/,'').replace(/&updated=true/,'').replace(/&context=(.*)/g,'') + qs;
+}
+
+function icl_st_filter_translation_priority(){
+    var qs = jQuery(this).val() != '' ? '&translation-priority=' + encodeURIComponent(jQuery(this).val()) : '';
+    location.href=location.href.replace(/#(.*)$/,'').replace(/&paged=([0-9]+)/,'').replace(/&updated=true/,'').replace(/&translation-priority=(.*)/g,'') + qs;
 }
 
 function icl_st_filter_search(){
@@ -281,6 +287,11 @@ function icl_st_update_checked_elements() {
     }
 
     jQuery('#icl_st_change_lang_selected').prop('disabled', get_checked_cbs().length === 0);
+    jQuery('#icl-st-change-translation-priority-selected').prop('disabled', get_checked_cbs().length === 0);
+
+    jQuery('.js-change-translation-priority .select2-choice, .js-simple-lang-selector-flags .select2-choice').attr('disabled', get_checked_cbs().length === 0);
+     
+
     if (!jQuery('.icl_st_row_cb:checked').length) {
         jQuery('#icl_st_delete_selected, #icl_send_strings').prop('disabled', true);
         WPML_String_Translation.translation_basket.clear_message();

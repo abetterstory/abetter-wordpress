@@ -71,7 +71,7 @@ function icl_sitepress_activate() {
 			$sql = "
              CREATE TABLE IF NOT EXISTS `{$table_name}` (
                 `translation_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                `element_type` VARCHAR( 36 ) NOT NULL DEFAULT 'post_post',
+                `element_type` VARCHAR( 60 ) NOT NULL DEFAULT 'post_post',
                 `element_id` BIGINT NULL DEFAULT NULL ,
                 `trid` BIGINT NOT NULL ,
                 `language_code` VARCHAR( 7 ) NOT NULL,
@@ -103,6 +103,7 @@ function icl_sitepress_activate() {
                  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                  `links_fixed` tinyint(4) NOT NULL DEFAULT 0,
                  `_prevstate` longtext,
+                 `uuid` varchar(36) NULL,
                  PRIMARY KEY (`rid`),
                  UNIQUE KEY `translation_id` (`translation_id`)
                 ) {$charset_collate}    
@@ -190,6 +191,7 @@ function icl_sitepress_activate() {
 		}
 
 		/* general string translation */
+		$translation_priority_default = __( 'Optional', 'sitepress' );
 		$table_name = $wpdb->prefix . 'icl_strings';
 		if ( 0 !== strcasecmp( $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" ), $table_name ) ) {
 			$sql = "
@@ -206,10 +208,13 @@ function icl_sitepress_activate() {
                   `status` TINYINT NOT NULL,
                   `gettext_context` TEXT NOT NULL,
                   `domain_name_context_md5` VARCHAR(32) NOT NULL,
+                  `translation_priority` varchar(160) NOT NULL,
+                  `word_count` int unsigned NULL,
                   PRIMARY KEY  (`id`),
                   UNIQUE KEY `uc_domain_name_context_md5` (`domain_name_context_md5`),
                   KEY `language_context` (`language`, `context`),
-                  KEY `icl_strings_name` (`name` ASC)
+                  KEY `icl_strings_name` (`name` ASC),
+                  KEY `icl_strings_translation_priority` ( `translation_priority` ASC )
                   ) {$charset_collate}
                   ";
 			if ( $wpdb->query( $sql ) === false ) {

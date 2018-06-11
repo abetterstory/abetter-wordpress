@@ -19,25 +19,30 @@ class WPML_ST_MO_Queue {
 	/** @var int */
 	private $limit;
 
+	private $transient;
+
 	/**
 	 * @param WPML_ST_MO_Dictionary $mo_dictionary
 	 * @param WPML_ST_MO_Scan $mo_translation_loader
 	 * @param WPML_ST_MO_Scan_Storage $mo_scan_storage
 	 * @param array $language_code_maps
 	 * @param int $limit
+	 * @param WPML_Transient $transient
 	 */
 	public function __construct(
 		WPML_ST_MO_Dictionary $mo_dictionary,
 		WPML_ST_MO_Scan $mo_translation_loader,
 		WPML_ST_MO_Scan_Storage $mo_scan_storage,
 		array $language_code_maps,
-		$limit = self::DEFAULT_LIMIT
+		$limit = self::DEFAULT_LIMIT,
+		WPML_Transient $transient
 	) {
 		$this->mo_dictionary         = $mo_dictionary;
 		$this->mo_translation_loader = $mo_translation_loader;
 		$this->mo_scan_storage       = $mo_scan_storage;
 		$this->language_codes_map    = $language_code_maps;
 		$this->limit                 = $limit;
+		$this->transient             = $transient;
 	}
 
 	public function import() {
@@ -156,14 +161,14 @@ class WPML_ST_MO_Queue {
 	}
 
 	public function is_locked() {
-		return (bool) get_transient( self::LOCK_FIELD );
+		return (bool) $this->transient->get( self::LOCK_FIELD );
 	}
 
 	public function lock() {
-		set_transient( self::LOCK_FIELD, 1, MINUTE_IN_SECONDS * 5 );
+		$this->transient->set( self::LOCK_FIELD, 1, MINUTE_IN_SECONDS * 5 );
 	}
 
 	public function unlock() {
-		delete_transient( self::LOCK_FIELD );
+		$this->transient->delete( self::LOCK_FIELD );
 	}
 }

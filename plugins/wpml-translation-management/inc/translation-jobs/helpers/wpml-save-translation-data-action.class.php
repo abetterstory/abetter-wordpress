@@ -12,11 +12,11 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 	private $translate_link_targets_in_posts;
 	private $translate_link_targets_in_strings;
 
-	public function __construct( $data, &$tm_records ) {
+	public function __construct( $data, $tm_records ) {
 		global $wpdb, $ICL_Pro_Translation, $sitepress;
 		parent::__construct();
 		$this->data                              = $data;
-		$this->tm_records                        = &$tm_records;
+		$this->tm_records                        = $tm_records;
 		$translate_link_targets_global_state = new WPML_Translate_Link_Target_Global_State( $sitepress );
 		$this->translate_link_targets_in_posts   = new WPML_Translate_Link_Targets_In_Posts( $translate_link_targets_global_state, $wpdb, $ICL_Pro_Translation );
 		$this->translate_link_targets_in_strings = new WPML_Translate_Link_Targets_In_Strings( $translate_link_targets_global_state, $wpdb, new WPML_WP_API(), $ICL_Pro_Translation );

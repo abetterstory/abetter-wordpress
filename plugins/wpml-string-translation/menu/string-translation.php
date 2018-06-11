@@ -33,8 +33,11 @@ if ( preg_match(
 //$status_filter  = $status_filter !== false ? (int) $status_filter : null;
 $context_filter = filter_input( INPUT_GET, 'context', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-$search_filter  = filter_input( INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+$search_filter  = filter_input( INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS );
 $exact_match    = filter_input( INPUT_GET, 'em', FILTER_VALIDATE_BOOLEAN );
+
+$filter_translation_priority = filter_var( isset( $_GET['translation-priority'] ) ? $_GET['translation-priority'] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+$translation_priorities      = class_exists( 'WPML_TM_Translation_Priorities') ? get_terms( array( 'taxonomy' => 'translation_priority', 'hide_empty' => false ) ) : array();
 
 $active_languages = $sitepress->get_active_languages();
 $icl_contexts = icl_st_get_contexts( $status_filter );
@@ -219,6 +222,22 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
         </span>
             <?php endif; ?>
 
+        <?php if( $translation_priorities ): ?>
+            <span style="white-space:nowrap">
+                <?php echo __( 'Select strings Translation Priority:', 'wpml-string-translation' ) ?>
+                <select name="icl-st-filter-translation-priority">
+                    <option value=""><?php esc_html_e( 'All Translation Priorities', 'wpml-translation-management' ) ?></option>
+                    <?php
+                    foreach ( $translation_priorities as $translation_priority ) {
+                        $translation_priority_selected = selected( $filter_translation_priority, $translation_priority->name, false );
+                        ?>
+                        <option value="<?php echo $translation_priority->name ?>" <?php echo $translation_priority_selected; ?>>
+                            <?php echo $translation_priority->name ?>
+                        </option>
+                    <?php } ?>
+                </select>
+            </span>
+        <?php endif; ?>
         &nbsp;&nbsp;
         <span style="white-space:nowrap">
         <label>
@@ -245,22 +264,18 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
 		<?php if( ! empty( $icl_contexts ) ): ?>
 			<p><a href="#" id="wpml-language-of-domains-link"><?php _e( 'Languages of domains', 'wpml-string-translation' ); ?></a></p>
 		<?php endif; ?>
+        <?php
+        $string_translation_table_ui = new WPML_String_Translation_Table( icl_get_string_translations() );
+        $string_translation_table_ui->render();
 
-		<?php
-			$string_translation_table_ui = new WPML_String_Translation_Table( icl_get_string_translations() );
-			$string_translation_table_ui->render( );
-
-			$change_string_language_dialog = new WPML_Change_String_Language_Dialog( $wpdb, $sitepress );
-			$change_string_language_dialog->render( );
-			
-			if( ! empty( $icl_contexts ) ) {
-		$string_factory                       = new WPML_ST_String_Factory( $wpdb );
-		$change_string_domain_language_dialog = new WPML_Change_String_Domain_Language_Dialog( $wpdb, $sitepress, $string_factory );
-				$change_string_domain_language_dialog->render( $icl_contexts );
-			}
-    $get_show_results = filter_input( INPUT_GET, 'show_results', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-    $get_page         = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_URL );
-    ?>
+        if ( ! empty( $icl_contexts ) ) {
+            $string_factory                       = new WPML_ST_String_Factory( $wpdb );
+            $change_string_domain_language_dialog = new WPML_Change_String_Domain_Language_Dialog( $wpdb, $sitepress, $string_factory );
+            $change_string_domain_language_dialog->render( $icl_contexts );
+        }
+        $get_show_results = filter_var( isset( $_GET['show_results'] ) ? $_GET['show_results'] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+        $get_page         = filter_var( $_GET['page'], FILTER_SANITIZE_URL );
+        ?>
         <?php if($wp_query->found_posts > 10): ?>
             <div class="tablenav">
             <?php
@@ -281,6 +296,7 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
             $query_url_params .= $paged;
             $query_url_params .= ( $context_filter !== null ? ( '&context=' . $context_filter ) : '' );
             $query_url_params .= ( $status_filter !== null ? ( '&status=' . $status_filter ) : '' );
+            $query_url_params .= ( $filter_translation_priority !== null ? ( '&tp=' . $filter_translation_priority ) : '' );
             ?>
             <?php if( $get_show_results === 'all' ): ?>
             <div class="tablenav-pages">
@@ -307,7 +323,8 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                             '&context=' => $context_filter,
                             '&status=' => $status_filter,
                             '&search=' => $search_filter,
-                            '&em=' => $exact_match
+                            '&em=' => $exact_match,
+                            '&tp=' => $filter_translation_priority
                         )
                     );
                     foreach ( $params as $key => $p ) {
@@ -343,6 +360,9 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                         if ( isset( $_GET[ 'status' ] ) ) {
                             $url .= '&amp;status=' . $_GET['status'];
                         }
+                        if ( isset( $_GET[ 'translation-priority' ] ) ) {
+                            $url .= '&amp;tp=' . $_GET['translation-priority'];
+                        }
 
                         $url = esc_url( $url );
                     ?>
@@ -353,9 +373,9 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
             </div>
         <?php endif; ?>
 
-        <?php if(current_user_can('manage_options')):  // the rest is only for admins. not for editors  ?>
+        <?php if( current_user_can('manage_options') || current_user_can('manage_translations') ):  // the rest is only for admins or translation mangagers, not for editors  ?>
 
-    <span class="subsubsub">
+        <span class="subsubsub">
             <input type="hidden" id="_icl_nonce_dstr"
                    value="<?php echo wp_create_nonce( 'icl_st_delete_strings_nonce' ) ?>"/>
 						<div id="wpml-st-package-incomplete" style="display:none;color:red;"><?php echo __( "You have selected strings belonging to a package. Please select all strings from the affected package or unselect these strings.", 'wpml-string-translation' ) ?></div>
@@ -363,23 +383,37 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                    value="<?php echo __( 'Delete selected strings', 'wpml-string-translation' ) ?>"
 									 data-confirm="<?php echo __( "Are you sure you want to delete these strings?\nTheir translations will be deleted too.", 'wpml-string-translation' ) ?>"
                    disabled="disabled"/>
-            <input type="button" class="button-secondary" id="icl_st_change_lang_selected"
-                   value="<?php echo __( 'Change language of selected strings', 'wpml-string-translation' ) ?>"
-                   disabled="disabled"/>
+
+            <?php
+
+            $change_string_language_dialog = new WPML_Change_String_Language_Select( $wpdb, $sitepress );
+            $change_string_language_dialog->show();
+
+            if( $translation_priorities ){
+	            $change_translation_priority_select = new WPML_Translation_Priority_Select();
+	            $change_translation_priority_select->show();
+            }
+            ?>
+
+            <span class="spinner icl-st-change-spinner"></span>
+
         </span>
 
         <br clear="all" />
 
         <br />
 
-	<?php do_action( 'wpml_st_below_menu', $status_filter_lang, 10, 2 ) ?>
+		<?php do_action( 'wpml_st_below_menu', $status_filter_lang, 10, 2 ) ?>
 
         <br style="clear:both;" />
         <div id="dashboard-widgets-wrap">
             <div id="dashboard-widgets" class="metabox-holder">
 
-                <div class="postbox-container" style="width: 49%;">
+	            <?php if( current_user_can( 'manage_options' ) ): ?>
+
+	            <div class="postbox-container" style="width: 49%;">
                     <div id="normal-sortables-stsel" class="meta-box-sortables ui-sortable">
+
                         <div id="dashboard_wpml_stsel_1" class="postbox">
                             <div class="handlediv" title="<?php echo __('Click to toggle', 'wpml-string-translation'); ?>">
                                 <br/>
@@ -516,8 +550,12 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                                 </div>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
+
+	            <?php endif; ?>
 
                 <div class="postbox-container" style="width: 49%;">
                     <div id="normal-sortables-poie" class="meta-box-sortables ui-sortable">
@@ -613,6 +651,8 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                     </div>
                 </div>
 
+	            <?php if( current_user_can( 'manage_options' ) ): ?>
+
                 <div class="postbox-container" style="width: 49%;">
                     <div id="normal-sortables-moreoptions" class="meta-box-sortables ui-sortable">
                         <div id="dashboard_wpml_st_poie" class="postbox">
@@ -676,6 +716,8 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
                             </div>
                     </div>
                 </div>
+
+	            <?php endif; ?>
 
             </div>
         </div>

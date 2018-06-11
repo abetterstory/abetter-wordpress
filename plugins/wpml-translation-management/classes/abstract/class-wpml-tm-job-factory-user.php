@@ -10,8 +10,8 @@ abstract class WPML_TM_Job_Factory_User {
 	 *
 	 * @param WPML_Translation_Job_Factory $job_factory
 	 */
-	public function __construct( &$job_factory ) {
-		$this->job_factory = &$job_factory;
+	public function __construct( $job_factory ) {
+		$this->job_factory = $job_factory;
 	}
 
 	/**

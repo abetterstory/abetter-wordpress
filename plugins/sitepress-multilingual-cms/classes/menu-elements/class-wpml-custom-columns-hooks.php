@@ -82,7 +82,7 @@ class WPML_Custom_Columns_Hooks extends WPML_WPDB_And_SP_User {
 	 */
 	private function get_custom_column_instance() {
 		if ( null === $this->custom_columns ) {
-			$this->custom_columns = new WPML_Custom_Columns( $this->wpdb, $this->sitepress );
+			$this->custom_columns = new WPML_Custom_Columns( $this->sitepress );
 		}
 
 		return $this->custom_columns;

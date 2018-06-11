@@ -130,7 +130,7 @@ class WPML_String_Translation_Table {
 										<?php echo esc_html( $lang['display_name'] ) ?>
 										<br/>
 										<?php if ( isset( $icl_string['translations'][ $lang['code'] ]['mo_string'] ) && $icl_string['translations'][ $lang['code'] ]['mo_string'] ) { ?>
-                                            <span class="wpml-st-mo-translation" title="<?php esc_attr_e( 'Imported translation', 'wpml-string-translations' ); ?>">
+                                            <span class="wpml-st-mo-translation" title="<?php esc_attr_e( 'Imported translation', 'wpml-string-translation' ); ?>">
                                                 <?php echo esc_html( $icl_string['translations'][ $lang['code'] ]['mo_string'] ); ?>
                                             </span>
 										<?php } ?>
@@ -142,10 +142,17 @@ class WPML_String_Translation_Table {
 										$temp_line_array = preg_split( '/\n|\r/', $icl_string['value'] );
 										$temp_num_lines  = count( $temp_line_array );
 										$rows += $temp_num_lines;
+
+
+										$string_value = '';
+										$placeholder = $icl_string['value'];
 										if ( isset( $icl_string['translations'][ $lang['code'] ] ) && null !== $icl_string['translations'][ $lang['code'] ]['value'] ) {
 											$string_value = $icl_string['translations'][ $lang['code'] ]['value'];
-										} else {
-											$string_value = $icl_string['value'];
+											if ( $string_value ) {
+												$placeholder = $string_value;
+											} elseif ( $icl_string['translations'][ $lang['code'] ]['mo_string'] ) {
+												$placeholder = $icl_string['translations'][ $lang['code'] ]['mo_string'];
+											}
 										}
 
 										?>
@@ -153,6 +160,7 @@ class WPML_String_Translation_Table {
 										_icl_string_translation_rtl_textarea( $lang['code'] ); ?>
 												rows="<?php echo esc_attr( $rows ) ?>" cols="40"
 												name="icl_st_translation"
+ 												placeholder="<?php echo esc_attr( $placeholder ); ?>"
  												data-lang="<?php echo $lang['code']; ?>"
 												<?php if ( isset( $icl_string['translations'][ $lang['code'] ] ) ): ?>id="icl_st_ta_<?php echo esc_attr( $icl_string['translations'][ $lang['code'] ]['id'] ) ?>"<?php endif; ?>
 										><?php echo esc_html( $string_value ) ?></textarea>
@@ -220,7 +228,7 @@ class WPML_String_Translation_Table {
 		$class = 'icl_st_row_cb' . ( ! empty( $string['string_package_id'] ) ? ' icl_st_row_package' : '' );
 
 		return '<td><input class="' . esc_attr( $class ) . '" type="checkbox" value="' . esc_attr( $string['string_id'] )
-		       . '" data-language="' . esc_attr( $string['string_language'] ) . '" /></td>';
+		       . '" data-language="' . esc_attr( $string['string_language'] ) .'" /></td>';
 	}
 
 	private function render_view_column( $string_id ) {

@@ -73,6 +73,8 @@ class WPML_ST_Strings {
 		$search_filter = isset( $_GET[ 'search' ] ) ? $_GET[ 'search' ] : false;
 		$exact_match   = isset( $_GET[ 'em' ] ) ? $_GET[ 'em' ] == 1 : false;
 
+		$translation_priority  = isset( $_GET[ 'translation-priority' ] ) ? $_GET[ 'translation-priority' ] : false;
+
 		if ( $status_filter !== false ) {
 			if ( $status_filter == ICL_TM_COMPLETE ) {
 				$extra_cond .= " AND s.status = " . ICL_TM_COMPLETE;
@@ -85,6 +87,14 @@ class WPML_ST_Strings {
 				$extra_cond .= " AND s.value = '" . esc_sql( $search_filter ) . "' ";
 			} else {
 				$extra_cond .= " AND s.value LIKE '%" . esc_sql( $search_filter ) . "%' ";
+			}
+		}
+
+		if ( $translation_priority != false ) {
+			if( $translation_priority === __( 'Optional', 'sitepress' ) ){
+				$extra_cond .= " AND s.translation_priority IN ( '" . esc_sql( $translation_priority ) . "', '' ) ";
+			}else{
+				$extra_cond .= " AND s.translation_priority = '" . esc_sql( $translation_priority ) . "' ";
 			}
 		}
 
@@ -151,6 +161,7 @@ class WPML_ST_Strings {
 											AND (str_{$language_code_aliases[$status_filter_lang]}.translator_id IS NULL
 													OR str_{$language_code_aliases[$status_filter_lang]}.translator_id = %d)",
 					array( ICL_TM_WAITING_FOR_TRANSLATOR, $current_user->ID ) );
+
 			$res       = $this->get_results( $sql_query, $extra_cond, $offset, $limit, $_joins, $_sels );
 			if ( $res ) {
 				$string_translations = empty( $status_filter_lang )
@@ -384,7 +395,7 @@ class WPML_ST_Strings {
 	}
 
 	private function build_sql_start( $selects = array(), $joins = array() ) {
-		array_unshift( $selects, "SQL_CALC_FOUND_ROWS DISTINCT(s.id) AS string_id, s.language AS string_language, s.string_package_id, s.context, s.gettext_context, s.name, s.value, s.status AS status" );
+		array_unshift( $selects, "SQL_CALC_FOUND_ROWS DISTINCT(s.id) AS string_id, s.language AS string_language, s.string_package_id, s.context, s.gettext_context, s.name, s.value, s.status AS status, s.translation_priority" );
 
 		return "SELECT " . join( ', ', $selects ) . " FROM {$this->wpdb->prefix}icl_strings s " . join( "\n", $joins ) . " ";
 	}

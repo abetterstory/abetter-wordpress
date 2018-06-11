@@ -1,5 +1,12 @@
 <?php
 
+$action_filter_loader = new WPML_Action_Filter_Loader();
+$action_filter_loader->load(
+	array(
+		'WPML_Compatibility_Factory',
+	)
+);
+
 add_action( 'plugins_loaded', 'wpml_plugins_integration_setup', 10 );
 
 function wpml_plugins_integration_setup() {

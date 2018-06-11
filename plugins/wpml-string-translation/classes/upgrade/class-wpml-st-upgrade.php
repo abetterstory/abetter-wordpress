@@ -2,6 +2,8 @@
 
 class WPML_ST_Upgrade {
 
+	const TRANSIENT_UPGRADE_IN_PROGRESS = 'wpml_st_upgrade_in_progress';
+
 	/** @var SitePress $sitepress */
 	private $sitepress;
 	
@@ -9,6 +11,9 @@ class WPML_ST_Upgrade {
 
 	/** @var  WPML_ST_Upgrade_Command_Factory */
 	private $command_factory;
+
+	/** @var bool $upgrade_in_progress */
+	private $upgrade_in_progress;
 
 	/**
 	 * @param SitePress $sitepress
@@ -21,6 +26,10 @@ class WPML_ST_Upgrade {
 	}
 	
 	public function run() {
+		if ( get_transient( self::TRANSIENT_UPGRADE_IN_PROGRESS ) ) {
+			return;
+		}
+
 		if ( $this->sitepress->get_wp_api()->is_admin() ) {
 			if ( $this->sitepress->get_wp_api()->constant( 'DOING_AJAX' ) ) {
 				$this->run_ajax();
@@ -30,6 +39,8 @@ class WPML_ST_Upgrade {
 		} else {
 			$this->run_front_end();
 		}
+
+		$this->set_upgrade_completed();
 	}
 
 	public function add_hooks() {
@@ -50,6 +61,8 @@ class WPML_ST_Upgrade {
 		$this->maybe_run( 'WPML_ST_Upgrade_MO_Scanning' );
 		$this->maybe_run( 'WPML_ST_Upgrade_DB_String_Name_Index' );
 		$this->maybe_run( 'WPML_ST_Upgrade_DB_Longtext_String_Value' );
+		$this->maybe_run( 'WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field' );
+		$this->maybe_run( 'WPML_ST_Upgrade_DB_String_Packages_Word_Count' );
 	}
 
 	private function run_ajax() {
@@ -58,15 +71,18 @@ class WPML_ST_Upgrade {
 		// it has to be maybe_run
 		$this->maybe_run( 'WPML_ST_Upgrade_Db_Cache_Command' );
 		$this->maybe_run( 'WPML_ST_Upgrade_MO_Scanning' );
+		$this->maybe_run( 'WPML_ST_Upgrade_DB_String_Packages_Word_Count' );
 	}
 
 	private function run_front_end() {
 		$this->maybe_run( 'WPML_ST_Upgrade_Db_Cache_Command' );
 		$this->maybe_run( 'WPML_ST_Upgrade_MO_Scanning' );
+		$this->maybe_run( 'WPML_ST_Upgrade_DB_String_Packages_Word_Count' );
 	}
 	
 	private function maybe_run( $class ) {
 		if ( ! $this->has_been_command_executed( $class ) ) {
+			$this->set_upgrade_in_progress();
 			$upgrade = $this->command_factory->create( $class );
 			if ( $upgrade->run() ) {
 				$this->mark_command_as_executed( $class );
@@ -132,6 +148,20 @@ class WPML_ST_Upgrade {
 	 */
 	protected function filter_nonce_parameter() {
 		return filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+	}
+
+	private function set_upgrade_in_progress() {
+		if ( ! $this->upgrade_in_progress ) {
+			$this->upgrade_in_progress = true;
+			set_transient( self::TRANSIENT_UPGRADE_IN_PROGRESS, true, MINUTE_IN_SECONDS );
+		}
+	}
+
+	private function set_upgrade_completed() {
+		if ( $this->upgrade_in_progress ) {
+			$this->upgrade_in_progress = false;
+			delete_transient( self::TRANSIENT_UPGRADE_IN_PROGRESS );
+		}
 	}
 }
 

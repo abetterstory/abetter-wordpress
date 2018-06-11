@@ -130,8 +130,8 @@ class WPML_Admin_Language_Switcher {
                     unset( $query_vars[ 'post' ], $query_vars[ 'action' ] );
                 }
             } elseif ( $is_tax ) {
-                if ( isset( $translations[ $lang[ 'code' ] ] ) && isset( $translations[ $lang[ 'code' ] ]->element_id ) ) {
-                    $query_vars[ 'tag_ID' ] = $translations[ $lang[ 'code' ] ]->element_id;
+                if ( isset( $translations[ $lang[ 'code' ] ] ) && isset( $translations[ $lang[ 'code' ] ]->term_id ) ) {
+                    $query_vars[ 'tag_ID' ] = $translations[ $lang[ 'code' ] ]->term_id;
                 } else {
                     $query_vars[ 'trid' ]        = $trid;
                     $query_vars[ 'source_lang' ] = $current_language;
@@ -233,7 +233,7 @@ class WPML_Admin_Language_Switcher {
     {
         ?>
             <div id="icl_als_help_popup" class="icl_cyan_box icl_pop_info">
-                <img class="icl_pop_info_but_close" align="right" src="<?php echo ICL_PLUGIN_URL . '/res/img/ico-close.png'?>" width="12" height="12" alt="x" />
+	              <span class="icl_pop_info_but_close otgs-ico-close"></span>
                 <?php echo sprintf( __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to <a%s>your profile</a>.', 'sitepress' ), ' href="' . admin_url( 'profile.php' ) . '"' );?>
             </div>
         <?php

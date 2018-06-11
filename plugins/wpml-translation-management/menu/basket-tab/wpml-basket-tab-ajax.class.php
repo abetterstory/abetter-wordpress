@@ -94,11 +94,15 @@ class WPML_Basket_Tab_Ajax {
 			if ( $response !== false && is_object( $response ) ) {
 				$response->call_to_action = '<strong>' . sprintf(
 						__(
-							'You have sent items to %s. Please check if additional steps are required on their end',
+							'You have sent items to %s. Please check if additional steps are required on their end.',
 							'wpml-translation-management'
 						),
 						$this->project->current_service_name()
 					) . '</strong>';
+				$batch_url = OTG_TRANSLATION_PROXY_URL . sprintf( '/projects/%d/external', $this->project->get_batch_job_id() );
+				$response->ts_batch_link = '<a href="' . $batch_url . '" class="wpml-external-link" target="_blank">' .
+				    __( 'Check the batch status on the translation service', 'wpml-translation-management' ) . '</a>';
+
 			}
 
 			$errors = $response === false && $this->project ? $this->project->errors : $errors;

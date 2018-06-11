@@ -10,9 +10,9 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 	private $template_service;
 
 	/**
-	 * @var WPML_TP_Service
+	 * @var WPML_TM_Translation_Services_Admin_Active_Template
 	 */
-	private $active_service;
+	private $active_service_template;
 
 	/**
 	 * @var array
@@ -48,12 +48,6 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 	 * @var WPML_Admin_Table_Sort
 	 */
 	private $table_sort;
-
-	/**
-	 * @var int
-	 */
-	private $items_per_page;
-
 	/**
 	 * @var
 	 */
@@ -66,7 +60,7 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 	 */
 	public function __construct( $args ) {
 		$this->template_service                   = $args['template_service'];
-		$this->active_service                     = $args['active_service'];
+		$this->active_service_template            = $args['active_service_template'];
 		$this->available_services                 = $args['available_services'];
 		$this->filtered_services                  = $args['filtered_services'];
 		$this->translation_service_type_requested = $args['translation_service_type_requested'];
@@ -74,7 +68,6 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 		$this->search_string                      = $args['search_string'];
 		$this->pagination                         = $args['pagination'];
 		$this->table_sort                         = $args['table_sort'];
-		$this->items_per_page                     = $args['items_per_page'];
 		$this->has_preferred_service              = $args['has_preferred_service'];
 	}
 
@@ -86,28 +79,10 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 	 * @return array
 	 */
 	private function get_services_list_model() {
-		$active_service_model = array();
-		$active_service       = $this->active_service;
-
-		if ( $active_service ) {
-			$active_service_model = array(
-				'id'                      => $active_service->get_id(),
-				'logo_url'                => $active_service->get_logo_url(),
-				'url'                     => $active_service->get_url(),
-				'name'                    => $active_service->get_name(),
-				'description'             => $active_service->get_description(),
-				'doc_url'                 => $active_service->get_doc_url(),
-				'requires_authentication' => (int) $active_service->get_requires_authentication(),
-				'custom_fields'           => esc_attr( wp_json_encode( $active_service->get_custom_fields() ) ),
-				'custom_fields_data'      => $active_service->get_custom_fields_data(),
-				'has_language_pairs'      => $active_service->get_has_language_pairs(),
-			);
-		}
-
 		$filtered_services = $this->get_filtered_services();
 
 		$model = array(
-			'active_service'                     => $active_service_model,
+			'active_service'                     => $this->active_service_template->render(),
 			'available_services'                 => $this->available_services,
 			'filtered_services'                  => $filtered_services,
 			'has_preferred_service'              => $this->has_preferred_service,
@@ -115,11 +90,9 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 			'table_sort'                         => $this->get_table_sort_columns(),
 			'clean_search_url'                   => remove_query_arg( array( 'paged', 's' ), $this->current_url ),
 			'current_url'                        => $this->current_url,
-			'items_per_page'                     => $this->items_per_page,
 			'nonces'                             => array(
 				WPML_TM_Translation_Services_Admin_Section_Ajax::NONCE_ACTION => wp_create_nonce( WPML_TM_Translation_Services_Admin_Section_Ajax::NONCE_ACTION ),
 				WPML_TM_Translation_Service_Authentication_Ajax::AJAX_ACTION  => wp_create_nonce( WPML_TM_Translation_Service_Authentication_Ajax::AJAX_ACTION ),
-				WPML_TP_Refresh_Language_Pairs::AJAX_ACTION                   => wp_create_nonce( WPML_TP_Refresh_Language_Pairs::AJAX_ACTION ),
 			),
 			'translation_service_type_requested' => $this->translation_service_type_requested,
 			'search_string'                      => $this->search_string,
@@ -130,14 +103,11 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 				),
 				'wpml_support'            => 'WPML support',
 				'support_link'            => 'https://wpml.org/forums/forum/english-support/',
-				'services_per_page'       => __( 'Services per page:', 'wpml-translation-management' ),
-				'refresh_language_pairs'  => __( 'Refresh language pairs', 'wpml-translation-management' ),
 				'inactive_services_title' => WPML_TP_API_Services::TRANSLATION_MANAGEMENT_SYSTEM === $this->translation_service_type_requested ?
 					__( 'Available Translation Management Systems', 'wpml-translation-management' ) :
 					__( 'Available Translation Services', 'wpml-translation-management' ),
 				'activate'                => __( 'Activate', 'wpml-translation-management' ),
 				'documentation'           => __( 'Documentation', 'wpml-translation-management' ),
-				'documentation_lower'     => __( 'documentation', 'wpml-translation-management' ),
 				'ts'                      => array(
 					'link'        => __( "I'm looking for translation services", 'wpml-translation-management' ),
 					'different'   => __( 'Looking for a different translation service?', 'wpml-translation-management' ),
@@ -168,33 +138,6 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 				)
 			)
 		);
-
-		if ( $active_service ) {
-			$model['strings']['active_service'] = array(
-				'title'        => __( 'Active service:', 'wpml-translation-management' ),
-				'deactivate'   => __( 'Deactivate', 'wpml-translation-management' ),
-				'modal_header' => sprintf( __( 'Enter here your %s authentication details', 'wpml-translation-management' ), $active_service->name ),
-				'modal_tip'    => $active_service->get_popup_message() ?
-					$active_service->get_popup_message() :
-					__( 'You can find API token at %s site', 'wpml-translation-management' ),
-				'modal_title'  => sprintf( __( '%s authentication', 'wpml-translation-management' ), $active_service->name ),
-			);
-
-			$authentication_message = array();
-			/* translators: sentence 1/3: create account with the translation service ("%1$s" is the service name) */
-			$authentication_message[] = __( 'To send content for translation to %1$s, you need to have an %1$s account.', 'wpml-translation-management' );
-			/* translators: sentence 2/3: create account with the translation service ("one" is "one account) */
-			$authentication_message[] = __( "If you don't have one, you can create it after clicking the authenticate button.", 'wpml-translation-management' );
-			/* translators: sentence 3/3: create account with the translation service ("%2$s" is "documentation") */
-			$authentication_message[] = __( 'Please, check the %2$s page for more details.', 'wpml-translation-management' );
-
-			$model['strings']['authentication'] = array(
-				'description'         => implode( ' ', $authentication_message ),
-				'authenticate_button' => __( 'Authenticate', 'wpml-translation-management' ),
-				'de_authorize_button' => __( 'De-authorize', 'wpml-translation-management' ),
-				'is_authorized'       => sprintf( __( '%s is authorized.', 'wpml-translation-management' ), $active_service->name ),
-			);
-		}
 
 		return $model;
 	}
@@ -227,14 +170,18 @@ class WPML_TM_Translation_Services_Admin_Section_Services_List_Template {
 
 		foreach ( $this->filtered_services as $service ) {
 			$services_model[] = array(
-				'id'          => $service->get_id(),
-				'logo_url'    => $service->get_logo_url(),
-				'name'        => $service->get_name(),
-				'description' => $service->get_description(),
-				'doc_url'     => $service->get_doc_url(),
-				'active'      => $this->active_service && $service->get_id() === $this->active_service->get_id() ? 'active' : 'inactive',
-				'popularity'  => $service->get_rankings()->popularity,
-				'speed'       => $service->get_rankings()->speed,
+				'id'                             => $service->get_id(),
+				'logo_url'                       => $service->get_logo_url(),
+				'name'                           => $service->get_name(),
+				'description'                    => $service->get_description(),
+				'doc_url'                        => $service->get_doc_url(),
+				'active'                         => $this->active_service_template && $service->get_id() === $this->active_service_template->get_id() ? 'active' : 'inactive',
+				'popularity'                     => $service->get_rankings()->popularity,
+				'speed'                          => $service->get_rankings()->speed,
+				'how_to_get_credentials_desc'    => $service->get_how_to_get_credentials_desc(),
+				'how_to_get_credentials_url'     => $service->get_how_to_get_credentials_url(),
+				'client_create_account_page_url' => $service->get_client_create_account_page_url(),
+				'custom_fields'                  => $service->get_custom_fields(),
 			);
 		}
 

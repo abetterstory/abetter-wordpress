@@ -1,6 +1,10 @@
 <?php
 
 class WPML_Translation_Element_Factory {
+	const ELEMENT_TYPE_POST = 'Post';
+	const ELEMENT_TYPE_TERM = 'Term';
+	const ELEMENT_TYPE_MENU = 'Menu';
+
 	/** @var SitePress */
 	private $sitepress;
 
@@ -17,8 +21,8 @@ class WPML_Translation_Element_Factory {
 	}
 
 	/**
-	 * @param int $id
-	 * @param string $type
+	 * @param int    $id
+	 * @param string $type any of `WPML_Translation_Element_Factory::ELEMENT_TYPE_POST`, `WPML_Translation_Element_Factory::ELEMENT_TYPE_TERM`, `WPML_Translation_Element_Factory::ELEMENT_TYPE_MENU`
 	 *
 	 * @return WPML_Translation_Element
 	 */

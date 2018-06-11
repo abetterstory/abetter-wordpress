@@ -8,6 +8,8 @@
  */
 class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 
+	private $http_referer;
+
 	public function init() {
 		parent::init ();
 		if ( $this->is_setup_complete() ) {
@@ -38,7 +40,8 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 		wp_defer_term_counting( true );
 		$post = isset( $post ) ? $post : get_post( $post_id );
 		// exceptions
-		if ( ! $this->has_save_post_action( $post ) ) {
+		$http_referer = $this->get_http_referer();
+		if ( ! $this->has_save_post_action( $post ) && ! $http_referer->is_rest_request_called_from_post_edit_page() ) {
 			wp_defer_term_counting( false );
 
 			return;
@@ -178,20 +181,16 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 	}
 
 	public function get_trid_from_referer() {
-		if ( isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
-			$query = wpml_parse_url ( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
-			parse_str ( $query, $vars );
+		$http_referer = $this->get_http_referer();
+		return $http_referer->get_trid();
+	}
+
+	private function get_http_referer() {
+		if ( ! $this->http_referer ) {
+			$factory = new WPML_URL_HTTP_Referer_Factory();
+			$this->http_referer = $factory->create();
 		}
 
-		if ( isset( $_SERVER[ 'REQUEST_URI' ] ) ) {
-			$request_uri = wpml_parse_url( $_SERVER[ 'REQUEST_URI' ], PHP_URL_QUERY );
-			parse_str( $request_uri, $request_uri_vars );
-		}
-
-		/**
-		 * trid from `HTTP_REFERER` should be return only if `REQUEST_URI` also has trid set.
-		 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmltm-1351
-		 */
-		return isset( $vars[ 'trid' ] ) && isset( $request_uri_vars['trid'] ) ? filter_var ( $vars[ 'trid' ], FILTER_SANITIZE_NUMBER_INT ) : false;
+		return $this->http_referer;
 	}
 }

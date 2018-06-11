@@ -186,6 +186,14 @@ class WPML_Translation_Basket {
 		TranslationProxy_Basket::delete_item_from_basket( $package_id, 'package' );
 	}
 
+	/**
+	 * @param int $id
+	 * @param string $kind
+	 */
+	public function remove_item( $id, $kind ) {
+		TranslationProxy_Basket::delete_item_from_basket( $id, $kind );
+	}
+
 	private function sanitize_basket_name( $basket_name, $max_length ) {
 		//input basket name is separated by pipes so we explode it
 		$to_trim = strlen( $basket_name ) - $max_length;

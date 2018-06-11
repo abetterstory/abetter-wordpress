@@ -108,6 +108,14 @@ switch($request){
         icl_set_setting('setup_wizard_step', 2);
         icl_save_settings();
         break;
+	case 'setup_got_to_step3':
+		icl_set_setting('setup_wizard_step', 3);
+		icl_save_settings();
+		break;
+	case 'setup_got_to_step5':
+		icl_set_setting('setup_wizard_step', 5);
+		icl_save_settings();
+		break;
     case 'toggle_show_translations':
         icl_set_setting('show_translations_flag', intval(!icl_get_setting('show_translations_flag', false)));
         icl_save_settings();
@@ -265,18 +273,12 @@ switch($request){
         }
         break;
     case 'icl_custom_tax_sync_options':
-        if(!empty($_POST['icl_sync_tax'])){
-            foreach($_POST['icl_sync_tax'] as $k=>$v){
-                $iclsettings['taxonomies_sync_option'][$k] = $v;
-                if($v){
-                    $this->verify_taxonomy_translations($k);
-                }
-            }
-	        $iclsettings['taxonomies_unlocked_option'] = $_POST['icl_sync_tax_unlocked'];
-			if ( isset( $iclsettings ) ) {
-				$this->save_settings($iclsettings);
-			}
-        }
+	    $new_options      = ! empty( $_POST['icl_sync_tax'] ) ? $_POST['icl_sync_tax'] : array();
+	    $unlocked_options = ! empty( $_POST['icl_sync_tax_unlocked'] ) ? $_POST['icl_sync_tax_unlocked'] : array();
+	    /** @var WPML_Settings_Helper $settings_helper */
+	    $settings_helper = wpml_load_settings_helper();
+	    $settings_helper->update_taxonomy_unlocked_settings( $unlocked_options );
+	    $settings_helper->update_taxonomy_sync_settings( $new_options );
         echo '1|';
         break;
 	case 'icl_custom_posts_sync_options':

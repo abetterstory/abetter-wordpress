@@ -13,7 +13,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	 * @param WPML_Translation_Job_Factory $job_factory
 	 * @param string                       $xliff_version
 	 */
-	public function __construct( &$job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION ) {
+	public function __construct( $job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION ) {
 		parent::__construct( $job_factory );
 		$this->xliff_version = $xliff_version;
 	}
@@ -182,8 +182,8 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 
 		$translation_unit = array();
 		if ( $sitepress->get_setting( 'xliff_newlines' ) === WPML_XLIFF_TM_NEWLINES_REPLACE ) {
-			$field_data            = str_replace( "\n", '<br class="xliff-newline" />', $field_data );
-			$field_data_translated = str_replace( "\n", '<br class="xliff-newline" />', $field_data_translated );
+			$field_data            = $this->replace_new_line_with_tag( $field_data );
+			$field_data_translated = $this->replace_new_line_with_tag( $field_data_translated );
 		}
 
 		$translation_unit['attributes']['resname']  = $field_name;
@@ -195,6 +195,10 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 
 
 		return $translation_unit;
+	}
+
+	protected function replace_new_line_with_tag( $string ) {
+		return str_replace( array( "\n", "\r" ), array( '<br class="xliff-newline" />', '' ), $string );
 	}
 
 	/**

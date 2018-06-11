@@ -6,6 +6,7 @@ new WPML_Taxonomy_Translation_Sync_Display();
 class WPML_Taxonomy_Translation_Table_Display {
 
 	private static function get_strings_translation_array() {
+		$st_plugin = '<a href="' . get_admin_url( null, 'plugins.php' ) . '" target="_blank" class="wpml-external-link">WPML String Translation</a>';
 
 		$labels = array(
 			'Show'                                  => __( 'Show', 'sitepress' ),
@@ -45,6 +46,7 @@ class WPML_Taxonomy_Translation_Table_Display {
 			'save'                                  => __( 'Save', 'sitepress' ),
 			'Singular'                              => __( 'Singular', 'sitepress' ),
 			'Plural'                                => __( 'Plural', 'sitepress' ),
+			'changeLanguage'                        => __( 'Change language', 'sitepress' ),
 			'cancel'                                => __( 'Cancel', 'sitepress' ),
 			'loading'                               => __( 'loading', 'sitepress' ),
 			'Save'                                  => __( 'Save', 'sitepress' ),
@@ -59,13 +61,14 @@ class WPML_Taxonomy_Translation_Table_Display {
 			'items'                                 => __( 'items', 'sitepress' ),
 			'item'                                  => __( 'item', 'sitepress' ),
 			'summaryTerms'                          => sprintf( __( 'Translation of %1$s', 'sitepress' ), '%taxonomy%' ),
-			'summaryLabels'                         => sprintf( __( 'Translations of taxonomy %1$s labels - appearing in WordPress admin menu', 'sitepress' ), '%taxonomy%' ),
+			'summaryLabels'                         => sprintf( __( 'Translations of taxonomy %1$s labels and slug', 'sitepress' ), '%taxonomy%' ),
+			'activateStringTranslation'             => sprintf( __( 'To translate taxonomy labels and slug you need %s plugin.', 'sitepress' ), $st_plugin ),
 			'preparingTermsData'                    => __( 'Loading ...', 'sitepress' ),
 			'firstColumnHeading'                    => sprintf( __( '%1$s terms (in original language)', 'sitepress' ), '%taxonomy%' ),
 			'wpml_save_term_nonce'                  => wp_create_nonce( 'wpml_save_term_nonce' ),
-			'wpml_tt_save_labels_translation_nonce' => wp_create_nonce( 'wpml_tt_save_labels_translation_nonce' ),
 			'wpml_tt_sync_hierarchy_nonce'          => wp_create_nonce( 'wpml_tt_sync_hierarchy_nonce' ),
 			'wpml_generate_unique_slug_nonce'       => wp_create_nonce( 'wpml_generate_unique_slug_nonce' ),
+			'wpml_taxonomy_translation_nonce'       => wp_create_nonce( 'wpml_taxonomy_translation_nonce' ),
 
 			'addTranslation'   => __( 'Add translation', 'sitepress' ),
 			'editTranslation'  => __( 'Edit translation', 'sitepress' ),
@@ -77,6 +80,8 @@ class WPML_Taxonomy_Translation_Table_Display {
 	}
 
 	public static function enqueue_taxonomy_table_js( $sitepress ) {
+
+		WPML_Simple_Language_Selector::enqueue_scripts();
 
 		$core_dependencies = array( 'jquery', 'jquery-ui-dialog', 'backbone', 'wpml-underscore-template-compiler' );
 		wp_register_script(
@@ -199,6 +204,12 @@ class WPML_Taxonomy_Translation_Table_Display {
 
 	public static function wpml_get_terms_and_labels_for_taxonomy_table() {
 		global $sitepress;
+
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'wpml_taxonomy_translation_nonce' ) ) {
+			wp_send_json_error( __( 'Wrong nonce', 'sitepress' ) );
+			return;
+		}
+
 		$taxonomy = false;
 
 		$request_post_taxonomy = filter_input( INPUT_POST,
@@ -218,10 +229,30 @@ class WPML_Taxonomy_Translation_Table_Display {
 				              'terms'                => $terms_data->terms(),
 				              'taxLabelTranslations' => $labels,
 				              'defaultLanguage'      => $def_lang,
-				              'bottomContent'        => $bottom_content
+				              'bottomContent'        => $bottom_content,
+				              'taxLangSelector'      => self::render_tax_language_selector( $labels, $taxonomy ),
 						  ) );
 		} else {
 			wp_send_json_error();
 		}
+	}
+
+	private static function render_tax_language_selector( $labels, $taxonomy ) {
+		global $sitepress;
+
+		if ( ! isset( $labels['st_default_lang'] ) ) {
+			return null;
+		}
+
+		$args = array(
+			'selected'           => $labels['st_default_lang'],
+			'name'               => 'string_lang[' . $taxonomy . ']',
+			'show_please_select' => false,
+			'echo'               => false,
+			'class'              => 'js-tax-lang-selector',
+		);
+
+		$lang_selector = new WPML_Simple_Language_Selector( $sitepress );
+		return $lang_selector->render( $args );
 	}
 }

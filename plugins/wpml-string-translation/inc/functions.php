@@ -250,7 +250,7 @@ function icl_translate( $context, $name, $value = false, $allow_empty_value = fa
 	}
 	$lock = true;
 
-	$is_requested_blog = ! ( is_multisite() && ms_is_switched() ) || $GLOBALS['blog_id'] === end( $GLOBALS['_wp_switched_stack'] );
+	$is_requested_blog = ! ( is_multisite() && ms_is_switched() ) || (int)$GLOBALS['blog_id'] === (int)end( $GLOBALS['_wp_switched_stack'] );
 
 	if ( $is_requested_blog ) {
 		if ( is_translated_admin_string( $name ) ) {

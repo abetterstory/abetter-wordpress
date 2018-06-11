@@ -53,6 +53,12 @@ class WPML_ST_Upgrade_Command_Factory {
 			case 'WPML_ST_Upgrade_DB_Longtext_String_Value' :
 				$result = new WPML_ST_Upgrade_DB_Longtext_String_Value( $this->wpdb );
 				break;
+			case 'WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field' :
+				$result = new WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field( $this->wpdb );
+				break;
+			case 'WPML_ST_Upgrade_DB_String_Packages_Word_Count' :
+				$result = new WPML_ST_Upgrade_DB_String_Packages_Word_Count( new WPML_Upgrade_Schema( $this->wpdb ) );
+				break;
 			default:
 				throw new WPML_ST_Upgrade_Command_Not_Found_Exception( $class_name );
 		}

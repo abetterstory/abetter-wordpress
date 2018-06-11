@@ -7,15 +7,21 @@
  */
 class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 
+	const ENDPOINT_SERVICES      = '/services.json';
+	const ENDPOINT_LANGUAGES_MAP = '/services/{service_id}/language_identifiers.json';
+	const ENDPOINT_CUSTOM_FIELDS = '/services/{service_id}/custom_fields.json';
+
 	const TRANSLATION_MANAGEMENT_SYSTEM = 'tms';
 	const TRANSLATION_SERVICE = 'ts';
 	const CACHED_SERVICES_KEY_DATA = 'wpml_translation_services';
 	const CACHED_SERVICES_TRANSIENT_KEY = 'wpml_translation_services_list';
 	const CACHED_SERVICES_KEY_TIMESTAMP = 'wpml_translation_services_timestamp';
 
+	private $endpoint;
+
 	/** @return string */
 	protected function get_endpoint_uri() {
-		return '/services.json';
+		return $this->endpoint;
 	}
 
 	/** @return bool */
@@ -29,6 +35,8 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @return array
 	 */
 	public function get_all( $reload = false ) {
+		$this->endpoint = self::ENDPOINT_SERVICES;
+
 		$translation_services = $reload ? null : $this->get_cached_services();
 
 		if ( ! $translation_services ) {
@@ -178,5 +186,35 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 		}
 
 		return $translation_service;
+	}
+
+	/**
+	 * @param $service_id
+	 *
+	 * @return array
+	 */
+	public function get_languages_map( $service_id ) {
+		$this->endpoint = self::ENDPOINT_LANGUAGES_MAP;
+
+		$args = array(
+			'service_id' => $service_id,
+		);
+
+		return parent::get( $args );
+	}
+
+	/**
+	 * @param $service_id
+	 *
+	 * @return mixed
+	 */
+	public function get_custom_fields( $service_id ) {
+		$this->endpoint = self::ENDPOINT_CUSTOM_FIELDS;
+
+		$args = array(
+			'service_id' => $service_id,
+		);
+
+		return parent::get( $args );
 	}
 }

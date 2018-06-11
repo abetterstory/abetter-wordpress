@@ -105,7 +105,7 @@ class WPML_URL_Converter_Subdir_Strategy extends WPML_URL_Converter_Abstract_Str
 			}
 		}
 
-		return $this->slash_helper->maybe_user_trailingslashit( $source_url, 'untrailingslashit' );
+		return $this->slash_helper->maybe_user_trailingslashit( $source_url, 'trailingslashit' );
 	}
 
 	/**

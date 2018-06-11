@@ -2,6 +2,8 @@
 
 class WPML_TM_Overdue_Jobs_Report {
 
+	const OVERDUE_JOBS_REPORT_TEMPLATE = 'notification/overdue-jobs-report.twig';
+
 	/** @var  WPML_Translation_Jobs_Collection $jobs_collection */
 	private $jobs_collection;
 
@@ -100,7 +102,7 @@ class WPML_TM_Overdue_Jobs_Report {
 
 		$to      = $manager->display_name . ' <' . $manager->user_email . '>';
 		$subject = esc_html__( 'Overdue translation jobs report', 'wpml-translation-management' );
-		$message = $this->email_view->render_overdue_jobs_report( $model );
+		$message = $this->email_view->render_model( $model, self::OVERDUE_JOBS_REPORT_TEMPLATE );
 
 		$headers = array(
 			'MIME-Version: 1.0',

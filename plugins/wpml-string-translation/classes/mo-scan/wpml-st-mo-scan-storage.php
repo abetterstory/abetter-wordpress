@@ -83,6 +83,10 @@ class WPML_ST_MO_Scan_Storage {
 		$result = array();
 
 		foreach ( $translations as $translation ) {
+			if ( ! isset( $value_id_map[ $translation->get_original() ] ) ) {
+				continue;
+			}
+
 			$result[] = new WPML_ST_Models_String_Translation(
 				$value_id_map[ $translation->get_original() ][ $translation->get_context() ],
 				$lang,

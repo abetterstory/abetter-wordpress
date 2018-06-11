@@ -240,7 +240,7 @@
 			var self = this,
 				tax = jQuery("#icl_tt_tax_switch").val();
 				
-			if (tax !== undefined && tax !== self.model.get("taxonomy")) {
+			if (tax !== undefined) {
 				self.mode = 'translate';
 				self.model.setTaxonomy(tax);
 			}

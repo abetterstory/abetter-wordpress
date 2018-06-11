@@ -263,14 +263,18 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 	 *
 	 */
 	private function get_multiple_slug_adjusted_IDs( $slugs ) {
+		$slug            = end( $slugs );
 		$parent_slugs    = array_slice( $slugs, 0, - 1 );
 		$pages_with_name = $this->wpdb->get_results(
-			"   SELECT p.ID, p.post_name, p.post_parent, par.post_name as parent_name
+			$this->wpdb->prepare(
+				"SELECT p.ID, p.post_name, p.post_parent, par.post_name as parent_name
 				" . $this->get_from_join_snippet() . "
 				LEFT JOIN {$this->wpdb->posts} par
 					ON par.ID = p.post_parent
-				" . $this->get_where_snippet() . " p.post_name IN (" . wpml_prepare_in( $slugs ) . ")
-				ORDER BY par.post_name IN (" . wpml_prepare_in( $parent_slugs ) . ") DESC"
+				" . $this->get_where_snippet() . " p.post_name = %s AND p.post_parent > 0
+				ORDER BY par.post_name IN (" . wpml_prepare_in( $parent_slugs ) . ") DESC",
+				$slug
+			)
 		);
 		$query_scorer = new WPML_Score_Hierarchy( $pages_with_name, $slugs );
 

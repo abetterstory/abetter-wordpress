@@ -36,6 +36,6 @@ abstract class WPML_TM_MCS_Section_UI {
 
 	}
 
-	protected abstract function render_content();
+	abstract protected function render_content();
 }
 

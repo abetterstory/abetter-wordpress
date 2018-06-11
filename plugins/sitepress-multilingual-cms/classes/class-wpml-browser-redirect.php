@@ -27,9 +27,7 @@ class WPML_Browser_Redirect {
     }
 
     public function enqueue_scripts(){
-        // Enqueue javascripts
-        wp_register_script('jquery.cookie', ICL_PLUGIN_URL . '/res/js/jquery.cookie.js', array('jquery'), ICL_SITEPRESS_VERSION);
-        wp_register_script('wpml-browser-redirect', ICL_PLUGIN_URL . '/res/js/browser-redirect.js', array('jquery', 'jquery.cookie'), ICL_SITEPRESS_VERSION);
+        wp_register_script( 'wpml-browser-redirect', ICL_PLUGIN_URL . '/dist/js/browser-redirect/app.js', array(), ICL_SITEPRESS_VERSION );
             
         $args['skip_missing'] = intval( $this->sitepress->get_setting( 'automatic_redirect' ) == 1 );
         

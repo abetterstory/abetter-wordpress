@@ -153,6 +153,7 @@ class WPML_Package_Translation_Schema {
                   `edit_link` TEXT NOT NULL,
                   `view_link` TEXT NOT NULL,
                   `post_id` INTEGER DEFAULT NULL,
+                  `word_count` VARCHAR(2000) DEFAULT NULL,
                   PRIMARY KEY  (`ID`)
                 ) " . $charset_collate . "";
 		if ( $wpdb->query( $sql ) === false ) {
