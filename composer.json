@@ -15,7 +15,10 @@
 	"autoload": {
 		"psr-4": {
 			"ABetter\\Wordpress\\": "src/"
-		}
+		},
+		"files": [
+	        "src/helpers.php"
+	    ]
 	},
 	"extra": {
         "laravel": {
