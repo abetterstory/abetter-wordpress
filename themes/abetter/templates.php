@@ -12,4 +12,6 @@ add_filter('theme_page_templates', function($templates){
 
 // ---
 
-if (is_file(ABSPATH.'/../templates.php')) require_once(ABSPATH.'/../templates.php');
+if (is_file(ROOTPATH.'/resources/wordpress/templates.php')) {
+	require_once(ROOTPATH.'/resources/wordpress/templates.php');
+}

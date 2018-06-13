@@ -11,7 +11,6 @@ $dotenv->load();
 define('WP_HOME', getenv('WP_HOME'));
 define('WP_SITEURL', getenv('WP_HOME'));
 define('FS_METHOD', 'direct');
-define('UPLOADS', ROOTPATH.'/storage/wordpress/uploads');
 
 /**
  * The base configuration for WordPress

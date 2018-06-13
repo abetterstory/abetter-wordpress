@@ -1,6 +1,6 @@
 <?php
 
-define('ROOTPATH', realpath(dirname(__FILE__).'/../../../'));
+define('ROOTPATH', realpath(dirname(__FILE__).'/../../../../'));
 
 require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Dotenv.php');
 require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Loader.php');

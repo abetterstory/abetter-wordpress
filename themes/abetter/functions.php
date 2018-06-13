@@ -176,6 +176,10 @@ add_filter('get_attached_file', function($url){
 
 // ---
 
-require_once(ABSPATH.'/../functions.php');
+if (is_file(ROOTPATH.'/resources/wordpress/functions.php')) {
+	require_once(ROOTPATH.'/resources/wordpress/functions.php');
+}
+
+// ---
 
 require_once('templates.php');
