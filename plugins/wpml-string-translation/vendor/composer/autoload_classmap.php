@@ -96,6 +96,8 @@ return array(
     'WPML_ST_MO_Unicode_Characters_Filter' => $baseDir . '/classes/mo-scan/wpml-st-mo-unicode-characters-filter.php',
     'WPML_ST_Models_String' => $baseDir . '/classes/db-mappers/class-wpml-st-models-string.php',
     'WPML_ST_Models_String_Translation' => $baseDir . '/classes/db-mappers/class-wpml-st-models-string-translation.php',
+    'WPML_ST_Multisite_Filters_Cleaner' => $baseDir . '/classes/utilities/class-wpml-st-multisite-filters-cleaner.php',
+    'WPML_ST_Multisite_Filters_Cleaner_Factory' => $baseDir . '/classes/utilities/class-wpml-st-multisite-filters-cleaner-factory.php',
     'WPML_ST_Options_All_Strings_English' => $baseDir . '/classes/performance/class-wpml-st-option-all-strings-english.php',
     'WPML_ST_Options_All_Strings_English_Factory' => $baseDir . '/classes/performance/class-wpml-st-option-all-strings-english-factory.php',
     'WPML_ST_Package_Cleanup' => $baseDir . '/classes/package-translation/class-wpml-st-package-cleanup.php',

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit567d003c818b4f4a12adf0f4fe1b1a6e
+class ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -107,6 +107,8 @@ class ComposerStaticInit567d003c818b4f4a12adf0f4fe1b1a6e
         'WPML_ST_MO_Unicode_Characters_Filter' => __DIR__ . '/../..' . '/classes/mo-scan/wpml-st-mo-unicode-characters-filter.php',
         'WPML_ST_Models_String' => __DIR__ . '/../..' . '/classes/db-mappers/class-wpml-st-models-string.php',
         'WPML_ST_Models_String_Translation' => __DIR__ . '/../..' . '/classes/db-mappers/class-wpml-st-models-string-translation.php',
+        'WPML_ST_Multisite_Filters_Cleaner' => __DIR__ . '/../..' . '/classes/utilities/class-wpml-st-multisite-filters-cleaner.php',
+        'WPML_ST_Multisite_Filters_Cleaner_Factory' => __DIR__ . '/../..' . '/classes/utilities/class-wpml-st-multisite-filters-cleaner-factory.php',
         'WPML_ST_Options_All_Strings_English' => __DIR__ . '/../..' . '/classes/performance/class-wpml-st-option-all-strings-english.php',
         'WPML_ST_Options_All_Strings_English_Factory' => __DIR__ . '/../..' . '/classes/performance/class-wpml-st-option-all-strings-english-factory.php',
         'WPML_ST_Package_Cleanup' => __DIR__ . '/../..' . '/classes/package-translation/class-wpml-st-package-cleanup.php',
@@ -230,8 +232,8 @@ class ComposerStaticInit567d003c818b4f4a12adf0f4fe1b1a6e
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit567d003c818b4f4a12adf0f4fe1b1a6e::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit567d003c818b4f4a12adf0f4fe1b1a6e::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464::$classMap;
 
         }, null, ClassLoader::class);
     }
