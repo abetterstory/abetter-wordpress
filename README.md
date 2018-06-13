@@ -1,39 +1,46 @@
-# labs-abetter-wordpress
+# LABS-ABetter-Wordpress v1.1.6
 
 ABetter Wordpress integration for Laravel 5+
 
 ## Install laravel + abetter + requirements
-- > composer create-project laravel/laravel
-- > chmod -r 777 storage
-- > chmod -r 777 bootstrap/cache
-- > composer require abetter/wordpress
+- composer create-project laravel/laravel
+- mkdir resources/wordpress
+- mkdir storage/wordpress/uploads
+- chmod -r 777 storage
+- chmod -r 777 bootstrap/cache
+- chmod -r 777 resources/wordpress
+- chmod -r 777 storage/wordpress/uploads
+- composer require abetter/wordpress
 
 ## Install optional dev tools
-- > composer require itsgoingd/clockwork --dev
+- composer require itsgoingd/clockwork --dev
 
 ## Add script command to root composer.json + update
-- "post-update-cmd": [
-	"ABetter\\Wordpress\\ComposerScripts::renameHelperFunctions"
-]
-- > composer update
-
-## Install vanilla Wordpress in resources/wordpress/core
-
-## Copy wp-config.php to resources/wordpress/core
-- > cd resources/wordpress/core
-- > cp ../../../vendor/abetter/wordpress/wp-config.php wp-config.php
+- "post-update-cmd": ["ABetter\\Wordpress\\ComposerScripts::renameHelperFunctions"]
+- composer update
 
 ## Setup Wordpress config in .env
+- WP_DEBUG=
+- WP_HOME=
+- WP_DB_NAME=
+- WP_DB_USER=
+- WP_DB_PASSWORD=
+- WP_DB_HOST=
+- WP_DB_CHARSET=
+- WP_DB_COLLATE=
+- WP_DB_PREFIX=
+- WP_AUTH_KEY=
+- WP_SECURE_AUTH_KEY=
+- WP_LOGGED_IN_KEY=
+- WP_NONCE_KEY=
+- WP_AUTH_SALT=
+- WP_SECURE_AUTH_SALT=
+- WP_LOGGED_IN_SALT=
+- WP_NONCE_SALT=
 
 ## Create symlink to public/wp
-- > cd public
-- > ln -s ../resources/wordpress/core wp
-
-## Create symlinks to wp-content
-- > cd resources/wordpress/core/wp-content
-- > ln -s ../../../../vendor/abetter/wordpress/plugins plugins
-- > ln -s ../../../../vendor/abetter/wordpress/themes themes
-- > ln -s ../../../../storage/wordpress/uploads uploads
+- cd public
+- ln -s ../vendor/abetter/wordpress/core wp
 
 ## Install Wordpress and configure
 
@@ -48,12 +55,11 @@ ABetter Wordpress integration for Laravel 5+
 - News : news (Posts page)
 - Privacy Policy : privacy-policy
 - Search : search
-- 404 Not Found : not-found
-- 403 Forbidden : forbidden
+- 404 Not Found : 404-not-found
+- 403 Forbidden : 403-forbidden
 
 ## Add laravel routes/web.php:
+- Route::get('wp-admin', function () { return redirect('/wp/wp-admin/'); });
+- Route::get('wp-admin/{any}', function () { return redirect('/wp/wp-admin/'); });
 - Route::get('/', '\ABetterWordpressController@handle');
 - Route::get('{l?}/{y?}/{m?}/{d?}/{s?}/{x?}/{z?}/{q?}', '\ABetterWordpressController@handle');
-- Route::get('wp-admin', function() {
-    return redirect('/wp/wp-admin/');
-});
