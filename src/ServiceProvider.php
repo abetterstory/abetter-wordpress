@@ -12,7 +12,9 @@ class ServiceProvider extends BaseServiceProvider {
      * @return void
      */
     public function boot() {
-        //
+
+		$this->loadViewsFrom(__DIR__.'/../views', 'wordpress');
+
     }
 
     /**
