@@ -155,6 +155,11 @@ add_action('edit_form_after_title', function(){
 
 // ---
 
+add_filter('post_type_link', function($url,$post=0){
+	$url = preg_replace('/\/wp\//',"/",$url);
+	return $url;
+});
+
 add_filter('post_link', function($url){
 	$url = preg_replace('/\/wp\//',"/",$url);
 	return $url;
