@@ -23,10 +23,10 @@ class Post extends Model {
 	}
 
 	public static function getPost($slug=NULL) {
-		// WP slug don't include full path for subpages
-		$try = trim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/');
-		if (preg_match('/^\d{4}\/\d{2}\/\d{2}\//',$try)) $try = $slug; // Safe for archive slugs
-		self::$post = ($p = get_page_by_path($try,OBJECT,self::getPostTypes())) ? $p : NULL;
+		if (!self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL) {
+			$slug = trim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/'); // Try real path for subpages
+			self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
+		}
 		return self::prepared();
 	}
 
