@@ -140,6 +140,7 @@ add_action('init', function(){
 	// Menus
 	register_nav_menus(array(
 		'main' => 'Main',
+		'extra' => 'Extra',
 		'social' => 'Social',
 		'quick' => 'Quick',
 		'language' => 'Language',
