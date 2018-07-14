@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model {
 
 	public static $post;
+	public static $posttypes;
 
 	// ---
 
@@ -22,8 +23,14 @@ class Post extends Model {
 	}
 
 	public static function getPost($slug=NULL) {
-		self::$post = ($p = get_page_by_path($slug,OBJECT,['post','page'])) ? $p : NULL;
+		self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
 		return self::prepared();
+	}
+
+	public static function getPostTypes() {
+		if (isset(self::$posttypes)) return self::$posttypes;
+		self::$posttypes = array_merge(['post','page'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
+		return self::$posttypes;
 	}
 
 	// ---
