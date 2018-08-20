@@ -82,6 +82,12 @@ add_filter('content_save_pre', function($content){
 	return $content;
 });
 
+// TinyMCE Editor JS
+add_filter('mce_external_plugins', function($mce_plugins) {
+	$mce_plugins[] = get_template_directory_uri().'/editor.js';
+	return $mce_plugins;
+}, 999);
+
 // TinyMCE Editor CSS
 add_filter('mce_css', function($mce_css){
 	if (!empty($mce_css)) $mce_css .= ',';
@@ -110,6 +116,7 @@ add_filter('tiny_mce_before_init',function($init){
 		),
 	);
 	$init['style_formats'] = json_encode($styles);
+	$init['extended_valid_elements'] = '*[*]';
 	return $init;
 });
 
