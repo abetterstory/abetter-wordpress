@@ -155,6 +155,12 @@ add_action('init', function(){
 	));
 });
 
+// Remove TinyMCE for Dictionary
+add_filter('user_can_richedit', function($default) {
+    if (get_post_type() == 'dictionary') return FALSE;
+    return $default;
+});
+
 // Force fields on all pages (posts)
 add_action('edit_form_after_title', function(){
 	add_post_type_support('page', 'editor');
