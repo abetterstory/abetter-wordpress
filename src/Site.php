@@ -8,7 +8,7 @@ class Site extends Model {
 
 	public static $site;
 
-	// ---
+	// --- Constructor
 
 	public function __construct(array $attributes = []) {
 		parent::__construct($attributes);

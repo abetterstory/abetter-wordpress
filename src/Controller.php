@@ -17,10 +17,13 @@ class Controller extends BaseController {
 	// ---
 
 	public function __construct($args=NULL) {
-		$this->loadWp();
+		self::loadWp();
 	}
 
-	public function loadWp() {
+	// ---
+
+	public static function loadWp() {
+		if (defined('ABSPATH')) return;
 		define('WP_USE_THEMES', FALSE);
 		require_once public_path('wp').'/wp-load.php';
 	}

@@ -9,7 +9,7 @@ class Post extends Model {
 	public static $post;
 	public static $posttypes;
 
-	// ---
+	// --- Constructor
 
 	public function __construct(array $attributes = []) {
 		parent::__construct($attributes);
