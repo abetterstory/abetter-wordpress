@@ -65,6 +65,7 @@ class Menu {
 	// ---
 
 	public static function build($id,$props=NULL) {
+		Controller::loadWp();
 		if (empty(self::$menu[$id])) self::$menu[$id] = new \StdClass();
 		$menu = &self::$menu[$id];
 		$menu->slug = (string) $id;
@@ -95,8 +96,8 @@ class Menu {
 			$item->order = (int) $term->menu_order;
 			$item->parent = (int) $term->menu_item_parent;
 			$item->style = (string) implode($term->classes," ");
-			$item->current = (string) self::isCurrent($term,'current');
-			$item->front = (string) self::isFront($term,'front');
+			$item->current = (string) self::isCurrent($item->url,'current');
+			$item->front = (string) self::isFront($item->url,'front');
 			$item->items = array();
 			$items[$item->id] = $item;
 			$menu->terms[$item->id] = $item;
@@ -165,8 +166,7 @@ class Menu {
 		return $rel;
 	}
 
-	public static function isCurrent($item, $class='current') {
-		$url = (isset($item->path)) ? $item->path : $item->url;
+	public static function isCurrent($url, $class='current') {
 		if ($item_hash = parse_url($url,PHP_URL_FRAGMENT)) return '';
 		$item_path = urldecode(parse_url($url,PHP_URL_PATH));
 		$current_path = urldecode(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
@@ -174,8 +174,8 @@ class Menu {
 		return ($item_path == $current_path) ? $class : '';
 	}
 
-	public static function isFront($item, $class='front') {
-		return ($item->url == '/') ? $class : '';
+	public static function isFront($url, $class='front') {
+		return ($url == '/') ? $class : '';
 	}
 
 	// ---
