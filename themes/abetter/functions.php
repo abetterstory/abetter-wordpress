@@ -167,7 +167,7 @@ add_filter('page_link', function($url){
 });
 
 add_filter('preview_post_link', function($url){
-	$url = preg_replace('/\?(page_id|p)=([0-9]+)\&/',"$1/$2?",$url);
+	$url = preg_replace('/\?(page_id|p)=([0-9]+)\&/',"$1/$2/?",$url);
 	return $url;
 });
 

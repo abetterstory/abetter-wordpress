@@ -34,8 +34,8 @@ class Index {
 			$item->id = (int) $post->ID;
 			$item->label = (string) $post->post_title;
 			$item->status = (string) $post->post_status;
-			$item->url = (string) str_replace(['?','='],['','/'],self::makeRelative(get_permalink($post)));
-			if ($item->status != 'publish') $item->url .= '/preview';
+			$item->url = (string) self::makeRelative(get_permalink($post));
+			if ($item->status != 'publish') $item->url = preg_replace('/\?(page_id|p)=([0-9]+)/',"$1/$2/",$item->url);
 			$item->order = (int) $post->menu_order;
 			$item->parent = (int) $post->post_parent;
 			$item->edit = "/wp/wp-admin/post.php?action=edit&post={$item->id}";
