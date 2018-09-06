@@ -1,3 +1,6 @@
+/*
+Wordpress editor scripts
+*/
 
 var editor = tinymce.activeEditor;
 

@@ -19,15 +19,29 @@ class Post extends Model {
 
 	public static function getFront() {
 		self::$post = get_post(get_option('page_on_front'));
+		self::$post = self::getPostPreview();
 		return self::prepared();
 	}
 
 	public static function getPost($slug=NULL) {
-		if (!self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL) {
-			$slug = trim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/'); // Try real path for subpages
-			self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
+		$request = preg_replace('/[0-9]+\/[0-9]+\/[0-9]+\//','',$slug); // Remove archive dates
+		$draft = (preg_match('/(page_id|p)\/([0-9]+)/',$request,$match)) ? $match[2] : NULL;
+		if ($draft && get_current_user_id()) {
+			self::$post = ($p = get_post($draft)) ? $p : NULL;
+		} else {
+			self::$post = ($p = get_page_by_path($request,OBJECT,self::getPostTypes())) ? $p : NULL;
 		}
+		self::$post = self::getPostPreview();
 		return self::prepared();
+	}
+
+	public static function getPostPreview() {
+		if (empty($_GET['preview']) || empty(self::$post->ID) || !get_current_user_id()) return self::$post;
+		$revisions = wp_get_post_revisions(self::$post->ID);
+		$previous = ($revisions) ? reset($revisions) : NULL;
+		$preview = (!empty($previous->ID)) ? get_post($previous->ID) : NULL;
+		self::$post = ($preview) ? $preview : self::$post;
+		return self::$post;
 	}
 
 	public static function getPostTypes() {

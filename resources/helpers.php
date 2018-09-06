@@ -1,0 +1,5 @@
+<?php
+
+/*
+Wordpress theme helpers
+*/

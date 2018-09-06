@@ -167,7 +167,7 @@ add_filter('page_link', function($url){
 });
 
 add_filter('preview_post_link', function($url){
-	//$url = preg_replace('/\?(page_id|p)=(.*)/',"/preview/$1/$2/",basename(get_permalink()));
+	$url = preg_replace('/\?(page_id|p)=([0-9]+)\&/',"$1/$2?",$url);
 	return $url;
 });
 
@@ -180,6 +180,10 @@ add_filter('get_attached_file', function($url){
 
 if (is_file(ROOTPATH.'/resources/wordpress/functions.php')) {
 	require_once(ROOTPATH.'/resources/wordpress/functions.php');
+}
+
+if (is_file(ROOTPATH.'/resources/wordpress/helpers.php')) {
+	require_once(ROOTPATH.'/resources/wordpress/helpers.php');
 }
 
 // ---

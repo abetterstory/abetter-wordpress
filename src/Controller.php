@@ -13,6 +13,7 @@ class Controller extends BaseController {
 	public $languages = array();
 	public $language = '';
 	public $post = NULL;
+	public $user = NULL;
 
 	// ---
 
@@ -63,6 +64,12 @@ class Controller extends BaseController {
 
 	// ---
 
+	public function getUser() {
+		return wp_get_current_user();
+	}
+
+	// ---
+
 	public function getPost() {
 		if ($this->isFront()) return Post::getFront();
 		return Post::getPost($this->slug);
@@ -84,10 +91,12 @@ class Controller extends BaseController {
 
 	public function handle() {
 		$this->args = func_get_args();
+		$this->user = $this->getUser();
 		$this->language = $this->getRequestLanguage();
 		$this->slug = $this->getRequestSlug();
 		$this->post = $this->getPost();
 		if (empty($this->post->ID)) return abort(404);
+		view()->addLocation(base_path().'/vendor/abetter/wordpress/views');
 		foreach ($this->getPostTemplateSuggestions() AS $suggestion) {
 			if (view()->exists('wordpress.'.$suggestion)) {
 				return view('wordpress.'.$suggestion)->with([

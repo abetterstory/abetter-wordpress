@@ -17,6 +17,7 @@ class Menu {
 	public function __construct($defined_vars = []) {
 		$defined_vars = (is_string($defined_vars)) ? ['id' => $defined_vars] : $defined_vars;
 		$this->scope = (object) $defined_vars;
+		Controller::loadWp();
 		if (!empty($this->scope->id)) {
 			$this->id = $this->scope->id;
 			$this->items = self::getItems($this->id);
@@ -65,7 +66,6 @@ class Menu {
 	// ---
 
 	public static function build($id,$props=NULL) {
-		Controller::loadWp();
 		if (empty(self::$menu[$id])) self::$menu[$id] = new \StdClass();
 		$menu = &self::$menu[$id];
 		$menu->slug = (string) $id;
@@ -94,6 +94,7 @@ class Menu {
 			$item->label = (string) $term->title;
 			$item->description = (string) $term->description;
 			$item->order = (int) $term->menu_order;
+			$item->target = (string) $term->target;
 			$item->parent = (int) $term->menu_item_parent;
 			$item->style = (string) implode($term->classes," ");
 			$item->current = (string) self::isCurrent($item->url,'current');
