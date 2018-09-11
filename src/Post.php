@@ -25,7 +25,7 @@ class Post extends Model {
 
 	public static function getPost($slug=NULL) {
 		$request = basename(preg_replace('/[0-9]+\/[0-9]+\/[0-9]+\//','',$slug)); // Remove archive dates
-		$draft = (preg_match('/(page_id|p)\/([0-9]+)/',$request,$match)) ? $match[2] : NULL;
+		$draft = (preg_match('/(page_id|p)\/([0-9]+)/',$slug,$match)) ? $match[2] : NULL;
 		if ($draft && get_current_user_id()) {
 			self::$post = ($p = get_post($draft)) ? $p : NULL;
 		} else {
