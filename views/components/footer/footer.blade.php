@@ -7,10 +7,10 @@
 		<ul class="brand boilerplate">
 			<li>
 				<figure>
-					@if ($Footer->brand_image)
-					<img alt="{{ $Footer->brand_label }}" src="{{ $Footer->brand_image }}" />
-					@elseif ($Footer->brand_svg)
-					{!! $Footer->brand_svg !!}
+					@if ($Footer->brand_logo_svg)
+						{!! $Footer->brand_logo_svg !!}
+					@elseif ($Footer->brand_logo)
+						<img alt="{{ $Footer->brand_label }}" src="{{ $Footer->brand_logo }}" />
 					@endif
 				</figure>
 				<p>{{ $Footer->brand_boilerplate }}</p>
@@ -24,7 +24,7 @@
 		</ul>
 
 		<ul class="legal">
-			<small>{{ $Footer->legal_line }}</small>
+			<small>{{ $Footer->brand_copyright }}</small>
 		</ul>
 
 	</section>

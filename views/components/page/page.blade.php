@@ -1,15 +1,14 @@
-<article id="page">
+<section id="page">
 
 	@inject('Page')
 
-	<div class="row uk-section">
-		<div class="column uk-container">
+	<article>
 
-			{!! $Page->content !!}
+		{!! $Page->content !!}
 
-		</div>
-	</div>
+	</article>
 
+	@style('/components/section/section.scss')
 	@style('page.scss')
 
 </section>

@@ -1,5 +1,5 @@
 $Ready(function(){
 
-	var $this = $('.component--demo');
+	var $this = document.getElementsByClassName('component--demo');
 
 });

@@ -1,6 +1,5 @@
-<?php clock() ?>
-<li id="menu-{{ $item->id }}" class="{{ $classname or 'menu-item' }} {{ $item->current }} {{ $item->front }} {{ ($item->items)?'has-children':'' }}">
-	<a href="{{ $item->url }}">
+<li id="menu-{{ $item->id }}" class="{{ $classname or 'menu-item' }} {{ $item->style }} {{ $item->current }} {{ $item->front }} {{ ($item->items)?'has-children':'' }}">
+	<a href="{{ $item->url }}" target="{{ $item->target }}">
 		<span class="menu-item-label">{{ $item->title }}</span>
 	</a>
 	@if ($item->items)

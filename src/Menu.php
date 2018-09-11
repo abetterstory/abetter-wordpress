@@ -97,8 +97,8 @@ class Menu {
 			$item->target = (string) $term->target;
 			$item->parent = (int) $term->menu_item_parent;
 			$item->style = (string) implode($term->classes," ");
-			$item->current = (string) self::isCurrent($item->url,'current');
-			$item->front = (string) self::isFront($item->url,'front');
+			$item->current = (string) _is_current($item->url,'current');
+			$item->front = (string) _is_front($item->url,'front');
 			$item->items = array();
 			$items[$item->id] = $item;
 			$menu->terms[$item->id] = $item;
@@ -108,6 +108,9 @@ class Menu {
 			}
 		}
 		foreach ($items AS $item) { // Pass 2 : Hierarchy
+			if ($item->current && isset($items[$item->parent])) {
+				$items[$item->parent]->current .= ' current-child';
+			}
 			if ($item->parent && isset($items[$item->parent])) {
 				$items[$item->parent]->items[$item->id] = $item;
 				$delete[] = $item->id;
@@ -150,33 +153,12 @@ class Menu {
 
 	public static function getUrl($page=NULL) {
 		$page = self::getPage($page);
-		return (isset($page->ID)) ? urldecode(self::makeRelative(get_permalink($page->ID))) : "";
+		return (isset($page->ID)) ? urldecode(_relative(get_permalink($page->ID))) : "";
 	}
 
 	public static function getTitle($page=NULL) {
 		$page = self::getPage($page);
 		return (isset($page->post_title)) ? $page->post_title : "";
-	}
-
-	// ---
-
-	public static function makeRelative($url) {
-		$rel = parse_url($url,PHP_URL_PATH);
-		$rel .= (($q = parse_url($url,PHP_URL_QUERY)) ? "?{$q}" : "");
-		$rel .= (($f = parse_url($url,PHP_URL_FRAGMENT)) ? "#{$f}" : "");
-		return $rel;
-	}
-
-	public static function isCurrent($url, $class='current') {
-		if ($item_hash = parse_url($url,PHP_URL_FRAGMENT)) return '';
-		$item_path = urldecode(parse_url($url,PHP_URL_PATH));
-		$current_path = urldecode(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
-		$current_path = preg_replace('/\/$/',"",$current_path) . '/'; // Fix for laravel removing trailing slash
-		return ($item_path == $current_path) ? $class : '';
-	}
-
-	public static function isFront($url, $class='front') {
-		return ($url == '/') ? $class : '';
 	}
 
 	// ---
