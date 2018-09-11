@@ -8,7 +8,7 @@
 
 	</article>
 
-	@style('/components/section/section.scss')
+	@style('../section/section.scss')
 	@style('page.scss')
 
 </section>

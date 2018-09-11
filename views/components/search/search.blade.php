@@ -18,8 +18,8 @@
 
 	@style('search.scss')
 
-	@style('/components/section/section.scss')
-	@style('/components/list/list.scss')
+	@style('../section/section.scss')
+	@style('../list/list.scss')
 
 	@script('search.js')
 
