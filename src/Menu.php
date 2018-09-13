@@ -68,7 +68,7 @@ class Menu {
 	public static function build($id,$props=NULL) {
 		if (empty(self::$menu[$id])) self::$menu[$id] = new \StdClass();
 		$menu = &self::$menu[$id];
-		$menu->slug = (string) $id;
+		$menu->slug = strtolower($id);
 		$menu->props = ($props) ? (object) $props : NULL;
 		$menu->term = ($t = get_term_by('slug',$menu->slug,'nav_menu')) ? $t : ((isset(get_nav_menu_locations()[$menu->slug])) ? get_term(get_nav_menu_locations()[$menu->slug],'nav_menu') : NULL);
 		$menu->menu = (isset($menu->term->term_id)) ? wp_get_nav_menu_items($menu->term->term_id) : array();
@@ -76,6 +76,8 @@ class Menu {
 		$menu->current = (object) ['title' => NULL, 'url' => self::getUrl(), 'page_id' => self::getId(), 'term_id' => NULL];
 		$menu->items = self::buildItems($id);
 		$menu->breadcrumbs = self::buildBreadcrumbs($id);
+		$menu->name = (isset($menu->term->slug)) ? $menu->term->slug : NULL;
+		$menu->label = (isset($menu->term->name)) ? $menu->term->name : NULL;
 	}
 
 	public static function buildItems($id) {
