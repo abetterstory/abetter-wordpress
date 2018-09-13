@@ -9,9 +9,9 @@ class Footer extends BaseComponent {
 
 	// --- Variables
 
-	// --- Parse
+	// --- Build
 
-	public function parse() {
+	public function build() {
 
 		$this->brand_url = "/";
 		$this->brand_label = _dictionary('brand_label',NULL,_lipsum('word'));

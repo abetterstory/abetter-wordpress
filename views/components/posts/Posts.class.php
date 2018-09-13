@@ -8,9 +8,9 @@ class Posts extends BaseComponent {
 
 	// --- Variables
 
-	// --- Parse
+	// --- Build
 
-	public function parse() {
+	public function build() {
 
 		$this->post = \ABetter\Wordpress\Post::$post;
 

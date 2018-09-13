@@ -22,9 +22,9 @@ class Menu extends BaseComponent {
 	public $main_items;
 	public $language_items;
 
-	// --- Parse
+	// --- Build
 
-	public function parse() {
+	public function build() {
 
 		$this->mobile_label = _dictionary('menu_label');
 

@@ -13,9 +13,9 @@ class Demo extends BaseComponent {
 	public $body;
 	public $image;
 
-	// --- Parse
+	// --- Build
 
-	public function parse() {
+	public function build() {
 
 		$this->title = _lipsum('headline','Demo');
 		$this->lead = _lipsum('lead','Demo');
