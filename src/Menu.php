@@ -73,7 +73,7 @@ class Menu {
 		$menu->term = ($t = get_term_by('slug',$menu->slug,'nav_menu')) ? $t : ((isset(get_nav_menu_locations()[$menu->slug])) ? get_term(get_nav_menu_locations()[$menu->slug],'nav_menu') : NULL);
 		$menu->menu = (isset($menu->term->term_id)) ? wp_get_nav_menu_items($menu->term->term_id) : array();
 		$menu->terms = array();
-		$menu->current = (object) ['title' => NULL, 'url' => self::getUrl(), 'page_id' => self::getId(), 'term_id' => NULL];
+		$menu->current = (object) [];
 		$menu->items = self::buildItems($id);
 		$menu->breadcrumbs = self::buildBreadcrumbs($id);
 		$menu->name = (isset($menu->term->slug)) ? $menu->term->slug : NULL;
@@ -85,29 +85,10 @@ class Menu {
 		$items = array();
 		$delete = array();
 		foreach ($menu->menu AS $term) { // Pass 1 : Parse
-			$item = new \StdClass();
-			$item->id = (int) $term->ID;
-			$item->term = $term;
-			$item->term_id = (int) $term->ID;
-			$item->page = self::getPage($term->object_id);
-			$item->page_id = $item->page->ID;
-			$item->title = (string) self::getTitle($item->page);
-			$item->url = ($term->type == 'custom') ? (string) $term->url : (string) self::getUrl($item->page);
-			$item->label = (string) $term->title;
-			$item->description = (string) $term->description;
-			$item->order = (int) $term->menu_order;
-			$item->target = (string) $term->target;
-			$item->parent = (int) $term->menu_item_parent;
-			$item->style = (string) implode($term->classes," ");
-			$item->current = (string) _is_current($item->url,'current');
-			$item->front = (string) _is_front($item->url,'front');
-			$item->items = array();
+			$item = self::buildTerm($term);
 			$items[$item->id] = $item;
 			$menu->terms[$item->id] = $item;
-			if ($item->current) {
-				$menu->current->title = $item->title;
-				$menu->current->term_id = $item->id;
-			}
+			if ($item->current) $menu->current = $item;
 		}
 		foreach ($items AS $item) { // Pass 2 : Hierarchy
 			if ($item->current && isset($items[$item->parent])) {
@@ -122,16 +103,45 @@ class Menu {
 		return $items;
 	}
 
+	public static function buildTerm($term) {
+		$item = new \StdClass();
+		$item->id = (int) $term->ID;
+		$item->term = $term;
+		$item->term_id = (int) $term->ID;
+		$item->page = self::getPage($term->object_id);
+		$item->page_id = $item->page->ID;
+		$item->title = (string) self::getTitle($item->page);
+		$item->url = ($term->type == 'custom') ? (string) $term->url : (string) self::getUrl($item->page);
+		$item->label = (string) $term->title;
+		$item->description = (string) $term->description;
+		$item->order = (int) $term->menu_order;
+		$item->target = (string) $term->target;
+		$item->parent = (int) $term->menu_item_parent;
+		$item->style = (string) implode($term->classes," ");
+		$item->current = (string) _is_current($item->url,'current');
+		$item->front = (string) _is_front($item->url,'front');
+		$item->items = array();
+		return $item;
+	}
+
 	public static function buildBreadcrumbs($id) {
 		$menu = &self::$menu[$id];
 		$breadcrumbs = array();
-		$breadcrumbs[] = $menu->current;
-		$next = (isset($menu->terms[$menu->current->term_id])) ? $menu->terms[$menu->current->term_id] : NULL;
+		if (!empty($menu->current->term_id)) $breadcrumbs[] = $menu->current;
+		$next = (isset($menu->current->term_id) && isset($menu->terms[$menu->current->term_id])) ? $menu->terms[$menu->current->term_id] : NULL;
 		while (!empty($next->parent)) {
 			$next = $menu->terms[$next->parent];
-			$breadcrumbs[] = (object) ['title' => $next->title, 'url' => $next->url, 'term_id' => $next->term_id, 'page_id' => $next->page_id];
+			$breadcrumbs[] = self::buildBreadcrumb($next->page);
 		}
 		return array_reverse($breadcrumbs);
+	}
+
+	public static function buildBreadcrumb($page) {
+		$item = new \StdClass();
+		$item->id = (int) $page->ID;
+		$item->title = (string) self::getTitle($page);
+		$item->url = (string) self::getUrl($page);
+		return $item;
 	}
 
 	// ---
