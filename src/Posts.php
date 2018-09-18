@@ -58,7 +58,29 @@ class Posts {
 
 	public function buildItem($post) {
 		if (isset(self::$cache['post'][$post->ID])) return self::$cache['post'][$post->ID];
-		// ---
+		$item = self::buildPost($post);
+		self::$cache['post'][$post->ID] = $item;
+		return $item;
+	}
+
+	// ---
+
+	public function fakeItem() {
+		$item = new \StdClass();
+		$item->type = "fake";
+		$item->url = "#fake";
+		$item->label = _lipsum('label');
+		$item->title = _lipsum('label');
+		$item->headline = _lipsum('headline');
+		$item->lead = _lipsum('lead');
+		$item->excerpt = _excerpt(_lipsum('normal'),400);
+		$item->image = _pixsum('photo');
+		return $item;
+	}
+
+	// ---
+
+	public static function buildPost($post) {
 		$item = new \StdClass();
 		$item->post = $post;
 		$item->id = (int) $post->ID;
@@ -102,23 +124,6 @@ class Posts {
 		if (!$item->image && preg_match('/<img[^>]*src="([^"]+)"/i',$item->content,$match)) {
 			$item->image = $match[1];
 		}
-		// ---
-		self::$cache['post'][$post->ID] = $item;
-		return $item;
-	}
-
-	// ---
-	
-	public function fakeItem() {
-		$item = new \StdClass();
-		$item->type = "fake";
-		$item->url = "#fake";
-		$item->label = _lipsum('label');
-		$item->title = _lipsum('label');
-		$item->headline = _lipsum('headline');
-		$item->lead = _lipsum('lead');
-		$item->excerpt = _excerpt(_lipsum('normal'),400);
-		$item->image = _pixsum('photo');
 		return $item;
 	}
 

@@ -2,16 +2,17 @@
 
 namespace ABetter\Wordpress;
 
-class Component extends ABetter\Toolkit\Component {
+class Component extends \ABetter\Toolkit\Component {
 
-	// --- Private
+	// --- Public
 
 	public $post;
 
 	// --- Init
 
 	public function init() {
-		$this->post = ABetter\Wordpress\Post::$post;
+		$this->post = Post::$post;
+		$this->item = Posts::buildPost($this->post);
 	}
 
 }
