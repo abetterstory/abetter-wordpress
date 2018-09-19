@@ -90,7 +90,6 @@ class Posts {
 		$item->author = (array) self::_wp_author($post);
 		$item->category = (array) self::_wp_categories($post);
 		$item->tag = (array) self::_wp_tags($post);
-		$item->label = (string) reset($item->category);
 		$item->status = (string) $post->post_status;
 		$item->slug = (in_array($post->ID,self::_wp_fronts())) ? '/' : urldecode(get_page_uri($post));
 		$item->url = (string) _relative(get_permalink($post));
@@ -106,6 +105,7 @@ class Posts {
 		$item->datelong = (string) get_the_date('F j, Y',$post);
 		// ---
 		$item->title = (string) $post->post_title;
+		$item->label = (string) ($f = get_field('teaser_label',$post)) ? $f : get_field('header_label',$post);
 		$item->headline = (string) ($f = get_field('teaser_headline',$post)) ? $f : get_field('header_headline',$post);
 		$item->lead = (string) ($f = get_field('teaser_excerpt',$post)) ? $f : get_field('header_lead',$post);
 		$item->excerpt = (string) trim(strip_tags($item->lead));
