@@ -20,7 +20,7 @@ class Search extends BaseComponent {
 
 		// ---
 
-		$this->posts = new \ABetter\Wordpress\Posts(['numberposts' => 10, 'fake' => TRUE]);
+		$this->posts = new \ABetter\Wordpress\Posts(['posts_per_page' => 10, 'fake' => TRUE]);
 		$this->items = $this->posts->items;
 
 	}

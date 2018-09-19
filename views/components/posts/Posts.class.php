@@ -20,7 +20,7 @@ class Posts extends BaseComponent {
 
 		// ---
 
-		$this->posts = new \ABetter\Wordpress\Posts(['numberposts' => 5, 'fake' => TRUE]);
+		$this->posts = new \ABetter\Wordpress\Posts(['posts_per_page' => 5, 'fake' => TRUE]);
 		$this->items = $this->posts->items;
 
 	}

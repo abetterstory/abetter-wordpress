@@ -29,13 +29,14 @@ class Posts {
 			'post_status' => 'publish',
 			'orderby' => 'date',
 			'order' => 'DESC',
-			'numberposts' => -1,
+			'posts_per_page' => -1,
 			'suppress_filters' => TRUE,
 			'fake' => FALSE,
 		],(array)$this->args);
 
 		$this->query = new \WP_Query($this->args);
 		$this->posts = (!empty($this->query->posts)) ? $this->query->posts : [];
+		$this->found = (int) $this->query->found_posts;
 		$this->items = [];
 
 		foreach ($this->posts AS $post) {
@@ -131,14 +132,14 @@ class Posts {
 
 	public static function _wp_categories($post,$terms=[]) {
 		if ($get = get_the_category($post->ID)) foreach ($get AS $term) {
-			$terms[$term->term_id] = ($d = _dictionary('category_'.$term->slug.'_label',NULL,'')) ? $d : $term->name;
+			$terms[$term->term_id] = ($d = _dictionary('category_'.preg_replace('/-/','_',$term->slug).'_label',NULL,'')) ? $d : $term->name;
 		}
 		return $terms;
 	}
 
 	public static function _wp_tags($post,$terms=[]) {
-		if ($get = get_the_category($post->ID)) foreach ($get AS $term) {
-			$terms[$term->term_id] = ($d = _dictionary('tag_'.$term->slug.'_label',NULL,'')) ? $d : $term->name;
+		if ($get = get_the_tags($post->ID)) foreach ($get AS $term) {
+			$terms[$term->term_id] = ($d = _dictionary('tag_'.preg_replace('/-/','_',$term->slug).'_label',NULL,'')) ? $d : $term->name;
 		}
 		return $terms;
 	}
