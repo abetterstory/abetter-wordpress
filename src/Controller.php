@@ -3,8 +3,10 @@
 namespace ABetter\Wordpress;
 
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\Request;
 use ABetter\Wordpress\Site;
 use ABetter\Wordpress\Post;
+use Closure;
 
 class Controller extends BaseController {
 
@@ -16,6 +18,7 @@ class Controller extends BaseController {
 	public $template = '';
 	public $post = NULL;
 	public $user = NULL;
+	public $error = NULL;
 
 	// ---
 
@@ -108,6 +111,7 @@ class Controller extends BaseController {
 		$this->slug = $this->getRequestSlug();
 		$this->post = $this->getPost();
 		$this->suggestions = $this->getPostTemplateSuggestions();
+		$this->error = (isset($this->post->error)) ? $this->post->error : NULL;
 		if ($theme = env('WP_THEME')) {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
@@ -119,7 +123,8 @@ class Controller extends BaseController {
 				return view($suggestion)->with([
 					'site' => Site::getSite(),
 					'post' => $this->post,
-					'template' => $suggestion
+					'error' => $this->error,
+					'template' => $suggestion,
 				]);
 			}
 		}

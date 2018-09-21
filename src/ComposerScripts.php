@@ -6,16 +6,27 @@ use Composer\Script\Event;
 
 class ComposerScripts {
 
+	public static function postUpdate(Event $event) {
+		self::checkMiddleware($event);
+		self::renameHelperFunctions($event);
+	}
+
+	// ---
+
+	public static function checkMiddleware(Event $event) {
+		echo __DIR__;
+	}
+
+	// ---
+
 	public static function renameHelperFunctions(Event $event) {
 		self::renameHelperFoundation($event);
 		self::renameHelperVoyager($event);
 		self::modifyHelperWordpress($event);
 	}
 
-	// ---
-
 	public static function modifyHelperWordpress(Event $event) {
-        $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $helpersPath = $vendorDir . '/../resources/wordpress/core/wp-includes/l10n.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);
@@ -24,10 +35,8 @@ class ComposerScripts {
         file_put_contents($helpersPath, $content);
     }
 
-	// ---
-
     public static function renameHelperFoundation(Event $event) {
-        $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $helpersPath = $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);
@@ -37,7 +46,7 @@ class ComposerScripts {
     }
 
 	public static function renameHelperVoyager(Event $event) {
-        $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $helpersPath = $vendorDir . '/tcg/voyager/src/Helpers/helpersi18n.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);
@@ -46,10 +55,8 @@ class ComposerScripts {
         file_put_contents($helpersPath, $content);
     }
 
-	// ---
-
 	public static function restoreHelperFoundation(Event $event) {
-        $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $helpersPath = $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);
@@ -59,7 +66,7 @@ class ComposerScripts {
     }
 
 	public static function restoreHelperVoyager(Event $event) {
-        $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
 		$helpersPath = $vendorDir . '/tcg/voyager/src/Helpers/helpersi18n.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);

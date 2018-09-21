@@ -1,4 +1,4 @@
-# LABS-ABetter-Wordpress v1.1.6
+# LABS-ABetter-Wordpress v1.2.x
 
 ABetter Wordpress integration for Laravel 5+
 
@@ -16,12 +16,17 @@ ABetter Wordpress integration for Laravel 5+
 - composer require itsgoingd/clockwork --dev
 
 ## Add script command to root composer.json + update
-- "post-update-cmd": ["ABetter\\Wordpress\\ComposerScripts::renameHelperFunctions"]
+- "post-update-cmd": ["ABetter\\Wordpress\\ComposerScripts::postUpdate"]
 - composer update
+
+## Register Middleware
+- Add to $middleware in app/Kernel.php
+- \ABetter\Wordpress\Middleware::class,
 
 ## Setup Wordpress config in .env
 - WP_DEBUG=
 - WP_HOME=
+- WP_THEME=
 - WP_DB_NAME=
 - WP_DB_USER=
 - WP_DB_PASSWORD=

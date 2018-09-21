@@ -26,9 +26,7 @@
                 "ABetter\\Wordpress\\ServiceProvider"
             ],
 			"aliases": {
-                "ABetterWordpressController": "ABetter\\Wordpress\\Controller",
-				"ABetterWordpressSite": "ABetter\\Wordpress\\Site",
-				"ABetterWordpressPost": "ABetter\\Wordpress\\Post"
+                "ABetterWordpressController": "ABetter\\Wordpress\\Controller"
             }
         }
     }
