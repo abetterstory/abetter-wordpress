@@ -14,7 +14,12 @@ class ComposerScripts {
 	// ---
 
 	public static function checkMiddleware(Event $event) {
-		echo __DIR__;
+		$vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
+		$kernelPath = $vendorDir . '/../app/Http/Kernel.php';
+		if (!file_exists($kernelPath)) return;
+		$content = file_get_contents($kernelPath);
+		if (preg_match('/ABetter/',$content)) return;
+		echo "Warning: ABetter Middleware not registrerd in app/Http/Kernel.php".PHP_EOL;
 	}
 
 	// ---
