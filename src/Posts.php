@@ -34,6 +34,10 @@ class Posts {
 			'fake' => FALSE,
 		],(array)$this->args);
 
+		if (isset($this->args['numberposts'])) {
+			$this->args['posts_per_page'] = (int) $this->args['numberposts'];
+		}
+
 		$this->query = new \WP_Query($this->args);
 		$this->posts = (!empty($this->query->posts)) ? $this->query->posts : [];
 		$this->found = (int) $this->query->found_posts;
@@ -45,8 +49,8 @@ class Posts {
 
 		// ---
 
-		if ($this->args['fake'] && count($this->items) < $this->args['numberposts']) {
-			while (count($this->items) < $this->args['numberposts']) {
+		if ($this->args['fake'] && count($this->items) < $this->args['posts_per_page']) {
+			while (count($this->items) < $this->args['posts_per_page']) {
 				$this->items[] = $this->fakeItem();
 			}
 		}
@@ -82,6 +86,7 @@ class Posts {
 	// ---
 
 	public static function buildPost($post) {
+		if (!isset($post->ID)) return NULL;
 		$item = new \StdClass();
 		$item->post = $post;
 		$item->id = (int) $post->ID;

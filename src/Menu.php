@@ -147,7 +147,7 @@ class Menu {
 	// ---
 
 	public static function getPage($page=NULL) {
-		if ($page === NULL) { $page = \ABetter\Wordpress\Post::$post; };
+		if ($page === NULL) $page = Post::$post;
 		if (empty($page->ID)) {
 			if (is_numeric($page)) {
 				$page = get_page($page);

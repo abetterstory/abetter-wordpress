@@ -12,6 +12,8 @@ class Controller extends BaseController {
 	public $slug = '';
 	public $languages = array();
 	public $language = '';
+	public $suggestions = [];
+	public $template = '';
 	public $post = NULL;
 	public $user = NULL;
 
@@ -62,6 +64,10 @@ class Controller extends BaseController {
 		return (($i = get_option('page_for_posts')) && $i == $this->post->ID) ? TRUE : FALSE;
 	}
 
+	public function isError() {
+		return (!empty($this->post->error)) ? (int) $this->post->error : FALSE;
+	}
+
 	// ---
 
 	public function getUser() {
@@ -75,6 +81,8 @@ class Controller extends BaseController {
 		return Post::getPost($this->slug);
 	}
 
+	// ---
+
 	public function getPostTemplateSuggestions() {
 		$suggestions = array();
 		$suggestions[] = ($this->post->post_type == 'post') ? 'page' : 'post';
@@ -83,6 +91,10 @@ class Controller extends BaseController {
 		if ($t = basename(get_page_template_slug($this->post->ID),'.php')) $suggestions[] = $t;
 		if ($this->isPosts()) $suggestions[] = 'posts';
 		if ($this->isFront()) $suggestions[] = 'front';
+		if ($code = $this->isError()) {
+			$suggestions[] = (string) $code;
+			$suggestions[] = 'error';
+		}
 		$suggestions = array_reverse($suggestions);
 		return $suggestions;
 	}
@@ -95,18 +107,23 @@ class Controller extends BaseController {
 		$this->language = $this->getRequestLanguage();
 		$this->slug = $this->getRequestSlug();
 		$this->post = $this->getPost();
-		if (empty($this->post->ID)) return abort(404);
-		view()->addLocation(base_path().'/vendor/abetter/wordpress/views');
-		foreach ($this->getPostTemplateSuggestions() AS $suggestion) {
-			if (view()->exists('wordpress.'.$suggestion)) {
-				return view('wordpress.'.$suggestion)->with([
+		$this->suggestions = $this->getPostTemplateSuggestions();
+		if ($theme = env('WP_THEME')) {
+			view()->addLocation(base_path().'/resources/views/'.$theme);
+			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
+		}
+		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		foreach ($this->suggestions AS $suggestion) {
+			if (view()->exists($suggestion)) {
+				$this->template = $suggestion;
+				return view($suggestion)->with([
 					'site' => Site::getSite(),
 					'post' => $this->post,
 					'template' => $suggestion
 				]);
 			}
 		}
-		return "No template found in views/wordpress/";
+		return "No template found in views.";
     }
 
 }

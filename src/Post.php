@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model {
 
 	public static $post;
+	public static $error;
 	public static $posttypes;
 
 	// --- Constructor
@@ -34,6 +35,7 @@ class Post extends Model {
 			}
 		}
 		self::$post = self::getPostPreview();
+		self::$post = self::getPostError();
 		return self::prepared();
 	}
 
@@ -44,6 +46,15 @@ class Post extends Model {
 		$preview = (!empty($previous->ID)) ? get_post($previous->ID) : NULL;
 		self::$post = ($preview) ? $preview : self::$post;
 		return self::$post;
+	}
+
+
+	public static function getPostError() {
+		if (isset(self::$post->ID)) return self::$post;
+		self::$error = ($p = $GLOBALS['wpdb']->get_results('SELECT * FROM wp_posts WHERE post_name LIKE "404%"')) ? reset($p) : NULL;
+		if (empty(self::$error->post_name)) abort(404);
+		self::$error->error = 404;
+		return self::$error;
 	}
 
 	public static function getPostTypes() {
