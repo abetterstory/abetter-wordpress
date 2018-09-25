@@ -1,12 +1,12 @@
 @php _debug('l10n');
-$site->canonical = '';
-$site->localizations = [];
+$post->canonical = url('/').$item->url;
+$post->localizations = [];
 @endphp
 
-@if (!empty($site->canonical))<link rel="canonical" href="{{ $site->canonical }}" />@endif
+@if(!empty($post->canonical))<link rel="canonical" href="{{ $post->canonical }}" />@endif
 
-@if (!empty($site->localizations))
-	@foreach($site->localizations AS $locale => $href)
-		<link rel="alternate" href="{{ $href }}" hreflang="{{ $locale }}" />
+@if(!empty($post->localizations))
+	@foreach($post->localizations AS $locale => $href)
+	<link rel="alternate" href="{{ $href }}" hreflang="{{ $locale }}" />
 	@endforeach
 @endif
