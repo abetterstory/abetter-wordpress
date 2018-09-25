@@ -2,8 +2,10 @@
 
 $post->ogsite = get_option('blogname');
 $post->ogtype = ($f = get_field('seo_type',$post)) ? $f : 'website';
-$post->ogurl = url('/') . (($f = get_field('seo_url',$post)) ? _relative($f) : $item->url);
 $post->oglocale = get_locale();
+
+$post->ogurl = url('/') . (($f = get_field('seo_url',$post)) ? _relative($f) : $item->url);
+$post->ogurl = rtrim($post->ogurl,'/'); // Laravel removes trailing slash
 
 if (!$post->ogimage = ($f = get_field('seo_image',$post)) ? $f : '') {
 	$post->ogimage = ($f = $item->image) ? $f : _dictionary('seo_image_default',NULL,'');
