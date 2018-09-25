@@ -1,9 +1,11 @@
 @php _debug('title');
-$post->title = $post->post_title;
-$post->title = preg_replace('/(<br>|<br\/>|<br \/>)/'," ",$post->title);
-$post->title = preg_replace('/( +)/'," ",$post->title);
+
+if (!$post->title = get_field('seo_title',$post)) {
+	$post->title = ($f = $item->headline) ? $f : $post->post_title;
+	$post->title = str_replace('{TITLE}',$post->title,_dictionary('seo_title_default',NULL,$post->title));
+	$post->title = _excerpt($post->title,60);
+}
+
 @endphp
 
-@if (!empty($post->title))
-	<title>{{ $post->title }}</title>
-@endif
+@if(!empty($post->title))<title>{{ $post->title }}</title>@endif

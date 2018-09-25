@@ -123,6 +123,7 @@ class Controller extends BaseController {
 				return view($suggestion)->with([
 					'site' => Site::getSite(),
 					'post' => $this->post,
+					'item' => Posts::buildPost($this->post),
 					'error' => $this->error,
 					'template' => $suggestion,
 				]);

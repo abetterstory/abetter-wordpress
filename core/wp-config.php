@@ -12,6 +12,7 @@ define('WP_HOME', getenv('WP_HOME'));
 define('WP_SITEURL', getenv('WP_HOME'));
 define('FS_METHOD', 'direct');
 define('COOKIEPATH', '/');
+define('WPLANG', 'en_EN');
 
 /**
  * The base configuration for WordPress
