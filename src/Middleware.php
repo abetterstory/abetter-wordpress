@@ -10,7 +10,7 @@ class Middleware {
 
 		$response = $next($request);
 
-		$data = (isset($response->original)) ? $response->original->getData() : NULL;
+		$data = (isset($response->original) && method_exists($response->original,'getData')) ? $response->original->getData() : NULL;
 		$error = (isset($data['error'])) ? $data['error'] : 0;
 
 		if ($error > 400) $response->setStatusCode($error);
