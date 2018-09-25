@@ -67,6 +67,10 @@ class Controller extends BaseController {
 		return (($i = get_option('page_for_posts')) && $i == $this->post->ID) ? TRUE : FALSE;
 	}
 
+	public function isSitemap() {
+		return (!empty($this->args[0]) && preg_match('/^sitemap/',$this->args[0])) ? TRUE : FALSE;
+	}
+
 	public function isError() {
 		return (!empty($this->post->error)) ? (int) $this->post->error : FALSE;
 	}
@@ -80,7 +84,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function getPost() {
-		if ($this->isFront()) return Post::getFront();
+		if ($this->isFront() || $this->isSitemap()) return Post::getFront();
 		return Post::getPost($this->slug);
 	}
 
@@ -117,6 +121,7 @@ class Controller extends BaseController {
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
 		}
 		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		if ($this->isSitemap()) return response()->view('sitemap')->header('Content-Type','text/xml');
 		foreach ($this->suggestions AS $suggestion) {
 			if (view()->exists($suggestion)) {
 				$this->template = $suggestion;

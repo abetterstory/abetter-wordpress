@@ -25,7 +25,7 @@ class Posts {
 		Controller::loadWp();
 
 		$this->args = array_replace([
-			'post_type' => 'post',
+			'post_type' => 'any',
 			'post_status' => 'publish',
 			'orderby' => 'date',
 			'order' => 'DESC',
@@ -41,10 +41,12 @@ class Posts {
 		$this->query = new \WP_Query($this->args);
 		$this->posts = (!empty($this->query->posts)) ? $this->query->posts : [];
 		$this->found = (int) $this->query->found_posts;
+		$this->ids = [];
 		$this->items = [];
 
 		foreach ($this->posts AS $post) {
 			$this->items[$post->ID] = $this->buildItem($post);
+			$this->ids[] = $post->ID;
 		}
 
 		// ---

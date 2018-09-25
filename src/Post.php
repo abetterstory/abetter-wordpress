@@ -59,7 +59,7 @@ class Post extends Model {
 
 	public static function getPostTypes() {
 		if (isset(self::$posttypes)) return self::$posttypes;
-		self::$posttypes = array_merge(['post','page'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
+		self::$posttypes = array_merge(['page','post'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
 		return self::$posttypes;
 	}
 

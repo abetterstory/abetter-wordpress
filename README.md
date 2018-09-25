@@ -64,7 +64,8 @@ ABetter Wordpress integration for Laravel 5+
 - 403 Forbidden : 403-forbidden
 
 ## Add laravel routes/web.php:
-- Route::get('wp-admin', function () { return redirect('/wp/wp-admin/'); });
-- Route::get('wp-admin/{any}', function () { return redirect('/wp/wp-admin/'); });
+- Route::get('wp-admin', function() { return redirect('/wp/wp-admin/'); });
+- Route::get('wp-admin/{path}', function() { return redirect('/wp/wp-admin/'); })->where('path','.*');
 - Route::get('/', '\ABetterWordpressController@handle');
-- Route::get('{l?}/{y?}/{m?}/{d?}/{s?}/{x?}/{z?}/{q?}', '\ABetterWordpressController@handle');
+- Route::get('sitemap', '\ABetterWordpressController@handle');
+- Route::get('{path}', '\ABetterWordpressController@handle')->where('path','.*');
