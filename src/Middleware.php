@@ -26,10 +26,16 @@ class Middleware {
 		$expire = ($f = get_field('settings_expire',$post)) ? $f : $expire;
 		$expire = (is_numeric($expire)) ? $expire : strtotime($expire,0);
 
-		$response->header('Cache-Control', 'max-age='.$expire);
-		$response->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', strtotime($post->post_date_gmt)));
+		$response->header('Cache-Control', 'public, max-age='.$expire);
+		//$response->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', strtotime($post->post_date_gmt)));
 		$response->header('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $expire));
 		$response->header('Etag', md5($response->content()));
+
+		$request->headers->remove('pragma');
+
+		//@header('Access-Control-Allow-Origin: *');
+		//@header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+		//@header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, X-Requested-With');
 
 		return $response;
 
