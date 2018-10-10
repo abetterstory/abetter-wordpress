@@ -4,7 +4,7 @@ $site->theme_css = _dictionary('theme_css',NULL,'');
 @endphp
 
 @if ($site->styles_app)
-<link href="{{ url('/').mix($site->styles_app) }}" rel="stylesheet" type="text/css">
+<link href="{{ mix($site->styles_app) }}" rel="stylesheet" type="text/css">
 @endif
 
 @if ($site->theme_css)

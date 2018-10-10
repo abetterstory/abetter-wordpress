@@ -27,7 +27,7 @@ class Middleware {
 		$expire = (is_numeric($expire)) ? $expire : strtotime($expire,0);
 
 		$response->header('Cache-Control', 'max-age='.$expire);
-		//$response->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', strtotime($post->post_date_gmt)));
+		$response->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', strtotime($post->post_date_gmt)));
 		$response->header('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $expire));
 		$response->header('Etag', md5($response->content()));
 
