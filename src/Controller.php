@@ -116,6 +116,9 @@ class Controller extends BaseController {
 		$this->post = $this->getPost();
 		$this->suggestions = $this->getPostTemplateSuggestions();
 		$this->error = (isset($this->post->error)) ? $this->post->error : NULL;
+		$this->expire = ($expire = get_field('settings_expire',$this->post)) ? $expire : '1 hour';
+		$this->redirect = ($redirect = get_field('settings_redirect',$this->post)) ? $redirect : NULL;
+		// ---
 		if ($theme = env('WP_THEME')) {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
@@ -130,6 +133,8 @@ class Controller extends BaseController {
 					'post' => $this->post,
 					'item' => Posts::buildPost($this->post),
 					'error' => $this->error,
+					'expire' => $this->expire,
+					'redirect' => $this->redirect,
 					'template' => $suggestion,
 				]);
 			}

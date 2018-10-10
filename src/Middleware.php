@@ -13,17 +13,15 @@ class Middleware {
 		$data = (isset($response->original) && method_exists($response->original,'getData')) ? $response->original->getData() : NULL;
 		$post = (isset($data['post'])) ? $data['post'] : NULL;
 		$error = (isset($data['error'])) ? $data['error'] : 0;
+		$expire = (isset($data['expire'])) ? $data['expire'] : '1 hour';
+		$redirect = (isset($data['redirect'])) ? $data['redirect'] : NULL;
 
 		if ($error > 400) $response->setStatusCode($error);
 
-		// ---
-
-		if ($location = get_field('settings_redirect',$post)) return \Redirect::to($location);
+		if ($redirect) return \Redirect::to($redirect);
 
 		// ---
 
-		$expire = '1 hour';
-		$expire = ($f = get_field('settings_expire',$post)) ? $f : $expire;
 		$expire = (is_numeric($expire)) ? $expire : strtotime($expire,0);
 
 		$response->header('Pragma', 'public');
