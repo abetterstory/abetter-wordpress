@@ -128,7 +128,7 @@ class Posts {
 		if (!$item->headline) $item->headline = $item->title;
 		if (!$item->excerpt) $item->excerpt = _excerpt(($item->lead)?$item->lead:$item->content,400);
 		// ---
-		$item->image = (string) ($f = get_field('teaser_image',$post)) ? $f['url'] : (($f = get_field('header_image',$post)) ? $f['url'] : '');
+		$item->image = (string) ($f = get_field('teaser_image',$post)) ? $f : (($f = get_field('header_image',$post)) ? $f : '');
 		if (!$item->image && preg_match('/<img[^>]*src="([^"]+)"/i',$item->content,$match)) {
 			$item->image = $match[1];
 		}
