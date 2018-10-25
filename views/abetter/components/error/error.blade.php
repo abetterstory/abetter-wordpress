@@ -1,10 +1,10 @@
 <section id="error">
 
-	@inject('Error')
+	@inject('ErrorComponent')
 
 	<article>
 
-		{!! $Page->content !!}
+		{!! $ErrorComponent->content !!}
 
 	</article>
 

@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use \ABetter\Toolkit\Component as BaseComponent;
 
-class Page extends BaseComponent {
+class ErrorComponent extends BaseComponent {
 
 	// --- Variables
 
