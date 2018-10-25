@@ -57,20 +57,16 @@ p {
 
 p + p {
 	margin-top: 0rem;
+	text-indent: 2rem;
 }
 
-p + p:before {
-	content: "";
-	padding-left: 2rem;
-}
-
-p:empty:before,
-p[empty]:before,
-p.empty:before,
-p:empty + p:before,
-p[empty] + p:before,
-p.empty + p:before {
-	padding-left: 0rem;
+p:empty,
+p[empty],
+p.empty,
+p:empty + p,
+p[empty] + p,
+p.empty + p {
+	text-indent: 0rem;
 }
 
 .lead {
