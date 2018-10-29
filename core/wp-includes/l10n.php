@@ -198,8 +198,8 @@ function translate_with_gettext_context( $text, $context, $domain = 'default' ) 
  *                       Default 'default'.
  * @return string Translated text.
  */
-if (!function_exists('__')){function __($text, $domain = 'default' ) {
-	return translate($text,$domain);}
+function __( $text, $domain = 'default' ) {
+	return translate( $text, $domain );
 }
 
 /**
@@ -1210,7 +1210,7 @@ function wp_dropdown_languages( $args = array() ) {
 		selected( '', $parsed_args['selected'], false )
 	);
 
-	// List installed languages.
+	// List installed languages. 
 	foreach ( $languages as $language ) {
 		$structure[] = sprintf(
 			'<option value="%s" lang="%s"%s data-installed="1">%s</option>',
