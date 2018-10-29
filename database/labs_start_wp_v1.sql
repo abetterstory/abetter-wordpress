@@ -391,7 +391,7 @@ CREATE TABLE `wp_users` (
 
 LOCK TABLES `wp_users` WRITE;
 /*!40000 ALTER TABLE `wp_users` DISABLE KEYS */;
-INSERT INTO `wp_users` VALUES (1,'admin','$P$BuCl4aR6UwhXCHMa/D.6ohfkKluC3f/','admin','johan@sjoland.com','','2018-06-13 08:30:52','',0,'admin');
+INSERT INTO `wp_users` VALUES (1,'admin','$P$BJU/t80JhCBEJxy.NnckytaNfZK.DJ.','admin','johan@sjoland.com','','2018-06-13 08:30:52','',0,'admin');
 /*!40000 ALTER TABLE `wp_users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
