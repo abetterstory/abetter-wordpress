@@ -32,7 +32,7 @@ class ComposerScripts {
 
 	public static function modifyHelperWordpress(Event $event) {
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        $helpersPath = $vendorDir . '/../resources/wordpress/core/wp-includes/l10n.php';
+		$helpersPath = $vendorDir . '/abetter/wordpress/core/wp-includes/l10n.php';
         if (!file_exists($helpersPath)) return;
         $content = file_get_contents($helpersPath);
         $content = str_replace('function __( ', "if (!function_exists('__')){function __(", $content);
