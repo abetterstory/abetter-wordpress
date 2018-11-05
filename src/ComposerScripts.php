@@ -6,6 +6,11 @@ use Composer\Script\Event;
 
 class ComposerScripts {
 
+	public static function postInstall(Event $event) {
+		self::checkMiddleware($event);
+		self::renameHelperFunctions($event);
+	}
+
 	public static function postUpdate(Event $event) {
 		self::checkMiddleware($event);
 		self::renameHelperFunctions($event);
