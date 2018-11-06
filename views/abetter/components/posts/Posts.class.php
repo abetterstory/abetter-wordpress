@@ -12,7 +12,7 @@ class Posts extends BaseComponent {
 
 	public function build() {
 
-		$this->post = \ABetter\Wordpress\Post::$post;
+		$this->post = get_post(get_option('page_for_posts'));
 
 		$this->content = ($f = _render($this->post->post_content)) ? $f : _lipsum('lead:p');
 
