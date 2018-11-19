@@ -20,6 +20,8 @@ class Controller extends BaseController {
 	public $user = NULL;
 	public $error = NULL;
 
+	public static $handle = NULL;
+
 	// ---
 
 	public function __construct($args=NULL) {
@@ -128,6 +130,7 @@ class Controller extends BaseController {
 		foreach ($this->suggestions AS $suggestion) {
 			if (view()->exists($suggestion)) {
 				$this->template = $suggestion;
+				self::$handle = $this;
 				return view($suggestion)->with([
 					'site' => Site::getSite(),
 					'post' => $this->post,
