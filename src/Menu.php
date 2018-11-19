@@ -86,6 +86,7 @@ class Menu {
 		$delete = array();
 		foreach ($menu->menu AS $term) { // Pass 1 : Parse
 			$item = self::buildTerm($term);
+			if ($item->page_status != 'publish') continue;
 			$items[$item->id] = $item;
 			$menu->terms[$item->id] = $item;
 			if ($item->current) $menu->current = $item;
@@ -110,9 +111,10 @@ class Menu {
 		$item->term_id = (int) $term->ID;
 		$item->page = self::getPage($term->object_id);
 		$item->page_id = $item->page->ID;
+		$item->page_status = $item->page->post_status;
 		$item->title = (string) self::getTitle($item->page);
 		$item->url = ($term->type == 'custom') ? (string) $term->url : (string) self::getUrl($item->page);
-		$item->label = (string) $term->title;
+		$item->label = (string) htmlspecialchars_decode($term->title);
 		$item->description = (string) $term->description;
 		$item->order = (int) $term->menu_order;
 		$item->target = (string) $term->target;
