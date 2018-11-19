@@ -40,6 +40,15 @@ class Menu extends BaseComponent {
 		$this->main = new WordpressMenu('Main');
 		$this->main_items = $this->main->items;
 
+		// ---
+
+		foreach ($this->main_items AS &$item) {
+			if (preg_match('/is-icon/',$item->style)) {
+				$item->icon = $item->style;
+				$item->style = preg_replace('/fa[^ ]*/',"",$item->style);
+			}
+		}
+
 	}
 
 }

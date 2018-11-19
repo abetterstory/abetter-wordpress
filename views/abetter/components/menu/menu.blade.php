@@ -78,7 +78,7 @@
 			</li>
 			<li class="mobile-menu-divider"></li>
 			@foreach ($Menu->main_items AS $item)
-				@component('components.menu.item',['item' => $item, 'classname' => 'mobile-menu-item'],TRUE)
+				@component('components.menu.item',['item' => $item, 'classname' => 'mobile-menu-item', 'nosub' => TRUE],TRUE)
 			@endforeach
 		</ul>
 	</section>
