@@ -25,6 +25,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function __construct($args=NULL) {
+		self::$handle = new \StdClass();
 		self::loadWp();
 	}
 
@@ -120,6 +121,9 @@ class Controller extends BaseController {
 		$this->error = (isset($this->post->error)) ? $this->post->error : NULL;
 		$this->expire = ($expire = get_field('settings_expire',$this->post)) ? $expire : '1 hour';
 		$this->redirect = ($redirect = get_field('settings_redirect',$this->post)) ? $redirect : NULL;
+		self::$handle->post = $this->post;
+		self::$handle->suggestions = $this->suggestions;
+		self::$handle->error = $this->error;
 		// ---
 		if ($theme = env('WP_THEME')) {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
@@ -130,7 +134,7 @@ class Controller extends BaseController {
 		foreach ($this->suggestions AS $suggestion) {
 			if (view()->exists($suggestion)) {
 				$this->template = $suggestion;
-				self::$handle = $this;
+				self::$handle->view = $suggestion;
 				return view($suggestion)->with([
 					'site' => Site::getSite(),
 					'post' => $this->post,
