@@ -106,7 +106,25 @@ body.footer-sticky {
 		position: absolute;
 		left: 0;
 		right: 0;
-		width: 100%;
+		width: auto;
 		bottom: 0px;
+	}
+}
+
+// ---
+
+body.footer-sticky {
+	&.lab-navigator {
+		#footer > .footer-container {
+			left: 320px;
+		}
+	}
+	&.lab-inspector {
+		#footer > .footer-container {
+			right: 320px;
+			@media (min-width: 2000px) {
+				right: 657px;
+			}
+		}
 	}
 }
