@@ -21,6 +21,9 @@ add_action('admin_init', function(){
 	remove_submenu_page('plugins.php', 'plugin-editor.php');
 	remove_submenu_page('plugins.php', 'plugin-install.php');
     remove_submenu_page('themes.php', 'theme-editor.php');
+	remove_menu_page('edit.php?post_type=dev_actor');
+	remove_menu_page('edit.php?post_type=dev_requirement');
+	remove_menu_page('edit.php?post_type=dev_brief');
 	remove_menu_page('edit-comments.php');
 	if (current_user_can('administrator')) return;
 	remove_menu_page('edit.php?post_type=acf-field-group');
@@ -127,6 +130,37 @@ add_action('init', function(){
         'public' => FALSE,
 		'show_ui' => TRUE
     ));
+	// Dev
+	register_post_type('dev_actor',array(
+        'labels' => array(
+            'name' => __('D:Actors'),
+            'singular_name' => __('D:Actor')
+        ),
+		'menu_icon' => 'dashicons-admin-tools',
+		'rewrite' => FALSE,
+        'public' => FALSE,
+		'show_ui' => TRUE
+    ));
+	register_post_type('dev_requirement',array(
+        'labels' => array(
+            'name' => __('D:Requirements'),
+            'singular_name' => __('D:Requirement')
+        ),
+		'menu_icon' => 'dashicons-admin-tools',
+		'rewrite' => FALSE,
+        'public' => FALSE,
+		'show_ui' => TRUE
+    ));
+	register_post_type('dev_brief',array(
+        'labels' => array(
+            'name' => __('D:Briefs'),
+            'singular_name' => __('D:Brief')
+        ),
+		'menu_icon' => 'dashicons-admin-tools',
+		'rewrite' => FALSE,
+        'public' => FALSE,
+		'show_ui' => TRUE
+    ));
 	// Menus
 	register_nav_menus(array(
 		'main' => 'Main',
@@ -147,6 +181,12 @@ add_filter('user_can_richedit', function($default) {
 // Force fields on all pages (posts)
 add_action('edit_form_after_title', function(){
 	add_post_type_support('page', 'editor');
+});
+
+// Force english admin panels
+add_action('locale', function($locale){
+	if (is_admin()) return 'en_US';
+	return $locale;
 });
 
 // ---
