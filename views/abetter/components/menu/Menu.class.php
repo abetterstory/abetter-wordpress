@@ -40,6 +40,9 @@ class Menu extends BaseComponent {
 		$this->main = new WordpressMenu('Main');
 		$this->main_items = $this->main->items;
 
+		$this->language = new WordpressMenu('Language');
+		$this->language_items = $this->language->items;
+
 		// ---
 
 		foreach ($this->main_items AS &$item) {
@@ -48,6 +51,15 @@ class Menu extends BaseComponent {
 				$item->style = preg_replace('/fa[^ ]*/',"",$item->style);
 			}
 		}
+		unset($item);
+
+		foreach ($this->language_items AS &$item) {
+			if (preg_match('/is-icon/',$item->style)) {
+				$item->icon = $item->style;
+				$item->style = preg_replace('/fa[^ ]*/',"",$item->style);
+			}
+		}
+		unset($item);
 
 	}
 

@@ -187,9 +187,9 @@
 		li.front {
 			display: none;
 		}
-		li.is-icon a {
+		li.is-icon > a {
 			padding-right: 4px;
-			.menu-item-label {
+			> .menu-item-label {
 				display: none;
 			}
 		}
@@ -200,8 +200,11 @@
 
 	ul.language {
 		flex-grow: 0;
-		span {
-			display: none;
+		li.is-icon > a {
+			padding-right: 4px;
+			> .menu-item-label {
+				display: none;
+			}
 		}
 	}
 
