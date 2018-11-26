@@ -113,15 +113,17 @@ class Menu {
 		$item->page_id = $item->page->ID;
 		$item->page_status = $item->page->post_status;
 		$item->title = (string) self::getTitle($item->page);
+		$item->label = (string) (!empty($term->post_title)) ? htmlspecialchars_decode($term->post_title) : $item->title;
 		$item->url = ($term->type == 'custom') ? (string) $term->url : (string) self::getUrl($item->page);
-		$item->label = (string) htmlspecialchars_decode($term->title);
 		$item->description = (string) $term->description;
 		$item->order = (int) $term->menu_order;
 		$item->target = (string) $term->target;
 		$item->parent = (int) $term->menu_item_parent;
 		$item->style = (string) implode($term->classes," ");
 		$item->current = (string) _is_current($item->url,'current');
-		$item->front = (string) _is_front($item->url,'front');
+		$item->front = Post::isFront($item->page_id);
+		$item->language = Post::getLanguage($item->page_id);
+		$item->translations = Post::getTranslations($item->page_id);
 		$item->items = array();
 		return $item;
 	}
@@ -157,6 +159,7 @@ class Menu {
 				$page = get_page_by_path($page);
 			}
 		}
+		$page = self::translatePage($page);
 		return $page;
 	}
 
@@ -173,6 +176,17 @@ class Menu {
 	public static function getTitle($page=NULL) {
 		$page = self::getPage($page);
 		return (isset($page->post_title)) ? $page->post_title : "";
+	}
+
+	// ---
+
+	public static function translatePage($page,$language=NULL,$fallback=TRUE) {
+		if (($request = Post::getRequestLanguage($page->ID)) != ($current = Post::getLanguage($page->ID))) {
+			if ($id = Post::getTranslation($page->ID,$request)) {
+				$page = get_post($id);
+			}
+		}
+		return $page;
 	}
 
 	// ---

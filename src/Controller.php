@@ -10,10 +10,11 @@ use Closure;
 
 class Controller extends BaseController {
 
-	public $args = array();
+	public $args = [];
 	public $slug = '';
-	public $languages = array();
+	public $languages = [];
 	public $language = '';
+	public $language_default = '';
 	public $suggestions = [];
 	public $template = '';
 	public $post = NULL;
@@ -40,30 +41,49 @@ class Controller extends BaseController {
 	// ---
 
 	public function getDefaultLanguage() {
+		if (!empty($this->language_default)) return $this->language_default;
+		if (function_exists('icl_object_id')) {
+			global $sitepress;
+			return $sitepress->get_default_language();
+		}
 		return strtolower(strtok(get_bloginfo('language'),'-'));
 	}
 
 	public function getAvailableLanguages() {
-		$this->languages = array($this->getDefaultLanguage());
-		//$this->languages[] = 'se';
+		if (!empty($this->languages)) return $this->languages;
+		if (function_exists('icl_get_languages')) {
+			$this->languages = ($l = icl_get_languages()) ? array_keys($l) : [];
+		} else {
+			$this->languages = array($this->getDefaultLanguage());
+		}
 		$this->languages = array_unique($this->languages);
 		return $this->languages;
 	}
 
 	public function getRequestLanguage() {
-		$this->language = (!empty($this->args[0]) && in_array($this->args[0],$this->getAvailableLanguages())) ? $this->args[0] : '';
-		if ($this->language) array_splice($this->args, 0, 1);
+		if (!empty($this->language)) return $this->language;
+		if (defined('ICL_LANGUAGE_CODE')) {
+			$this->language = ICL_LANGUAGE_CODE;
+		} else {
+			$this->language = (!empty($this->args[0]) && in_array($this->args[0],$this->getAvailableLanguages())) ? $this->args[0] : '';
+		}
 		return $this->language;
 	}
 
 	public function getRequestSlug() {
-		return (!empty($this->args)) ? $this->args[count($this->args)-1] : '';
+		$slug = (!empty($this->args)) ? $this->args[count($this->args)-1] : '';
+		if ($this->language != $this->language_default) {
+			$slug = preg_replace('/^'.$this->language.'\//','/',$slug);
+		}
+		return $slug;
 	}
 
 	// ---
 
 	public function isFront() {
-		return (empty($this->args) || empty($this->args[0])) ? TRUE : FALSE;
+		if (empty($this->args) || empty($this->args[0])) return TRUE;
+		if (in_array($this->slug,$this->getAvailableLanguages())) return TRUE;
+		return FALSE;
 	}
 
 	public function isPosts() {
@@ -114,7 +134,9 @@ class Controller extends BaseController {
 	public function handle() {
 		$this->args = func_get_args();
 		$this->user = $this->getUser();
+		$this->languages = $this->getAvailableLanguages();
 		$this->language = $this->getRequestLanguage();
+		$this->language_default = $this->getDefaultLanguage();
 		$this->slug = $this->getRequestSlug();
 		$this->post = $this->getPost();
 		$this->suggestions = $this->getPostTemplateSuggestions();

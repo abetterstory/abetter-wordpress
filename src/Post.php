@@ -10,6 +10,11 @@ class Post extends Model {
 	public static $error;
 	public static $posttypes;
 
+	public static $languages;
+	public static $language;
+	public static $language_default;
+	public static $language_request;
+
 	// --- Constructor
 
 	public function __construct(array $attributes = []) {
@@ -61,6 +66,65 @@ class Post extends Model {
 		if (isset(self::$posttypes)) return self::$posttypes;
 		self::$posttypes = array_merge(['page','post'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
 		return self::$posttypes;
+	}
+
+	// ---
+
+	public static function getDefaultLanguage() {
+		if (!empty(self::$language_default)) return self::$language_default;
+		if (function_exists('icl_object_id')) {
+			global $sitepress;
+			self::$language_default = $sitepress->get_default_language();
+		} else {
+			self::$language_default = strtolower(strtok(get_bloginfo('language'),'-'));
+		}
+	}
+
+	public static function getRequestLanguage() {
+		if (!empty(self::$language_request)) return self::$language_request;
+		if (defined('ICL_LANGUAGE_CODE')) {
+			self::$language_request = ICL_LANGUAGE_CODE;
+		} else {
+			self::$language_request = self::getDefaultLanguage();
+		}
+		return self::$language_request;
+	}
+
+	// ---
+
+	public static function getLanguage($post) {
+		$language = self::getDefaultLanguage();
+ 		if (function_exists('icl_object_id')) {
+			$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
+ 			$language = ($lc = $GLOBALS['wpdb']->get_var('SELECT language_code FROM wp_icl_translations WHERE element_id = "'.$id.'"')) ? $lc : $language;
+ 		}
+		return $language;
+	}
+
+	public static function getTranslations($post) {
+		$translations = [];
+ 		if (function_exists('icl_object_id')) {
+			$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
+ 			$results = ($tr = $GLOBALS['wpdb']->get_results('SELECT language_code,element_id FROM wp_icl_translations WHERE trid = "'.$id.'"',ARRAY_N)) ? $tr : $translations;
+			foreach ($results AS $row) $translations[(string)$row[0]] = (integer)$row[1];
+ 		}
+		return $translations;
+	}
+
+	public static function getTranslation($post,$language) {
+		if (!$translations = self::getTranslations($post)) return NULL;
+		foreach ($translations AS $lc => $id) {
+			if ($lc == $language) return $id;
+		}
+		return NULL;
+	}
+
+	// ---
+
+	public static function isFront($post,$true='front',$false='') {
+		$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
+		if (($front = get_option('page_on_front')) && $front == $id) return $true;
+		return $false;
 	}
 
 	// ---

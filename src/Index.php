@@ -24,7 +24,7 @@ class Index {
 
 		Controller::loadWp();
 
-		self::$posts = get_posts(['post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC']);
+		self::$posts = get_posts(['post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC', 'suppress_filters' => FALSE]);
 		self::$index = [];
 		self::$cleanup = [];
 
@@ -42,10 +42,14 @@ class Index {
 			$item->selector = "wp-{$post->post_type}-{$item->id}";
 			$item->preview = _relative(get_permalink($post));
 			$item->current = (string) _is_current($item->url,'current');
-			$item->front = (string) _is_front($item->url,'front');
+			$item->front = Post::isFront($post->ID);
+			$item->language = Post::getLanguage($post->ID);
+			$item->translations = Post::getTranslations($post->ID);
 			$item->items = array();
 			self::$index[$item->id] = $item;
 		}
+
+		//clock('build',self::$index);
 
 		// Pass 2 : Hierarchy
 		foreach (self::$index AS $item) {
