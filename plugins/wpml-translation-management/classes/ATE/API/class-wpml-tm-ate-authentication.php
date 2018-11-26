@@ -35,7 +35,7 @@ class WPML_TM_ATE_Authentication {
 			$body_md5 = null;
 
 			if ( $params && 'get' !== $verb ) {
-				$body_md5              = md5( wp_json_encode( $params ) );
+				$body_md5              = md5( wp_json_encode( $params, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ) );
 				$query_to_sign['body'] = $body_md5;
 			}
 

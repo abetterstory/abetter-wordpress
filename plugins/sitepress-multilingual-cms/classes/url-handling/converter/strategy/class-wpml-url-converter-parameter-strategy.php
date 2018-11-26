@@ -26,6 +26,10 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 		return $this->slash_helper->maybe_user_trailingslashit( $converted_url, 'trailingslashit' );
 	}
 
+	public function convert_admin_url_string( $source_url, $lang ) {
+		return $this->convert_url_string( $source_url, $lang );
+	}
+
 	/**
 	 * @param array $url_parts
 	 *

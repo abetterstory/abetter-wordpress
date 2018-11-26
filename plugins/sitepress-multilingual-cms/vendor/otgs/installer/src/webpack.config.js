@@ -47,7 +47,7 @@ const ui = (env) => {
 		plugins: [
 			new ExtractTextPlugin(path.join('css', 'ui', 'styles.css')),
 		],
-		devtool: isProduction ? 'source-map' : 'inline-source-map',
+		devtool: isProduction ? '' : 'inline-source-map',
 	};
 };
 

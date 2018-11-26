@@ -59,6 +59,9 @@ var WPML_TM = WPML_TM || {};
 			}
 
 			_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self, self.translationCompleteCheckbox.is( ':checked' )), 1000);
+
+			_.delay(_.bind(self.setInputStatus, self, 1000 ) );
+
 		},
 
 		getTextAreaElement: function () {
@@ -129,7 +132,20 @@ var WPML_TM = WPML_TM || {};
 
 			body.css( 'background-color', '#eee' );
 			sizer.css( 'background-color', '#eee' );
+		},
+		setTranslatedColor: function ( css ) {
+			var input = this.$el.find( '.translated_value' ),
+				html  = input.find( 'iframe' ).contents().find( 'html' ),
+				body  = html.find( 'body' ),
+				sizer = input.find( '.mce-statusbar' ).find( '.mce-flow-layout' ),
+				textArea = input.find( '.translated_value' );
+
+			body.css( 'background-color', css.background );
+			sizer.css( 'background-color', css.background );
+			textArea.css( 'background-color', css.background );
+
 		}
+
 
 	});
 }());

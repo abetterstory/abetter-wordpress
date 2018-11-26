@@ -48,6 +48,15 @@ class WPML_URL_Converter_Domain_Strategy extends WPML_URL_Converter_Abstract_Str
 			return $original_source_url;
 		}
 
+		return $this->convert_url( $source_url, $lang );
+	}
+
+	public function convert_admin_url_string( $source_url, $lang ) {
+		return $this->convert_url( $source_url, $lang );
+	}
+
+	private function convert_url( $source_url, $lang ) {
+
 		$base_url = isset( $this->domains[ $lang ] ) ? $this->domains[ $lang ] : $this->get_url_helper()->get_abs_home();
 
 		$base_url_parts = $this->parse_domain_and_subdir( $base_url );

@@ -51,7 +51,7 @@ class WPML_Slug_Translation implements IWPML_Action {
 
 		if ( $this->slug_translation_settings->is_enabled() ) {
 			add_filter( 'option_rewrite_rules', array( $this, 'rewrite_rules_filter' ), 1, 1 ); // high priority
-			add_filter( 'post_type_link', array( $this, 'post_type_link_filter' ), 1, 4 ); // high priority
+			add_filter( 'post_type_link', array( $this, 'post_type_link_filter' ), apply_filters( 'wpml_post_type_link_priority', 1 ), 4 );
 			add_filter( 'pre_term_link', array( $this->term_link_filter, 'replace_slug_in_termlink' ), 1, 2 ); // high priority
 			add_filter( 'edit_post', array( $this, 'clear_post_link_cache' ), 1, 2 );
 			add_filter( 'query_vars', array( $this, 'add_cpt_names' ), 1, 2 );

@@ -358,18 +358,18 @@ msgctxt "2/2 Confirm to disconnect duplicates"
 msgid "These items will be automatically disconnected from originals, so translation is not lost when you update the originals."
 msgstr ""
 
-# $response->call_to_action = '<strong>' . sprintf(
+# $response->call_to_action = sprintf(
 # __(
-# 'You have sent items to %s. Please check if additional steps are required on their end.',
+# 'You\'ve sent the content for translation to %s. Please continue to their site, to make sure that the translation starts.',
 
-msgid "You have sent items to %s. Please check if additional steps are required on their end."
+msgid "You've sent the content for translation to %s. Please continue to their site, to make sure that the translation starts."
 msgstr ""
 
-# $response->ts_batch_link = '<a href="' . $batch_url . '" class="wpml-external-link" target="_blank">' .
-# __( 'Check the batch status on the translation service', 'wpml-translation-management' ) . '</a>';
-#
+# 'href' => $batch_url,
+# 'text' => sprintf( __( 'Continue to %s', 'wpml-translation-management' ),
+# $this->project->current_service_name()
 
-msgid "Check the batch status on the translation service"
+msgid "Continue to %s"
 msgstr ""
 
 # if ( ! $basket ) {
@@ -590,14 +590,14 @@ msgid "Translation Dashboard"
 msgstr ""
 
 # echo sprintf(
-# esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ), '<a href="#" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>' )
+# esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ), '<a href="https://wpml.org/documentation/translating-your-contents/using-the-translation-editor/?utm_source=wpmlplugin&utm_campaign=content-translation&utm_medium=translation-dashboard&utm_term=how-to-send-content-to-translation#how-to-send-content-to-translation" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>' )
 # ?></p>
 
 msgid "To see more items, use the filter and narrow down the search. %s"
 msgstr ""
 
 # echo sprintf(
-# esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ), '<a href="#" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>' )
+# esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ), '<a href="https://wpml.org/documentation/translating-your-contents/using-the-translation-editor/?utm_source=wpmlplugin&utm_campaign=content-translation&utm_medium=translation-dashboard&utm_term=how-to-send-content-to-translation#how-to-send-content-to-translation" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>' )
 # ?></p>
 
 msgid "Help"
@@ -3015,13 +3015,13 @@ msgstr ""
 
 # echo '<div class="notice notice-info">
 # <p>' . esc_html__( 'This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
-# <p><a href="#" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
+# <p><a href="https://wpml.org/documentation/translating-your-contents/translating-gutenberg-content-with-wpml/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-gutenberg-content-with-wpml" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
 
 msgid "This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken."
 msgstr ""
 
 # <p>' . esc_html__( 'This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
-# <p><a href="#" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
+# <p><a href="https://wpml.org/documentation/translating-your-contents/translating-gutenberg-content-with-wpml/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-gutenberg-content-with-wpml" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
 # </div>';
 
 msgid "Learn how to translate content that comes from Gutenberg"
@@ -4153,115 +4153,143 @@ msgid "Yes, Show me the available translation services"
 msgstr ""
 
 # $this->model['strings'] = array(
-# 'title'        => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
-# 'summary'      => __( 'WPML offers two kinds of translation editors for you to choose from. The classic editor is always free (included with WPML) and offers basic editing features. Our Advanced Translation Editor allows your translators to work much faster and more accurately.',
+# 'title'          => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
+# 'summary'        => __( 'Quick Demo', 'wpml-translation-management' ),
 
 msgid "Choose Your Translation Editor"
 msgstr ""
 
-# 'title'        => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
-# 'summary'      => __( 'WPML offers two kinds of translation editors for you to choose from. The classic editor is always free (included with WPML) and offers basic editing features. Our Advanced Translation Editor allows your translators to work much faster and more accurately.',
-# 'wpml-translation-management' ),
+# 'title'          => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
+# 'summary'        => __( 'Quick Demo', 'wpml-translation-management' ),
+# 'quick_demo_url' => 'https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/?utm_source=wpmlplugin&utm_campaign=tm-setup-wizard&utm_medium=quick-demo-link&utm_term=advanced-translation-editor#see-how-it-works',
 
-msgid "WPML offers two kinds of translation editors for you to choose from. The classic editor is always free (included with WPML) and offers basic editing features. Our Advanced Translation Editor allows your translators to work much faster and more accurately."
+msgid "Quick Demo"
 msgstr ""
 
-# 'options'      => array(
-# 'classic' => array('heading' => __( 'WPML’s Classic Translation Editor', 'wpml-translation-management' ),),
-# 'ate'     => array('heading' => __( 'WPML’s Advanced Translation Editor', 'wpml-translation-management'), ),
+# 'classic' => array(
+# 'heading'    => __( 'Classic Translation Editor', 'wpml-translation-management' ),
+# 'subheading' => __( 'Great for smaller sites', 'wpml-translation-management' ),
 
-msgid "WPML’s Classic Translation Editor"
+msgid "Classic Translation Editor"
 msgstr ""
 
-# 'classic' => array('heading' => __( 'WPML’s Classic Translation Editor', 'wpml-translation-management' ),),
-# 'ate'     => array('heading' => __( 'WPML’s Advanced Translation Editor', 'wpml-translation-management'), ),
-# ),
+# 'heading'    => __( 'Classic Translation Editor', 'wpml-translation-management' ),
+# 'subheading' => __( 'Great for smaller sites', 'wpml-translation-management' ),
+#
 
-msgid "WPML’s Advanced Translation Editor"
+msgid "Great for smaller sites"
 msgstr ""
 
-# ),
-# 'feature_1'    => __( 'Support for all content types', 'wpml-translation-management' ),
-# 'feature_2'    => __( 'Spell checker', 'wpml-translation-management' ),
+# 'ate'     => array(
+# 'heading'        => __( 'Advanced Translation Editor', 'wpml-translation-management' ),
+# 'subheading'     => __( 'Ideal for commercial sites', 'wpml-translation-management' ),
+
+msgid "Advanced Translation Editor"
+msgstr ""
+
+# 'heading'        => __( 'Advanced Translation Editor', 'wpml-translation-management' ),
+# 'subheading'     => __( 'Ideal for commercial sites', 'wpml-translation-management' ),
+# 'extra_template' => array(
+
+msgid "Ideal for commercial sites"
+msgstr ""
+
+# array(
+# 'label'   => __( 'Support for all content types', 'wpml-translation-management' ),
+# 'classic' => true,
 
 msgid "Support for all content types"
 msgstr ""
 
-# 'feature_1'    => __( 'Support for all content types', 'wpml-translation-management' ),
-# 'feature_2'    => __( 'Spell checker', 'wpml-translation-management' ),
-# 'feature_3'    => __( 'Translation Memory', 'wpml-translation-management' ),
+# array(
+# 'label'   => __( 'Spell checker', 'wpml-translation-management' ),
+# 'classic' => false,
 
 msgid "Spell checker"
 msgstr ""
 
-# 'feature_2'    => __( 'Spell checker', 'wpml-translation-management' ),
-# 'feature_3'    => __( 'Translation Memory', 'wpml-translation-management' ),
-# 'feature_4'    => __( 'Machine Translation', 'wpml-translation-management' ),
+# array(
+# 'label'   => __( 'Translation Memory', 'wpml-translation-management' ),
+# 'classic' => false,
 
 msgid "Translation Memory"
 msgstr ""
 
-# 'feature_3'    => __( 'Translation Memory', 'wpml-translation-management' ),
-# 'feature_4'    => __( 'Machine Translation', 'wpml-translation-management' ),
-# 'feature_5'    => __( 'Translator preview', 'wpml-translation-management' ),
+# array(
+# 'label'   => __( 'Machine Translation', 'wpml-translation-management' ),
+# 'classic' => false,
 
 msgid "Machine Translation"
 msgstr ""
 
-# 'feature_4'    => __( 'Machine Translation', 'wpml-translation-management' ),
-# 'feature_5'    => __( 'Translator preview', 'wpml-translation-management' ),
-# 'feature_6'    => __( 'Cost', 'wpml-translation-management' ),
+# array(
+# 'label'   => __( 'HTML-free editing', 'wpml-translation-management' ),
+# 'classic' => false,
+
+msgid "HTML-free editing"
+msgstr ""
+
+# array(
+# 'label'   => __( 'Translator preview', 'wpml-translation-management' ),
+# 'classic' => false,
 
 msgid "Translator preview"
 msgstr ""
 
-# 'feature_5'    => __( 'Translator preview', 'wpml-translation-management' ),
-# 'feature_6'    => __( 'Cost', 'wpml-translation-management' ),
-# 'classic_cost' => __( 'Included in WPML', 'wpml-translation-management' ),
+# array(
+# 'label'   => __( 'Cost', 'wpml-translation-management' ),
+# 'classic' => __( 'Included in WPML', 'wpml-translation-management' ),
 
 msgid "Cost"
 msgstr ""
 
-# 'feature_6'    => __( 'Cost', 'wpml-translation-management' ),
-# 'classic_cost' => __( 'Included in WPML', 'wpml-translation-management' ),
-# 'ate_cost_1'   => __( '$8 / month / translator', 'wpml-translation-management' ),
+# 'label'   => __( 'Cost', 'wpml-translation-management' ),
+# 'classic' => __( 'Included in WPML', 'wpml-translation-management' ),
+# 'ate'     => __( 'Free during the beta period', 'wpml-translation-management' ),
 
 msgid "Included in WPML"
 msgstr ""
 
-# 'classic_cost' => __( 'Included in WPML', 'wpml-translation-management' ),
-# 'ate_cost_1'   => __( '$8 / month / translator', 'wpml-translation-management' ),
-# 'ate_cost_2'   => __( 'Free during the beta period', 'wpml-translation-management' ),
-
-msgid "$8 / month / translator"
-msgstr ""
-
-# 'ate_cost_1'   => __( '$8 / month / translator', 'wpml-translation-management' ),
-# 'ate_cost_2'   => __( 'Free during the beta period', 'wpml-translation-management' ),
-# 'select'       => __( 'Select', 'wpml-translation-management' ),
+# 'classic' => __( 'Included in WPML', 'wpml-translation-management' ),
+# 'ate'     => __( 'Free during the beta period', 'wpml-translation-management' ),
+# ),
 
 msgid "Free during the beta period"
 msgstr ""
 
-# 'ate_cost_2'   => __( 'Free during the beta period', 'wpml-translation-management' ),
-# 'select'       => __( 'Select', 'wpml-translation-management' ),
-# 'continue'     => __( 'Continue', 'wpml-translation-management' ),
+# 'type'  => 'text',
+# 'value' => __( '* The Advanced Translation Editor is free now. When it goes out of beta, it will cost a small fee per user.' ),
+# ),
+
+msgid "* The Advanced Translation Editor is free now. When it goes out of beta, it will cost a small fee per user."
+msgstr ""
+
+# 'type'     => 'link',
+# 'value'    => __( 'Pricing information', 'wpml-translation-management' ),
+# 'url'      => 'https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/?utm_source=wpmlplugin&utm_campaign=tm-setup-wizard&utm_medium=pricing-information-link&utm_term=advanced-translation-editor#how-much-does-it-cost',
+
+msgid "Pricing information"
+msgstr ""
+
+# 'type'  => 'text',
+# 'value' => __( '* WPML’s Advanced Translation Editor has no lock-in. Content that you translate with it, you can continue editing with the Translation Editor.', 'wpml-translation-management' ),
+# ),
+
+msgid "* WPML’s Advanced Translation Editor has no lock-in. Content that you translate with it, you can continue editing with the Translation Editor."
+msgstr ""
+
+#
+# 'select'   => __( 'Select', 'wpml-translation-management' ),
+# 'continue' => __( 'Continue', 'wpml-translation-management' ),
 
 msgid "Select"
 msgstr ""
 
-# 'continue'     => __( 'Continue', 'wpml-translation-management' ),
-# 'go_back'      => __( 'Back to adding translators', 'wpml-translation-management' ),
-# 'after_table'  => __( '* You can always switch between the Classic and Advanced translation editors later.', 'wpml-translation-management' ),
+# 'continue' => __( 'Continue', 'wpml-translation-management' ),
+# 'go_back'  => __( 'Back to adding translators', 'wpml-translation-management' ),
+#
 
 msgid "Back to adding translators"
-msgstr ""
-
-# 'go_back'      => __( 'Back to adding translators', 'wpml-translation-management' ),
-# 'after_table'  => __( '* You can always switch between the Classic and Advanced translation editors later.', 'wpml-translation-management' ),
-# 'ate'          => $this->mscs_ate->get_model(),
-
-msgid "* You can always switch between the Classic and Advanced translation editors later."
 msgstr ""
 
 # $this->model['strings'] = array(
@@ -4469,19 +4497,19 @@ msgstr ""
 
 # 'title'          => __( 'WPML cannot send some of the content to translation', 'wpml-translation-management' ),
 # 'message'        => __( 'Some of the content that you selected for translation includes fields that are encoded. Translators will not be able to work on this kind of content, so we removed it from the job.', 'wpml-translation-management' ),
-# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending to translation.', 'wpml-translation-management' ),
+# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending for translation.', 'wpml-translation-management' ),
 
 msgid "Some of the content that you selected for translation includes fields that are encoded. Translators will not be able to work on this kind of content, so we removed it from the job."
 msgstr ""
 
 # 'message'        => __( 'Some of the content that you selected for translation includes fields that are encoded. Translators will not be able to work on this kind of content, so we removed it from the job.', 'wpml-translation-management' ),
-# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending to translation.', 'wpml-translation-management' ),
+# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending for translation.', 'wpml-translation-management' ),
 # 'show_fields'    => __( 'show fields', 'wpml-translation-management' ),
 
-msgid "To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending to translation."
+msgid "To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending for translation."
 msgstr ""
 
-# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending to translation.', 'wpml-translation-management' ),
+# 'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending for translation.', 'wpml-translation-management' ),
 # 'show_fields'    => __( 'show fields', 'wpml-translation-management' ),
 # 'documentation'  => array(
 
@@ -4489,17 +4517,24 @@ msgid "show fields"
 msgstr ""
 
 # return array(
-# 'title'               => __( 'Sending to translation', 'wpml-translation-management' ),
-# 'sent_to_translation' => __( 'Items sent to translation!', 'wpml-translation-management' ),
+# 'title'               => __( 'Sending for translation', 'wpml-translation-management' ),
+# 'sent_to_translation' => __( 'Items sent for translation!', 'wpml-translation-management' ),
 
-msgid "Sending to translation"
+msgid "Sending for translation"
 msgstr ""
 
-# 'title'               => __( 'Sending to translation', 'wpml-translation-management' ),
-# 'sent_to_translation' => __( 'Items sent to translation!', 'wpml-translation-management' ),
-# 'button_done'         => __( 'Done!', 'wpml-translation-management' ),
+# 'title'               => __( 'Sending for translation', 'wpml-translation-management' ),
+# 'sent_to_translation' => __( 'Items sent for translation!', 'wpml-translation-management' ),
+# 'button_done'         => __( 'Done', 'wpml-translation-management' ),
 
-msgid "Items sent to translation!"
+msgid "Items sent for translation!"
+msgstr ""
+
+# 'sent_to_translation' => __( 'Items sent for translation!', 'wpml-translation-management' ),
+# 'button_done'         => __( 'Done', 'wpml-translation-management' ),
+# );
+
+msgid "Done"
 msgstr ""
 
 # $wcml_link = '<a href="https://wordpress.org/plugins/woocommerce-multilingual" target="_blank">WooCommerce Multilingual.</a>';
@@ -4741,13 +4776,6 @@ msgstr ""
 # <?php
 
 msgid "WPML Translation Management is enabled but not effective. It requires %s in order to work."
-msgstr ""
-
-# 'strings' => array(
-# 'done' => __( 'Done', 'wpml-translation-management' ),
-# 'header' => sprintf(__('%s requires additional data', 'wpml-translation-management'), $service_name),
-
-msgid "Done"
 msgstr ""
 
 # 'done' => __( 'Done', 'wpml-translation-management' ),

@@ -17,7 +17,7 @@ function icl_st_init(){
         exit;
     }
 
-    if(isset($_GET['icl_action']) && $_GET['icl_action'] == 'view_string_in_source'){
+    if ( isset( $_GET['icl_action'], $_GET['nonce'] ) && $_GET['icl_action'] == 'view_string_in_source' && wp_verify_nonce( $_GET['nonce'], 'view_string_in_source' ) ) {
         icl_st_string_in_source($_GET['string_id']);
         exit;
     }

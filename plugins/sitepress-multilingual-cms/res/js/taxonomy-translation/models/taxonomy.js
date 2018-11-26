@@ -66,11 +66,14 @@
 						self.set('bottomContent', response.bottomContent);
 					}
 
+					TaxonomyTranslation.data.resultsTruncated = response.resultsTruncated;
+
 					if (termsData) {
 						self.processData(termsData);
 					} else {
 						self.trigger('newTaxonomySet');
 					}
+
 				}
 			});
 		},

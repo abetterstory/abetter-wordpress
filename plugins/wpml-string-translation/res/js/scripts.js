@@ -83,6 +83,7 @@ function icl_st_toggler(){
     jQuery(".icl-st-inline").slideUp();
     var inl = jQuery(this).parent().next().next();
     if(inl.css('display') == 'none'){
+		inl.trigger('wpml-open-string-translations', inl);
         inl.slideDown();            
     }else{
         inl.slideUp();            
@@ -177,36 +178,45 @@ function icl_st_filter_search_remove(){
 }
 
 function icl_st_delete_selected() {
-	var postVars;
-	var delids;
-	var proceed;
-	var confirmMessage;
-	var checkedRows = jQuery('.icl_st_row_cb:checked');
-	if (checkedRows.length) {
-		confirmMessage = jQuery(this).data('confirm');
-		proceed = confirm(confirmMessage);
+    var postVars;
+    var delids;
+    var proceed;
+    var confirmMessage;
+    var errorMessage;
+    var checkedRows = jQuery('.icl_st_row_cb:checked');
+    if (checkedRows.length) {
+        confirmMessage = jQuery(this).data('confirm');
+        errorMessage = jQuery(this).data('error');
+        proceed = confirm(confirmMessage);
 
-		if(proceed) {
-			delids = [];
-			checkedRows.each(function () {
-				var item = jQuery(this).val();
-				delids.push(item);
-				jQuery(this).trigger('click');
-			});
-			if (delids) {
-				postVars = 'icl_ajx_action=icl_st_delete_strings&value=' + delids.join(',') + '&_icl_nonce=' + jQuery('#_icl_nonce_dstr').val();
-				jQuery.post(icl_ajx_url, postVars, function () {
-					var i = 0;
-					for (; i < delids.length; i++) {
-						jQuery('.icl_st_row_cb[value="' + delids[i] + '"]').parent().parent().fadeOut('fast', function () {
-							jQuery(this).remove();
-						});
-					}
-				});
-			}
-		}
-	}
-	return false;
+        if (proceed) {
+            delids = [];
+            checkedRows.each(function () {
+                var item = jQuery(this).val();
+                delids.push(item);
+                jQuery(this).trigger('click');
+            });
+            if (delids) {
+                postVars = 'icl_ajx_action=icl_st_delete_strings&value=' + delids.join(',') + '&_icl_nonce=' + jQuery('#_icl_nonce_dstr').val();
+                jQuery.post(icl_ajx_url, postVars, function () {
+                    var i = 0;
+                    for (; i < delids.length; i++) {
+                        jQuery('.icl_st_row_cb[value="' + delids[i] + '"]').parent().parent().fadeOut('fast', function () {
+                            jQuery(this).remove();
+                        });
+                    }
+                }).success(function (msg) {
+                    if ('1' !== msg) {
+                        alert(errorMessage);
+                    }
+                }).error(function () {
+                    alert(errorMessage);
+                });
+            }
+        }
+    }
+
+    return false;
 }
 
 function icl_st_send_strings(){

@@ -19,9 +19,9 @@ class WPML_Element_Sync_Settings_Factory {
 		global $sitepress;
 
 		if ( self::POST === $type ) {
-			$settings = $sitepress->get_setting( 'custom_posts_sync_option', array() );
+			$settings = $sitepress->get_setting( self::KEY_POST_SYNC_OPTION, array() );
 		} elseif ( self::TAX === $type ) {
-			$settings = $sitepress->get_setting( 'taxonomies_sync_option', array() );
+			$settings = $sitepress->get_setting( self::KEY_TAX_SYNC_OPTION, array() );
 		} else {
 			throw new Exception( 'Unknown element type.' );
 		}

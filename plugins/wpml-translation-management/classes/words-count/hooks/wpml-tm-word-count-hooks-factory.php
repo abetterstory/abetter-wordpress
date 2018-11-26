@@ -27,8 +27,12 @@ class WPML_TM_Word_Count_Hooks_Factory implements IWPML_Backend_Action_Loader, I
 	}
 
 	private function add_refresh_hooks() {
+		if ( $this->is_heartbeat_autosave() ) {
+			return;
+		}
+
 		$this->hooks['refresh'] = new WPML_TM_Word_Count_Refresh_Hooks(
-			new WPML_TM_Word_Count_Async_Refresh( $this->get_words_count_single_process_factory()->create() ),
+			$this->get_words_count_single_process_factory(),
 			$this->get_translation_element_factory(),
 			class_exists( 'WPML_ST_Package_Factory' ) ? new WPML_ST_Package_Factory() : null
 		);
@@ -110,5 +114,9 @@ class WPML_TM_Word_Count_Hooks_Factory implements IWPML_Backend_Action_Loader, I
 		global $sitepress;
 
 		return $sitepress;
+	}
+
+	private function is_heartbeat_autosave() {
+		return isset( $_POST['data']['wp_autosave'] );
 	}
 }

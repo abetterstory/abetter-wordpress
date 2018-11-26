@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464
+class ComposerStaticInita73796e2544f0225e9eb77289565f47b
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -130,6 +130,7 @@ class ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464
         'WPML_ST_Records' => __DIR__ . '/../..' . '/classes/records/class-wpml-st-records.php',
         'WPML_ST_Relative_Translation_Status' => __DIR__ . '/../..' . '/classes/string-translation-status/class-wpml-st-relative-translation-status.php',
         'WPML_ST_Remote_String_Translation_Factory' => __DIR__ . '/../..' . '/classes/actions/class-wpml-st-remote-string-translation-factory.php',
+        'WPML_ST_Repair_Strings_Schema' => __DIR__ . '/../..' . '/classes/upgrade/repair-schema/wpml-st-repair-strings-schema.php',
         'WPML_ST_Reset' => __DIR__ . '/../..' . '/classes/class-wpml-st-reset.php',
         'WPML_ST_Scan_Dir' => __DIR__ . '/../..' . '/classes/utilities/wpml-st-scan-dir.php',
         'WPML_ST_Settings' => __DIR__ . '/../..' . '/classes/class-wpml-st-settings.php',
@@ -185,6 +186,10 @@ class ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464
         'WPML_ST_Track_Strings_Notice' => __DIR__ . '/../..' . '/classes/notices/track-strings/wpml-st-track-strings-notice.php',
         'WPML_ST_Track_Strings_Notice_Hooks' => __DIR__ . '/../..' . '/classes/notices/track-strings/wpml-st-track-strings-notice-hooks.php',
         'WPML_ST_Track_Strings_Notice_Hooks_Factory' => __DIR__ . '/../..' . '/classes/notices/track-strings/wpml-st-track-strings-notice-hooks-factory.php',
+        'WPML_ST_Translation_Memory' => __DIR__ . '/../..' . '/classes/translation-memory/class-wpml-st-translation-memory.php',
+        'WPML_ST_Translation_Memory_Factory' => __DIR__ . '/../..' . '/classes/translation-memory/class-wpml-st-translation-memory-factory.php',
+        'WPML_ST_Translation_Memory_Records' => __DIR__ . '/../..' . '/classes/translation-memory/class-wpml-st-translation-memory-records.php',
+        'WPML_ST_Translation_Memory_Settings_UI' => __DIR__ . '/../..' . '/classes/translation-memory/class-wpml-st-translation-memory-settings-ui.php',
         'WPML_ST_Update_File_Hash_Ajax' => __DIR__ . '/../..' . '/classes/strings-scanning/class-wpml-st-update-file-hash-ajax.php',
         'WPML_ST_Update_File_Hash_Ajax_Factory' => __DIR__ . '/../..' . '/classes/strings-scanning/factory/class-st-update-file-hash-ajax-factory.php',
         'WPML_ST_Upgrade' => __DIR__ . '/../..' . '/classes/upgrade/class-wpml-st-upgrade.php',
@@ -232,8 +237,8 @@ class ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitbbcc42f15ca4c92840ff677d0fa51464::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInita73796e2544f0225e9eb77289565f47b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInita73796e2544f0225e9eb77289565f47b::$classMap;
 
         }, null, ClassLoader::class);
     }

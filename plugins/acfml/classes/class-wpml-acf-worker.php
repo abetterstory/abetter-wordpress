@@ -33,11 +33,7 @@ class WPML_ACF_Worker {
 
 		$meta_value_converted = $this->duplicate_post_meta($meta_value, $target_lang, $meta_data);
 
-		if ($meta_value_converted !== $meta_value) {
-			update_post_meta($post_id_to, $meta_key, $meta_value_converted, $meta_value);
-		}
-
-
+		update_post_meta($post_id_to, $meta_key, $meta_value_converted, $meta_value);
 
 	}
 	

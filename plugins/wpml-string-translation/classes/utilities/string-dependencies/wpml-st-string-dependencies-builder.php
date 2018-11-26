@@ -24,8 +24,13 @@ class WPML_ST_String_Dependencies_Builder {
 		$parent_id = $this->records->get_parent_id_from( $type, $id );
 
 		if ( $parent_id ) {
-			$parent = $this->from( $this->get_parent_type( $type ), $parent_id );
-			$parent->search( $id, $type )->set_needs_refresh( true );
+			$parent       = $this->from( $this->get_parent_type( $type ), $parent_id );
+			$initial_node = $parent->search( $id, $type );
+
+			if ( $initial_node ) {
+				$initial_node->set_needs_refresh( true );
+			}
+
 			return $parent;
 		}
 

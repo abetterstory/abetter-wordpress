@@ -6,10 +6,23 @@ class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 	/** @var  WPML_PB_Factory $factory */
 	private $factory;
 
+	/** @var WPML_Page_Builder_Settings $page_builder_settings */
+	private $page_builder_settings;
+
+	public function __construct( WPML_Page_Builder_Settings $page_builder_settings ) {
+		$this->page_builder_settings = $page_builder_settings;
+	}
+
 	public function add_shortcodes( $shortcode_data ) {
 
 		foreach ( $shortcode_data as $shortcode ) {
-			$tag = $shortcode['tag']['value'];
+			$tag         = $shortcode['tag']['value'];
+			$is_raw_html = isset( $shortcode['tag']['raw-html'] ) && $shortcode['tag']['raw-html'];
+
+			if ( $is_raw_html && ! $this->page_builder_settings->is_raw_html_translatable() ) {
+				continue;
+			}
+
 			if ( ! in_array( $tag, $this->shortcodes ) ) {
 				$this->shortcodes[ $tag ] = array(
 					'encoding'           => $shortcode['tag']['encoding'],

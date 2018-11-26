@@ -83,6 +83,7 @@
 				
 			self.headerTerms = labels.translate.replace( '%taxonomy%', taxonomySingularLabel );
 			self.summaryTerms = labels.summaryTerms.replace( '%taxonomy%', '<strong>' + taxonomyPluralLabel + '</strong>' );
+			self.resultsTruncated = labels.resultsTruncated.replace( '%taxonomy%', '<strong>' + taxonomyPluralLabel + '</strong>' );
 			self.labelSummary = labels.summaryLabels.replace( '%taxonomy%', '<strong>' + taxonomySingularLabel + '</strong>' );
 
 			return self;
@@ -131,6 +132,7 @@
 					taxonomy: taxonomy,
 					langs: TaxonomyTranslation.data.activeLanguages,
 					summaryTerms: self.summaryTerms,
+					resultsTruncated: self.resultsTruncated,
 					labelSummary: self.labelSummary,
 					mode: self.mode,
 					hasContent: hasContent,

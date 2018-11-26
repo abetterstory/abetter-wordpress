@@ -118,7 +118,7 @@ class WPML_TM_MCS_ATE_Strings {
 		     || $this->is_authenticated_user() ) {
 			$ate_console_link_text = __( 'Manage translator subscriptions', 'wpml-translation-management' );
 			$ate_console_link_url  = $this->get_auto_login();
-			$ate_console_link      = '<a class="wpml-external-link" href="'
+			$ate_console_link      = '<a class="wpml-external-link js-ate-console" href="'
 			                         . $ate_console_link_url
 			                         . '" target="_blank">'
 			                         . $ate_console_link_text
@@ -163,7 +163,8 @@ class WPML_TM_MCS_ATE_Strings {
 	}
 
 	/**
-	 * @param string     $attribute
+	 * @param string $status
+	 * @param string $attribute
 	 * @param null|mixed $default
 	 *
 	 * @return mixed

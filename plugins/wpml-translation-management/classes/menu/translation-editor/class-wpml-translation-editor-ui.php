@@ -46,8 +46,6 @@ class WPML_Translation_Editor_UI {
 		if ( $job_instance->get_translator_id() <= 0 ) {
 			$job_instance->assign_to( $sitepress->get_wp_api()->get_current_user_id() );
 		}
-		$job_instance->maybe_load_terms_from_post_into_job( $sitepress->get_setting( 'tm_block_retranslating_terms' ) );
-
 	}
 
 	function render() {
@@ -149,13 +147,14 @@ class WPML_Translation_Editor_UI {
 			true
 		);
 
-	  $this->fields             = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
-	  $this->fields             = $this->add_titles_and_adjust_styles( $this->fields );
-	  $this->fields             = $this->add_rtl_attributes( $this->fields );
-	  $model['fields']          = $this->fields;
-	  $model['layout']          = $this->job_layout->run( $model['fields'], $this->tm_instance );
-	  $model['rtl_original']    = $this->rtl_original;
-	  $model['rtl_translation'] = $this->rtl_translation;
+		$this->fields                = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
+		$this->fields                = $this->add_titles_and_adjust_styles( $this->fields );
+		$this->fields                = $this->add_rtl_attributes( $this->fields );
+		$model['fields']             = $this->fields;
+		$model['layout']             = $this->job_layout->run( $model['fields'], $this->tm_instance );
+		$model['rtl_original']       = $this->rtl_original;
+		$model['rtl_translation']    = $this->rtl_translation;
+		$model['translation_memory'] = (bool) $this->sitepress->get_setting( 'translation_memory', 1 );
 
 		$model = $this->filter_the_model( $model );
 		?>

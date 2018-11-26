@@ -13,31 +13,36 @@ include_once $plugin_path . '/includes/functions-core.php';
 include_once $plugin_path . '/includes/class-otgs-installer-subscription.php';
 include_once $plugin_path . '/includes/class-wp-installer.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/class-wp-installer-api.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-translation-service-info.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-installer-dependencies.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-wp-installer-channels.php';
+$installer_plugin_path = WP_Installer()->plugin_path();
 
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-php-functions.php';
+include_once $installer_plugin_path . '/includes/class-wp-installer-api.php';
+include_once $installer_plugin_path . '/includes/class-translation-service-info.php';
+include_once $installer_plugin_path . '/includes/class-installer-dependencies.php';
+include_once $installer_plugin_path . '/includes/class-wp-installer-channels.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-sender.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-storage.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-hooks.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-php-functions.php';
 
-include_once WP_Installer()->plugin_path() . '/templates/template-service/interface-iotgs-installer-template-service.php';
-include_once WP_Installer()->plugin_path() . '/templates/template-service/class-otgs-installer-twig-template-service.php';
-include_once WP_Installer()->plugin_path() . '/templates/template-service/class-otgs-installer-twig-template-service-loader.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-sender.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-storage.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-hooks.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-setting-resources.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-plugins-page-notice.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-setting-ajax.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-filename-hooks.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-icons.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-share-local-components-setting-hooks.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-factory.php';
+include_once $installer_plugin_path . '/templates/template-service/interface-iotgs-installer-template-service.php';
+include_once $installer_plugin_path . '/templates/template-service/class-otgs-installer-twig-template-service.php';
+include_once $installer_plugin_path . '/templates/template-service/class-otgs-installer-twig-template-service-loader.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/functions-templates.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-twig-autoloader.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-setting-resources.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugins-page-notice.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-setting-ajax.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-filename-hooks.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-icons.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-share-local-components-setting-hooks.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-factory.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin-factory.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin-finder.php';
+
+include_once $installer_plugin_path . '/includes/functions-templates.php';
+include_once $installer_plugin_path . '/includes/class-otgs-twig-autoloader.php';
 
 // Initialization
 WP_Installer();

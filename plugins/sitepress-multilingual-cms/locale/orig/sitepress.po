@@ -1329,6 +1329,27 @@ msgstr ""
 msgid "You must have a valid subscription in order to get upgrades or support for this plugin. %sPurchase a subscription or enter an existing site key%s."
 msgstr ""
 
+# 'strings'   => array(
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %s. For the %s, %s.', 'installer' ),
+# 'Toolset Views Lite', '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/advanced-sites-with-toolset-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+
+msgid "You are using the complementary %s. For the %s, %s."
+msgstr ""
+
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %s. For the %s, %s.', 'installer' ),
+# 'Toolset Views Lite', '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/advanced-sites-with-toolset-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+# ),
+
+msgid "complete set of features"
+msgstr ""
+
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %s. For the %s, %s.', 'installer' ),
+# 'Toolset Views Lite', '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/advanced-sites-with-toolset-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+# ),
+
+msgid "upgrade to Toolset"
+msgstr ""
+
 # $theme_repo_name = $this->installer_theme_get_repo_product_name( $frontend_tab_selected );;
 # $response['unregistered_messages'] = sprintf( __( 'To install and update %s, please %sregister%s %s for this site.', 'installer' ),
 # $theme_repo_name, '<a href="' . $registration_url . '">', '</a>', $theme_repo_name );
@@ -1378,6 +1399,13 @@ msgstr ""
 msgid "Return to the updates page"
 msgstr ""
 
+# 'strings'   => array(
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
+# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/advanced-sites-with-toolset-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+
+msgid "You are using the complementary %1$s. For the %2$s, %3$s."
+msgstr ""
+
 # $translation_array = array(
 # 'installing' => __( 'Installing %s', 'installer' ),
 # 'updating'   => __( 'Updating %s', 'installer' ),
@@ -1404,6 +1432,13 @@ msgstr ""
 # $this,
 
 msgid "Installer"
+msgstr ""
+
+# public function types_upgrade_link( $links ) {
+# $links[] = '<a style="color: #55AA55" target="_blank" href="'. esc_url( 'https://toolset.com/buy/?utm_source=typesplugin&utm_campaign=moving-types-to-toolset&utm_medium=plugins-page&utm_term=upgrade-link' ) .'">' . __( 'Upgrade', 'installer' ) . '</a>';
+# return $links;
+
+msgid "Upgrade"
 msgstr ""
 
 # public function plugins_action_links_registered( $links ) {
@@ -1516,6 +1551,13 @@ msgstr ""
 # '<a href="' . $this->menu_url() . '">', '</a>' );
 
 msgid "%sRenew here%s."
+msgstr ""
+
+# $ret     = false;
+# $message = sprintf( __( 'Connection failed! Please refresh the page and try again. (%s)', 'installer' ), '<i>' . $connection_error . '</i>' );
+# } else { //subscription not valid
+
+msgid "Connection failed! Please refresh the page and try again. (%s)"
 msgstr ""
 
 # $ret     = false;
@@ -3379,23 +3421,23 @@ msgstr ""
 msgid "All term names updated"
 msgstr ""
 
-# $update
-# ? __ ( 'Update %s translation', 'sitepress' )
-# : __ ( 'Edit the %s translation', 'sitepress' ),
+# if ( $update ) {
+# $text = __( 'Update %s translation', 'sitepress' );
+# } else {
 
 msgid "Update %s translation"
 msgstr ""
 
-# ? __ ( 'Update %s translation', 'sitepress' )
-# : __ ( 'Edit the %s translation', 'sitepress' ),
-# $this->active_langs[ $lang_code ][ 'display_name' ]
+# } else {
+# $text = __( 'Edit the %s translation', 'sitepress' );
+# }
 
 msgid "Edit the %s translation"
 msgstr ""
 
-# $text = sprintf (
-# __ ( 'Add translation to %s', 'sitepress' ),
-# $this->active_langs[ $lang_code ][ 'display_name' ]
+# 'add_translation.png',
+# sprintf( __( 'Add translation to %s', 'sitepress' ), $this->active_langs[ $lang_code ]['display_name'] ),
+# $link,
 
 msgid "Add translation to %s"
 msgstr ""
@@ -3940,7 +3982,7 @@ msgstr ""
 msgid "Show content in:"
 msgstr ""
 
-# <img class="icl_pop_info_but_close" align="right" src="<?php echo ICL_PLUGIN_URL . '/res/img/ico-close.png'?>" width="12" height="12" alt="x" />
+# <span class="icl_pop_info_but_close otgs-ico-close"></span>
 # <?php echo sprintf( __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to <a%s>your profile</a>.', 'sitepress' ), ' href="' . admin_url( 'profile.php' ) . '"' );?>
 # </div>
 
@@ -4491,6 +4533,41 @@ msgstr ""
 # } ?>
 
 msgid "duplicate"
+msgstr ""
+
+# private function media_options( $post ) {
+# echo '<br /><br /><strong>' . esc_html__( 'Media attachments', 'sitepress' ) . '</strong>';
+#
+
+msgid "Media attachments"
+msgstr ""
+
+# if( ! $original_post_id || (int) $post->ID === $original_post_id ){
+# $duplicate_media_label =  esc_html__('Duplicate uploaded media to translations', 'sitepress');
+# $duplicate_featured_label =  esc_html__('Duplicate featured image to translations', 'sitepress');
+
+msgid "Duplicate uploaded media to translations"
+msgstr ""
+
+# $duplicate_media_label =  esc_html__('Duplicate uploaded media to translations', 'sitepress');
+# $duplicate_featured_label =  esc_html__('Duplicate featured image to translations', 'sitepress');
+# } else {
+
+msgid "Duplicate featured image to translations"
+msgstr ""
+
+# } else {
+# $duplicate_media_label =  esc_html__('Duplicate uploaded media from original', 'sitepress');
+# $duplicate_featured_label =  esc_html__('Duplicate featured image from original', 'sitepress');
+
+msgid "Duplicate uploaded media from original"
+msgstr ""
+
+# $duplicate_media_label =  esc_html__('Duplicate uploaded media from original', 'sitepress');
+# $duplicate_featured_label =  esc_html__('Duplicate featured image from original', 'sitepress');
+# }
+
+msgid "Duplicate featured image from original"
 msgstr ""
 
 # echo '<input id="icl_cfo" class="button-secondary" type="button" value="' . sprintf(
@@ -7073,6 +7150,188 @@ msgctxt "You may need to {re-save the site permalinks} - 1/2"
 msgid "You may need to %s."
 msgstr ""
 
+# if ( $response['left'] ) {
+# $response['message'] = sprintf( __( 'Duplicating featured images. %d left', 'sitepress' ), $response['left'] );
+# } else {
+
+msgid "Duplicating featured images. %d left"
+msgstr ""
+
+# } else {
+# $response['message'] = sprintf( __( 'Duplicating featured images: done!', 'sitepress' ), $response['left'] );
+# }
+
+msgid "Duplicating featured images: done!"
+msgstr ""
+
+# if ( $response['left'] ) {
+# $response['message'] = sprintf( __( 'Duplicating media. %d left', 'sitepress' ), $response['left'] );
+# } else {
+
+msgid "Duplicating media. %d left"
+msgstr ""
+
+# } else {
+# $response['message'] = sprintf( __( 'Duplicating media: done!', 'sitepress' ), $response['left'] );
+# }
+
+msgid "Duplicating media: done!"
+msgstr ""
+
+# if ( $response['left'] ) {
+# $response['message'] = sprintf( __( 'Setting language to media. %d left', 'sitepress' ), $response['left'] );
+# } else {
+
+msgid "Setting language to media. %d left"
+msgstr ""
+
+# } else {
+# $response['message'] = sprintf( __( 'Setting language to media: done!', 'sitepress' ), $response['left'] );
+# }
+
+msgid "Setting language to media: done!"
+msgstr ""
+
+#
+# $response['message'] = __( 'Started...', 'sitepress' );
+#
+
+msgid "Started..."
+msgstr ""
+
+#
+# $response['message'] = __( 'Done!', 'sitepress' );
+#
+
+msgid "Done!"
+msgstr ""
+
+# if ( $response['left'] ) {
+# $response['message'] = sprintf( esc_html__( 'Translating media. %d left', 'sitepress' ), $response['left'] );
+# } else {
+
+msgid "Translating media. %d left"
+msgstr ""
+
+# } else {
+# $response['message'] = sprintf( esc_html__( 'Translating media: done!', 'sitepress' ), $response['left'] );
+# }
+
+msgid "Translating media: done!"
+msgstr ""
+
+# <td align="right">
+# <input class="button-primary" name="start" type="submit" value="<?php esc_attr_e('Start', 'sitepress'); ?> &raquo;"/>
+# </td>
+
+msgid "Start"
+msgstr ""
+
+# <div class="wpml-section-header">
+# <h3><?php esc_html_e('Media Translation', 'sitepress'); ?></h3>
+# </div>
+
+msgid "Media Translation"
+msgstr ""
+
+#
+# <p><?php esc_html_e("The Media Translation plugin needs to add languages to your site's media. Without this language information, existing media files will not be displayed in the WordPress admin.", 'wpml-media') ?></p>
+#
+
+msgid "The Media Translation plugin needs to add languages to your site's media. Without this language information, existing media files will not be displayed in the WordPress admin."
+msgstr ""
+
+#
+# <p><?php esc_html_e('You can check if some attachments can be duplicated to translated content:', 'sitepress') ?></p>
+#
+
+msgid "You can check if some attachments can be duplicated to translated content:"
+msgstr ""
+
+# <li><label><input type="checkbox" id="set_language_info" name="set_language_info" value="1" <?php if (!empty($orphan_attachments)): ?>checked="checked"<?php endif; ?>
+# <?php if (empty($orphan_attachments)): ?>disabled="disabled"<?php endif ?> />&nbsp;<?php esc_html_e('Set language information for existing media', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Translate existing media in all languages', 'sitepress') ?></label></li>
+
+msgid "Set language information for existing media"
+msgstr ""
+
+# <?php if (empty($orphan_attachments)): ?>disabled="disabled"<?php endif ?> />&nbsp;<?php esc_html_e('Set language information for existing media', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Translate existing media in all languages', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Duplicate existing media for translated content', 'sitepress') ?></label></li>
+
+msgid "Translate existing media in all languages"
+msgstr ""
+
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Translate existing media in all languages', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Duplicate existing media for translated content', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_featured" name="duplicate_featured" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Duplicate the featured images for translated content', 'sitepress') ?></label></li>
+
+msgid "Duplicate existing media for translated content"
+msgstr ""
+
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Duplicate existing media for translated content', 'sitepress') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_featured" name="duplicate_featured" value="1" checked="checked"/>&nbsp;<?php esc_html_e('Duplicate the featured images for translated content', 'sitepress') ?></label></li>
+# </ul>
+
+msgid "Duplicate the featured images for translated content"
+msgstr ""
+
+# <tr>
+# <td><a href="https://wpml.org/documentation/getting-started-guide/media-translation/" target="_blank"><?php esc_html_e('Media Translation Documentation', 'sitepress') ?></a></td>
+# <td align="right">
+
+msgid "Media Translation Documentation"
+msgstr ""
+
+# <td colspan="2">
+# <h4><?php esc_html_e('How to handle media for new content:', 'sitepress'); ?></h4>
+# </td>
+
+msgid "How to handle media for new content:"
+msgstr ""
+
+# <label><input type="checkbox" name="content_default_always_translate_media"
+# value="1" <?php echo $always_translate_media_html_checked; ?> />&nbsp;<?php esc_html_e('When uploading media to the Media library, make it available in all languages', 'sitepress') ?></label>
+# </li>
+
+msgid "When uploading media to the Media library, make it available in all languages"
+msgstr ""
+
+# <label><input type="checkbox" name="content_default_duplicate_media"
+# value="1" <?php echo $duplicate_media_html_checked; ?> />&nbsp;<?php esc_html_e('Duplicate media attachments for translations', 'sitepress') ?></label>
+# </li>
+
+msgid "Duplicate media attachments for translations"
+msgstr ""
+
+# <label><input type="checkbox" name="content_default_duplicate_featured"
+# value="1"  <?php echo $duplicate_featured_html_checked; ?> />&nbsp;<?php esc_html_e('Duplicate featured images for translations', 'sitepress') ?></label>
+# </li>
+
+msgid "Duplicate featured images for translations"
+msgstr ""
+
+# <div id="wpml_media_all_done" class="hidden updated">
+# <p><?php esc_html_e("You're all done. From now on, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen.", 'wpml-media') ?></p>
+# </div>
+
+msgid "You're all done. From now on, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen."
+msgstr ""
+
+# <p>
+# <?php esc_html_e( 'WPML needs to set languages to existing media in your site.', 'sitepress' ) ?>
+# <a href="<?php echo $settings_page ?>"
+
+msgid "WPML needs to set languages to existing media in your site."
+msgstr ""
+
+# <a href="<?php echo $settings_page ?>"
+# class="button-secondary"><?php esc_html_e( 'Set media languages', 'sitepress' ) ?></a>
+#
+
+msgid "Set media languages"
+msgstr ""
+
 # 'icl_duplicate_message' => $success,
 # 'icl_duplicate_fail'    => __( 'Unable to remove relationship!', 'sitepress' ),
 # );
@@ -8365,35 +8624,28 @@ msgstr ""
 msgid "Messages and notifications"
 msgstr ""
 
-# $langsel .= '<div class="howto icl_nav_menu_text" style="float:right;">';
+# $langsel .= '<div class="icl_nav_menu_text" style="float:right;">';
 # $langsel .= __('Translations:', 'sitepress');
 # foreach($sitepress->get_active_languages() as $lang){
 
 msgid "Translations:"
 msgstr ""
 
-# $menu_id = $wpdb->get_var($wpdb->prepare("SELECT term_id FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id=%d",$this->current_menu['translations'][$lang['code']]->element_id));
-# $tr_link = '<a style="text-decoration:none" title="'. esc_attr(__('edit translation', 'sitepress')).'" href="'.admin_url('nav-menus.php').
-# '?menu='.$menu_id. $lang_suff .'">'.
+# $menu_id = $wpdb->get_var( $wpdb->prepare( "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id=%d", $this->current_menu['translations'][ $lang['code'] ]->element_id ) );
+# $label   = __( 'edit translation', 'sitepress' );
+# $tr_link = '<a style="text-decoration:none" title="' . esc_attr( $label ) . '" href="' . admin_url( 'nav-menus.php' ) .
 
 msgid "edit translation"
 msgstr ""
 
-# '?menu='.$menu_id. $lang_suff .'">'.
-# $lang['display_name'] . '&nbsp;<img src="'.ICL_PLUGIN_URL.'/res/img/edit_translation.png" alt="'. esc_attr(__('edit', 'sitepress')).
-# '" width="12" height="12" /></a>';
-
-msgid "edit"
-msgstr ""
-
-# }else{
-# $tr_link = '<a style="text-decoration:none" title="'. esc_attr(__('add translation', 'sitepress')).'" href="'.admin_url('nav-menus.php').
-# '?action=edit&menu=0&trid='.$this->current_menu['trid'].'&lang='.$lang['code'].'">'.
+# } else {
+# $label   = __( 'add translation', 'sitepress' );
+# $tr_link = '<a style="text-decoration:none" title="' . esc_attr( $label ) . '" href="' . admin_url( 'nav-menus.php' ) .
 
 msgid "add translation"
 msgstr ""
 
-# $langsel .= '<div class="howto icl_nav_menu_text" style="float:right;">';
+# $langsel .= '<div class="icl_nav_menu_text" style="float:right; clear:right">';
 # $langsel .= '<div><a href="'.admin_url('admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/menu-sync/menus-sync.php').'">' . __('Synchronize menus between languages.', 'sitepress') . '</a></div>';
 # $langsel .= '</div>';
 

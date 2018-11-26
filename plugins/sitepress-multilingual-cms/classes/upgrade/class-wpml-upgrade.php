@@ -26,14 +26,20 @@ class WPML_Upgrade {
 	 * @param WPML_Upgrade_Command_Factory $command_factory
 	 */
 	public function __construct( array $commands, SitePress $sitepress, WPML_Upgrade_Command_Factory $command_factory ) {
+		$this->add_commands( $commands );
+		$this->sitepress       = $sitepress;
+		$this->command_factory = $command_factory;
+	}
+
+	/**
+	 * @param array $commands
+	 */
+	public function add_commands( array $commands ) {
 		foreach ( $commands as $command ) {
 			if ( $command instanceof WPML_Upgrade_Command_Definition ) {
 				$this->commands[] = $command;
 			}
 		}
-
-		$this->sitepress       = $sitepress;
-		$this->command_factory = $command_factory;
 	}
 
 	public function run() {
@@ -181,7 +187,7 @@ class WPML_Upgrade {
 	/**
 	 * @param IWPML_Upgrade_Command $class
 	 */
-	private function mark_command_as_executed( IWPML_Upgrade_Command $class ) {
+	public function mark_command_as_executed( IWPML_Upgrade_Command $class ) {
 		$this->set_update_status( $this->get_command_id( get_class( $class ) ), true );
 		wp_cache_flush();
 	}

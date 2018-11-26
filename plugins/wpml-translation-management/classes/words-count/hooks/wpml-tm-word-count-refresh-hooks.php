@@ -2,8 +2,8 @@
 
 class WPML_TM_Word_Count_Refresh_Hooks implements IWPML_Action {
 
-	/** @var WPML_TM_Word_Count_Async_Refresh $async_refresh */
-	private $async_refresh;
+	/** @var WPML_TM_Word_Count_Single_Process_Factory $single_process_factory */
+	private $single_process_factory;
 
 	/** @var WPML_Translation_Element_Factory $element_factory */
 	private $element_factory;
@@ -15,13 +15,13 @@ class WPML_TM_Word_Count_Refresh_Hooks implements IWPML_Action {
 	private $packages_to_refresh = array();
 
 	public function __construct(
-		WPML_TM_Word_Count_Async_Refresh $async_invalidate,
+		WPML_TM_Word_Count_Single_Process_Factory $single_process_factory,
 		WPML_Translation_Element_Factory $element_factory,
 		WPML_ST_Package_Factory $st_package_factory = null
 	) {
-		$this->async_refresh      = $async_invalidate;
-		$this->element_factory    = $element_factory;
-		$this->st_package_factory = $st_package_factory;
+		$this->single_process_factory = $single_process_factory;
+		$this->element_factory        = $element_factory;
+		$this->st_package_factory     = $st_package_factory;
 	}
 
 	public function add_hooks() {
@@ -46,12 +46,7 @@ class WPML_TM_Word_Count_Refresh_Hooks implements IWPML_Action {
 			$post_id = $post_element->get_source_element()->get_id();
 		}
 
-		$item = array(
-			'element_type' => 'post',
-			'element_id'   => $post_id,
-		);
-
-		$this->async_refresh->data( $item )->dispatch();
+		$this->single_process_factory->create()->process( 'post', $post_id );
 	}
 
 	/**
@@ -91,12 +86,7 @@ class WPML_TM_Word_Count_Refresh_Hooks implements IWPML_Action {
 
 	public function refresh_packages_word_count() {
 		foreach ( $this->packages_to_refresh as $package_to_refresh ) {
-			$item = array(
-				'element_type' => 'package',
-				'element_id'   => $package_to_refresh,
-			);
-
-			$this->async_refresh->data( $item )->dispatch();
+			$this->single_process_factory->create()->process( 'package', $package_to_refresh );
 		}
 	}
 }

@@ -17,11 +17,18 @@ class WPML_TM_Translation_Basket_Dialog_Hooks implements IWPML_Action {
 	}
 
 	public function enqueue_scripts() {
-		wp_enqueue_script(
-			'wpml-tm-translation-basket-dialog',
+		$handler = 'wpml-tm-translation-basket-dialog';
+
+		wp_register_script( $handler,
 			WPML_TM_URL . '/res/js/translation-basket/dialog.js',
 			array( 'jquery-ui-dialog' )
 		);
+
+		wp_localize_script( $handler, 'wpmlTMBasket', array( 'dialogs' => array(), 'redirection' => '' ) );
+
+		wp_enqueue_script($handler);
+
+		wp_enqueue_script( 'wpml-tm-basket-redirection', WPML_TM_URL . '/res/js/translation-basket/redirection.js', array(), WPML_TM_VERSION, true );
 	}
 
 	public function display_dialog_markup() {

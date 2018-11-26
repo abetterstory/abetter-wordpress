@@ -75,6 +75,8 @@ class WPML_TM_Wizard_For_Manager extends WPML_Wizard {
 			WPML_TM_VERSION
 		);
 
+		wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
+
 		wp_enqueue_script( 'wpml-tm-translation-roles-select2',
 			WPML_TM_URL . '/res/js/translation-roles-select2.js',
 			array(),

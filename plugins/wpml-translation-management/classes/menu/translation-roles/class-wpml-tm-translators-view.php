@@ -31,7 +31,7 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		$this->active_languages              = $active_languages;
 		$this->translator_activation_records = $translator_activation_records;
 
-		$this->source_languages = apply_filters( 'wpml_tm_allowed_source_languages', clone( $this->active_languages ) );
+		$this->source_languages = apply_filters( 'wpml_tm_allowed_source_languages', clone $this->active_languages );
 	}
 
 	public function render() {

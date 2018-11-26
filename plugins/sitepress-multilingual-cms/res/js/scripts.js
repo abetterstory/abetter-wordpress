@@ -586,3 +586,14 @@ var icl_popups = {
         });
     }
 };
+
+WPML_core.redirectUploadsOnLangParam = function() {
+	var path = window.location.pathname,
+		upload_screen_file = 'upload.php',
+		has_lang_param = 1 === window.location.search.search('lang');
+
+	if (path.slice(upload_screen_file.length * -1) === upload_screen_file && has_lang_param) {
+		window.location = path;
+	}
+};
+jQuery('ready', WPML_core.redirectUploadsOnLangParam() );

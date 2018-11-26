@@ -10,6 +10,69 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 
 	private $mcsetup_sections = array();
 
+	public function init() {
+		$this->init_navigation_links();
+	}
+
+	private function init_navigation_links() {
+		/**
+		 * @var SitePress             $sitepress
+		 * @var TranslationManagement $iclTranslationManagement
+		 */
+		global $sitepress, $iclTranslationManagement;
+		$is_admin = current_user_can( 'manage_options' );
+
+		if ( $this->is_end_user_feature_enabled() && $is_admin ) {
+			$this->mcsetup_sections['ml-content-setup-sec-0'] = esc_html__( 'General settings', 'wpml-translation-management' );
+		}
+
+		$this->mcsetup_sections['ml-content-setup-sec-1'] = esc_html__( 'How to translate posts and pages', 'wpml-translation-management' );
+
+		if ( $is_admin ) {
+			$this->mcsetup_sections['ml-content-setup-sec-2'] = esc_html__( 'Posts and pages synchronization', 'wpml-translation-management' );
+			$this->mcsetup_sections['ml-content-setup-sec-3'] = esc_html__( 'Translated documents options', 'wpml-translation-management' );
+
+			if ( defined( 'WPML_ST_VERSION' ) ) {
+				$this->mcsetup_sections['ml-content-setup-sec-4'] = esc_html__( 'Custom posts slug translation options', 'wpml-translation-management' );
+			}
+
+			$this->mcsetup_sections['ml-content-setup-sec-5']   = esc_html__( 'Translation pickup mode', 'wpml-translation-management' );
+		}
+
+		$this->mcsetup_sections['ml-content-setup-sec-5-1'] = esc_html__( 'XLIFF file options', 'wpml-translation-management' );
+
+		if ( $is_admin ) {
+			$this->mcsetup_sections['ml-content-setup-sec-cf']  = esc_html__( 'Custom Fields Translation', 'wpml-translation-management' );
+			$this->mcsetup_sections['ml-content-setup-sec-tcf'] = esc_html__( 'Custom Term Meta Translation', 'wpml-translation-management' );
+
+			$custom_posts = array();
+			$this->post_types = $sitepress->get_translatable_documents(true);
+
+			foreach ($this->post_types as $k => $v) {
+				$custom_posts[$k] = $v;
+			}
+
+			global $wp_taxonomies;
+			$custom_taxonomies = array_diff(array_keys((array)$wp_taxonomies), array('post_tag', 'category', 'nav_menu', 'link_category', 'post_format'));
+
+			if ( $custom_posts ) {
+				$this->mcsetup_sections['ml-content-setup-sec-7'] = esc_html__( 'Post Types Translation', 'wpml-translation-management' );
+			}
+
+			if ( $custom_taxonomies ) {
+				$this->mcsetup_sections['ml-content-setup-sec-8'] = esc_html__( 'Taxonomies Translation', 'wpml-translation-management' );
+			}
+
+			if ( ! empty( $iclTranslationManagement->admin_texts_to_translate ) && function_exists( 'icl_register_string' ) ) {
+				$this->mcsetup_sections['ml-content-setup-sec-9'] = esc_html__( 'Admin Strings to Translate', 'wpml-translation-management' );
+			}
+		}
+
+		$this->get_translate_link_targets_ui()->add_hooks();
+
+		$this->mcsetup_sections = apply_filters( 'wpml_mcsetup_navigation_links', $this->mcsetup_sections, $sitepress, $iclTranslationManagement );
+	}
+
 	protected function render_main() {
 		?>
 		<div class="wrap">
@@ -66,7 +129,7 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 				<p>
 					<i class="otgs-ico-warning"></i> <?php echo esc_html__( 'There is new translated content on this site. You can scan posts and strings to adjust links to point to translated content.',
 					                                                        'wpml-translation-management' ); ?></p>
-				<p><?php $this->get_translate_link_targets_ui()->render_top_link(); ?></p>
+				<p><?php echo $this->get_navigation_link( $this->get_translate_link_targets_ui()->get_id() ); ?></p>
 			</div>
 			<?php
 		}
@@ -207,6 +270,7 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 								</label>
 							</p>
 						</div>
+						
 						<?php do_action( 'wpml_how_to_translate_posts_and_pages' ); ?>
 
 						<?php do_action( 'wpml_how_to_translate_posts_and_pages_below' ); ?>
@@ -443,8 +507,8 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 			</div><!-- #ml-content-setup-sec-9 -->
 		<?php endif; ?>
 
-		<?php if ( $this->should_show_mcsetup_section( 'ml-content-setup-sec-10' ) ) : ?>
-			<?php $this->get_translate_link_targets_ui()->render(); ?><!-- #ml-content-setup-sec-10 -->
+		<?php if ( $this->should_show_mcsetup_section( $this->get_translate_link_targets_ui()->get_id() ) ) : ?>
+			<?php echo $this->get_translate_link_targets_ui()->render(); ?><!-- #ml-content-setup-sec-links-target -->
 		<?php endif; ?>
 
 		<?php
@@ -500,70 +564,19 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 	}
 
 	private function render_mcsetup_navigation_links() {
-		/**
-		 * @var SitePress             $sitepress
-		 * @var TranslationManagement $iclTranslationManagement
-		 */
-		global $sitepress, $iclTranslationManagement;
-		$is_admin = current_user_can( 'manage_options' );
-
-		if ( $this->is_end_user_feature_enabled() && $is_admin ) {
-			$this->mcsetup_sections['ml-content-setup-sec-0'] = esc_html__( 'General settings', 'wpml-translation-management' );
-		}
-
-		$this->mcsetup_sections['ml-content-setup-sec-1'] = esc_html__( 'How to translate posts and pages', 'wpml-translation-management' );
-
-		if ( $is_admin ) {
-			$this->mcsetup_sections['ml-content-setup-sec-2'] = esc_html__( 'Posts and pages synchronization', 'wpml-translation-management' );
-			$this->mcsetup_sections['ml-content-setup-sec-3'] = esc_html__( 'Translated documents options', 'wpml-translation-management' );
-
-			if ( defined( 'WPML_ST_VERSION' ) ) {
-				$this->mcsetup_sections['ml-content-setup-sec-4'] = esc_html__( 'Custom posts slug translation options', 'wpml-translation-management' );
-			}
-
-			$this->mcsetup_sections['ml-content-setup-sec-5']   = esc_html__( 'Translation pickup mode', 'wpml-translation-management' );
-		}
-
-		$this->mcsetup_sections['ml-content-setup-sec-5-1'] = esc_html__( 'XLIFF file options', 'wpml-translation-management' );
-
-		if ( $is_admin ) {
-			$this->mcsetup_sections['ml-content-setup-sec-cf']  = esc_html__( 'Custom Fields Translation', 'wpml-translation-management' );
-			$this->mcsetup_sections['ml-content-setup-sec-tcf'] = esc_html__( 'Custom Term Meta Translation', 'wpml-translation-management' );
-
-			$custom_posts = array();
-			$this->post_types = $sitepress->get_translatable_documents(true);
-
-			foreach ($this->post_types as $k => $v) {
-				$custom_posts[$k] = $v;
-			}
-
-			global $wp_taxonomies;
-			$custom_taxonomies = array_diff(array_keys((array)$wp_taxonomies), array('post_tag', 'category', 'nav_menu', 'link_category', 'post_format'));
-
-			if ( $custom_posts ) {
-				$this->mcsetup_sections['ml-content-setup-sec-7'] = esc_html__( 'Post Types Translation', 'wpml-translation-management' );
-			}
-
-			if ( $custom_taxonomies ) {
-				$this->mcsetup_sections['ml-content-setup-sec-8'] = esc_html__( 'Taxonomies Translation', 'wpml-translation-management' );
-			}
-
-			if ( ! empty( $iclTranslationManagement->admin_texts_to_translate ) && function_exists( 'icl_register_string' ) ) {
-				$this->mcsetup_sections['ml-content-setup-sec-9'] = esc_html__( 'Admin Strings to Translate', 'wpml-translation-management' );
-			}
-		}
-
-		ob_start();
- 		$this->get_translate_link_targets_ui()->render_top_link();
-		$this->mcsetup_sections['ml-content-setup-sec-10'] = trim( strip_tags( ob_get_clean() ) );
-
 		echo '<ul class="wpml-navigation-links js-wpml-navigation-links">';
 
 		foreach ( $this->mcsetup_sections as $anchor => $title ) {
-			echo '<li><a href="#' . $anchor . '">' . $title . '</a></li>';
+			echo '<li>' . $this->get_navigation_link( $anchor ) . '</li>';
 		}
 
 		echo '</ul>';
+	}
+
+	private function get_navigation_link( $anchor ) {
+		if ( array_key_exists( $anchor, $this->mcsetup_sections ) ) {
+			return '<a href="#' . $anchor . '">' . $this->mcsetup_sections[ $anchor ] . '</a>';
+		}
 	}
 
 	/** @return bool */
@@ -582,7 +595,6 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 
 		if ( ! $this->translate_link_targets_ui ) {
 			$this->translate_link_targets_ui = new WPML_Translate_Link_Targets_UI(
-				'ml-content-setup-sec-10',
 				__( 'Translate Link Targets', 'wpml-translation-management' ),
 				$wpdb,
 				$sitepress,

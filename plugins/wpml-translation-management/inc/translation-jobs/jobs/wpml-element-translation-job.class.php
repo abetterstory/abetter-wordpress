@@ -278,9 +278,6 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 			"(SELECT job_id FROM {$wpdb->prefix}icl_translate_job trans_job WHERE trans_job.rid = {$table}.rid LIMIT 1)"
 		);
 	}
-
-	public function maybe_load_terms_from_post_into_job( $delete ) {
-	}
 	
 	private function get_iclt_field( $field_name, $translation ) {
 		global $wpdb;

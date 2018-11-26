@@ -34,4 +34,16 @@ class WPML_Translation_Element_Factory {
 
 		return new $class_name( $id, $this->sitepress, $this->wpml_cache );
 	}
+
+	public function create_post( $id ) {
+		return new WPML_Post_Element( $id, $this->sitepress, $this->wpml_cache );
+	}
+
+	public function create_term( $id ) {
+		return new WPML_Term_Element( $id, $this->sitepress, $this->wpml_cache );
+	}
+
+	public function create_menu( $id ) {
+		return new WPML_Menu_Element( $id, $this->sitepress, $this->wpml_cache );
+	}
 }

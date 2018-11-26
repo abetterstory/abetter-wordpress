@@ -42,7 +42,7 @@ class WPML_TM_Translation_Basket_Validation_Notice {
 			'strings'   => array(
 				'title'          => __( 'WPML cannot send some of the content to translation', 'wpml-translation-management' ),
 				'message'        => __( 'Some of the content that you selected for translation includes fields that are encoded. Translators will not be able to work on this kind of content, so we removed it from the job.', 'wpml-translation-management' ),
-				'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending to translation.', 'wpml-translation-management' ),
+				'message_bottom' => __( 'To fix this problem, you need to tell WPML how these fields are encoded, so that WPML can decode them before sending for translation.', 'wpml-translation-management' ),
 				'show_fields'    => __( 'show fields', 'wpml-translation-management' ),
 				'documentation'  => array(
 					'link' => 'https://wpml.org/documentation/translating-your-contents/page-builders/how-to-fix-encoding-of-fields/?utm_source=wpmlplugin&utm_campaign=content-translation&utm_medium=translation-basket&utm_term=how-to-fix-encoding-of-fields',

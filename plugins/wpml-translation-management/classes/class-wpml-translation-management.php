@@ -153,12 +153,6 @@ class WPML_Translation_Management {
 			if ( $this->sitepress->get_wp_api()->is_dashboard_tab() ) {
 				$screen_options_factory = new WPML_UI_Screen_Options_Factory( $this->sitepress );
 				$this->dashboard_screen_options = $screen_options_factory->create_pagination( 'tm_dashboard_per_page', ICL_TM_DOCS_PER_PAGE );
-			} elseif ( $this->sitepress->get_wp_api()->is_tm_page( 'translation-services' ) ) {
-				$screen_options_factory = new WPML_UI_Screen_Options_Factory( $this->sitepress );
-				$this->dashboard_screen_options = $screen_options_factory->create_pagination(
-					WPML_TM_Translation_Services_Admin_Section_Factory::OPTION_ITEMS_PER_PAGE,
-					WPML_TM_Translation_Services_Admin_Section_Factory::DEFAULT_ITEMS_PER_PAGE
-				);
 			}
 
 			// Add a nice warning message if the user tries to edit a post manually and it's actually in the process of being translated
@@ -240,6 +234,7 @@ class WPML_Translation_Management {
 
 	function admin_enqueue_scripts() {
 		if ( ! defined( 'DOING_AJAX' ) ) {
+
 			wp_register_script( 'wpml-tm-progressbar', WPML_TM_URL . '/res/js/wpml-progressbar.js', array(
 					'jquery',
 					'jquery-ui-progressbar',
@@ -256,11 +251,8 @@ class WPML_Translation_Management {
 			wp_enqueue_style('wpml-tm-queue', WPML_TM_URL . '/res/css/translations-queue.css', array(), WPML_TM_VERSION);
 
 			if ( filter_input(INPUT_GET, 'page') === WPML_TM_FOLDER . '/menu/main.php' ) {
-				if ( isset( $_GET[ 'sm' ] ) && ( $_GET[ 'sm' ] == 'services' || $_GET[ 'sm' ] === 'translators' ) ) {
-					wp_register_script( 'wpml-tm-translation-services',
-					                    WPML_TM_URL . '/res/js/translation-services.js',
-					                    array( 'wpml-tm-scripts', 'jquery-ui-dialog' ),
-					                    WPML_TM_VERSION );
+				if ( isset( $_GET[ 'sm' ] ) && ( $_GET[ 'sm' ] == 'translation-services' || $_GET[ 'sm' ] === 'translators' ) ) {
+
 					wp_register_script( 'wpml-tm-translation-translators',
 					                    WPML_TM_URL . '/dist/js/translators/app.js',
 					                    array( 'jquery-ui-dialog' ),
@@ -269,6 +261,8 @@ class WPML_Translation_Management {
 						WPML_TM_URL . '/res/js/translation-managers.js',
 						array( 'wpml-tm-scripts', 'underscore' ),
 						WPML_TM_VERSION );
+
+					wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
 
 					wp_enqueue_script( 'wpml-tm-translation-roles-select2',
 						WPML_TM_URL . '/res/js/translation-roles-select2.js',
@@ -306,9 +300,7 @@ class WPML_Translation_Management {
 						'restNonce' => wp_create_nonce( 'wp_rest' ),
 					);
 
-					wp_localize_script( 'wpml-tm-translation-services', 'tm_ts_data', $tm_ts_data );
 					wp_localize_script( 'wpml-tm-translation-translators', 'tm_tt_data', $tm_tt_data );
-					wp_enqueue_script( 'wpml-tm-translation-services' );
 					wp_enqueue_script( 'wpml-tm-translation-translators' );
 					wp_localize_script( 'wpml-tm-translation-managers', 'tm_tm_data', $tm_tm_data );
 					wp_enqueue_script( 'wpml-tm-translation-managers' );
@@ -320,7 +312,9 @@ class WPML_Translation_Management {
 				                   WPML_TM_VERSION );
 			}
 
-			WPML_Simple_Language_Selector::enqueue_scripts();
+			if ( WPML_TM_Page::is_settings() ) {
+				WPML_Simple_Language_Selector::enqueue_scripts();
+			}
 
 			wp_enqueue_style ( 'wp-jquery-ui-dialog' );
 			wp_enqueue_script( 'thickbox' );
@@ -551,6 +545,7 @@ class WPML_Translation_Management {
 
 	public function settings_page() {
 		$settings_page = new WPML_TM_Menus_Settings();
+		$settings_page->init();
 		$settings_page->display_main();
 	}
 

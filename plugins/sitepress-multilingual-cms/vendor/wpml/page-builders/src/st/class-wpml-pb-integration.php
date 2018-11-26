@@ -100,6 +100,7 @@ class WPML_PB_Integration {
 		add_action( 'save_post', array( $this, 'queue_save_post_actions' ), PHP_INT_MAX, 2 );
 		add_action( 'icl_st_add_string_translation', array( $this, 'new_translation' ), 10, 1 );
 		add_action( 'shutdown', array( $this, 'do_shutdown_action' ) );
+		add_action( 'wpml_pb_finished_adding_string_translations', array( $this, 'save_translations_to_post' ) );
 		add_action( 'wpml_pro_translation_completed', array( $this, 'cleanup_strings_after_translation_completed' ), 10, 3 );
 
 		add_filter( 'wpml_tm_translation_job_data', array( $this, 'rescan' ), 9, 2 );

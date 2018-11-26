@@ -252,7 +252,7 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'html',
 						'type'        => __( 'HTML', 'sitepress' ),
-						'editor_type' => 'VISUAL'
+						'editor_type' => 'AREA'
 					),
 				),
 			),
@@ -351,6 +351,31 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					),
 				),
 			),
+			'countdown'     => array(
+				'conditions' => array( $this->type => 'countdown' ),
+				'fields'     => array(
+					array(
+						'field'       => 'label_days',
+						'type'        => __( 'Countdown: Label days', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'label_hours',
+						'type'        => __( 'Countdown: Label hours', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'label_minutes',
+						'type'        => __( 'Countdown: Label minutes', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'label_seconds',
+						'type'        => __( 'Countdown: Label seconds', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+				),
+			),
 			'icon-box'    => array(
 				'conditions' => array( $this->type => 'icon-box' ),
 				'fields'     => array(
@@ -402,6 +427,11 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'rotating_text',
 						'type'        => __( 'Animated Headline: Rotating text', 'sitepress' ),
+						'editor_type' => 'AREA'
+					),
+					array(
+						'field'       => 'after_text',
+						'type'        => __( 'Animated Headline: After text', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 				),
@@ -480,6 +510,11 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 				'conditions'        => array( $this->type => 'accordion' ),
 				'fields'            => array(),
 				'integration-class' => 'WPML_Elementor_Accordion',
+			),
+			'testimonial-carousel'   => array(
+				'conditions'        => array( $this->type => 'testimonial-carousel' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Elementor_Testimonial_Carousel',
 			),
 			'tabs'        => array(
 				'conditions'        => array( $this->type => 'tabs' ),

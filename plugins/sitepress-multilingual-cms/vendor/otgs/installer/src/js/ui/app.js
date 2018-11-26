@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import UI from './UI';
 
 window.addEventListener('DOMContentLoaded', () => {

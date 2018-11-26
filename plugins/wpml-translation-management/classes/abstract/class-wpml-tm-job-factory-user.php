@@ -23,4 +23,15 @@ abstract class WPML_TM_Job_Factory_User {
 		$content = preg_replace( '/[^#\w]*/u', '', $content );
 		return $content || '0' === $content;
 	}
+
+	/**
+	 * Validate XLIFF target on reading XLIFF.
+	 *
+	 * @param $target string
+	 *
+	 * @return bool
+	 */
+	protected function is_valid_target( $target ) {
+		return $target || '0' === $target;
+	}
 }

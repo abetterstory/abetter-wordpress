@@ -72,7 +72,7 @@ class WPML_URL_Filters {
 		/**
 		 * We can't append lang argument in the rest_url
 		 * when we are in the post page (e.g.: "wp-admin/post-new.php")
-		 * because we are producing malformed rest URLs wich are breaking
+		 * because we are producing malformed rest URLs which are breaking
 		 * Gutenberg editor
 		 *
 		 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-5265
@@ -80,7 +80,7 @@ class WPML_URL_Filters {
 		$http_referer_factory = new WPML_URL_HTTP_Referer_Factory();
 		$http_referer = $http_referer_factory->create();
 
-		if ( WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER === (int) $this->sitepress->get_setting( 'language_negotiation_type' )
+		if ( in_array( (int) $this->sitepress->get_setting( 'language_negotiation_type' ), array( WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER, WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY ), true )
 		     && ! $http_referer->is_post_edit_page()
 		) {
 			add_filter( 'rest_url', array( $this, 'add_lang_in_rest_url' ) );

@@ -82,6 +82,19 @@ switch($request){
         $iclsettings['sync_post_date'] = @intval($_POST['icl_sync_post_date']);
         $iclsettings['sync_comments_on_duplicates'] = @intval($_POST['icl_sync_comments_on_duplicates']);
         $this->save_settings($iclsettings);
+
+	    $wpml_page_builder_options = new WPML_Page_Builder_Settings();
+
+	    if ( array_key_exists( 'wpml_pb_translate_raw_html', $_POST ) ) {
+		    $wpml_page_builder_options->set_raw_html_translatable(
+		    	filter_var($_POST['wpml_pb_translate_raw_html'], FILTER_VALIDATE_INT)
+		    );
+	    } else {
+		    $wpml_page_builder_options->set_raw_html_translatable( 0 );
+	    }
+
+	    $wpml_page_builder_options->save();
+
         echo 1;
         break;
     case 'language_domains':

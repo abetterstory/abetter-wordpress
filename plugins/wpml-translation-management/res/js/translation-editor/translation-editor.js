@@ -208,4 +208,6 @@ jQuery(document).ready(function () {
     tmEditor.update_copy_link_visibility();
 
     jQuery(window).trigger('customEvent');
+
 });
+

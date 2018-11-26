@@ -74,7 +74,7 @@ class WPML_Basket_Tab_Ajax {
 	 * @uses \WPML_Basket_Tab_Ajax::create_remote_batch_message
 	 */
 	function begin_basket_commit() {
-		$basket_name = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING );
+		$basket_name = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
 
 		wp_send_json_success( $this->create_remote_batch_message( $basket_name ) );
 	}
@@ -92,16 +92,20 @@ class WPML_Basket_Tab_Ajax {
 			$response               = $this->project && $has_remote_translators ? $this->project->commit_batch_job() : true;
 			$response               = ! empty( $this->project->errors ) ? false : $response;
 			if ( $response !== false && is_object( $response ) ) {
-				$response->call_to_action = '<strong>' . sprintf(
+				$response->call_to_action = sprintf(
 						__(
-							'You have sent items to %s. Please check if additional steps are required on their end.',
+							'You\'ve sent the content for translation to %s. Please continue to their site, to make sure that the translation starts.',
 							'wpml-translation-management'
 						),
 						$this->project->current_service_name()
-					) . '</strong>';
-				$batch_url = OTG_TRANSLATION_PROXY_URL . sprintf( '/projects/%d/external', $this->project->get_batch_job_id() );
-				$response->ts_batch_link = '<a href="' . $batch_url . '" class="wpml-external-link" target="_blank">' .
-				    __( 'Check the batch status on the translation service', 'wpml-translation-management' ) . '</a>';
+				);
+				$batch_url                = OTG_TRANSLATION_PROXY_URL . sprintf( '/projects/%d/external', $this->project->get_batch_job_id() );
+				$response->ts_batch_link  = array(
+					'href' => $batch_url,
+					'text' => sprintf( __( 'Continue to %s', 'wpml-translation-management' ),
+						$this->project->current_service_name()
+					),
+				);
 
 			}
 
@@ -123,7 +127,7 @@ class WPML_Basket_Tab_Ajax {
 	 * @uses \WPML_Translation_Basket::check_basket_name
 	 */
 	function check_basket_name() {
-		$basket_name            = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING );
+		$basket_name            = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
 		$basket_name_max_length = TranslationProxy::get_current_service_batch_name_max_length();
 
 		wp_send_json_success( $this->basket->check_basket_name( $basket_name, $basket_name_max_length ) );
@@ -168,7 +172,8 @@ class WPML_Basket_Tab_Ajax {
 		if ( ! empty( $errors ) ) {
 			$this->networking->rollback_basket_commit( filter_input( INPUT_POST,
 			                                                         'basket_name',
-			                                                         FILTER_SANITIZE_STRING ) );
+			                                                         FILTER_SANITIZE_STRING,
+			                                                         FILTER_FLAG_NO_ENCODE_QUOTES ) );
 			wp_send_json_error( self::sanitize_errors( $result ) );
 		} else {
 			$this->basket->delete_all_items();

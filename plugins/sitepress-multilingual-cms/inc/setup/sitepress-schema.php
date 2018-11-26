@@ -382,8 +382,15 @@ function icl_sitepress_activate() {
 	}
 
 	//Set new caps for all administrator role
-	icl_enable_capabilities();
+	if ( is_multisite() ) {
+		add_action( 'plugins_loaded', 'wpml_enable_capabilities' );
+	} else {
+		wpml_enable_capabilities();
+	}
+
 	repair_el_type_collate();
+
+	WPML_Media_Duplication_Setup::initialize_settings();
 
 	do_action('wpml_activated');
 }
@@ -447,4 +454,15 @@ function icl_enable_capabilities() {
 
 	$iclsettings[ 'icl_capabilities_verified' ] = true;
 	update_option( 'icl_sitepress_settings', $iclsettings );
+}
+
+/**
+ * Fires at plugins_loaded action, to call icl_enable_capabilities().
+ * https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-5695
+ */
+function wpml_enable_capabilities() {
+	global $sitepress_settings;
+
+	icl_enable_capabilities();
+	$sitepress_settings = get_option('icl_sitepress_settings');
 }

@@ -539,6 +539,10 @@ class TranslationManagement {
 						if ( ! empty( $cft ) ) {
 							$this->settings[ $setting ] = $cft;
 							$this->save_settings();
+							/**
+							 * Fires after update of custom fields synchronisation preferences in WPML > Settings
+							 */
+							do_action('wpml_custom_fields_sync_option_updated', $cft );
 						}
 					}
 				}
@@ -557,6 +561,9 @@ class TranslationManagement {
 					$sitepress->set_setting( 'tm_block_retranslating_terms', $data[ 'tm_block_retranslating_terms' ] );
 				} else {
 					$sitepress->set_setting( 'tm_block_retranslating_terms', '' );
+				}
+				if ( isset( $data[ 'translation_memory' ] ) ) {
+					$sitepress->set_setting( 'translation_memory', $data[ 'translation_memory' ] );
 				}
 				$this->save_settings();
 				echo '1|';
@@ -653,7 +660,13 @@ class TranslationManagement {
 	 * @return array
 	 */
 	public static function get_blog_translators( $args = array() ) {
-		return wpml_tm_load_blog_translators()->get_blog_translators( $args );
+		$translators = array();
+
+		if ( function_exists( 'wpml_tm_load_blog_translators' ) ) {
+			$translators = wpml_tm_load_blog_translators()->get_blog_translators( $args );
+		}
+		
+		return $translators;
 	}
 
 	/**
@@ -1762,7 +1775,7 @@ class TranslationManagement {
 					$o_value = substr( $o_value, 0, 200 ) . ' ...';
 				}
 			}
-			echo '<li>' . $context_html . esc_html( $name ) . ': <i>' . $o_value . '</i> ' . $edit_link . '</li>';
+			echo $context_html . esc_html( $name ) . ': <i>' . $o_value . '</i> ' . $edit_link;
 		} else {
 			$edit_link = '[<a href="' . admin_url( 'admin.php?page=' . WPML_ST_FOLDER . '/menu/string-translation.php&context=' . esc_html( $es_context ) ) . '">' . esc_html__( 'translate', 'sitepress' ) . '</a>]';
 			echo '<strong>' . $context_html . $name . '</strong> ' . $edit_link;

@@ -308,11 +308,16 @@ class SitePress_Setup {
             ) {
                 continue;
             }
-            if ( !file_exists ( WPML_PLUGIN_PATH . '/res/flags/' . $code . '.png' ) ) {
-                $file = 'nil.png';
-            } else {
-                $file = $code . '.png';
-            }
+			$code_parts = explode( '-', $code );
+
+			$file = 'nil.png';
+
+			if ( file_exists( WPML_PLUGIN_PATH . '/res/flags/' . $code . '.png' ) ) {
+				$file = $code . '.png';
+			} elseif ( file_exists( WPML_PLUGIN_PATH . '/res/flags/' . $code_parts[0] . '.png' ) ) {
+				$file = $code_parts[0] . '.png';
+			}
+
             $wpdb->insert (
                 $wpdb->prefix . 'icl_flags',
                 array( 'lang_code' => $code, 'flag' => $file, 'from_template' => 0 )

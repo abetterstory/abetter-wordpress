@@ -29,9 +29,9 @@ class WPML_TM_Translation_Basket_Dialog_View {
 
 	public static function get_strings() {
 		return array(
-			'title'               => __( 'Sending to translation', 'wpml-translation-management' ),
-			'sent_to_translation' => __( 'Items sent to translation!', 'wpml-translation-management' ),
-			'button_done'         => __( 'Done!', 'wpml-translation-management' ),
+			'title'               => __( 'Sending for translation', 'wpml-translation-management' ),
+			'sent_to_translation' => __( 'Items sent for translation!', 'wpml-translation-management' ),
+			'button_done'         => __( 'Done', 'wpml-translation-management' ),
 		);
 	}
 }

@@ -382,7 +382,7 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 	}
 
 	private function add_job_elements( $job, $include_non_translatable_elements ) {
-		global $wpdb;
+		global $wpdb, $sitepress;
 
 		$jelq = ! $include_non_translatable_elements ? ' AND field_translate = 1' : '';
 

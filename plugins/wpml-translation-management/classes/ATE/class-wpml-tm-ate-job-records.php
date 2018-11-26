@@ -67,14 +67,27 @@ class WPML_TM_ATE_Job_Records {
 			$data = array();
 		}
 		$data[ $field_name ] = $field_value;
-		$this->store( $wpml_job_id, $data );
+		try {
+			$this->store( $wpml_job_id, $data );
+
+			return true;
+		} catch ( Exception $ex ) {
+			return false;
+		}
 	}
 
 	public function update_ate_job_data( $ate_job_id, $job_data ) {
 		$ate_job_id           = (int) $ate_job_id;
 		$data_from_ate_job_id = $this->get_data_from_ate_job_id( $ate_job_id );
 		$job_data             = array_merge( $data_from_ate_job_id['ate_job_data'], $job_data );
-		$this->store( $data_from_ate_job_id['wpml_job_id'], $job_data );
+
+		try {
+			$this->store( $data_from_ate_job_id['wpml_job_id'], $job_data );
+
+			return true;
+		} catch ( Exception $ex ) {
+			return false;
+		}
 	}
 
 	public function get_data_from_ate_job_id( $ate_job_id ) {
@@ -96,6 +109,13 @@ class WPML_TM_ATE_Job_Records {
 		return null;
 	}
 
+	/**
+	 * @param int   $wpml_job_id
+	 * @param array $ate_job_data
+	 *
+	 * @throws \HttpResponseException
+	 * @throws \Requests_Exception
+	 */
 	public function store( $wpml_job_id, array $ate_job_data ) {
 		$wpml_job_id = (int) $wpml_job_id;
 		$this->read_option_value();
@@ -106,10 +126,7 @@ class WPML_TM_ATE_Job_Records {
 		}
 
 		if ( array_key_exists( 'translated_xliff', $ate_job_data ) && $ate_job_data['translated_xliff'] ) {
-			$response = wp_remote_get( $ate_job_data['translated_xliff'] );
-			if ( 200 === (int) $response['response']['code'] ) {
-				$this->data[ $wpml_job_id ]['translated_xliff_download'] = $response['body'];
-			}
+			$this->get_xliff_file( $wpml_job_id, $ate_job_data );
 		}
 		update_option( self::WPML_TM_ATE_JOB_RECORDS, $this->data );
 	}
@@ -142,6 +159,26 @@ class WPML_TM_ATE_Job_Records {
 		}
 
 		return '';
+	}
+
+	/**
+	 * @param int   $wpml_job_id
+	 * @param array $ate_job_data
+	 *
+	 * @throws \Requests_Exception
+	 */
+	protected function get_xliff_file( $wpml_job_id, array $ate_job_data ) {
+		/** @var \WP_Error|array $response */
+		$response = wp_remote_get( $ate_job_data['translated_xliff'] );
+		if ( is_wp_error( $response ) ) {
+			throw new Requests_Exception( $response->get_error_message(), $response->get_error_code() );
+		} elseif ( isset( $response['response']['code'] ) && 200 !== (int) $response['response']['code'] ) {
+			throw new Requests_Exception( $response['response']['message'], $response['response']['code'] );
+		} elseif ( ! isset( $response['body'] ) || ! trim( $response['body'] ) ) {
+			throw new Requests_Exception( 'Missing body', 0 );
+		} else {
+			$this->data[ $wpml_job_id ]['translated_xliff_download'] = $response['body'];
+		}
 	}
 
 }

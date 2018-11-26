@@ -2,17 +2,8 @@
 
 class WPML_Post_Types extends WPML_SP_User {
 
-	public function get_translatable( $exclude_standard = false ) {
-		$custom_posts = array();
-		$post_types = $this->sitepress->get_translatable_documents( true );
-
-		foreach ( $post_types as $k => $v ) {
-			if ( ! $exclude_standard || 'attachment' !== $k ) {
-				$custom_posts[ $k ] = $v;
-			}
-		}
-
-		return $custom_posts;
+	public function get_translatable() {
+		return $this->sitepress->get_translatable_documents( true );
 	}
 
 	public function get_readonly() {
@@ -31,8 +22,8 @@ class WPML_Post_Types extends WPML_SP_User {
 		return $types;
 	}
 
-	public function get_translatable_and_readonly( $exclude_standard = false ) {
-		return $this->get_translatable( $exclude_standard ) + $this->get_readonly();
+	public function get_translatable_and_readonly() {
+		return $this->get_translatable() + $this->get_readonly();
 	}
 
 }

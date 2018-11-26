@@ -16,7 +16,7 @@ class WPML_PB_Loader {
 		$page_builder_config_import = new WPML_PB_Config_Import_Shortcode( $st_settings );
 		$page_builder_config_import->add_hooks();
 		if ( $page_builder_config_import->has_settings() ) {
-			$strategy = new WPML_PB_Shortcode_Strategy();
+			$strategy = new WPML_PB_Shortcode_Strategy( new WPML_Page_Builder_Settings() );
 			$strategy->add_shortcodes( $page_builder_config_import->get_settings() );
 			$page_builder_strategies[] = $strategy;
 		}

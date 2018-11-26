@@ -22,7 +22,7 @@ $wp_installer_instance = dirname( __FILE__ ) . '/installer.php';
 global $wp_installer_instances;
 $wp_installer_instances[ $wp_installer_instance ] = array(
 	'bootfile' => $wp_installer_instance,
-	'version'  => '1.8.19'
+	'version'  => '1.8.25'
 );
 
 

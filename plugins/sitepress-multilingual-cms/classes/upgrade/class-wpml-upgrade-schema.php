@@ -64,4 +64,8 @@ class WPML_Upgrade_Schema {
 			 	AND COLUMN_NAME = '{$column_name}'"
 		);
 	}
+
+	public function get_wpdb() {
+		return $this->wpdb;
+	}
 }

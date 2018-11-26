@@ -535,6 +535,11 @@
 					form.attr('disabled', 'disabled');
 					form.attr('readonly', 'readonly');
 					form.trigger('wpml-tm-basket-submitted', response);
+
+					if (0 === wpmlTMBasket.dialogs.length) {
+						location.href = wpmlTMBasket.redirect;
+					}
+
 					// hide the badge
 					jQuery('#wpml-basket-items').hide();
 

@@ -29,7 +29,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 *
 	 * @return stdClass|WP_Error
 	 */
-	protected function get_job_for_xliff( SimpleXMLElement $xliff ) {
+	public function get_job_for_xliff( SimpleXMLElement $xliff ) {
 		$identifier           = $this->identifier_from_xliff( $xliff );
 		$job_identifier_parts = explode( '-', $identifier );
 		if ( count( $job_identifier_parts ) === 2 && is_numeric( $job_identifier_parts[0] ) ) {
@@ -75,7 +75,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
 
-			if ( ! $this->is_valid_unit_content( $target ) ) {
+			if ( ! $this->is_valid_target( $target ) ) {
 				return $this->invalid_xliff_error( array( 'target' ) );
 			}
 
@@ -130,7 +130,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	}
 
 	/**
-	 * @param string $filename 
+	 * @param string $filename
 	 * @return bool
 	 */
 	function validate_file_name( $filename ) {

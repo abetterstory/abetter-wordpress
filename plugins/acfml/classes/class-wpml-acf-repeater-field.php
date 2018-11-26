@@ -34,6 +34,7 @@ class WPML_ACF_Repeater_Field {
 					$sub_field = $this->get_sub_acf_pro_repeater_field($sub_field_name);
 					if (isset($sub_field['type'])) {
 						$processed_data->related_acf_field_value['type'] = $sub_field['type'];
+						$processed_data->related_acf_field_value['taxonomy'] = $sub_field['taxonomy'];
 						if ('repeater' != $sub_field['type']) {
 							$field = $this->duplicated_post_object->get_field_object($processed_data, $field);
 						}

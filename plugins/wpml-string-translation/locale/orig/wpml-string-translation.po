@@ -788,14 +788,21 @@ msgstr ""
 msgid "Automatically add paragraphs"
 msgstr ""
 
-# 'strings' => array(
-# 'checkbox_enable_label' => sprintf( __( 'Use different slugs in different languages for %s.', 'wpml-string-translation' ), $custom_type->labels->name ),
-# 'slug_status_incomplete' => __( "Not marked as 'complete'. Press 'Save' to enable.", 'wpml-string-translation' ),
+# protected function get_privacy_policy() {
+# return __( 'WPML String Translation will send all strings to WPML’s Advanced Translation Editor and to the translation services which are used.', 'wpml-string-translation' );
+# }
 
-msgid "Use different slugs in different languages for %s."
+msgid "WPML String Translation will send all strings to WPML’s Advanced Translation Editor and to the translation services which are used."
 msgstr ""
 
-# 'checkbox_enable_label' => sprintf( __( 'Use different slugs in different languages for %s.', 'wpml-string-translation' ), $custom_type->labels->name ),
+# 'strings' => array(
+# 'toggle_slugs_table' => sprintf( __( 'Set different slugs in different languages for %s.', 'wpml-string-translation' ), $custom_type->labels->name ),
+# 'slug_status_incomplete' => __( "Not marked as 'complete'. Press 'Save' to enable.", 'wpml-string-translation' ),
+
+msgid "Set different slugs in different languages for %s."
+msgstr ""
+
+# 'toggle_slugs_table' => sprintf( __( 'Set different slugs in different languages for %s.', 'wpml-string-translation' ), $custom_type->labels->name ),
 # 'slug_status_incomplete' => __( "Not marked as 'complete'. Press 'Save' to enable.", 'wpml-string-translation' ),
 # 'original_label' => __( '(original)', 'wpml-string-translation' ),
 

@@ -44,7 +44,7 @@ class WPML_TM_ATE_API {
 			                                   'timeout' => 60,
 			                                   'method'  => $verb,
 			                                   'headers' => $this->json_headers(),
-			                                   'body'    => wp_json_encode( $params ),
+			                                   'body'    => wp_json_encode( $params, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ),
 		                                   ) );
 
 		return $this->get_response( $result );
@@ -188,7 +188,7 @@ class WPML_TM_ATE_API {
 
 			$response_body = json_decode( $response['body'], true );
 
-			if ( array_key_exists( 'errors', $response_body ) ) {
+			if ( is_array( $response_body ) && array_key_exists( 'errors', $response_body ) ) {
 				$errors = $response_body['errors'];
 			}
 

@@ -33,27 +33,86 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 	public function add_strings() {
 
 		$this->model['strings'] = array(
-			'title'        => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
-			'summary'      => __( 'WPML offers two kinds of translation editors for you to choose from. The classic editor is always free (included with WPML) and offers basic editing features. Our Advanced Translation Editor allows your translators to work much faster and more accurately.',
-			                      'wpml-translation-management' ),
-			'options'      => array(
-				'classic' => array('heading' => __( 'WPML’s Classic Translation Editor', 'wpml-translation-management' ),),
-				'ate'     => array('heading' => __( 'WPML’s Advanced Translation Editor', 'wpml-translation-management'), ),
+			'title'          => __( 'Choose Your Translation Editor', 'wpml-translation-management' ),
+			'summary'        => __( 'Quick Demo', 'wpml-translation-management' ),
+			'quick_demo_url' => 'https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/?utm_source=wpmlplugin&utm_campaign=tm-setup-wizard&utm_medium=quick-demo-link&utm_term=advanced-translation-editor#see-how-it-works',
+			'options'        => array(
+				'classic' => array(
+					'heading'    => __( 'Classic Translation Editor', 'wpml-translation-management' ),
+					'subheading' => __( 'Great for smaller sites', 'wpml-translation-management' ),
+
+				),
+				'ate'     => array(
+					'heading'        => __( 'Advanced Translation Editor', 'wpml-translation-management' ),
+					'subheading'     => __( 'Ideal for commercial sites', 'wpml-translation-management' ),
+					'extra_template' => array(
+						'template' => 'mcs-ate-controls.twig',
+						'model'    => $this->mscs_ate->get_model(),
+					)
+				),
 			),
-			'feature_1'    => __( 'Support for all content types', 'wpml-translation-management' ),
-			'feature_2'    => __( 'Spell checker', 'wpml-translation-management' ),
-			'feature_3'    => __( 'Translation Memory', 'wpml-translation-management' ),
-			'feature_4'    => __( 'Machine Translation', 'wpml-translation-management' ),
-			'feature_5'    => __( 'Translator preview', 'wpml-translation-management' ),
-			'feature_6'    => __( 'Cost', 'wpml-translation-management' ),
-			'classic_cost' => __( 'Included in WPML', 'wpml-translation-management' ),
-			'ate_cost_1'   => __( '$8 / month / translator', 'wpml-translation-management' ),
-			'ate_cost_2'   => __( 'Free during the beta period', 'wpml-translation-management' ),
-			'select'       => __( 'Select', 'wpml-translation-management' ),
-			'continue'     => __( 'Continue', 'wpml-translation-management' ),
-			'go_back'      => __( 'Back to adding translators', 'wpml-translation-management' ),
-			'after_table'  => __( '* You can always switch between the Classic and Advanced translation editors later.', 'wpml-translation-management' ),
-			'ate'          => $this->mscs_ate->get_model(),
+
+			'features' => array(
+				array(
+					'label'   => __( 'Support for all content types', 'wpml-translation-management' ),
+					'classic' => true,
+					'ate'     => true,
+				),
+				array(
+					'label'   => __( 'Spell checker', 'wpml-translation-management' ),
+					'classic' => false,
+					'ate'     => true,
+				),
+				array(
+					'label'   => __( 'Translation Memory', 'wpml-translation-management' ),
+					'classic' => false,
+					'ate'     => true,
+				),
+				array(
+					'label'   => __( 'Machine Translation', 'wpml-translation-management' ),
+					'classic' => false,
+					'ate'     => true,
+				),
+				array(
+					'label'   => __( 'HTML-free editing', 'wpml-translation-management' ),
+					'classic' => false,
+					'ate'     => true,
+				),
+				array(
+					'label'   => __( 'Translator preview', 'wpml-translation-management' ),
+					'classic' => false,
+					'ate'     => true,
+				)
+			),
+
+			'after_table' => array(
+				array(
+					array(
+						'type'  => 'text',
+						'value' => __( '* The Advanced Translation Editor is free now. When it goes out of beta, it will cost a small fee per user.', 'wpml-translation-management' ),
+					),
+					array(
+						'type'     => 'link',
+						'value'    => __( 'Pricing information', 'wpml-translation-management' ),
+						'url'      => 'https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/?utm_source=wpmlplugin&utm_campaign=tm-setup-wizard&utm_medium=pricing-information-link&utm_term=advanced-translation-editor#how-much-does-it-cost',
+						'external' => true,
+					),
+				),
+				array(
+					array(
+						'type'  => 'text',
+						'value' => __( '* WPML’s Advanced Translation Editor has no lock-in. Content that you translate with it, you can continue editing with the Translation Editor.', 'wpml-translation-management' ),
+					),
+				),
+			),
+
+			'ate' => $this->mscs_ate->get_model(),
+
+			'select'   => __( 'Select', 'wpml-translation-management' ),
+			'continue' => __( 'Continue', 'wpml-translation-management' ),
+			'go_back'  => __( 'Back to adding translators', 'wpml-translation-management' ),
+
+
 		);
 	}
 

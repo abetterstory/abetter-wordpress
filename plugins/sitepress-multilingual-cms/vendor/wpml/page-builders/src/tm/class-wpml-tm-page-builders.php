@@ -88,7 +88,6 @@ class WPML_TM_Page_Builders {
 			$string_id = $wrapper->get_string_id();
 
 			if ( $string_id ) {
-
 				do_action(
 					'wpml_add_string_translation',
 					$string_id,
@@ -100,6 +99,8 @@ class WPML_TM_Page_Builders {
 				);
 			}
 		}
+
+		do_action( 'wpml_pb_finished_adding_string_translations' );
 	}
 
 	/**

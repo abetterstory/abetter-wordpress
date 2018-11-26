@@ -1,6 +1,9 @@
 <div class="wpml-wrap">
 	<% if ( mode === 'translate' ) { %>
 		<h3 id="term-table-summary"><%= summaryTerms %></h3>
+		<% if ( TaxonomyTranslation.data.resultsTruncated ) { %>
+		<div class="icl-admin-message-warning"><p><%= resultsTruncated %></p></div>
+		<% } %>
 		<div id="wpml-taxonomy-translation-filters"></div>
 		<div id="wpml-taxonomy-translation-terms-table"></div>
 		<div id="wpml-taxonomy-translation-terms-nav"></div>

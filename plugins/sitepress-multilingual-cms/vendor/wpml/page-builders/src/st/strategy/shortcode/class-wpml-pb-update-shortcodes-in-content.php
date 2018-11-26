@@ -2,6 +2,8 @@
 
 class WPML_PB_Update_Shortcodes_In_Content {
 
+	const LONG_STRING_THRESHOLD = 5000;
+
 	/** @var  WPML_PB_Shortcode_Strategy $strategy */
 	private $strategy;
 	/** @var WPML_PB_Shortcode_Encoding $encoding */
@@ -80,20 +82,50 @@ class WPML_PB_Update_Shortcodes_In_Content {
 
 	private function replace_string_with_translation( $block, $original, $translation, $is_attribute = false, $attr = '' ) {
 		$translation = apply_filters( 'wpml_pb_before_replace_string_with_translation', $translation, $is_attribute );
+		$new_block   = $block;
 
-		$new_block = $block;
 		if ( $translation ) {
-			if ( $is_attribute && $attr ) {
-				$pattern   = '/' . $attr . '=(["\'])' . preg_quote( $original, '/' ) . '(["\'])/';
-				$new_block = preg_replace( $pattern, $attr . '=${1}' . $translation . '${2}', $block );
+
+			if ( $this->is_string_too_long_for_regex( $original ) ) {
+				$new_block         = str_replace( $original, $translation, $block );
+				$this->new_content = str_replace( $block, $new_block, $this->new_content );
 			} else {
-				$pattern   = '/(]\s*)' . preg_quote( trim( $original ), '/' ) . '(\s*\[)/';
-				$new_block = preg_replace( $pattern, '${1}' . trim( $translation ) . '${2}', $block );
+				if ( $is_attribute && $attr ) {
+					$pattern     = '/' . $attr . '=(["\'])' . preg_quote( $original, '/' ) . '(["\'])/';
+					$replacement = $attr . '=${1}' . $this->escape_backward_reference_on_replacement_string( $translation ) . '${2}';
+				} else {
+					$pattern     = '/(]\s*)' . preg_quote( trim( $original ), '/' ) . '(\s*\[)/';
+					$replacement = '${1}' . $this->escape_backward_reference_on_replacement_string( trim( $translation ) ) . '${2}';
+				}
+
+				$new_block         = preg_replace( $pattern, $replacement, $block );
+				$replacement       = $this->escape_backward_reference_on_replacement_string( $new_block );
+				$this->new_content = preg_replace( '/' . preg_quote( $block, '/' ) . '/', $replacement, $this->new_content, 1 );
 			}
-			$this->new_content = preg_replace( '/'. preg_quote( $block, '/' ) . '/', $new_block, $this->new_content, 1 );
 		}
 
 		return $new_block;
+	}
+
+	/**
+	 * We need to escape backward references that could be included in the replacement text
+	 * e.g. '$1999.each' => '$19' is considered as a backward reference
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function escape_backward_reference_on_replacement_string( $string ) {
+		return preg_replace( '/\$([\d]{1,2})/', '\\\$' . '${1}', $string );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return bool
+	 */
+	private function is_string_too_long_for_regex( $string ) {
+		return mb_strlen( $string ) > self::LONG_STRING_THRESHOLD;
 	}
 
 	private function get_translation( $original, $encoding = false ) {

@@ -5,6 +5,8 @@
  */
 class WPML_Meta_Boxes_Post_Edit_HTML {
 
+	const FLAG_HAS_MEDIA_OPTIONS = 'wpml_has_media_options';
+
 	/** @var SitePress $sitepress */
 	private $sitepress;
 	/** @var WPML_Post_Translation $post_translation */
@@ -56,6 +58,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 		$this->translation_of();
 		$this->languages_actions();
 		$this->copy_from_original( $post );
+		$this->media_options( $post );
 		do_action( 'icl_post_languages_options_after' );
 		$contents = ob_get_clean();
 
@@ -562,6 +565,37 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
                                             $this->post_translation->get_element_id( $source_lang, $trid ),
                                             $lang );
 		}
+	}
+
+	private function media_options( $post ) {
+		echo '<br /><br /><strong>' . esc_html__( 'Media attachments', 'sitepress' ) . '</strong>';
+
+		$original_post_id = (int) $this->post_translation->get_original_post_ID( $this->trid );
+
+		if( ! $original_post_id ){
+			$settings = get_option( '_wpml_media' );
+			$content_defaults = $settings['new_content_settings'];
+			$duplicate_media = $content_defaults['duplicate_media'];
+			$duplicate_featured  = $content_defaults['duplicate_featured'];
+		} else{
+			$duplicate_media = get_post_meta( $original_post_id, WPML_Admin_Post_Actions::DUPLICATE_MEDIA_META_KEY, true );
+			$duplicate_featured  = get_post_meta( $original_post_id, WPML_Admin_Post_Actions::DUPLICATE_FEATURED_META_KEY, true );
+		}
+
+		if( ! $original_post_id || (int) $post->ID === $original_post_id ){
+			$duplicate_media_label =  esc_html__('Duplicate uploaded media to translations', 'sitepress');
+			$duplicate_featured_label =  esc_html__('Duplicate featured image to translations', 'sitepress');
+		} else {
+			$duplicate_media_label =  esc_html__('Duplicate uploaded media from original', 'sitepress');
+			$duplicate_featured_label =  esc_html__('Duplicate featured image from original', 'sitepress');
+		}
+
+		echo '<br /><input name="' . self::FLAG_HAS_MEDIA_OPTIONS . '" type="hidden" value="1"/>';
+		echo '<br /><label><input name="wpml_duplicate_media" type="checkbox" value="1" ' .
+		     checked( $duplicate_media, true, false ) . '/>&nbsp;' . $duplicate_media_label . '</label>';
+		echo '<br /><label><input name="wpml_duplicate_featured" type="checkbox" value="1" ' .
+		     checked( $duplicate_featured, true, false ) . '/>&nbsp;' . $duplicate_featured_label . '</label>';
+
 	}
 
 	/**

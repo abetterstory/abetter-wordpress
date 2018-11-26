@@ -30,7 +30,7 @@ if ( ! function_exists( 'prepare_synchronization_needed_warning' ) ) {
 $default_language = $sitepress->get_default_language();
 
 $wpml_post_types = new WPML_Post_Types( $sitepress );
-$custom_posts = $wpml_post_types->get_translatable_and_readonly( true );
+$custom_posts = $wpml_post_types->get_translatable_and_readonly();
 
 $custom_posts_sync_not_set = array();
 foreach ( $custom_posts as $k => $custom_post ) {
@@ -183,9 +183,12 @@ if ( $custom_taxonomies ) {
 								    $translation_mode,
 								    $unlocked
 							    );
-								if ( $taxonomy_slug_UI ) { ?>
+
+							    $slug_UI = apply_filters( 'wpml_taxonomy_slug_translation_ui', $taxonomy_slug_UI, $ctax );
+
+							    if ( $slug_UI ) { ?>
 								<div class="wpml-flex-table-cell-span">
-									<?php echo $taxonomy_slug_UI->render( $ctax, $wp_taxonomies[ $ctax ] ); ?>
+									<?php echo $slug_UI->render( $ctax, $wp_taxonomies[ $ctax ] ); ?>
 								</div>
 							   <?php } ?>
 						    </div>

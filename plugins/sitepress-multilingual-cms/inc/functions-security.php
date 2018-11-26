@@ -62,6 +62,24 @@ if ( ! function_exists( 'uuid_v5' ) ) {
 }
 
 /**
+ * This function was introduced in WP 4.7.0
+ * Generate a random UUID (version 4).
+ *
+ * @return string UUID.
+ */
+if ( ! function_exists( 'wp_generate_uuid4' ) ) {
+	function wp_generate_uuid4() {
+		return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+		                mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+		                mt_rand( 0, 0xffff ),
+		                mt_rand( 0, 0x0fff ) | 0x4000,
+		                mt_rand( 0, 0x3fff ) | 0x8000,
+		                mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+		);
+	}
+}
+
+/**
  * @param string   $object_id
  * @param string   $object_type
  * @param int|null $timestamp   If this parameter is `null`, it will be assigned the current time

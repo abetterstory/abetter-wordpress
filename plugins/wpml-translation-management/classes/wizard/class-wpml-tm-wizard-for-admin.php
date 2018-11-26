@@ -20,6 +20,8 @@ class WPML_TM_Wizard_For_Admin extends WPML_Wizard {
 		wp_enqueue_script( 'wpml-tm-wizard' );
 		wp_enqueue_style( 'wpml-tooltip' );
 
+		wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
+
 		wp_enqueue_script( 'wpml-tm-translation-roles-select2',
 			WPML_TM_URL . '/res/js/translation-roles-select2.js',
 			array(),

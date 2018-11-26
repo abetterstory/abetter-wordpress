@@ -46,13 +46,29 @@ function wpml_site_uses_icl() {
  *
  * @return bool|mixed
  * @since      3.1
- * @deprecated 3.2 use 'wpml_setting' filter instead
+ * @deprecated 3.2 use `\wpml_setting` or 'wpml_get_setting_filter' filter instead
  */
 function icl_get_setting( $key, $default = false ) {
-    global $sitepress_settings;
-    $sitepress_settings = isset($sitepress_settings) ? $sitepress_settings : get_option('icl_sitepress_settings');
+	return wpml_get_setting( $key, $default );
+}
 
-    return isset( $sitepress_settings[ $key ] ) ? $sitepress_settings[ $key ] : $default;
+/**
+ * Get a WPML setting value
+ * If the Main SitePress Class cannot be accessed by the function it will read the setting from the database
+ * It will return `$default` if the requested key is not set
+ *
+ * @param mixed|null $default      Required. The value to return if the settings key does not exist.
+ *                                 (typically it's false, but you may want to use something else)
+ * @param string     $key          The settings name key to return the value of
+ *
+ * @return mixed The value of the requested setting, or `$default`
+ * @since 4.1
+ */
+function wpml_get_setting( $key, $default = null ) {
+	global $sitepress_settings;
+	$sitepress_settings = isset( $sitepress_settings ) ? $sitepress_settings : get_option( 'icl_sitepress_settings' );
+
+	return isset( $sitepress_settings[ $key ] ) ? $sitepress_settings[ $key ] : $default;
 }
 
 /**
@@ -64,18 +80,18 @@ function icl_get_setting( $key, $default = false ) {
  * @param mixed|false $default     Required. The value to return if the settings key does not exist.
  *                                 (typically it's false, but you may want to use something else)
  * @param string      $key         The settings name key to return the value of
- * @param mixed       $deprecated  Deprecated param.
- *
- * @todo  [WPML 3.3] Remove deprecated argument
  *
  * @return mixed The value of the requested setting, or $default
  * @since 3.2
  * @use \SitePress::api_hooks
  */
-function wpml_get_setting_filter( $default, $key, $deprecated = null ) {
-    $default = $deprecated !== null && !$default ? $deprecated : $default;
+function wpml_get_setting_filter( $default, $key ) {
+	$args = func_get_args();
+	if ( count( $args ) > 2 && $args[2] !== null ) {
+		$default = $args[2];
+	}
 
-    return icl_get_setting($key, $default);
+	return wpml_get_setting( $key, $default );
 }
 
 /**
@@ -574,8 +590,6 @@ function activate_installer( $sitepress = null ) {
 	include_once WPML_PLUGIN_PATH . '/vendor/otgs/installer/loader.php'; //produces global variable $wp_installer_instance
 	$args = array(
 		'plugins_install_tab' => 1,
-		'high_priority'       => 1,
-
 	);
 
 	if ( $sitepress ) {
@@ -725,4 +739,52 @@ if ( ! function_exists( 'wp_parse_url' ) ) {
  */
 function wpml_http_build_query( $query_data ) {
 	return http_build_query( $query_data, '', '&' );
+}
+
+/**
+ * @param array $array
+ * @param int   $sort_flags
+ *
+ * @uses \wpml_array_unique_fallback
+ *
+ * @return array
+ */
+function wpml_array_unique( $array, $sort_flags = SORT_REGULAR ) {
+	if ( version_compare( phpversion(), '5.2.9', '>=' ) ) {
+		return array_unique( $array, $sort_flags );
+	}
+
+	return wpml_array_unique_fallback( $array, true );
+}
+
+/**
+ * @param $array
+ * @param $keep_key_assoc
+ *
+ * @see \wpml_array_unique
+ *
+ * @return array
+ */
+function wpml_array_unique_fallback( $array, $keep_key_assoc ) {
+	$duplicate_keys = array();
+	$tmp            = array();
+
+	foreach ( $array as $key => $val ) {
+		// convert objects to arrays, in_array() does not support objects
+		if ( is_object( $val ) ) {
+			$val = (array) $val;
+		}
+
+		if ( ! in_array( $val, $tmp ) ) {
+			$tmp[] = $val;
+		} else {
+			$duplicate_keys[] = $key;
+		}
+	}
+
+	foreach ( $duplicate_keys as $key ) {
+		unset( $array[ $key ] );
+	}
+
+	return $keep_key_assoc ? $array : array_values( $array );
 }

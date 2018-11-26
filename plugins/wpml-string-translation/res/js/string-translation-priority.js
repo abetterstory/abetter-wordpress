@@ -62,7 +62,7 @@ WPML_String_Translation.ChangeTranslationPriority = function () {
             dropdownCss:        {'z-index': parseInt(jQuery('.ui-dialog').css('z-index'), 10) + 100},
             dropdownAutoWidth:  true
         });
-		jQuery('.js-change-translation-priority .select2-choice').addClass('button button-secondary').attr('disabled', 'true');
+        jQuery('.js-change-translation-priority .select2-choice').addClass('button button-secondary').attr('disabled', 'true');
     };
 
     init();

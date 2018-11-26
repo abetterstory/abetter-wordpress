@@ -363,7 +363,7 @@ class WPML_Translations_Queue {
 	}
 
 	public function translation_jobs_require_update( $jobs ) {
-		return apply_filters( 'wpml_tm_translation_queue_jobs_require_update', false, $jobs );
+		return apply_filters( 'wpml_tm_translation_queue_jobs_require_update', false, $jobs, true );
 	}
 
 	/**

@@ -29,7 +29,7 @@
             {% endif %}
 
             <h3>{{ active_service.get_name }}</h3>
-            <p>{{ active_service.get_description }}</p>
+            <p>{{ active_service.get_description|raw }}</p>
 
             <p><a target="_blank" href="{{ active_service.get_doc_url }}">{{ strings.documentation }}</a></p>
 

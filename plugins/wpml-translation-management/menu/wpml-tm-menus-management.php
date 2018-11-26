@@ -700,9 +700,9 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 			$source_language         = TranslationProxy_Basket::get_source_language();
 			$basket                  = new WPML_Translation_Basket( $wpdb );
 			$basket_name_placeholder = sprintf(
-				__( "%s|WPML|%s", 'wpml-translation-management' ), get_option( 'blogname' ), $source_language
+				__( "%s|WPML|%s", 'wpml-translation-management' ), htmlspecialchars_decode( get_option( 'blogname' ), ENT_QUOTES ), $source_language
 			);
-			$basket_name_placeholder = esc_attr( $basket->get_unique_basket_name( $basket_name_placeholder, $basket_name_max_length ) );
+			$basket_name_placeholder = $basket->get_unique_basket_name( $basket_name_placeholder, $basket_name_max_length );
 			$basket_languages        = TranslationProxy_Basket::get_target_languages();
 			$target_languages        = array();
 			$translators_dropdowns   = array();

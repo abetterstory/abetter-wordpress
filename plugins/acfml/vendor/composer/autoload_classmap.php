@@ -7,9 +7,15 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WPML_ACF' => $baseDir . '/classes/class-wpml-acf.php',
+    'WPML_ACF_Attachments' => $baseDir . '/classes/class-wpml-acf-attachments.php',
     'WPML_ACF_Convertable' => $baseDir . '/classes/wpml-acf-convertable.php',
+    'WPML_ACF_Custom_Fields_Sync' => $baseDir . '/classes/class-wpml-acf-custom-fields-sync.php',
+    'WPML_ACF_Display_Translated' => $baseDir . '/classes/class-wpml-acf-display-translated.php',
     'WPML_ACF_Duplicated_Post' => $baseDir . '/classes/class-wpml-acf-duplicated-post.php',
+    'WPML_ACF_Editor_Hooks' => $baseDir . '/classes/class-wpml-acf-editor-hooks.php',
     'WPML_ACF_Field' => $baseDir . '/classes/class-wpml-acf-field.php',
+    'WPML_ACF_Field_Annotations' => $baseDir . '/classes/class-wpml-acf-field-annotations.php',
+    'WPML_ACF_Location_Rules' => $baseDir . '/classes/class-wpml-acf-location-rules.php',
     'WPML_ACF_Page_Link_Field' => $baseDir . '/classes/class-wpml-acf-page-link-field.php',
     'WPML_ACF_Post_Id' => $baseDir . '/classes/class-wpml-acf-post-id.php',
     'WPML_ACF_Post_Ids' => $baseDir . '/classes/class-wpml-acf-post-ids.php',

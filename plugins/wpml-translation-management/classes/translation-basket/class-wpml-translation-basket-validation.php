@@ -38,6 +38,11 @@ class WPML_Translation_Basket_Validation {
 	private function get_base64_encoded_documents( $invalid_documents, $basket, $kind ) {
 		if ( array_key_exists( $kind, $basket ) ) {
 			foreach ( $basket[ $kind ] as $id => $document ) {
+
+				if ( ! get_post( $id ) ) {
+					continue;
+				}
+
 				$package = $this->package_helper->create_translation_package( $id );
 				foreach ( $package['contents'] as $slug => $field ) {
 					if ( array_key_exists( 'format', $field )

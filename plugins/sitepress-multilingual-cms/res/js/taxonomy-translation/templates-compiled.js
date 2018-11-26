@@ -480,41 +480,47 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="wpml-wrap">\r\n\t';
+__p += '<div class="wpml-wrap">\n\t';
  if ( mode === 'translate' ) { ;
-__p += '\r\n\t\t<h3 id="term-table-summary">' +
+__p += '\n\t\t<h3 id="term-table-summary">' +
 ((__t = ( summaryTerms )) == null ? '' : __t) +
-'</h3>\r\n\t\t<div id="wpml-taxonomy-translation-filters"></div>\r\n\t\t<div id="wpml-taxonomy-translation-terms-table"></div>\r\n\t\t<div id="wpml-taxonomy-translation-terms-nav"></div>\r\n\r\n\t\t<h3 id="term-label-summary">' +
+'</h3>\n\t\t';
+ if ( TaxonomyTranslation.data.resultsTruncated ) { ;
+__p += '\n\t\t<div class="icl-admin-message-warning"><p>' +
+((__t = ( resultsTruncated )) == null ? '' : __t) +
+'</p></div>\n\t\t';
+ } ;
+__p += '\n\t\t<div id="wpml-taxonomy-translation-filters"></div>\n\t\t<div id="wpml-taxonomy-translation-terms-table"></div>\n\t\t<div id="wpml-taxonomy-translation-terms-nav"></div>\n\n\t\t<h3 id="term-label-summary">' +
 ((__t = ( labelSummary )) == null ? '' : __t) +
-'</h3>\r\n\t\t';
+'</h3>\n\t\t';
  if ( TaxonomyTranslation.data.translatedTaxonomyLabels ) { ;
-__p += '\r\n\t\t\t<div id="wpml-taxonomy-translation-labels-table"></div>\r\n\t\t';
+__p += '\n\t\t\t<div id="wpml-taxonomy-translation-labels-table"></div>\n\t\t';
  } else { ;
-__p += '\r\n\t\t\t<div class="otgs-notice notice notice-warning"><p>' +
+__p += '\n\t\t\t<div class="otgs-notice notice notice-warning"><p>' +
 ((__t = ( labels.activateStringTranslation )) == null ? '' : __t) +
-'</p></div>\r\n\t\t';
+'</p></div>\n\t\t';
  } ;
-__p += '\r\n\t';
+__p += '\n\t';
  } else if ( mode === 'sync' ) { ;
-__p += '\r\n\t\t<div id="wpml-taxonomy-translation-filters"></div>\r\n\t\t';
+__p += '\n\t\t<div id="wpml-taxonomy-translation-filters"></div>\n\t\t';
  if ( hasContent ) { ;
-__p += '\r\n\t\t\t<div id="wpml-taxonomy-translation-terms-table"></div>\r\n\t\t\t<div id="wpml-taxonomy-translation-terms-nav"></div>\r\n\t\t\t<div class="wpml-tt-sync-section">\r\n\t\t\t\t<div class="wpml-tt-sync-legend">\r\n\t\t\t\t\t<strong>' +
+__p += '\n\t\t\t<div id="wpml-taxonomy-translation-terms-table"></div>\n\t\t\t<div id="wpml-taxonomy-translation-terms-nav"></div>\n\t\t\t<div class="wpml-tt-sync-section">\n\t\t\t\t<div class="wpml-tt-sync-legend">\n\t\t\t\t\t<strong>' +
 ((__t = ( labels.legend )) == null ? '' : __t) +
-'</strong>\r\n\t\t\t\t\t<span class="wpml-parent-added" style="background-color:#CCFF99;">' +
+'</strong>\n\t\t\t\t\t<span class="wpml-parent-added" style="background-color:#CCFF99;">' +
 ((__t = ( labels.willBeAdded )) == null ? '' : __t) +
-'</span>\r\n\t\t\t\t\t<span class="wpml-parent-removed" style="background-color:#F55959;">' +
+'</span>\n\t\t\t\t\t<span class="wpml-parent-removed" style="background-color:#F55959;">' +
 ((__t = ( labels.willBeRemoved )) == null ? '' : __t) +
-'</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="wpml-tt-sync-action">\r\n\t\t\t\t\t<input type="submit" class="button-primary button-lg" value="' +
+'</span>\n\t\t\t\t</div>\n\t\t\t\t<div class="wpml-tt-sync-action">\n\t\t\t\t\t<input type="submit" class="button-primary button-lg" value="' +
 ((__t = ( labels.synchronizeBtn )) == null ? '' : __t) +
-'" id="tax-apply">\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t';
+'" id="tax-apply">\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t';
  } else { ;
-__p += '\r\n\t\t\t<h2 class="text-center">' +
+__p += '\n\t\t\t<h2 class="text-center">' +
 ((__t = ( labelSynced )) == null ? '' : __t) +
-'</h2>\r\n\t\t';
+'</h2>\n\t\t';
  } ;
-__p += '\r\n\t';
+__p += '\n\t';
  } ;
-__p += '\r\n</div>\r\n';
+__p += '\n</div>\n';
 
 }
 return __p
