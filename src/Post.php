@@ -8,12 +8,21 @@ class Post extends Model {
 
 	public static $post;
 	public static $error;
+
 	public static $posttypes;
+	public static $front;
+	public static $news;
+	public static $privacy;
 
 	public static $languages;
 	public static $language;
 	public static $language_default;
 	public static $language_request;
+
+	public static $translation;
+	public static $translations;
+
+	public static $cache;
 
 	// --- Constructor
 
@@ -24,8 +33,9 @@ class Post extends Model {
 	// ---
 
 	public static function getFront() {
-		self::$post = get_post(get_option('page_on_front'));
+		self::$post = get_post(get_option('page_on_front')); // WPML filter this to current language
 		self::$post = self::getPostPreview();
+		self::$post = self::getPostL10n();
 		return self::prepared();
 	}
 
@@ -41,6 +51,7 @@ class Post extends Model {
 		}
 		self::$post = self::getPostPreview();
 		self::$post = self::getPostError();
+		self::$post = self::getPostL10n();
 		return self::prepared();
 	}
 
@@ -62,41 +73,32 @@ class Post extends Model {
 		return self::$error;
 	}
 
-	public static function getPostTypes() {
-		if (isset(self::$posttypes)) return self::$posttypes;
-		self::$posttypes = array_merge(['page','post'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
-		return self::$posttypes;
+	public static function getPostL10n() {
+		if (isset(self::$post->l10n)) return self::$post;
+		self::$post->l10n = new \StdClass();
+		self::$post->l10n->default = self::getDefaultLanguage();
+		self::$post->l10n->request = self::getRequestLanguage();
+		self::$post->l10n->language = self::getLanguage(self::$post);
+		self::$post->l10n->translations = self::getTranslations(self::$post);
+		self::$post->language = self::$post->l10n->language;
+		return self::$post;
 	}
 
 	// ---
 
-	public static function getDefaultLanguage() {
-		if (!empty(self::$language_default)) return self::$language_default;
-		if (function_exists('icl_object_id')) {
-			global $sitepress;
-			self::$language_default = $sitepress->get_default_language();
-		} else {
-			self::$language_default = strtolower(strtok(get_bloginfo('language'),'-'));
-		}
+	public static function getL10n($post) {
+		$l10n = new \StdClass();
+		$l10n->default = self::getDefaultLanguage();
+		$l10n->request = self::getRequestLanguage();
+		$l10n->language = self::getLanguage($post);
+		$l10n->translations = self::getTranslations($post);
+		return $l10n;
 	}
-
-	public static function getRequestLanguage() {
-		if (!empty(self::$language_request)) return self::$language_request;
-		if (defined('ICL_LANGUAGE_CODE')) {
-			self::$language_request = ICL_LANGUAGE_CODE;
-		} else {
-			self::$language_request = self::getDefaultLanguage();
-		}
-		return self::$language_request;
-	}
-
-	// ---
 
 	public static function getLanguage($post) {
 		$language = self::getDefaultLanguage();
  		if (function_exists('icl_object_id')) {
-			$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
- 			$language = ($lc = $GLOBALS['wpdb']->get_var('SELECT language_code FROM wp_icl_translations WHERE element_id = "'.$id.'"')) ? $lc : $language;
+ 			$language = ($lc = $GLOBALS['wpdb']->get_var("SELECT language_code FROM wp_icl_translations WHERE (element_id = \"{$post->ID}\" AND element_type = \"post_{$post->post_type}\")")) ? $lc : $language;
  		}
 		return $language;
 	}
@@ -104,9 +106,13 @@ class Post extends Model {
 	public static function getTranslations($post) {
 		$translations = [];
  		if (function_exists('icl_object_id')) {
-			$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
- 			$results = ($tr = $GLOBALS['wpdb']->get_results('SELECT language_code,element_id FROM wp_icl_translations WHERE trid = "'.$id.'"',ARRAY_N)) ? $tr : $translations;
+			$trid = $GLOBALS['wpdb']->get_var("SELECT trid FROM wp_icl_translations WHERE (element_id = \"{$post->ID}\" AND element_type = \"post_{$post->post_type}\")");
+ 			$results = ($tr = $GLOBALS['wpdb']->get_results("SELECT language_code,element_id FROM wp_icl_translations WHERE (trid = \"{$trid}\" AND element_type = \"post_{$post->post_type}\")",ARRAY_N)) ? $tr : $translations;
 			foreach ($results AS $row) $translations[(string)$row[0]] = (integer)$row[1];
+			//global $sitepress;
+			//$trid = $sitepress->get_element_trid($post->ID,'post_'.$post->post_type);
+			//$results = $sitepress->get_element_translations($trid,'post_'.$post->post_type);
+			//foreach ($results AS $row) $translations[$row->language_code] = (integer) $row->element_id;
  		}
 		return $translations;
 	}
@@ -122,9 +128,66 @@ class Post extends Model {
 	// ---
 
 	public static function isFront($post,$true='front',$false='') {
-		$id = (is_object($post) && isset($post->ID)) ? $post->ID : $post;
-		if (($front = get_option('page_on_front')) && $front == $id) return $true;
-		return $false;
+		return (in_array($post->ID,self::getFrontPages())) ? $true : $false;
+	}
+
+	// ---
+
+	public static function getDefaultLanguage() {
+		if (!empty(self::$language_default)) return self::$language_default;
+		if (function_exists('icl_object_id')) {
+			global $sitepress;
+			self::$language_default = $sitepress->get_default_language();
+		} else {
+			self::$language_default = strtolower(strtok(get_bloginfo('language'),'-'));
+		}
+		return self::$language_default;
+	}
+
+	public static function getRequestLanguage() {
+		if (!empty(self::$language_request)) return self::$language_request;
+		if (function_exists('icl_object_id')) {
+			self::$language_request = ICL_LANGUAGE_CODE;
+		} else {
+			self::$language_request = self::getDefaultLanguage();
+		}
+		return self::$language_request;
+	}
+
+	public static function getPostTypes() {
+		if (isset(self::$posttypes)) return self::$posttypes;
+		self::$posttypes = array_merge(['page','post'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
+		return self::$posttypes;
+	}
+
+	public static function getFrontPages() {
+		if (isset(self::$front)) return self::$front;
+		self::$front = ($front = _wp_option('page_on_front')) ? (array) $front : [];
+		if (function_exists('icl_object_id')) {
+			self::$front = ($result = $GLOBALS['wpdb']->get_results('SELECT element_id FROM wp_icl_translations WHERE trid = "'.$front.'"', ARRAY_N)) ? $result : self::$front;
+			foreach (self::$front AS &$row) $row = reset($row);
+		}
+		return self::$front;
+	}
+
+	public static function getNewsPages() {
+		if (isset(self::$news)) return self::$news;
+		self::$news = ($news = _wp_option('page_for_posts')) ? (array) $news : [];
+		if (function_exists('icl_object_id')) {
+			self::$news = ($result = $GLOBALS['wpdb']->get_results('SELECT element_id FROM wp_icl_translations WHERE trid = "'.$news.'"', ARRAY_N)) ? $result : self::$news;
+			foreach (self::$news AS &$row) $row = reset($row);
+		}
+		return self::$news;
+	}
+
+	public static function getPrivacyPages() {
+		if (isset(self::$privacy)) return self::$privacy;
+		self::$privacy = ($privacy = _wp_option('wp_page_for_privacy_policy')) ? (array) $privacy : [];
+		if (function_exists('icl_object_id')) {
+			self::$privacy = ($result = $GLOBALS['wpdb']->get_results('SELECT element_id FROM wp_icl_translations WHERE trid = "'.$privacy.'"', ARRAY_N)) ? $result : self::$privacy;
+			foreach (self::$privacys AS &$row) $row = reset($row);
+		}
+		return self::$privacy;
 	}
 
 	// ---

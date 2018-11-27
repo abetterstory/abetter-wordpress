@@ -632,33 +632,8 @@
                 "default_value": "",
                 "placeholder": "",
                 "maxlength": "",
-                "rows": 8,
+                "rows": 4,
                 "new_lines": ""
-            },
-            {
-                "key": "field_5bfc3fd0c92b5",
-                "label": "Design",
-                "name": "dev_mockup_design",
-                "type": "gallery",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "wrapper": {
-                    "width": "",
-                    "class": "",
-                    "id": ""
-                },
-                "min": "",
-                "max": "",
-                "insert": "append",
-                "library": "all",
-                "min_width": "",
-                "min_height": "",
-                "min_size": "",
-                "max_width": "",
-                "max_height": "",
-                "max_size": "",
-                "mime_types": ""
             }
         ],
         "location": [

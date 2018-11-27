@@ -121,9 +121,9 @@ class Menu {
 		$item->parent = (int) $term->menu_item_parent;
 		$item->style = (string) implode($term->classes," ");
 		$item->current = (string) _is_current($item->url,'current');
-		$item->front = Post::isFront($item->page_id);
-		$item->language = Post::getLanguage($item->page_id);
-		$item->translations = Post::getTranslations($item->page_id);
+		$item->front = Post::isFront($item->page);
+		$item->l10n = Post::getL10n($item->page);
+		$item->language = $item->l10n->language;
 		$item->items = array();
 		return $item;
 	}
@@ -163,6 +163,19 @@ class Menu {
 		return $page;
 	}
 
+ 	// ?
+
+	public static function translatePage($page,$language=NULL,$fallback=TRUE) {
+		if (($request = Post::getRequestLanguage($page)) != ($current = Post::getLanguage($page))) {
+			if ($id = Post::getTranslation($page,$request)) {
+				$page = get_post($id);
+			}
+		}
+		return $page;
+	}
+
+	// --
+
 	public static function getId($page=NULL) {
 		$page = self::getPage($page);
 		return (isset($page->ID)) ? $page->ID : "";
@@ -176,17 +189,6 @@ class Menu {
 	public static function getTitle($page=NULL) {
 		$page = self::getPage($page);
 		return (isset($page->post_title)) ? $page->post_title : "";
-	}
-
-	// ---
-
-	public static function translatePage($page,$language=NULL,$fallback=TRUE) {
-		if (($request = Post::getRequestLanguage($page->ID)) != ($current = Post::getLanguage($page->ID))) {
-			if ($id = Post::getTranslation($page->ID,$request)) {
-				$page = get_post($id);
-			}
-		}
-		return $page;
 	}
 
 	// ---

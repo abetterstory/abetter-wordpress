@@ -98,12 +98,15 @@ class Posts {
 		$item->category = (array) self::_wp_categories($post);
 		$item->tag = (array) self::_wp_tags($post);
 		$item->status = (string) $post->post_status;
-		$item->slug = (in_array($post->ID,self::_wp_fronts())) ? '/' : urldecode(get_page_uri($post));
+		$item->slug = (Post::isFront($post,TRUE)) ? '/' : urldecode(get_page_uri($post));
 		$item->url = (string) _relative(get_permalink($post));
 		$item->order = (int) $post->menu_order;
 		$item->parent = (int) $post->post_parent;
 		$item->current = (string) _is_current($item->url,'current');
-		$item->front = (string) _is_front($item->url,'front');
+		$item->front = Post::isFront($post,'front');
+		// ---
+		$item->l10n = Post::getL10n($post);
+		$item->language = $item->l10n->language;
 		// ---
 		$item->timestamp = (int) get_the_date('U',$post);
 		$item->date = (string) get_the_date('Y-m-d',$post);
@@ -154,25 +157,6 @@ class Posts {
 	public static function _wp_author($post,$author=[]) {
 		$author[get_the_author_meta('ID',$post->post_author)] = get_the_author_meta('nickname',$post->post_author);
 		return $author;
-	}
-
-	// ---
-
-	public static function _wp_option($name) {
-		if (isset(self::$cache['_wp_option_'][$name])) return self::$cache['_wp_option_'][$name];
-		global $GLOBALS; $option = $GLOBALS['wpdb']->get_row('SELECT option_value FROM wp_options WHERE option_name = "'.$name.'"', ARRAY_N);
-		$option = (is_array($option)) ? reset($option) : NULL;
-		self::$cache['_wp_option_'][$name] = $option;
-		return $option;
-	}
-
-	public static function _wp_fronts() {
-		if (isset(self::$cache['_wp_fronts'])) return self::$cache['_wp_fronts'];
-		$fronts = (array) self::_wp_option('page_on_front');
-		//global $GLOBALS; $results = $GLOBALS['wpdb']->get_results('SELECT element_id FROM wp_icl_translations WHERE trid = "'.self::_wp_option('page_on_front').'"', ARRAY_N);
-		//foreach ($results AS $row) $fronts[] = reset($row);
-		self::$cache['_wp_fronts'] = $fronts;
-		return $fronts;
 	}
 
 	// ---

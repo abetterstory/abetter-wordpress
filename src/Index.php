@@ -24,7 +24,9 @@ class Index {
 
 		Controller::loadWp();
 
-		self::$posts = get_posts(['post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC', 'suppress_filters' => FALSE]);
+		$wpml_bypass = FALSE;
+
+		self::$posts = get_posts(['post_type' => 'page', 'post_status' => 'any', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC', 'suppress_filters' => $wpml_bypass]);
 		self::$index = [];
 		self::$cleanup = [];
 
@@ -42,9 +44,9 @@ class Index {
 			$item->selector = "wp-{$post->post_type}-{$item->id}";
 			$item->preview = _relative(get_permalink($post));
 			$item->current = (string) _is_current($item->url,'current');
-			$item->front = Post::isFront($post->ID);
-			$item->language = Post::getLanguage($post->ID);
-			$item->translations = Post::getTranslations($post->ID);
+			$item->front = Post::isFront($post,'front');
+			$item->l10n = Post::getL10n($post);
+			$item->language = $item->l10n->language;
 			$item->items = array();
 			self::$index[$item->id] = $item;
 		}
