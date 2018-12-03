@@ -114,7 +114,7 @@ class Posts {
 		$item->datetime = (string) get_the_date('Y-m-d H:i',$post);
 		$item->datelong = (string) get_the_date('F j, Y',$post);
 		// ---
-		$item->title = (string) $post->post_title;
+		$item->title = (string) htmlspecialchars_decode($post->post_title);
 		$item->label = (string) ($f = get_field('teaser_label',$post)) ? $f : get_field('header_label',$post);
 		$item->headline = (string) ($f = get_field('teaser_headline',$post)) ? $f : get_field('header_headline',$post);
 		$item->lead = (string) ($f = get_field('teaser_excerpt',$post)) ? $f : get_field('header_lead',$post);
