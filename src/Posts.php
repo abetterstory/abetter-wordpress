@@ -38,6 +38,13 @@ class Posts {
 			$this->args['posts_per_page'] = (int) $this->args['numberposts'];
 		}
 
+		if (isset($this->args['s']) && ($s = $this->args['s'])) {
+			$search_meta = $GLOBALS['wpdb']->get_col("SELECT DISTINCT post_id FROM wp_postmeta WHERE (meta_value LIKE '%{$s}%')");
+			$search_posts = $GLOBALS['wpdb']->get_col("SELECT DISTINCT ID FROM wp_posts WHERE (post_title LIKE '%{$s}%' OR post_content LIKE '%{$s}%')");
+			$this->args['post__in'] = array_merge($search_meta, $search_posts);
+			unset($this->args['s']);
+		}
+
 		$this->query = new \WP_Query($this->args);
 		$this->posts = (!empty($this->query->posts)) ? $this->query->posts : [];
 		$this->found = (int) $this->query->found_posts;
