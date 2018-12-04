@@ -38,10 +38,8 @@ class Posts {
 			$this->args['posts_per_page'] = (int) $this->args['numberposts'];
 		}
 
-		if (isset($this->args['s']) && ($s = $this->args['s'])) {
-			$search_meta = $GLOBALS['wpdb']->get_col("SELECT DISTINCT post_id FROM wp_postmeta WHERE (meta_value LIKE '%{$s}%')");
-			$search_posts = $GLOBALS['wpdb']->get_col("SELECT DISTINCT ID FROM wp_posts WHERE (post_title LIKE '%{$s}%' OR post_content LIKE '%{$s}%')");
-			$this->args['post__in'] = array_merge($search_meta, $search_posts);
+		if (isset($this->args['s'])) {
+			$this->args['post__in'] = $this->searchItems($this->args['s']);
 			unset($this->args['s']);
 		}
 
@@ -75,6 +73,18 @@ class Posts {
 		$item = self::buildPost($post);
 		self::$cache['post'][$post->ID] = $item;
 		return $item;
+	}
+
+	// ---
+
+	public function searchItems($s) {
+		$keys = apply_filters('search_meta_keys',[]) ?? [];
+		$query = "SELECT DISTINCT post_id FROM wp_postmeta WHERE (meta_value LIKE '%{$s}%')";
+		$conditions = []; foreach ($keys AS $key) $conditions[] = "(meta_key = '{$key}' AND meta_value LIKE '%{$s}%')";
+		if ($conditions) $query = "SELECT DISTINCT post_id FROM wp_postmeta WHERE (".implode($conditions,' OR ').")";
+		$search_meta = $GLOBALS['wpdb']->get_col($query);
+		$search_posts = $GLOBALS['wpdb']->get_col("SELECT DISTINCT ID FROM wp_posts WHERE (post_title LIKE '%{$s}%' OR post_content LIKE '%{$s}%')");
+		return array_merge($search_meta, $search_posts);
 	}
 
 	// ---
