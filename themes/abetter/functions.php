@@ -3,6 +3,20 @@
 Wordpress theme functions and definitions
 */
 
+// Admin Menu Bar
+add_action('admin_bar_menu', function($wp_admin_bar){
+	$wp_admin_bar->add_node(array(
+		'id' => 'abetter-clear-cache',
+		'title' => '<span class="ab-icon"></span><span class="ab-label">Clear Cache@CDN</span>',
+		'href' => '/service/invalidate',
+		'meta' => array(
+			'target' => '_blank',
+			'onclick' => 'event.preventDefault(); if (window.abcc) return; window.abcc = 1; var $li = jQuery(event.target).closest("li"); $li.removeClass("done").addClass("invalidating"); jQuery.get("/aws/invalidate.json").done(function(res,txt,req){ window.abcc = 0; $li.removeClass("invalidating").addClass("done"); console.log("/aws/invalidate.json",{res:res,txt:txt,req:req}); });',
+			'html' => '<style>#wpadminbar #wp-admin-bar-abetter-clear-cache .ab-icon{position:relative;top:1px}#wpadminbar #wp-admin-bar-abetter-clear-cache .ab-label{margin-left:-2px}#wpadminbar #wp-admin-bar-abetter-clear-cache .ab-icon:before{position:relative;content:"\f182";top:0}#wpadminbar #wp-admin-bar-abetter-clear-cache.invalidating .ab-label{color:#fff!important;opacity:.4}#wpadminbar #wp-admin-bar-abetter-clear-cache.invalidating .ab-icon:before{color:#fff!important;content:"\f531"}#wpadminbar #wp-admin-bar-abetter-clear-cache.done .ab-icon:before{color:#fff!important;content:"\f147"}#wpadminbar #wp-admin-bar-abetter-clear-cache.invalidating .ab-icon{animation:rotating 2s linear infinite}@-webkit-keyframes rotating{from{transform:rotate(360deg)}to{transform:rotate(0)}}</style>'
+		)
+	));
+},9999);
+
 // Add developer role
 add_action('after_setup_theme',function(){
 	$admin_role = get_role('administrator');
