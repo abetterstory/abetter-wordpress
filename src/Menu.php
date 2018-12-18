@@ -9,6 +9,7 @@ class Menu {
 	public $id;
 	public $items;
 	public $breadcrumbs;
+	public $label;
 
 	public static $menu;
 
@@ -22,6 +23,7 @@ class Menu {
 			$this->id = $this->scope->id;
 			$this->items = self::getItems($this->id);
 			$this->breadcrumbs = self::getBreadcrumbs($this->id);
+			$this->label = self::getLabel($this->id);
 		}
 	}
 
@@ -43,6 +45,12 @@ class Menu {
 		if (isset(self::$menu[$id]->breadcrumbs)) return self::$menu[$id]->breadcrumbs;
 		self::build($id);
 		return self::$menu[$id]->breadcrumbs;
+	}
+
+	public static function getLabel($id) {
+		if (isset(self::$menu[$id]->label)) return self::$menu[$id]->label;
+		self::build($id);
+		return self::$menu[$id]->label;
 	}
 
 	// ---
