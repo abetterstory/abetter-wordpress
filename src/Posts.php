@@ -7,6 +7,11 @@ class Posts {
 	public $args;
 	public $query;
 	public $posts;
+	public $ids;
+	public $count;
+	public $total;
+	public $more;
+	public $meta;
 	public $items;
 
 	public static $cache;
@@ -45,7 +50,9 @@ class Posts {
 
 		$this->query = new \WP_Query($this->args);
 		$this->posts = (!empty($this->query->posts)) ? $this->query->posts : [];
-		$this->found = (int) $this->query->found_posts;
+		$this->count = count($this->posts);
+		$this->total = (int) $this->query->found_posts;
+		$this->more = ($this->total > $this->count) ? TRUE : FALSE;
 		$this->ids = [];
 		$this->items = [];
 
@@ -53,6 +60,8 @@ class Posts {
 			$this->items[$post->ID] = $this->buildItem($post);
 			$this->ids[] = $post->ID;
 		}
+
+		$this->meta = $this->getItemsMeta($this->items);
 
 		// ---
 
@@ -153,6 +162,25 @@ class Posts {
 			$item->image = $match[1];
 		}
 		return $item;
+	}
+
+	// ---
+
+	public static function getItemsMeta($items) {
+		$meta = new \StdClass();
+		$meta->type = [];
+		$meta->language = [];
+		$meta->category = [];
+		$meta->tag = [];
+		$meta->author = [];
+		foreach ($items AS $item) {
+			$meta->type += [$item->type];
+			$meta->language += [$item->language];
+			$meta->category += $item->category;
+			$meta->tag += $item->tag;
+			$meta->author += $item->author;
+		}
+		return $meta;
 	}
 
 	// ---
