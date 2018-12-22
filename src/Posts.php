@@ -168,6 +168,12 @@ class Posts {
 		$item->link = (string) _wp_field('cover_link',$post) ?: _wp_field('header_link',$post);
 		if (!$item->link) $item->link = (string) ($d = _dictionary($post->post_type.'_more',NULL,'')) ? $d : _dictionary('post_more',NULL,'');
 		// ---
+		$item->teaser_label = (string) _wp_field('teaser_label',$post) ?: $item->label;
+		$item->teaser_headline = (string) _wp_field('teaser_headline',$post) ?: $item->headline;
+		$item->teaser_excerpt = (string) _wp_field('teaser_excerpt',$post) ?: $item->excerpt;
+		$item->teaser_image = (string) _wp_field('teaser_image',$post) ?: $item->image;
+		$item->teaser_link = (string) _wp_field('teaser_link',$post) ?: $item->link;
+		// ---
 		return $item;
 	}
 
