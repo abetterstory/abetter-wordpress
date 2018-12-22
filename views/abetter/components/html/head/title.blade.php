@@ -1,7 +1,7 @@
 @php _debug('title');
 
 if (!$post->title = get_field('seo_title',$post)) {
-	$post->title = ($f = $item->headline) ? $f : $post->post_title;
+	$post->title = $item->headline ?? $post->post_title;
 	$post->title = str_replace('{TITLE}',$post->title,_dictionary('seo_title_default',NULL,$post->title));
 	$post->title = _excerpt($post->title,60);
 }
