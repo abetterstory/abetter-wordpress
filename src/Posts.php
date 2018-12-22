@@ -142,9 +142,9 @@ class Posts {
 		$item->datelong = (string) get_the_date('F j, Y',$post);
 		// ---
 		$item->title = (string) htmlspecialchars_decode($post->post_title);
-		$item->label = (string) ($f = _wp_field('teaser_label',$post)) ? $f : _wp_field('cover_label',$post);
-		$item->headline = (string) ($f = _wp_field('teaser_headline',$post)) ? $f : _wp_field('cover_headline',$post);
-		$item->lead = (string) ($f = _wp_field('teaser_excerpt',$post)) ? $f : _wp_field('cover_lead',$post);
+		$item->label = (string) _wp_field('cover_label',$post);
+		$item->headline = (string) _wp_field('cover_headline',$post);
+		$item->lead = (string) _wp_field('cover_lead',$post);
 		$item->excerpt = (string) trim(strip_tags($item->lead));
 		$item->content = (string) _wp_content($post);
 		if (!$item->headline && preg_match('/<h1[^>]*>([^<]+)<\/h1>(.*)/i',$item->content,$match)) {
@@ -158,12 +158,14 @@ class Posts {
 		if (!$item->headline) $item->headline = $item->title;
 		if (!$item->excerpt) $item->excerpt = _excerpt(($item->lead)?$item->lead:$item->content,400);
 		// ---
-		$item->image = (string) ($f = _wp_field('teaser_image',$post)) ? $f : (($f = _wp_field('cover_image',$post)) ? $f : '');
+
+		// ---
+		$item->image = (string) ($f = _wp_field('cover_image',$post)) ? $f : '';
 		if (!$item->image && preg_match('/<img[^>]*src="([^"]+)"/i',$item->content,$match)) {
 			$item->image = $match[1];
 		}
 		// ---
-		$item->link = (string) ($f = _wp_field('teaser_link',$post)) ? $f : _wp_field('cover_link',$post);
+		$item->link = (string) _wp_field('cover_link',$post);
 		if (!$item->link) $item->link = (string) ($d = _dictionary($post->post_type.'_more',NULL,'')) ? $d : _dictionary('post_more',NULL,'');
 		// ---
 		return $item;
