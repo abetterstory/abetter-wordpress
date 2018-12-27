@@ -100,7 +100,7 @@ class Menu {
 			if ($item->current) $menu->current = $item;
 		}
 		foreach ($items AS $item) { // Pass 2 : Hierarchy
-			if ($item->current && isset($items[$item->parent])) {
+			if ($item->current && isset($items[$item->parent]) && !preg_match('/not-current/',$item->style)) {
 				$items[$item->parent]->current .= ' current-child';
 			}
 			if ($item->parent && isset($items[$item->parent])) {
