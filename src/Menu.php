@@ -11,6 +11,14 @@ class Menu {
 	public $breadcrumbs;
 	public $label;
 
+	public static $languages;
+	public static $language;
+	public static $language_default;
+	public static $language_request;
+
+	public static $translation;
+	public static $translations;
+
 	public static $menu;
 
 	// --- Constructor
@@ -79,6 +87,8 @@ class Menu {
 		$menu->slug = strtolower($id);
 		$menu->props = ($props) ? (object) $props : NULL;
 		$menu->term = ($t = get_term_by('slug',$menu->slug,'nav_menu')) ? $t : ((isset(get_nav_menu_locations()[$menu->slug])) ? get_term(get_nav_menu_locations()[$menu->slug],'nav_menu') : NULL);
+		$menu->term = self::getTranslated($menu->term);
+		$menu->language = self::getLanguage($menu->term);
 		$menu->menu = (isset($menu->term->term_id)) ? wp_get_nav_menu_items($menu->term->term_id) : array();
 		$menu->terms = array();
 		$menu->current = (object) [];
@@ -169,6 +179,61 @@ class Menu {
 		}
 		$page = self::translatePage($page);
 		return $page;
+	}
+
+	// ---
+
+	public static function getTranslated($term) {
+		if (!function_exists('icl_object_id') || self::getRequestLanguage() == self::getDefaultLanguage()) return $term;
+		if ($translation = self::getTranslation($term,self::getRequestLanguage())) return get_term($translation);
+		return $term;
+	}
+
+	public static function getDefaultLanguage() {
+		if (!empty(self::$language_default)) return self::$language_default;
+		if (function_exists('icl_object_id')) {
+			global $sitepress;
+			self::$language_default = $sitepress->get_default_language();
+		} else {
+			self::$language_default = strtolower(strtok(get_bloginfo('language'),'-'));
+		}
+		return self::$language_default;
+	}
+
+	public static function getRequestLanguage() {
+		if (!empty(self::$language_request)) return self::$language_request;
+		if (function_exists('icl_object_id')) {
+			self::$language_request = ICL_LANGUAGE_CODE;
+		} else {
+			self::$language_request = self::getDefaultLanguage();
+		}
+		return self::$language_request;
+	}
+
+	public static function getLanguage($term) {
+		$language = self::getDefaultLanguage();
+ 		if (function_exists('icl_object_id')) {
+ 			$language = ($lc = $GLOBALS['wpdb']->get_var("SELECT language_code FROM wp_icl_translations WHERE (element_id = \"{$term->term_id}\" AND element_type = \"tax_{$term->taxonomy}\")")) ? $lc : $language;
+ 		}
+		return $language;
+	}
+
+	public static function getTranslations($term) {
+		$translations = [];
+		if (function_exists('icl_object_id')) {
+			$trid = $GLOBALS['wpdb']->get_var("SELECT trid FROM wp_icl_translations WHERE (element_id = \"{$term->term_id}\" AND element_type = \"tax_{$term->taxonomy}\")");
+			$results = ($tr = $GLOBALS['wpdb']->get_results("SELECT language_code,element_id FROM wp_icl_translations WHERE (trid = \"{$trid}\" AND element_type = \"tax_{$term->taxonomy}\")",ARRAY_N)) ? $tr : $translations;
+			foreach ($results AS $row) $translations[(string)$row[0]] = (integer)$row[1];
+		}
+		return $translations;
+	}
+
+	public static function getTranslation($term,$language) {
+		if (!$translations = self::getTranslations($term)) return NULL;
+		foreach ($translations AS $lc => $id) {
+			if ($lc == $language) return $id;
+		}
+		return NULL;
 	}
 
  	// ?
