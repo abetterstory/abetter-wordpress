@@ -127,6 +127,32 @@ class Post extends Model {
 
 	// ---
 
+	public static function getPage($id,$language=NULL) {
+		$post = NULL;
+		if (is_object($id)) {
+			$post = $id;
+		} else if (is_numeric($id)) {
+			$post = get_post($id);
+		} else if (is_string($id)) {
+			$post = get_page_by_path($id);
+		}
+		if (!$post) return NULL;
+		$post->l10n = $post->l10n ?? self::getL10n($post);
+		$post = self::getTranslated($post);
+		return $post;
+	}
+
+	public static function getTranslated($post,$language=NULL) {
+		if (!function_exists('icl_object_id') || empty($post->l10n) || self::getDefaultLanguage() == self::getRequestLanguage()) return $post;
+		if ($id = $post->l10n->translations[self::getRequestLanguage()]) {
+			$post = get_post($id);
+			$post->l10n = $post->l10n ?? self::getL10n($post);
+		}
+		return $post;
+	}
+
+	// ---
+
 	public static function isFront($post,$true='front',$false='') {
 		return (in_array($post->ID,self::getFrontPages())) ? $true : $false;
 	}
