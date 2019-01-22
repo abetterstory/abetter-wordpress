@@ -5,7 +5,8 @@ namespace ABetter\Wordpress;
 class SitemapComponent extends Component {
 	public function build() {
 
-		$this->baseurl = url('/').'/sitemap';
+		$this->domain = ($canonical = env('APP_CANONICAL')) ? $canonical : url('/');
+		$this->baseurl = $this->domain.'/sitemap';
 		$this->query = trim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/');
 		$this->types = Post::getPostTypes();
 		$this->type = (preg_match('/sitemap\_?([^\.]+)\.xml$/',$this->query,$match)) ? $match[1] : '';
@@ -41,7 +42,7 @@ $Sitemap = new SitemapComponent();
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	@foreach ($Sitemap->items AS $item)
     <url>
-        <loc>{{ url('/').$item->url }}</loc>
+        <loc>{{ $Sitemap->domain.$item->url }}</loc>
         <lastmod>{{ date('Y-m-d\TH:i:sP',$item->timestamp) }}</lastmod>
         <changefreq>{{ ($item->front) ? 'daily' : 'weekly' }}</changefreq>
         <priority>{{ ($item->front) ? '0.8' : '0.5' }}</priority>
