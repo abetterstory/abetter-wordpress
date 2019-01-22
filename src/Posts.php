@@ -86,14 +86,15 @@ class Posts {
 
 	// ---
 
-	public function searchItems($s) {
+	public function searchItems($s,$post__in=[]) {
 		$keys = apply_filters('search_meta_keys',[]) ?? [];
 		$query = "SELECT DISTINCT post_id FROM wp_postmeta WHERE (meta_value LIKE '%{$s}%')";
 		$conditions = []; foreach ($keys AS $key) $conditions[] = "(meta_key LIKE '%{$key}' AND meta_value LIKE '%{$s}%')";
 		if ($conditions) $query = "SELECT DISTINCT post_id FROM wp_postmeta WHERE (".implode($conditions,' OR ').")";
 		$search_meta = $GLOBALS['wpdb']->get_col($query);
 		$search_posts = $GLOBALS['wpdb']->get_col("SELECT DISTINCT ID FROM wp_posts WHERE (post_title LIKE '%{$s}%' OR post_content LIKE '%{$s}%')");
-		return array_merge($search_meta, $search_posts);
+		$post__in = array_merge($post__in, $search_meta, $search_posts);
+		return ($post__in) ? $post__in : [0];
 	}
 
 	// ---
