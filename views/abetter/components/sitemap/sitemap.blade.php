@@ -31,7 +31,7 @@ $Sitemap = new SitemapComponent();
 
 @php echo '<?xml version="1.0" encoding="UTF-8"?>' @endphp
 @if ($Sitemap->index)
-<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	@foreach ($Sitemap->types AS $type)
 	<sitemap>
 		<loc>{{ $Sitemap->baseurl.'_'.$type.'.xml' }}</loc>
