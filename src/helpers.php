@@ -54,6 +54,18 @@ if (! function_exists('___')) {
 
 // ---
 
+if (!function_exists('_wp_view')) {
+
+	function _wp_view($test=NULL) {
+		if (!$view = \ABetter\Wordpress\Controller::$handle->view) {
+			$ss = \ABetter\Wordpress\Controller::$handle->suggestions ?? [];
+			foreach ($ss AS $s) $view = (!$view && \View::exists($s)) ? $s : $view;
+		}
+		return ($test) ? ($test === $view) : $view;
+	}
+
+}
+
 if (!function_exists('_wp_post')) {
 
 	function _wp_page($id,$lang=NULL) {
