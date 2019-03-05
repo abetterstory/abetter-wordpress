@@ -49,6 +49,12 @@ class Post extends Model {
 				self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
 			}
 		}
+		// Fix WPML problem with identical slugs on translations
+		if (function_exists('icl_object_id')) {
+			if (($id = apply_filters('wpml_object_id', self::$post->ID)) && $id !== self::$post->ID) {
+				self::$post = get_post($id);
+			}
+		}
 		self::$post = self::getPostPreview();
 		self::$post = self::getPostError();
 		self::$post = self::getPostL10n();
