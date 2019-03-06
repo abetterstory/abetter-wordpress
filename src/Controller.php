@@ -22,6 +22,7 @@ class Controller extends BaseController {
 	public $error = NULL;
 
 	public static $handle = NULL;
+	public static $view = NULL;
 
 	// ---
 
@@ -76,6 +77,22 @@ class Controller extends BaseController {
 			$slug = preg_replace('/^'.$this->language.'\//','/',$slug);
 		}
 		return $slug;
+	}
+
+	// ---
+
+	public static function getView($is=NULL) {
+		if (!empty(self::$view)) return self::$view;
+		if (!self::$view = self::$handle->view) {
+			foreach (self::$handle->suggestions AS $s) {
+				self::$view = (!self::$view && \View::exists($s)) ? $s : self::$view;
+			}
+		}
+		return ($is) ? self::isView($is) : self::$view;
+	}
+
+	public static function isView($is,$true=TRUE,$false=FALSE) {
+		return ($is == self::getView()) ? $true : $false;
 	}
 
 	// ---

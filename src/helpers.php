@@ -56,12 +56,9 @@ if (! function_exists('___')) {
 
 if (!function_exists('_wp_view')) {
 
-	function _wp_view($test=NULL) {
-		if (!$view = \ABetter\Wordpress\Controller::$handle->view) {
-			$ss = \ABetter\Wordpress\Controller::$handle->suggestions ?? [];
-			foreach ($ss AS $s) $view = (!$view && \View::exists($s)) ? $s : $view;
-		}
-		return ($test) ? ($test === $view) : $view;
+	function _wp_view($is=NULL) {
+		if ($is) return \ABetter\Wordpress\Controller::isView($is);
+		return \ABetter\Wordpress\Controller::getView();
 	}
 
 }
