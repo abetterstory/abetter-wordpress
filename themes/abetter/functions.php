@@ -82,6 +82,13 @@ add_filter('content_save_pre', function($content){
 	return $content;
 });
 
+// Filter @components and images in post_content
+add_filter('content_save_pre', function($content) {
+	$content = preg_replace('/<p>(<img[^<]+)<\/p>/', "\n$1\n", $content);
+	$content = preg_replace('/<p>(@[^<]+)<\/p>/', "\n$1\n", $content);
+	return $content;
+});
+
 // TinyMCE Editor JS
 add_filter('mce_external_plugins', function($mce_plugins) {
 	$mce_plugins[] = get_template_directory_uri().'/editor.js';
