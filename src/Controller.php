@@ -111,6 +111,10 @@ class Controller extends BaseController {
 		return (!empty($this->args[0]) && preg_match('/^sitemap/',$this->args[0])) ? TRUE : FALSE;
 	}
 
+	public function isRobots() {
+		return (!empty($this->args[0]) && preg_match('/^robots/',$this->args[0])) ? TRUE : FALSE;
+	}
+
 	public function isError() {
 		return (!empty($this->post->error)) ? (int) $this->post->error : FALSE;
 	}
@@ -124,7 +128,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function getPost() {
-		if ($this->isFront() || $this->isSitemap()) return Post::getFront();
+		if ($this->isFront() || $this->isSitemap() || $this->isRobots()) return Post::getFront();
 		return Post::getPost($this->slug);
 	}
 
@@ -169,6 +173,7 @@ class Controller extends BaseController {
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
 		}
 		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		if ($this->isRobots()) return response()->view('robots')->header('Content-Type','text/plain');
 		if ($this->isSitemap()) return response()->view('sitemap')->header('Content-Type','text/xml');
 		foreach ($this->suggestions AS $suggestion) {
 			if (view()->exists($suggestion)) {
