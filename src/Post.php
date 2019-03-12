@@ -50,7 +50,7 @@ class Post extends Model {
 			}
 		}
 		// Fix WPML problem with identical slugs on translations
-		if (function_exists('icl_object_id')) {
+		if (function_exists('icl_object_id') && !empty(self::$post->ID)) {
 			if (($id = apply_filters('wpml_object_id', self::$post->ID)) && $id !== self::$post->ID) {
 				self::$post = get_post($id);
 			}
