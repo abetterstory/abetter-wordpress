@@ -117,6 +117,13 @@ class TranslationProxy {
 		$sitepress->save_settings();
 	}
 
+	/**
+	 * @param      $service
+	 * @param bool $custom_fields_data
+	 *
+	 * @return mixed
+	 * @throws \WPMLTranslationProxyApiException
+	 */
 	public static function build_and_store_active_translation_service( $service, $custom_fields_data = false ) {
 		global $sitepress;
 
@@ -307,7 +314,7 @@ class TranslationProxy {
 				$format_string = self::sanitize_custom_text( $string->format_string );
 
 				if ( $paragraph ) {
-					$format = '<p class="icl_status_jobs">' . $format_string . '</p>';
+					$format = '<p>' . $format_string . '</p>';
 				} else {
 					$format = '<div>' . $format_string . '</div>';
 				}
@@ -404,6 +411,7 @@ class TranslationProxy {
 	 *
 	 * @return bool
 	 * @throws \InvalidArgumentException
+	 * @throws \WPMLTranslationProxyApiException
 	 */
 	public static function service_requires_authentication( $service = false ) {
 		if ( ! $service ) {

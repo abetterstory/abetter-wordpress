@@ -39,6 +39,14 @@ abstract class WPML_Translation_Roles_Records {
 		return false;
 	}
 
+	public function delete_all() {
+		$users = $this->get_users_with_capability();
+		foreach( $users as $user ) {
+			$user = new WP_User( $user->ID );
+			$user->remove_cap( $this->get_capability() );
+		}
+	}
+
 	/**
 	 * @param string $compare
 	 * @param string $search

@@ -21,6 +21,9 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 	 */
 	private $back_trace;
 
+	const FILTER_PREFIX = 'wpseo_sitemap_';
+	const FILTER_SUFFIX = '_content';
+
 	/**
 	 * WPSEO_XML_Sitemaps_Filter constructor.
 	 *
@@ -44,7 +47,7 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 			add_filter( 'wpseo_typecount_join', array( $wpml_query_filter, 'filter_single_type_join' ), 10, 2 );
 			add_filter( 'wpseo_typecount_where', array( $wpml_query_filter, 'filter_single_type_where' ), 10, 2 );
 		} else {
-			add_filter( 'wpseo_sitemap_page_content', array( $this, 'add_languages_to_sitemap' ) );
+			add_action( 'init', array( $this, 'init_hooks_when_custom_post_types_are_available' ), 20 );
 			// Remove posts under hidden language.
 			add_filter( 'wpseo_xml_sitemap_post_url', array( $this, 'exclude_hidden_language_posts' ), 10, 2 );
 		}
@@ -56,7 +59,17 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 		add_filter( 'wpseo_enable_xml_sitemap_transient_caching', array( $this, 'transient_cache_filter' ), 10, 0 );
 		add_filter( 'wpseo_build_sitemap_post_type', array( $this, 'wpseo_build_sitemap_post_type_filter' ) );
 		add_action( 'wpseo_xmlsitemaps_config', array( $this, 'list_domains' ) );
-		add_filter( 'wpseo_sitemap_entry', array( $this, 'exclude_translations_of_static_home_page' ), 10, 3 );
+		add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', array( $this, 'exclude_translations_of_static_pages' ), 10, 3 );
+	}
+
+	/**
+	 * Delay these hooks until after 'init' so that custom post types are available.
+	 */
+	public function init_hooks_when_custom_post_types_are_available() {
+		$types = wp_list_pluck( $this->sitepress->get_translatable_documents(), 'name' );
+		foreach ( $types as $type ) {
+			add_filter( self::FILTER_PREFIX . $type . self::FILTER_SUFFIX, array( $this, 'add_languages_to_sitemap' ) );
+		}
 	}
 
 	/**
@@ -64,14 +77,37 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 	 * Do this only if configuration language per domain option is not used.
 	 */
 	public function add_languages_to_sitemap() {
+
 		$output = '';
+		$type = $this->get_sitemap_type();
+
+		// Check if page_for_posts is set and bail out early.
+		if ( 'post' === $type && ! get_option( 'page_for_posts' ) ) {
+			return $output;
+		}
+
+		// Loop through language adding urls.
 		$default_lang = $this->sitepress->get_default_language();
 		$active_langs = $this->sitepress->get_active_languages();
 		unset( $active_langs[ $default_lang ] );
 
 		foreach ( $active_langs as $lang_code => $lang_data ) {
-			$output .= $this->sitemap_url_filter( $this->wpml_url_converter->convert_url( home_url(), $lang_code ) );
+			switch ( $type ) {
+				case 'page':
+					$url = $this->get_translated_home_url( $lang_code );
+					break;
+				case 'post':
+					$url = $this->get_translated_page_for_posts( $lang_code );
+					break;
+				default:
+					$this->sitepress->switch_lang( $lang_code );
+					$url = get_post_type_archive_link( $type );
+					$this->sitepress->switch_lang();
+			}
+
+			$output .= $this->sitemap_url_filter( $url );
 		}
+
 		return $output;
 	}
 
@@ -201,6 +237,10 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 	 * @return string
 	 */
 	public function sitemap_url_filter( $url ) {
+		if ( ! $url ) {
+			return '';
+		}
+
 		$url = htmlspecialchars( $url );
 
 		$output = "\t<url>\n";
@@ -214,25 +254,22 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 	}
 
 	/**
-	 * @param $url
-	 * @param $type
-	 * @param $post_object
+	 * @param $excluded_post_ids
 	 *
-	 * @return string|bool
+	 * @return array
 	 */
-	public function exclude_translations_of_static_home_page( $url, $type, $post_object ) {
-		if ( 'post' !== $type || $this->is_per_domain() ) {
-			return $url;
-		}
-		$page_on_front = (int) get_option( 'page_on_front' );
-		if ( $page_on_front ) {
-			$translations = $this->sitepress->post_translations()->get_element_translations( $page_on_front );
-			unset( $translations[ $this->sitepress->get_default_language() ] );
-			if ( in_array( $post_object->ID, $translations, false ) ) {
-				$url = false;
+	public function exclude_translations_of_static_pages( $excluded_post_ids ) {
+		$static_pages = array( 'page_on_front', 'page_for_posts' );
+		foreach ( $static_pages as $static_page ) {
+			$page_id = (int) get_option( $static_page );
+			if ( $page_id ) {
+				$translations = (array) $this->sitepress->post_translations()->get_element_translations( $page_id );
+				unset( $translations[ $this->sitepress->get_default_language() ] );
+				$excluded_post_ids = array_merge( $excluded_post_ids, array_values( $translations ) );
 			}
 		}
-		return $url;
+
+		return $excluded_post_ids;
 	}
 
 	/**
@@ -267,4 +304,34 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 
 		return $this->back_trace;
 	}
+
+	/**
+	 * Figure out which sitemap we are working with by looking at the current filter.
+	 */
+	private function get_sitemap_type() {
+		global $wp_current_filter;
+
+		return substr( substr( end( $wp_current_filter ), strlen( self::FILTER_PREFIX ) ), 0, -strlen( self::FILTER_SUFFIX ) );
+	}
+
+	/**
+	 * @param $lang_code
+	 *
+	 * @return bool|mixed|string
+	 */
+	private function get_translated_home_url( $lang_code ) {
+		return $this->wpml_url_converter->convert_url( home_url(), $lang_code );
+	}
+
+	/**
+	 * @param $lang_code
+	 *
+	 * @return false|string
+	 */
+	private function get_translated_page_for_posts( $lang_code ) {
+		$page_for_posts = $this->sitepress->get_object_id( get_option( 'page_for_posts' ), 'page', true, $lang_code );
+
+		return get_permalink( $page_for_posts );
+	}
+
 }

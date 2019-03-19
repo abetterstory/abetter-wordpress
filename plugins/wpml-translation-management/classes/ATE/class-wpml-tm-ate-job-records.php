@@ -151,7 +151,17 @@ class WPML_TM_ATE_Job_Records {
 
 		$job_id = (int) $wpml_job_id;
 		if ( ! array_key_exists( $job_id, $this->data ) ) {
-			$this->data[ $job_id ] = array();
+			$data = apply_filters( 'wpml_tm_ate_job_data_fallback', array(), $job_id );
+			if ( $data ) {
+				try {
+					$this->store( $job_id, $data );
+				} catch ( Exception $e ) {
+					$error_log = new WPML_TM_ATE_API_Error();
+					$error_log->log( $e->getMessage() );
+				}
+			}
+
+			$this->data[ $job_id ] = $data;
 		}
 
 		if ( isset( $this->data[ $job_id ][ $field_name ] ) ) {

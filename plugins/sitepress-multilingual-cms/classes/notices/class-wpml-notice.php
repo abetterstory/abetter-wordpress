@@ -34,6 +34,12 @@ class WPML_Notice {
 
 	private $dismiss_reset = false;
 
+	/*
+	 * @var bool
+	 * @since 4.1.0
+	 */
+	private $flash = false;
+
 	/**
 	 * @var string
 	 */
@@ -334,4 +340,21 @@ class WPML_Notice {
 	public function is_different( WPML_Notice $other_notice ) {
 		return serialize( $this ) !== serialize( $other_notice );
 	}
+
+	/**
+	 * @param bool $flash
+	 * @since 4.1.0
+	 */
+	public function set_flash( $flash = true ){
+		$this->flash = (bool) $flash;
+	}
+
+	/**
+	 * @return bool
+	 * @since 4.1.0
+	 */
+	public function is_flash(){
+		return $this->flash;
+	}
+
 }

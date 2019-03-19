@@ -78,11 +78,20 @@ class WPML_TP_Service_Authentication extends WPML_TP_Service_Action {
 			$project = $this->project_factory->project( $service, $delivery );
 		} else {
 			$wp_api      = $this->sitepress->get_wp_api();
-			$url         = $wp_api->get_option( 'siteurl' );
-			$name        = $wp_api->get_option( 'blogname' );
-			$description = $wp_api->get_option( 'blogdescription' );
+			$blog_info = array(
+				'url'         => $wp_api->get_option( 'siteurl' ),
+				'name'        => $wp_api->get_option( 'blogname' ),
+				'description' => $wp_api->get_option( 'blogdescription' ),
+			);
+
+			$current_user = wp_get_current_user();
+			$client_data  = array(
+				'email' => $current_user->user_email,
+				'name'  => $current_user->display_name,
+			);
+
 			$project     = $this->project_factory->project( $service );
-			$project->create( $url, $name, $description, $delivery );
+			$project->create( $blog_info, $client_data, $delivery );
 		}
 
 		return $project;

@@ -68,18 +68,38 @@ class WPML_File {
 		return trailingslashit( $base['uri'] ) . $relative_path;
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public function get_relative_path( $path ) {
-		return str_replace( ABSPATH, '', $path );
+		return str_replace( $this->fix_dir_separator( ABSPATH ), '', $path );
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public function get_full_path( $path ) {
 		return ABSPATH . $this->get_relative_path( $path );
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return bool
+	 */
 	public function file_exists( $path ) {
 		return $this->filesystem->is_readable( $this->get_full_path( $path ) );
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return int
+	 */
 	public function get_file_modified_timestamp( $path ) {
 		return $this->filesystem->mtime( $this->get_full_path( $path ) );
 	}

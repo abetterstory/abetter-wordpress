@@ -79,6 +79,7 @@ jQuery(document).ready(function () {
 	jQuery('form[name="icl_custom_posts_sync_options"]').submit(iclSaveForm);
 	jQuery('form[name="icl_cf_translation"]').submit(iclSaveForm);
 	jQuery('form[name="icl_tcf_translation"]').submit(iclSaveForm);
+	jQuery('form[name="wpml-old-jobs-editor"]').submit(iclSaveForm);
 
 	var icl_translation_jobs_basket = jQuery('#icl-translation-jobs-basket');
 	icl_translation_jobs_basket.find('th :checkbox').change(iclTmSelectAllJobsBasket);

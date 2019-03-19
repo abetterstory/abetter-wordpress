@@ -33,7 +33,7 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 	}
 
 	private function add_admin_hooks() {
-		if ( is_admin() || $this->is_doing_xmlrpc() ) {
+		if ( is_admin() || $this->is_doing_xmlrpc() || $this->is_doing_rest_request() ) {
 			add_action( 'wp_ajax_wpml_delete_packages', array( $this, 'delete_packages_ajax' ) );
 			add_action( 'wp_ajax_wpml_change_package_lang', array( $this, 'change_package_lang_ajax' ) );
 
@@ -81,7 +81,6 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 
 			/* TM Hooks */
 			//This is called by \TranslationManagement::send_all_jobs - The hook is dynamically built.
-			add_action( 'wpml_tm_send_package_jobs', array( $this, 'send_jobs' ), 10, 5 );
 			add_filter( 'wpml_tm_dashboard_sql', array( $this, 'tm_dashboard_sql_filter' ), 10, 1 );
 
 			/* Translation editor hooks */
@@ -91,7 +90,6 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 			/* API Hooks */
 			//@deprecated @since 3.2 Use 'wpml_delete_package'
 			add_action( 'wpml_delete_package_action', array( $this, 'delete_package_action' ), 10, 2 );
-			add_action( 'wpml_delete_package', array( $this, 'delete_package_action' ), 10, 2 );
 
 			add_action( 'deleted_post', array( $this, 'remove_post_packages' ) );
 		}
@@ -100,7 +98,18 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 	private function is_doing_xmlrpc() {
 		return ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST );
 	}
-	
+
+	/**
+	 * @return bool
+	 */
+	private function is_doing_rest_request() {
+        /*
+         * We can't rely on REST_REQUEST constant because it is defined much later than this action
+         */
+
+		return false !== strpos( $_SERVER['REQUEST_URI'], 'wp-json' );
+	}
+
 	private function add_global_hooks() {
 
 		//TODO: deprecated, use the 'wpml_translate_string' filter
@@ -110,6 +119,7 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 		add_action( 'wpml_register_string', array( $this, 'register_string_action' ), 10, 5 );
 		add_action( 'wpml_start_string_package_registration', array( $this, 'start_string_package_registration_action' ), 10, 1 );
 		add_action( 'wpml_delete_unused_package_strings', array( $this, 'delete_unused_package_strings_action' ), 10, 1 );
+		add_action( 'wpml_delete_package', array( $this, 'delete_package_action' ), 10, 2 );
 		add_filter( 'wpml_st_get_post_string_packages', array( $this, 'get_post_string_packages' ), 10, 2 );
 
 		add_filter( 'wpml_string_id_from_package', array( $this, 'string_id_from_package_filter' ), 10, 4 );
@@ -218,7 +228,7 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 		require WPML_PACKAGE_TRANSLATION_PATH . '/inc/wpml-package-admin-lang-switcher.class.php';
 		$this->admin_lang_switcher = new WPML_Package_Admin_Lang_Switcher( $package, $args );
 	}
-	
+
 	function cleanup_translation_jobs_basket_packages( $translation_jobs_basket ) {
 		if ( empty( $translation_jobs_basket[ 'packages' ] ) ) {
 			return;
@@ -752,23 +762,6 @@ class WPML_Package_Translation extends WPML_Package_Helper {
 			</p>
 		</div>
 	<?php
-	}
-
-	function send_jobs( $item_type_name, $item_type, $package_basket_items, $translators, $batch_options ) {
-	  if ( $item_type_name === 'package' ) {
-			// for every post in cart
-			// prepare data for send_jobs() and do it
-			foreach ( $package_basket_items as $basket_item_id => $basket_item ) {
-				$jobs_data                        = array();
-				$jobs_data['iclpost'][]           = $basket_item_id;
-				$jobs_data['tr_action']           = $basket_item[ 'to_langs' ];
-				$jobs_data['translators']         = $translators;
-				$jobs_data['batch_name']          = $batch_options['basket_name'];
-				$jobs_data['batch_options']       = $batch_options;
-				$jobs_data['element_type_prefix'] = $item_type_name;
-				do_action( 'wpml_tm_send_jobs', $jobs_data );
-			}
-		}
 	}
 
 	public function tm_dashboard_sql_filter( $sql ) {

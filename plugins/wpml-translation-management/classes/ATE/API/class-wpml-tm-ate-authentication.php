@@ -105,7 +105,7 @@ class WPML_TM_ATE_Authentication {
 		$query['wpml_tm_version']   = WPML_TM_VERSION;
 		$query['shared_key']        = $this->get_shared();
 		$query['token']             = uuid_v5( wp_generate_uuid4(), $url );
-		$query['website_uuid']      = wpml_get_site_id();
+		$query['website_uuid']      = wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE );
 		$query['ui_language_code']  = apply_filters( 'wpml_get_user_admin_language',
 		                                            wpml_get_default_language(),
 		                                            get_current_user_id() );

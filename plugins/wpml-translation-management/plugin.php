@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Translation Management
 Plugin URI: https://wpml.org/
-Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-6-8/">WPML Translation Management 2.6.8 release notes</a>
+Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-8-3/">WPML Translation Management 2.8.3 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.6.8
+Version: 2.8.3
 Plugin Slug: wpml-translation-management
 */
 
@@ -13,7 +13,7 @@ if ( defined( 'WPML_TM_VERSION' ) || get_option( '_wpml_inactive' ) ) {
 	return;
 }
 
-define( 'WPML_TM_VERSION', '2.6.8' );
+define( 'WPML_TM_VERSION', '2.8.3' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -35,6 +35,7 @@ require_once WPML_TM_PATH . '/inc/constants.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/wpml-pro-translation.class.php';
 require_once WPML_TM_PATH . '/inc/functions-load.php';
 require_once WPML_TM_PATH . '/inc/js-scripts.php';
+require_once WPML_TM_PATH . '/inc/deprecated-hooks.php';
 
 new WPML_TM_Requirements();
 
@@ -60,10 +61,7 @@ function wpml_tm_load( $sitepress = null ) {
 	if ( version_compare( ICL_SITEPRESS_VERSION, '3.3.1', '>=' ) ) {
 		global $wpdb, $WPML_Translation_Management, $ICL_Pro_Translation;
 
-		$core_translation_management = wpml_load_core_tm();
-		$tm_loader                   = new WPML_TM_Loader();
-		$wpml_tp_translator          = new WPML_TP_Translator();
-		$WPML_Translation_Management = new WPML_Translation_Management( $sitepress, $tm_loader, $core_translation_management, $wpml_tp_translator );
+		$WPML_Translation_Management = wpml_translation_management();
 		$WPML_Translation_Management->init();
 		$WPML_Translation_Management->load();
 
@@ -96,12 +94,14 @@ function wpml_tm_load( $sitepress = null ) {
 			$translation_feedback_module->run();
 		}
 
-		$action_filter_loader->load( array(
-			                             'WPML_TM_Jobs_Deadline_Estimate_AJAX_Action_Factory',
-			                             'WPML_TM_Jobs_Deadline_Cron_Hooks_Factory',
-			                             'WPML_TM_Emails_Settings_Factory',
-			                             'WPML_TM_Jobs_Summary_Report_Hooks_Factory',
-		));
+		$action_filter_loader->load(
+			array(
+				'WPML_TM_Jobs_Deadline_Estimate_AJAX_Action_Factory',
+				'WPML_TM_Jobs_Deadline_Cron_Hooks_Factory',
+				'WPML_TM_Emails_Settings_Factory',
+				'WPML_TM_Jobs_Summary_Report_Hooks_Factory',
+			)
+		);
 	}
 
 	$actions = array(
@@ -123,6 +123,15 @@ function wpml_tm_load( $sitepress = null ) {
 		'WPML_TM_Admin_Menus_Factory',
 		'WPML_TM_Privacy_Content_Factory',
 		'WPML_TM_ATE_Translator_Login_Factory',
+		'WPML_TM_Serialized_Custom_Field_Package_Handler_Factory',
+		'WPML_TM_MCS_Pagination_Ajax_Factory',
+		'WPML_TM_Shortcodes_Catcher_Factory',
+		'WPML_TM_Disable_Notices_In_Wizard_Factory',
+		'WPML_Translation_Jobs_Migration_Hooks_Factory',
+		'WPML_TM_Only_I_Language_Pairs_Factory',
+		'WPML_TM_Post_Edit_TM_Editor_Select_Factory',
+		'WPML_TM_Translation_Jobs_Fix_Summary_Factory',
+		'WPML_TM_Troubleshooting_Fix_Translation_Jobs_TP_ID_Factory',
 	);
 	$action_filter_loader->load( $actions );
 
@@ -134,15 +143,22 @@ function wpml_tm_load( $sitepress = null ) {
 		'WPML_TM_REST_Jobs_Factory',
 		'WPML_TM_REST_ATE_Public_Factory',
 		'WPML_TM_REST_Settings_Translation_Editor_Factory',
+		'WPML_TM_REST_TP_XLIFF_Factory',
+		'WPML_TM_REST_Apply_TP_Translation_Factory',
+		'WPML_TM_REST_Batch_Sync_Factory',
+		'WPML_TM_REST_ATE_Sync_Jobs_Factory',
 	);
 	$action_filter_loader->load( $rest_actions );
 
 	$ams_ate_actions = array(
 		'WPML_TM_AMS_Synchronize_Actions_Factory',
+		'WPML_TM_AMS_Synchronize_Users_On_Access_Denied_Factory',
 		'WPML_TM_ATE_Jobs_Store_Actions_Factory',
 		'WPML_TM_ATE_Jobs_Actions_Factory',
+		'WPML_TM_ATE_Job_Data_Fallback_Factory',
 		'WPML_TM_ATE_Post_Edit_Actions_Factory',
 		'WPML_TM_ATE_Translator_Message_Classic_Editor_Factory',
+		'WPML_TM_Old_Editor_Factory',
 	);
 	$action_filter_loader->load( $ams_ate_actions );
 }
@@ -186,8 +202,10 @@ function wpml_tm_reset_options( array $options ) {
 	$options[] = WPML_TM_ATE_Job_Records::WPML_TM_ATE_JOB_RECORDS;
 	$options[] = WPML_TM_ATE_Authentication::AMS_DATA_KEY;
 	$options[] = WPML_Upgrade_Admins_To_Manage_Translations_Factory::HAS_RUN_OPTION;
-	$options[] = WPML_TM_Wizard_For_Manager_Options::WIZARD_COMPLETE;
-	$options[] = WPML_TM_Wizard_For_Manager_Options::CURRENT_STEP;
+	$options[] = WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_MANAGER;
+	$options[] = WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_ADMIN;
+	$options[] = WPML_TM_Wizard_Options::CURRENT_STEP;
+	$options[] = WPML_TM_Wizard_Options::WHO_WILL_TRANSLATE_MODE;
 
 	return $options;
 }

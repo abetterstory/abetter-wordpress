@@ -7,6 +7,7 @@ class WPML_ST_Package_Factory {
 
 	public function __construct( WPML_WP_Cache_Factory $cache_factory = null ) {
 		$this->cache_factory = $cache_factory;
+		wp_cache_add_non_persistent_groups( __CLASS__ );
 	}
 
 	/**

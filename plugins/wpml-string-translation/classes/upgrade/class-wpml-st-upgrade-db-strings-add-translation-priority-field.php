@@ -12,7 +12,7 @@ class WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field implements IWPML
 	}
 
 	public function run() {
-		$result = false;
+		$result = null;
 
 		$table_name = $this->wpdb->prefix . 'icl_strings';
 		if ( 0 !== count( $this->wpdb->get_results( "SHOW TABLES LIKE '{$table_name}'" ) ) ) {
@@ -24,18 +24,20 @@ class WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field implements IWPML
 				$result = false !== $this->wpdb->query( $sql );
 			}
 
-			$sql = "SHOW KEYS FROM  {$table_name} WHERE Key_name='icl_strings_translation_priority'";
-			if ( 0 === count( $this->wpdb->get_results( $sql ) ) ) {
-				$sql = "
-				ALTER TABLE {$this->wpdb->prefix}icl_strings 
-				ADD INDEX `icl_strings_translation_priority` ( `translation_priority` ASC )
-				";
+			if ( false !== $result ) {
+				$sql = "SHOW KEYS FROM  {$table_name} WHERE Key_name='icl_strings_translation_priority'";
+				if ( 0 === count( $this->wpdb->get_results( $sql ) ) ) {
+					$sql = "
+					ALTER TABLE {$this->wpdb->prefix}icl_strings 
+					ADD INDEX `icl_strings_translation_priority` ( `translation_priority` ASC )
+					";
 
-				$result = false !== $this->wpdb->query( $sql );
+					$result = false !== $this->wpdb->query( $sql );
+				}
 			}
 		}
 
-		return $result;
+		return (bool) $result;
 	}
 
 	public function run_ajax() {

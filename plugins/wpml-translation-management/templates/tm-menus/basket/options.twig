@@ -11,16 +11,22 @@
                value="{{ basket_name_placeholder }}"
                maxlength="{{ basket_name_max_length }}"
                placeholder="{{ basket_name_placeholder }}">
-        <a class="js-wpml-tooltip-open wpml-tooltip-open otgs-ico-help"
-           data-content="{{ strings.batch_name_desc }}"></a>
+		<a
+			class="js-otgs-popover-tooltip js-otgs-popover-tooltip otgs-ico-help"
+			data-tippy-zIndex="999999"
+			title="{{ strings.batch_name_desc }}"
+		> </a>
     </p>
 
     <p>
         <label for="basket-deadline">{{ strings.batch_deadline_label }}</label>
         <input id="basket-deadline" name="basket-deadline" type="text" value="{{ deadline_estimation_date }}">
-        <a class="js-wpml-tooltip-open wpml-tooltip-open otgs-ico-help"
-           data-content="{{ strings.batch_deadline_tooltip|raw }}"></a>
-        <span class="spinner"></span>
+		<a
+			class="js-otgs-popover-tooltip js-otgs-popover-tooltip otgs-ico-help"
+			data-tippy-zIndex="999999"
+			title="{{ strings.batch_deadline_tooltip|raw }}"
+		> </a>
+        <span class="spinner"> </span>
     </p>
 
     <h3 class="wpml-tm-section-header">{{ strings.heading_translators }}</h3>
@@ -40,8 +46,11 @@
                 <td class="column-translator" >
                     {{ dropdowns_translators[ lang.code ]|raw }}
                     {% if translation_service_enabled == false %}
-                    <a class="js-wpml-tooltip-open wpml-tooltip-open otgs-ico-help"
-                       data-content="{{ strings.pro_translation_tip }}{{ pro_translation_link }}"></a>
+						<a
+							class="js-otgs-popover-tooltip js-otgs-popover-tooltip otgs-ico-help"
+							data-tippy-zIndex="999999"
+							title="{{ strings.pro_translation_tip }}{{ pro_translation_link }}"
+						> </a>
                     {% endif %}
                 </td>
             </tr>

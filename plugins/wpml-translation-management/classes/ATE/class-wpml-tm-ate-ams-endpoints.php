@@ -26,14 +26,19 @@ class WPML_TM_ATE_AMS_Endpoints {
 	/**
 	 * ATE
 	 */
-	const ENDPOINTS_JOB         = '/api/wpml/job';
-	const ENDPOINTS_JOBS        = '/api/wpml/jobs';
-	const ENDPOINTS_MANAGERS    = '/api/wpml/websites/translation_managers';
-	const ENDPOINTS_SITE        = '/api/wpml/websites';
-	const ENDPOINTS_STATUS      = '/api/wpml/access_keys/{SHARED_KEY}/status';
-	const ENDPOINTS_TRANSLATORS = '/api/wpml/websites/translators';
-	const SERVICE_AMS           = 'ams';
-	const SERVICE_ATE           = 'ate';
+	const ENDPOINTS_JOB                 = '/api/wpml/job';
+	const ENDPOINTS_JOBS                = '/api/wpml/jobs';
+	const ENDPOINT_JOBS_BY_WPML_JOB_IDS = '/api/wpml/jobs/wpml';
+	const ENDPOINTS_MANAGERS            = '/api/wpml/websites/translation_managers';
+	const ENDPOINTS_SITE                = '/api/wpml/websites/create_unique';
+	const ENDPOINTS_STATUS              = '/api/wpml/access_keys/{SHARED_KEY}/status';
+	const ENDPOINTS_TRANSLATORS         = '/api/wpml/websites/translators';
+	const SERVICE_AMS                   = 'ams';
+	const SERVICE_ATE                   = 'ate';
+
+	const STORE_JOB = '/ate/jobs/store';
+	const JOBS_IN_PROGRESS = '/ate/jobs/in-progress';
+	const SYNC_JOBS = '/ate/jobs/sync';
 
 	/**
 	 * @return string
@@ -236,5 +241,19 @@ class WPML_TM_ATE_AMS_Endpoints {
 		return $this->get_endpoint_url( self::SERVICE_ATE,
 		                                self::ENDPOINTS_JOBS . $job_id_part,
 		                                array( 'status' => $statuses ) );
+	}
+
+	/**
+	 * @param int() $job_ids
+	 *
+	 * @return string
+	 */
+	public function get_ate_jobs_by_wpml_job_ids( $job_ids ) {
+		return $this->get_endpoint_url( self::SERVICE_ATE,
+			self::ENDPOINT_JOBS_BY_WPML_JOB_IDS,
+			array(
+				'site_identifier' => wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE ),
+				'wpml_job_ids'    => $job_ids,
+			) );
 	}
 }

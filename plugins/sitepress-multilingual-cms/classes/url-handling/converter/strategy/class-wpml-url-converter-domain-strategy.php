@@ -68,7 +68,7 @@ class WPML_URL_Converter_Domain_Strategy extends WPML_URL_Converter_Abstract_Str
 
 		$converted_url = http_build_url( $url_parts );
 
-		return $this->slash_helper->maybe_user_trailingslashit( $converted_url, 'trailingslashit' );
+		return $this->slash_helper->maybe_user_trailingslashit( $converted_url );
 	}
 
 	/**

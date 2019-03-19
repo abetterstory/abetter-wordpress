@@ -118,37 +118,17 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 	public function initialize_nodes_to_translate() {
 
 		$this->nodes_to_translate = array(
-			'rich-text'      => array(
-				'conditions' => array( 'type' => 'rich-text' ),
-				'fields'     => array(
-					array(
-						'field'       => 'text',
-						'type'        => __( 'Text Editor', 'sitepress' ),
-						'editor_type' => 'VISUAL'
-					),
-				),
-			),
-			'html'           => array(
-				'conditions' => array( 'type' => 'html' ),
-				'fields'     => array(
-					array(
-						'field'       => 'html',
-						'type'        => __( 'HTML', 'sitepress' ),
-						'editor_type' => 'VISUAL'
-					),
-				),
-			),
 			'button'         => array(
 				'conditions' => array( 'type' => 'button' ),
 				'fields'     => array(
 					array(
 						'field'       => 'text',
-						'type'        => __( 'Button', 'sitepress' ),
+						'type'        => __( 'Button: Text', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 					array(
 						'field'       => 'link',
-						'type'        => __( 'Link', 'sitepress' ),
+						'type'        => __( 'Button: Link', 'sitepress' ),
 						'editor_type' => 'LINK'
 					),
 				),
@@ -163,51 +143,55 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 					),
 					array(
 						'field'       => 'link',
-						'type'        => __( 'Link', 'sitepress' ),
+						'type'        => __( 'Heading: Link', 'sitepress' ),
 						'editor_type' => 'LINK'
 					),
 				),
 			),
-			'call to action' => array(
-				'conditions' => array( 'type' => 'cta' ),
+			'html'           => array(
+				'conditions' => array( 'type' => 'html' ),
 				'fields'     => array(
 					array(
-						'field'       => 'title',
-						'type'        => __( 'Call to Action: Heading', 'sitepress' ),
-						'editor_type' => 'LINE'
-					),
-					array(
-						'field'       => 'text',
-						'type'        => __( 'Call to Action: Text', 'sitepress' ),
+						'field'       => 'html',
+						'type'        => __( 'HTML', 'sitepress' ),
 						'editor_type' => 'VISUAL'
 					),
-					array(
-						'field'       => 'btn_text',
-						'type'        => __( 'Call to Action: Button text', 'sitepress' ),
-						'editor_type' => 'LINE'
-					),
-					array(
-						'field'       => 'btn_link',
-						'type'        => __( 'Call to Action: Button link', 'sitepress' ),
-						'editor_type' => 'LINK'
-					),
-
 				),
 			),
-			'icon'           => array(
-				'conditions' => array( 'type' => 'icon' ),
+			'photo'          => array(
+				'conditions' => array( 'type' => 'photo' ),
 				'fields'     => array(
 					array(
-						'field'       => 'text',
-						'type'        => __( 'Icon text', 'sitepress' ),
-						'editor_type' => 'VISUAL'
-					),
-					array(
-						'field'       => 'link',
-						'type'        => __( 'Link', 'sitepress' ),
+						'field'       => 'link_url',
+						'type'        => __( 'Photo: Link', 'sitepress' ),
 						'editor_type' => 'LINK'
 					),
 				),
+			),
+			'rich-text'      => array(
+				'conditions' => array( 'type' => 'rich-text' ),
+				'fields'     => array(
+					array(
+						'field'       => 'text',
+						'type'        => __( 'Text Editor', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+				),
+			),
+			'accordion'      => array(
+				'conditions'        => array( 'type' => 'accordion' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Beaver_Builder_Accordion',
+			),
+			'pricing-table'  => array(
+				'conditions'        => array( 'type' => 'pricing-table' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Beaver_Builder_Pricing_Table',
+			),
+			'tabs'           => array(
+				'conditions'        => array( 'type' => 'tabs' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Beaver_Builder_Tab',
 			),
 			'callout'        => array(
 				'conditions' => array( 'type' => 'callout' ),
@@ -238,23 +222,166 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 				'conditions' => array( 'type' => 'contact-form' ),
 				'fields'     => array(
 					array(
+						'field'       => 'name_placeholder',
+						'type'        => __( 'Contact Form: Name Field Placeholder', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'subject_placeholder',
+						'type'        => __( 'Contact Form: Subject Field Placeholder', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'email_placeholder',
+						'type'        => __( 'Contact Form: Email Field Placeholder', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'phone_placeholder',
+						'type'        => __( 'Contact Form: Phone Field Placeholder', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'message_placeholder',
+						'type'        => __( 'Contact Form: Your Message Placeholder', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'terms_checkbox_text',
+						'type'        => __( 'Contact Form: Checkbox Text', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'terms_text',
+						'type'        => __( 'Contact Form: Terms and Conditions', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+					array(
 						'field'       => 'success_message',
-						'type'        => __( 'Contact Form: Success message', 'sitepress' ),
+						'type'        => __( 'Contact Form: Success Message', 'sitepress' ),
 						'editor_type' => 'VISUAL'
 					),
 					array(
 						'field'       => 'btn_text',
-						'type'        => __( 'Contact Form: Button text', 'sitepress' ),
+						'type'        => __( 'Contact Form: Button Text', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 					array(
 						'field'       => 'success_url',
-						'type'        => __( 'Contact Form: Redirect link', 'sitepress' ),
+						'type'        => __( 'Contact Form: Redirect Link', 'sitepress' ),
 						'editor_type' => 'LINK'
 					),
 				),
 			),
-			'numbers'   => array(
+			'call-to-action' => array(
+				'conditions' => array( 'type' => 'cta' ),
+				'fields'     => array(
+					array(
+						'field'       => 'title',
+						'type'        => __( 'Call to Action: Heading', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'text',
+						'type'        => __( 'Call to Action: Text', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+					array(
+						'field'       => 'btn_text',
+						'type'        => __( 'Call to Action: Button text', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'btn_link',
+						'type'        => __( 'Call to Action: Button link', 'sitepress' ),
+						'editor_type' => 'LINK'
+					),
+
+				),
+			),
+			'subscribe-form' => array(
+				'conditions' => array( 'type' => 'subscribe-form' ),
+				'fields'     => array(
+					array(
+						'field'       => 'terms_checkbox_text',
+						'type'        => __( 'Subscribe form: Checkbox Text', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'terms_text',
+						'type'        => __( 'Subscribe form: Terms and Conditions', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+					array(
+						'field'       => 'custom_subject',
+						'type'        => __( 'Subscribe form: Notification Subject', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'success_message',
+						'type'        => __( 'Subscribe form: Success Message', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+					array(
+						'field'       => 'btn_text',
+						'type'        => __( 'Subscribe form: Button Text', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'success_url',
+						'type'        => __( 'Subscribe form: Redirect Link', 'sitepress' ),
+						'editor_type' => 'LINK'
+					),
+				),
+			),
+			'content-slider' => array(
+				'conditions'        => array( 'type' => 'content-slider' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Beaver_Builder_Content_Slider',
+			),
+			'icon'           => array(
+				'conditions' => array( 'type' => 'icon' ),
+				'fields'     => array(
+					array(
+						'field'       => 'text',
+						'type'        => __( 'Icon: Text', 'sitepress' ),
+						'editor_type' => 'VISUAL'
+					),
+					array(
+						'field'       => 'link',
+						'type'        => __( 'Icon: Link', 'sitepress' ),
+						'editor_type' => 'LINK'
+					),
+				),
+			),
+			'icon-group'     => array(
+				'conditions'        => array( 'type' => 'icon-group' ),
+				'fields'            => array(),
+				'integration-class' => 'WPML_Beaver_Builder_Icon_Group',
+			),
+			'map'            => array(
+				'conditions' => array( 'type' => 'map' ),
+				'fields'     => array(
+					array(
+						'field'       => 'address',
+						'type'        => __( 'Map: Address', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+				)
+			),
+			'testimonials'   => array(
+				'conditions'        => array( 'type' => 'testimonials' ),
+				'fields'            => array(
+					array(
+						'field'       => 'heading',
+						'type'        => __( 'Testimonial: Heading', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+
+				),
+				'integration-class' => 'WPML_Beaver_Builder_Testimonials',
+			),
+			'numbers'        => array(
 				'conditions' => array( 'type' => 'numbers' ),
 				'fields'     => array(
 					array(
@@ -267,72 +394,50 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 						'type'        => __( 'Number Counter: Text after number', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
-				),
-			),
-			'accordion'      => array(
-				'conditions'        => array( 'type' => 'accordion' ),
-				'fields'            => array(),
-				'integration-class' => 'WPML_Beaver_Builder_Accordion',
-			),
-			'tabs'            => array(
-				'conditions'        => array( 'type' => 'tabs' ),
-				'fields'            => array(),
-				'integration-class' => 'WPML_Beaver_Builder_Tab',
-			),
-			'content-slider'            => array(
-				'conditions'        => array( 'type' => 'content-slider' ),
-				'fields'            => array(),
-				'integration-class' => 'WPML_Beaver_Builder_Content_Slider',
-			),
-			'testimonials'            => array(
-				'conditions'        => array( 'type' => 'testimonials' ),
-				'fields'            => array(
 					array(
-						'field'       => 'heading',
-						'type'        => __( 'Testimonial heading', 'sitepress' ),
+						'field'       => 'number_prefix',
+						'type'        => __( 'Number Counter: Number Prefix', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
-
+					array(
+						'field'       => 'number_suffix',
+						'type'        => __( 'Number Counter: Number Suffix', 'sitepress' ),
+						'editor_type' => 'LINE'
+					)
 				),
-				'integration-class' => 'WPML_Beaver_Builder_Testimonials',
 			),
-			'subscribe-form'        => array(
-				'conditions' => array( 'type' => 'subscribe-form' ),
+			'post-grid'      => array(
+				'conditions' => array( 'type' => 'post-grid' ),
 				'fields'     => array(
 					array(
-						'field'       => 'success_message',
-						'type'        => __( 'Subscribe form: Success message', 'sitepress' ),
+						'field'       => 'no_results_message',
+						'type'        => __( 'Posts: No Results Message', 'sitepress' ),
 						'editor_type' => 'VISUAL'
 					),
 					array(
-						'field'       => 'btn_text',
-						'type'        => __( 'Subscribe form: Button text', 'sitepress' ),
+						'field'       => 'more_btn_text',
+						'type'        => __( 'Posts: Button Text', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 					array(
-						'field'       => 'success_url',
-						'type'        => __( 'Subscribe form: Redirect link', 'sitepress' ),
-						'editor_type' => 'LINK'
+						'field'       => 'terms_list_label',
+						'type'        => __( 'Posts: Terms Label', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'more_link_text',
+						'type'        => __( 'Posts: More Link Text', 'sitepress' ),
+						'editor_type' => 'LINE'
 					),
 				),
 			),
-			'pricing-table'            => array(
-				'conditions'        => array( 'type' => 'pricing-table' ),
-				'fields'            => array(),
-				'integration-class' => 'WPML_Beaver_Builder_Pricing_Table',
-			),
-			'icon-group'            => array(
-				'conditions'        => array( 'type' => 'icon-group' ),
-				'fields'            => array(),
-				'integration-class' => 'WPML_Beaver_Builder_Icon_Group',
-			),
-			'photo'        => array(
-				'conditions' => array( 'type' => 'photo' ),
+			'post-slider'    => array(
+				'conditions' => array( 'type' => 'post-slider' ),
 				'fields'     => array(
 					array(
-						'field'       => 'link_url',
-						'type'        => __( 'Link', 'sitepress' ),
-						'editor_type' => 'LINK'
+						'field'       => 'more_link_text',
+						'type'        => __( 'Posts Slider: More Link Text', 'sitepress' ),
+						'editor_type' => 'LINE'
 					),
 				),
 			),

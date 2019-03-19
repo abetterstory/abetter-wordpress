@@ -53,7 +53,10 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality{
 
 	function icl_st_render_option_writes( $option_name, $option_value, $option_key = '' ) {
 		$sub_key = $option_key . '[' . $option_name . ']';
-		if ( is_array( $option_value ) || is_object( $option_value ) ) {
+		if (
+			is_array( $option_value ) ||
+			( is_object( $option_value ) && '__PHP_Incomplete_Class' !== get_class( $option_value ) )
+		) {
 			$output = '<h4><a class="icl_stow_toggler" href="#">+ ' . $option_name
 			          . '</a></h4><ul class="icl_st_option_writes" style="display: none">';
 			foreach ( $option_value as $key => $value ) {
@@ -200,9 +203,10 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality{
 
 	function clear_cache_for_option() {
 		$option_name = substr( current_filter(), 14 );
-		foreach ( array_keys( $this->icl_st_cache ) as $lang_code ) {
-			if ( isset( $this->icl_st_cache[ $lang_code ][ $option_name ] ) ) {
-				unset ( $this->icl_st_cache[ $lang_code ][ $option_name ] );
+		$blog_id = get_current_blog_id();
+		foreach ( $this->icl_st_cache[ $blog_id ] as $lang_code => &$cache_data ) {
+			if ( array_key_exists( $option_name, $cache_data ) ) {
+				unset( $cache_data[ $option_name ] );
 			}
 		}
 	}

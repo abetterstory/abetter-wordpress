@@ -74,21 +74,20 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		if ( $translation_record ) {
 			$trid = $translation_record->trid();
 
-			$dummy_basket_data = array(
-				'post'                => array( $element_id ),
-				'translate_from'      => $translation_record->language_code(),
-				'translate_to'        => array( $target_language_code => 1 ),
+			$batch = new WPML_TM_Translation_Batch(
+				array(
+					new WPML_TM_Translation_Batch_Element(
+						$element_id,
+						$element_type_prefix,
+						$translation_record->language_code(),
+						array( $target_language_code => 1 )
+					)
+				),
+				TranslationProxy_Batch::get_generic_batch_name(),
+				array( $target_language_code => $translator_id ? $translator_id : 0 )
 			);
 
-			if ( $element_type ) {
-				$dummy_basket_data['element_type_prefix'] = $element_type_prefix;
-			}
-
-			if ( null !== $translator_id ) {
-				$dummy_basket_data['translators'] = array( $target_language_code => $translator_id );
-			}
-
-			$iclTranslationManagement->send_jobs( $dummy_basket_data );
+			$iclTranslationManagement->send_jobs( $batch, $element_type_prefix );
 		}
 
 		return $this->job_id_by_trid_and_lang( $trid, $target_language_code );
@@ -352,6 +351,19 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		return $output;
 	}
 
+	/**
+	 * @param int $job_id
+	 * @param array $data
+	 */
+	public function update_job_data( $job_id, array $data ) {
+		global $wpdb;
+		$wpdb->update(
+			$wpdb->prefix . 'icl_translate_job',
+			$data,
+			array( 'job_id' => $job_id )
+		);
+	}
+
 	private function get_job_select(
 		$icl_translate_alias = 'iclt',
 		$icl_translations_translated_alias = 't',
@@ -378,7 +390,8 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				{$icl_translations_original_alias}.element_type AS original_post_type,
 				{$icl_translate_job_alias}.title,
 				{$icl_translate_job_alias}.deadline_date,
-				{$icl_translate_job_alias}.completed_date";
+				{$icl_translate_job_alias}.completed_date,
+				{$icl_translate_job_alias}.editor";
 	}
 
 	private function add_job_elements( $job, $include_non_translatable_elements ) {

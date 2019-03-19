@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf73f6009d51f53b5b1f6ec1e11d4f7b0
+class ComposerStaticInit7ee13be32fadf7e56d22c491fd947c7e
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -26,7 +26,9 @@ class ComposerStaticInitf73f6009d51f53b5b1f6ec1e11d4f7b0
         'WPML_ACF_Editor_Hooks' => __DIR__ . '/../..' . '/classes/class-wpml-acf-editor-hooks.php',
         'WPML_ACF_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field.php',
         'WPML_ACF_Field_Annotations' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-annotations.php',
+        'WPML_ACF_Field_Settings' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-settings.php',
         'WPML_ACF_Location_Rules' => __DIR__ . '/../..' . '/classes/class-wpml-acf-location-rules.php',
+        'WPML_ACF_Options_Page' => __DIR__ . '/../..' . '/classes/class-wpml-acf-options-page.php',
         'WPML_ACF_Page_Link_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-page-link-field.php',
         'WPML_ACF_Post_Id' => __DIR__ . '/../..' . '/classes/class-wpml-acf-post-id.php',
         'WPML_ACF_Post_Ids' => __DIR__ . '/../..' . '/classes/class-wpml-acf-post-ids.php',
@@ -49,8 +51,8 @@ class ComposerStaticInitf73f6009d51f53b5b1f6ec1e11d4f7b0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitf73f6009d51f53b5b1f6ec1e11d4f7b0::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitf73f6009d51f53b5b1f6ec1e11d4f7b0::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit7ee13be32fadf7e56d22c491fd947c7e::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit7ee13be32fadf7e56d22c491fd947c7e::$classMap;
 
         }, null, ClassLoader::class);
     }

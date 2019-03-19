@@ -167,16 +167,16 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		$uuid            = $this->get_uuid();
 
 		try {
-			$res = $project->send_to_translation_batch_mode( $file, $title, $cms_id, $url, $source_language, $target_language, $word_count, $translator_id, $note, $uuid );
+			$tp_job_id = $project->send_to_translation_batch_mode( $file, $title, $cms_id, $url, $source_language, $target_language, $word_count, $translator_id, $note, $uuid );
 		} catch ( Exception $err ) {
 			// The translation entry will be removed
 			$project->errors[] = $err;
-			$res = 0;
+			$tp_job_id = 0;
 		}
 
 		$translation_id = $this->get_translation_id();
 
-		if ( $res ) {
+		if ( $tp_job_id ) {
 			$tm_instance->update_translation_status( array(
 				'translation_id' => $translation_id,
 				'translator_id'  => $translator_id,
@@ -212,7 +212,7 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 			$err = true;
 		}
 
-		return array( isset( $err ) ? $err : false, $project, $res );
+		return array( isset( $err ) ? $err : false, $project, $tp_job_id );
 	}
 
 	/**

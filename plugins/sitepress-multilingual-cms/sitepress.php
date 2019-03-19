@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Multilingual CMS
 Plugin URI: https://wpml.org/
-Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-4-0-8/">WPML 4.0.8 release notes</a>
+Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-4-2-4-1/">WPML 4.2.4.1 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 4.0.8
+Version: 4.2.4.1
 Plugin Slug: sitepress-multilingual-cms
 */
 
@@ -18,7 +18,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) || ( (bool) get_option( '_wpml_inactive'
 	return;
 }
 
-define( 'ICL_SITEPRESS_VERSION', '4.0.8' );
+define( 'ICL_SITEPRESS_VERSION', '4.2.4' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -90,6 +90,13 @@ require WPML_PLUGIN_PATH . '/inc/setup/sitepress-schema.php';
 
 require WPML_PLUGIN_PATH . '/inc/functions-load.php';
 require WPML_PLUGIN_PATH . '/inc/constants.php';
+
+/**
+ * Initialize otgs/ui as soon as `WPML_PLUGIN_PATH` becomes available
+ */
+require_once( $autoloader_dir . '/otgs/ui/loader.php' );
+otgs_ui_initialize( WPML_PLUGIN_PATH . '/vendor/otgs/ui', ICL_PLUGIN_URL . '/vendor/otgs/ui' );
+
 require WPML_PLUGIN_PATH . '/inc/taxonomy-term-translation/wpml-term-translations.class.php';
 require WPML_PLUGIN_PATH . '/inc/functions-troubleshooting.php';
 require WPML_PLUGIN_PATH . '/menu/term-taxonomy-menus/taxonomy-translation-display.class.php';
@@ -177,16 +184,36 @@ if ( $sitepress->is_setup_complete() ) {
 		'WPML_Meta_Boxes_Post_Edit_Ajax_Factory',
 		'WPML_Wizard_Fetch_Content_Factory',
 		'WPML_Privacy_Content_Factory',
-		'WPML_Attachment_Action_Factory',
-		'WPML_Media_Attachments_Duplication_Factory',
-		'WPML_Deactivate_Old_Media_Factory',
-		'WPML_Set_Attachments_Language_Factory',
-		'WPML_Display_As_Translated_Attachments_Query_Factory',
-		'WPML_Media_Settings_Factory',
 		'WPML_Custom_Columns_Factory',
+		'WPML_Config_Shortcode_List',
+		'WPML_Config_Built_With_Page_Builders',
+		'WPML_Endpoints_Support_Factory',
 		'WPML_Installer_Domain_URL_Factory',
+		'WPML_REST_Extend_Args_Factory',
+		'WPML_WP_Options_General_Hooks_Factory',
+		'WPML_WP_In_Subdir_URL_Filters_Factory',
+		'WPML_Table_Collate_Fix_Factory',
 	);
 	$action_filter_loader->load( $actions );
+
+	if ( $sitepress->is_translated_post_type( 'attachment' ) ) {
+		$media_actions = array(
+			'WPML_Attachment_Action_Factory',
+			'WPML_Media_Attachments_Duplication_Factory',
+			'WPML_Deactivate_Old_Media_Factory',
+			'WPML_Set_Attachments_Language_Factory',
+			'WPML_Display_As_Translated_Attachments_Query_Factory',
+			'WPML_Media_Settings_Factory',
+		);
+
+		$action_filter_loader->load( $media_actions );
+	}
+
+	$rest_factories = array(
+		'WPML_REST_Posts_Hooks_Factory',
+	);
+
+	$action_filter_loader->load( $rest_factories );
 }
 
 $sitepress->load_core_tm();
@@ -223,7 +250,7 @@ wpml_maybe_setup_post_edit();
 require WPML_PLUGIN_PATH . '/modules/cache-plugins-integration/cache-plugins-integration.php';
 require WPML_PLUGIN_PATH . '/inc/plugins-integration.php';
 
-if ( ( defined( 'DOING_CRON' ) && DOING_CRON ) || is_admin() ) {
+if ( ( defined( 'DOING_CRON' ) && DOING_CRON ) || is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 	activate_installer( $sitepress );
 	if ( $sitepress->get_setting( 'setup_complete' ) ) {
 		setup_admin_menus();

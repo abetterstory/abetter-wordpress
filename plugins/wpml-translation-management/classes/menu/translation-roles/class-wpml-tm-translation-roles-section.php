@@ -2,7 +2,7 @@
 
 class WPML_TM_Translation_Roles_Section implements IWPML_TM_Admin_Section {
 
-	/** @var WPML_Translator_Settings $translator_settings */
+	/** @var WPML_Translator_Settings_Interface $translator_settings */
 	private $translator_settings;
 
 	/** @var WPML_Translation_Manager_Settings $translation_manager_settings */
@@ -10,7 +10,7 @@ class WPML_TM_Translation_Roles_Section implements IWPML_TM_Admin_Section {
 
 	public function __construct(
 		WPML_Translation_Manager_Settings $translation_manager_settings,
-		WPML_Translator_Settings $translator_settings )
+		WPML_Translator_Settings_Interface $translator_settings )
 	{
 		$this->translation_manager_settings = $translation_manager_settings;
 		$this->translator_settings = $translator_settings;
@@ -55,7 +55,7 @@ class WPML_TM_Translation_Roles_Section implements IWPML_TM_Admin_Section {
 	}
 
 	public function render() {
-		$this->translation_manager_settings->render();
 		echo $this->translator_settings->render();
+		echo $this->translation_manager_settings->render();
 	}
 }

@@ -8,6 +8,9 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	const RESPONSE_ATE_DUPLICATED_SOURCE_ID = 417;
 	const RESPONSE_ATE_UNEXPECTED_ERROR = 500;
 
+	const RESPONSE_ATE_ERROR_NOTICE_ID = 'ate-update-error';
+	const RESPONSE_ATE_ERROR_NOTICE_GROUP = 'default';
+
 	/**
 	 * @var WPML_TM_ATE_API
 	 */
@@ -33,6 +36,9 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	private $current_screen;
 	private $trid_original_element_map = array();
 
+	/** @var WPML_TM_ATE_Jobs_Sync_Script_Loader */
+	private $job_sync_script_loader;
+
 	/**
 	 * WPML_TM_ATE_Jobs_Actions constructor.
 	 *
@@ -41,19 +47,22 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 * @param \SitePress                                 $sitepress
 	 * @param \WPML_Current_Screen                       $current_screen
 	 * @param \WPML_TM_AMS_Translator_Activation_Records $translator_activation_records
+     * @param WPML_TM_ATE_Jobs_Sync_Script_Loader                 $job_sync_script_loader
 	 */
 	public function __construct(
 		WPML_TM_ATE_API $ate_api,
 		WPML_TM_ATE_Jobs $ate_jobs,
 		SitePress $sitepress,
 		WPML_Current_Screen $current_screen,
-		WPML_TM_AMS_Translator_Activation_Records $translator_activation_records
+		WPML_TM_AMS_Translator_Activation_Records $translator_activation_records,
+		WPML_TM_ATE_Jobs_Sync_Script_Loader $job_sync_script_loader
 	) {
-		$this->ate_api        = $ate_api;
-		$this->ate_jobs       = $ate_jobs;
-		$this->sitepress      = $sitepress;
-		$this->current_screen = $current_screen;
+		$this->ate_api                       = $ate_api;
+		$this->ate_jobs                      = $ate_jobs;
+		$this->sitepress                     = $sitepress;
+		$this->current_screen                = $current_screen;
 		$this->translator_activation_records = $translator_activation_records;
+		$this->job_sync_script_loader        = $job_sync_script_loader;
 	}
 
 	public function add_hooks() {
@@ -220,16 +229,16 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 * @return array
 	 */
 	public function get_ate_jobs_data_filter( $ignore, array $translation_jobs ) {
-		return $this->get_get_ate_jobs_data( $translation_jobs );
+		return $this->get_ate_jobs_data( $translation_jobs );
 	}
 
-	private function get_get_ate_jobs_data( array $translation_jobs ) {
+	private function get_ate_jobs_data( array $translation_jobs ) {
 		$ate_jobs_data      = array();
 		$skip_getting_data  = false;
 		$ate_jobs_to_create = array();
 
 		foreach ( $translation_jobs as $translation_job ) {
-			if ( $this->is_a_local_translation_job( $translation_job ) ) {
+			if ( $this->is_ate_translation_job( $translation_job ) ) {
 				$ate_job_id = $this->get_ate_job_id( $translation_job->job_id );
 				if ( ! $ate_job_id ) {
 					$ate_jobs_to_create[] = $translation_job->job_id;
@@ -250,7 +259,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 			$ate_jobs_to_create &&
 			$this->added_translation_jobs( array( 'local' => $ate_jobs_to_create ) )
 		) {
-			$ate_jobs_data                            = $this->get_get_ate_jobs_data( $translation_jobs );
+			$ate_jobs_data                            = $this->get_ate_jobs_data( $translation_jobs );
 			$this->is_second_attempt_to_get_jobs_data = true;
 		}
 
@@ -266,12 +275,23 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	}
 
 	public function update_jobs_on_current_screen() {
-		if ( $this->is_edit_list_page_of_a_translatable_type() || $this->is_edit_page_of_a_translatable_type() ) {
-			$translation_jobs = $this->get_local_jobs_from_posts( $this->current_screen->get_posts() );
-			if ( $translation_jobs ) {
-				$this->update_jobs( null, $translation_jobs, true );
-			}
+		if (
+		        $this->is_edit_list_page_of_a_translatable_type() ||
+                $this->is_edit_page_of_a_translatable_type() ||
+		        WPML_TM_Page::is_dashboard() ||
+		        WPML_TM_Page::is_translation_queue() ||
+		        WPML_TM_Page::is_job_list()
+        ) {
+            $this->job_sync_script_loader->load();
 		}
+	}
+
+	/**
+	 * @param string $message
+	 */
+	private function add_update_error_notice( $message ) {
+		$error_log = new WPML_TM_ATE_API_Error();
+		$error_log->log( $message );
 	}
 
 	/**
@@ -279,7 +299,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 * @param array|stdClass $translation_jobs
 	 * @param bool           $ignore_errors
 	 *
-	 * @return bool
+	 * @return int[]
 	 */
 	public function update_jobs( $updated, $translation_jobs, $ignore_errors = false ) {
 		/**
@@ -296,16 +316,18 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 			}
 		}
 
+		$updated_jobs = array();
+
 		if ( $translation_jobs ) {
-			$ate_jobs_data = $this->get_get_ate_jobs_data( $translation_jobs );
+			$ate_jobs_data = $this->get_ate_jobs_data( $translation_jobs );
 
 			if ( ! $ate_jobs_data ) {
-				return false;
+				return array();
 			}
 
 			$job_ids_map = array();
 			foreach ( $translation_jobs as $translation_job ) {
-				if ( $this->is_a_local_translation_job( $translation_job ) ) {
+				if ( $this->is_ate_translation_job( $translation_job ) ) {
 					$ate_job_id = null;
 					if ( isset( $ate_jobs_data[ $translation_job->job_id ]['ate_job_id'] ) ) {
 						$ate_job_id                 = $ate_jobs_data[ $translation_job->job_id ]['ate_job_id'];
@@ -318,13 +340,15 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 				$ate_job_ids = array_keys( $job_ids_map );
 				$response    = $this->ate_api->get_non_delivered_ate_jobs( $ate_job_ids );
 
-				$this->check_response_error( $response );
+				try {
+					$this->check_response_error( $response );
+				} catch( RuntimeException $e ){
+					$this->add_update_error_notice( $e->getMessage() );
+				}
 
 				$processed = json_decode( wp_json_encode( $response ), true );
 
 				if ( $processed ) {
-					$update_errors = 0;
-					$ack_errors    = 0;
 					foreach ( $processed as $ate_job_id => $job_status ) {
 						if ( array_key_exists( $ate_job_id, $job_ids_map ) ) {
 							$job_stored  = $this->ate_jobs->store( $job_ids_map[ $ate_job_id ], $job_status );
@@ -334,24 +358,24 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 									/** @var WP_Error $response */
 									throw new RuntimeException( $job_stored['error']['message'], $job_stored['error']['code'] );
 								}
-								$update_errors++;
 							}
 
 							if ( $job_updated ) {
 								if ( $this->must_acknowledge_ATE( $job_status ) ) {
-									if ( ! $this->confirm_received_job( $ate_job_id, $ignore_errors ) ) {
-										$ack_errors++;
+									if ( $this->confirm_received_job( $ate_job_id, $ignore_errors ) ) {
+										$updated_jobs[] = $job_ids_map[ $ate_job_id ];
 									}
-								}
+								} else {
+									$updated_jobs[] = $job_ids_map[ $ate_job_id ];
+                                }
 							}
 						}
 					}
-					$updated = ( $update_errors + $ack_errors ) === 0;
 				}
 			}
 		}
 
-		return $updated;
+		return $updated_jobs;
 	}
 
 	/**
@@ -464,7 +488,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 							$job_id = $tm_core->get_translation_job_id( $trid, $language_code );
 							if ( $job_id ) {
 								$translation_job = $tm_core->get_translation_job( $job_id );
-								if ( $translation_job && $this->is_a_local_translation_job( $translation_job ) ) {
+								if ( $translation_job && $this->is_ate_translation_job( $translation_job ) ) {
 									$translation_jobs[] = $translation_job;
 								}
 							}
@@ -482,8 +506,9 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 *
 	 * @return bool
 	 */
-	private function is_a_local_translation_job( $translation_job ) {
-		return 'local' === $translation_job->translation_service;
+	private function is_ate_translation_job( $translation_job ) {
+		return 'local' === $translation_job->translation_service
+			   && WPML_TM_Editors::ATE === $translation_job->editor;
 	}
 
 	/**

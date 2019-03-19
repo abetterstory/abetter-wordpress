@@ -130,7 +130,7 @@ class WPML_Flags {
 	private function append_path_to_url( $base_url, $path ) {
 		$base_url_parts = wp_parse_url( $base_url );
 
-		$base_url_path_components = '';
+		$base_url_path_components = array();
 		if ( array_key_exists( 'path', $base_url_parts ) ) {
 			$base_url_path_components = explode( '/', untrailingslashit( $base_url_parts['path'] ) );
 		}

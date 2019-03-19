@@ -45,6 +45,8 @@ class WPML_ST_Slug_Translation_UI_Save implements IWPML_Action {
 		if ( $this->settings->is_enabled() && ! empty( $_POST['translate_slugs'] ) ) {
 
 			foreach ( $_POST['translate_slugs'] as $type => $data ) {
+				$type = filter_var( $type, FILTER_SANITIZE_STRING );
+				$data = $this->sanitize_translate_slug_data( $data );
 				$is_type_enabled = $this->has_translation( $data );
 				$this->settings->set_type( $type, $is_type_enabled );
 				$this->update_slug_translations( $type, $data );
@@ -52,6 +54,21 @@ class WPML_ST_Slug_Translation_UI_Save implements IWPML_Action {
 
 			$this->settings->save();
 		}
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	private function sanitize_translate_slug_data( array $data ) {
+		$data['original'] = filter_var( $data['original'], FILTER_SANITIZE_STRING );
+
+		foreach ( $data['langs'] as $lang => $translated_slug ) {
+			$data['langs'][ $lang ] = filter_var( $translated_slug, FILTER_SANITIZE_STRING );
+		}
+
+		return $data;
 	}
 
 	private function has_translation( array $data ) {

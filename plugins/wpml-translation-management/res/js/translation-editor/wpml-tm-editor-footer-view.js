@@ -13,10 +13,12 @@ var WPML_TM = WPML_TM || {};
 			'click .js-save': 'save',
 			'click .js-resign': 'resign',
 			'click .js-dialog-cancel': 'cancel',
-			'click .js-save-and-close': 'save_and_close'
+			'click .js-save-and-close': 'save_and_close',
+			'change .js-toggle-translated': 'toggleTranslated'
 		},
-		initialize: function () {
+		initialize: function (options) {
 			var self = this;
+			self.mainView = options.mainView;
 			self.listenTo(self.model, 'translationUpdated', self.setDirty);
 		},
 		save: function () {
@@ -136,6 +138,10 @@ var WPML_TM = WPML_TM || {};
 			} else {
 				this.$el.find('.js-resign').show();
 			}
+		},
+		toggleTranslated: function() {
+			var toggle = this.$el.find('.js-toggle-translated');
+			this.mainView.hideTranslated(toggle.is(':checked'));
 		}
 	});
 }());

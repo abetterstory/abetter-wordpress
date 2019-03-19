@@ -5,7 +5,7 @@ Description: This 'glue' plugin makes it easier to translate with WPML content p
 Author: OnTheGoSystems
 Plugin URI: https://wpml.org/
 Author URI: http://www.onthegosystems.com/
-Version: 0.9
+Version: 1.1
  */
 
 $autoloader_dir = __DIR__ . '/vendor';
@@ -24,6 +24,7 @@ add_action('admin_enqueue_scripts', 'acfml_enqueue_scripts');
 function acfml_enqueue_scripts() {
 	if (is_admin()) {
 		wp_enqueue_script('acfml_js', plugin_dir_url(__FILE__) . 'assets/js/admin-script.js', array('jquery'));
+		wp_enqueue_style('acfml_css', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css');
 	}	
 }
 

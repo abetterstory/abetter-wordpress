@@ -66,7 +66,7 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 				$previous_element = $previous_version_elements[ $index ];
 			}
 			$data[] = array(
-				'field_type'            => sanitize_title( str_replace( WPML_Element_Translation_Package::CUSTOM_FIELD_KEY_SEPARATOR, '-', $element->field_type ) ),
+				'field_type'            => sanitize_title( str_replace( WPML_TM_Field_Type_Encoding::CUSTOM_FIELD_KEY_SEPARATOR, '-', $element->field_type ) ),
 				'tid'                   => $element->tid,
 				'field_style'           => $element->field_type === 'body' ? '2' : '0',
 				'field_finished'        => $element->field_finished,

@@ -88,6 +88,8 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 						                                                                                  $translation_package );
 					}
 
+					wpml_tm_load_old_jobs_editor()->set( $job_id, WPML_TM_Editors::WP );
+
 					// saving the translation
 					do_action( 'wpml_save_job_fields_from_post', $job_id );
 				}

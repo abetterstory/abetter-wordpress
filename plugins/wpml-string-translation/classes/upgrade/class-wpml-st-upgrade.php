@@ -19,7 +19,7 @@ class WPML_ST_Upgrade {
 	 * @param SitePress $sitepress
 	 * @param WPML_ST_Upgrade_Command_Factory $command_factory
 	 */
-	public function __construct( $sitepress, WPML_ST_Upgrade_Command_Factory $command_factory ) {
+	public function __construct( $sitepress, WPML_ST_Upgrade_Command_Factory $command_factory = null ) {
 		$this->sitepress = $sitepress;
 		$this->string_settings = $this->sitepress->get_setting( 'st', array() );
 		$this->command_factory = $command_factory;
@@ -81,7 +81,7 @@ class WPML_ST_Upgrade {
 	}
 	
 	private function maybe_run( $class ) {
-		if ( ! $this->has_been_command_executed( $class ) ) {
+		if ( ! $this->has_command_been_executed( $class ) ) {
 			$this->set_upgrade_in_progress();
 			$upgrade = $this->command_factory->create( $class );
 			if ( $upgrade->run() ) {
@@ -91,7 +91,7 @@ class WPML_ST_Upgrade {
 	}
 
 	private function maybe_run_ajax( $class ) {
-		if ( ! $this->has_been_command_executed( $class ) ) {
+		if ( ! $this->has_command_been_executed( $class ) ) {
 			$this->run_ajax_command( $class );
 		}
 	}
@@ -128,7 +128,7 @@ class WPML_ST_Upgrade {
 	 *
 	 * @return bool
 	 */
-	private function has_been_command_executed( $class ) {
+	public function has_command_been_executed( $class ) {
 		$id = call_user_func( array( $class, 'get_command_id' ) );
 		return isset( $this->string_settings[ $id . '_has_run' ] );
 	}

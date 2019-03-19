@@ -192,9 +192,13 @@ class WPML_Register_String_Filter extends WPML_Displayed_String_Filter {
 			$string_id = $this->wpdb->insert_id;
 
 			if ( $string_id === 0 ) {
-				$input_args = $args;
-				$input_args['allow_empty_value'] = $allow_empty_value;
-				$string_id = $this->handle_db_error_and_resave_string( $input_args );
+				if ( empty( $this->wpdb->last_error ) ) {
+					$string_id = $this->get_string_id_registered_in_concurrent_request( $args );
+				} else {
+					$input_args = $args;
+					$input_args['allow_empty_value'] = $allow_empty_value;
+					$string_id = $this->handle_db_error_and_resave_string( $input_args );
+				}
 			}
 
 			icl_update_string_status( $string_id );
@@ -240,6 +244,20 @@ class WPML_Register_String_Filter extends WPML_Displayed_String_Filter {
 		}
 
 		return $string_id;
+	}
+
+	/**
+	 * @param array $args
+	 *
+	 * @return int
+	 */
+	private function get_string_id_registered_in_concurrent_request( array $args ) {
+		return (int) $this->wpdb->get_var(
+			$this->wpdb->prepare(
+				"SELECT id FROM {$this->wpdb->prefix}icl_strings WHERE domain_name_context_md5 = %s",
+				md5( $args['context'] . $args['name'] . $args['gettext_context'] )
+			)
+		);
 	}
 
 	/**

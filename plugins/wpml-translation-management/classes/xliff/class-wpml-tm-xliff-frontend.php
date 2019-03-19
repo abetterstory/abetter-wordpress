@@ -14,15 +14,20 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	private $export_archive_name;
 	private $late_init_priority = 9999;
 
+	/** @var bool */
+	private $simplexml_on;
+
 	/**
 	 * WPML_TM_Xliff_Frontend constructor.
 	 *
 	 * @param WPML_Translation_Job_Factory $job_factory
 	 * @param SitePress                    $sitepress
+	 * @param int         $support_info
 	 */
-	public function __construct( &$job_factory, &$sitepress ) {
+	public function __construct( WPML_Translation_Job_Factory $job_factory, SitePress $sitepress, $simplexml_on ) {
 		parent::__construct( $job_factory );
-		$this->sitepress = &$sitepress;
+		$this->sitepress    = $sitepress;
+		$this->simplexml_on = $simplexml_on;
 	}
 
 	/**
@@ -56,6 +61,7 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 
 	/**
 	 * @return bool
+	 * @throws \Exception
 	 */
 	function init() {
 		$this->attachments = array();
@@ -67,7 +73,7 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 				'ajax_set_xliff_options'
 			), 10, 2 );
 			if ( ! $this->sitepress->get_setting( 'xliff_newlines' ) ) {
-				$this->sitepress->set_setting( 'xliff_newlines', WPML_XLIFF_TM_NEWLINES_REPLACE, true );
+				$this->sitepress->set_setting( 'xliff_newlines', WPML_XLIFF_TM_NEWLINES_ORIGINAL, true );
 			}
 			if ( ! $this->sitepress->get_setting( 'tm_xliff_version' ) ) {
 				$this->sitepress->set_setting( 'tm_xliff_version', '12', true );
@@ -81,7 +87,7 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 				add_action( 'wpml_xliff_select_actions', array(
 					$this,
 					'translation_queue_xliff_select_actions'
-				), 10, 2 );
+				), 10, 3 );
 				add_action( 'wpml_translation_queue_do_actions_export_xliff', array(
 					$this,
 					'translation_queue_do_actions_export_xliff'
@@ -131,9 +137,9 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	function ajax_set_xliff_options() {
 		check_ajax_referer( 'icl_xliff_options_form_nonce', 'security' );
 		$newlines = (int) $_POST['icl_xliff_newlines'];
-		$this->sitepress->set_setting( "xliff_newlines", $newlines, true );
+		$this->sitepress->set_setting( 'xliff_newlines', $newlines, true );
 		$version = (int) $_POST['icl_xliff_version'];
-		$this->sitepress->set_setting( "tm_xliff_version", $version, true );
+		$this->sitepress->set_setting( 'tm_xliff_version', $version, true );
 
 		wp_send_json_success( array(
 			'message'        => 'OK',
@@ -228,9 +234,9 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 * @return string
 	 */
 	private function get_xliff_file( $job_id, $xliff_version = WPML_XLIFF_DEFAULT_VERSION ) {
-		$xliff = new WPML_TM_Xliff_Writer( $this->job_factory, $xliff_version );
-
-		return $xliff->generate_job_xliff( $job_id );
+		return wpml_tm_xliff_factory()
+			->create_writer( $xliff_version )
+			->generate_job_xliff( $job_id );
 	}
 
 	/**
@@ -272,6 +278,8 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 
 	/**
 	 * @param wpml_zip $archive
+	 *
+	 * @throws \Exception
 	 */
 	private function stream_xliff_archive( $archive ) {
 		if ( is_a( $archive, 'wpml_zip' ) ) {
@@ -314,12 +322,9 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 * Stops any redirects from happening when we call the
 	 * translation manager to save the translations.
 	 *
-	 * @param $location
-	 *
 	 * @return null
 	 */
-	function _stop_redirect( $location ) {
-
+	function _stop_redirect(  ) {
 		return null;
 	}
 
@@ -426,9 +431,10 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	/**
 	 * @param $actions
 	 * @param $action_name
+	 * @param $translation_jobs
 	 */
-	function translation_queue_xliff_select_actions( $actions, $action_name ) {
-		if ( sizeof( $actions ) > 0 ):
+	function translation_queue_xliff_select_actions( $actions, $action_name, $translation_jobs ) {
+		if ( $this->has_translation_jobs( $translation_jobs ) && sizeof( $actions ) > 0 ):
 			$user_version = $this->get_user_xliff_version();
 			?>
 			<div class="alignleft actions">
@@ -436,8 +442,8 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 					<option
 						value="-1" <?php echo $user_version == false ? "selected='selected'" : ""; ?>><?php _e( 'Bulk Actions' ); ?></option>
 					<?php foreach ( $actions as $key => $action ): ?>
-						<option
-							value="<?php echo $key; ?>" <?php echo $user_version == $key ? "selected='selected'" : ""; ?>><?php echo $action; ?></option>
+						<option <?php disabled( ! $this->simplexml_on ); ?>
+							value="<?php echo $key; ?>" <?php echo $user_version == $key && $this->simplexml_on ? "selected='selected'" : ""; ?>><?php echo $action; ?></option>
 					<?php endforeach; ?>
 				</select>
 				<input type="submit" value="<?php esc_attr_e( 'Apply' ); ?>"
@@ -446,6 +452,10 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 			</div>
 			<?php
 		endif;
+	}
+
+	private function has_translation_jobs( $translation_jobs ) {
+		return $translation_jobs && array_key_exists( 'jobs', $translation_jobs ) && $translation_jobs['jobs'];
 	}
 
 	/**
@@ -540,7 +550,11 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		<?php
 	}
 
-	function translation_queue_after_display() {
+	function translation_queue_after_display( $translation_jobs = array() ) {
+		if ( ! $this->has_translation_jobs( $translation_jobs ) ) {
+			return;
+		}
+
 		$export_label = esc_html__( 'Export all jobs:', 'wpml-translation-management' );
 
 		if ( isset( $_SESSION['translation_ujobs_filter'] ) ) {
@@ -580,16 +594,31 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		<table class="widefat">
 			<thead><tr><th><?php esc_html_e( 'Import / Export XLIFF', 'wpml-translation-management' ); ?></th></tr></thead>
 			<tbody><tr><td>
+					<?php if ( ! $this->simplexml_on ): ?>
+						<div class="otgs-notice error">
+							<p>
+								<strong><?php esc_html_e( 'SimpleXML missing!', 'wpml-translation-management' ); ?></strong>
+							</p>
+							<p>
+								<?php esc_html_e( 'SimpleXML extension is required for using XLIFF files in WPML Translation Management.', 'wpml-translation-management' ) ?>
+								<a href="https://wpml.org/?page_id=716"><?php esc_html_e( 'WPML Minimum Requirements', 'wpml-translation-management' ) ?></a>
+							</p>
+						</div>
+					<?php endif; ?>
 				<form method="post" id="translation-xliff-export-all-filtered" action="">
 					<label for="wpml_xliff_export_all_filtered"><?php echo $export_label; ?></label>
-					<select name="xliff_version" class="select"><?php echo $this->get_xliff_version_select_options(); ?></select>
-					<input type="submit" value="<?php esc_attr_e( 'Export', 'wpml-translation-management' ); ?>" name="wpml_xliff_export_all_filtered" id="xliff_download" class="button-secondary action" />
+					<select name="xliff_version" class="select" <?php disabled( ! $this->simplexml_on ); ?>><?php
+						echo $this->get_xliff_version_select_options(); ?></select>
+					<input type="submit" value="<?php esc_attr_e( 'Export', 'wpml-translation-management' ); ?>" <?php
+						disabled( ! $this->simplexml_on );?> name="wpml_xliff_export_all_filtered" id="xliff_download" class="button-secondary action" />
 					<input type="hidden" value="<?php echo wp_create_nonce( 'xliff-export-all-filtered' ); ?>" name="nonce">
 				</form>
 				<hr>
 				<form enctype="multipart/form-data" method="post" id="translation-xliff-upload" action="">
 					<label for="upload-xliff-file"><?php _e( 'Select the xliff file or zip file to upload from your computer:&nbsp;', 'wpml-translation-management' ); ?></label>
-					<input type="file" id="upload-xliff-file" name="import" /><input type="submit" value="<?php _e( 'Upload', 'wpml-translation-management' ); ?>" name="xliff_upload" id="xliff_upload" class="button-secondary action" />
+					<input type="file" id="upload-xliff-file" name="import" <?php disabled( ! $this->simplexml_on ); ?> />
+					<input type="submit" value="<?php _e( 'Upload', 'wpml-translation-management' ); ?>" name="xliff_upload" id="xliff_upload" class="button-secondary action" <?php
+					disabled( ! $this->simplexml_on ); ?> />
 				</form>
 			</td></tr></tbody>
 		</table>

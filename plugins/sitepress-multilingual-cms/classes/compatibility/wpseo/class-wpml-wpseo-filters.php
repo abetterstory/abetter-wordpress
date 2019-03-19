@@ -32,6 +32,8 @@ class WPML_WPSEO_Filters {
 		add_action( 'wpml_before_make_duplicate',         array( $this, 'before_make_duplicate_action' ) );
 		add_filter( 'wpseo_canonical',                    array( $this, 'canonical_filter' ) );
 		add_filter( 'wpml_must_translate_canonical_url',  array( $this, 'must_translate_canonical_url_filter' ), 10, 2 );
+		add_filter( 'wpseo_prev_rel_link',                array( $this, 'rel_link_filter' ) );
+		add_filter( 'wpseo_next_rel_link',                array( $this, 'rel_link_filter' ) );
 	}
 
 	/**
@@ -72,6 +74,10 @@ class WPML_WPSEO_Filters {
 			$url = $this->canonicals->get_canonical_url( $url, $obj, '' );
 		}
 
+		if ( null === $obj ) {
+			$url = $this->canonicals->get_general_canonical_url( $url );
+		}
+
 		return $url;
 	}
 
@@ -93,5 +99,21 @@ class WPML_WPSEO_Filters {
 		}
 
 		return $should_translate;
+	}
+
+	/**
+	 * Prev/next page general link filter.
+	 *
+	 * @param string $link Link to a prev/next page in archive.
+	 *
+	 * @return string
+	 */
+	public function rel_link_filter( $link ) {
+		if ( preg_match( '/href="([^"]+)"/', $link, $matches ) ) {
+			$canonical_url = $this->canonicals->get_general_canonical_url( $matches[1] );
+			$link          = str_replace( $matches[1], $canonical_url, $link );
+		}
+
+		return $link;
 	}
 }

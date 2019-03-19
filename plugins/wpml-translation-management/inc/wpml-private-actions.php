@@ -77,8 +77,10 @@ function wpml_tm_assign_translation_job( $job_id, $translator_id, $service = 'lo
 		                                                      0,
 		                                                      true );
 	if ( $job ) {
-		$job->assign_to( $translator_id, $service );
+		return $job->assign_to( $translator_id, $service );
 	}
+
+	return null;
 }
 
 add_action( 'wpml_tm_assign_translation_job', 'wpml_tm_assign_translation_job', 10, 4 );

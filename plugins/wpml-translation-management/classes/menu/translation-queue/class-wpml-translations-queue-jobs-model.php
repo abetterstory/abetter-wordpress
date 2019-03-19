@@ -48,7 +48,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		$model['jobs'] = array();
 
 		foreach ( $this->translation_jobs as $job ) {
-			$job->post_title   = apply_filters( 'the_title', $job->post_title );
+			$job->post_title   = apply_filters( 'the_title', $job->post_title, $job->original_doc_id );
 			$job->tm_post_link = $this->get_post_link( $job );
 			$job->post_type    = $this->get_post_type( $job );
 			$job->icon         = $this->tm_instance->status2icon_class( $job->status, $job->needs_update );

@@ -299,7 +299,14 @@ class WPML_Slug_Translation implements IWPML_Action {
 		$slug = sanitize_title_with_dashes( $slug );
 		$slug = str_replace( '%45', '%', $slug );
 
-		return $slug;
+		/**
+		 * Filters the sanitized post type or taxonomy slug translation
+		 *
+		 * @since 2.10.0
+		 *
+		 * @param string $slug
+		 */
+		return apply_filters( 'wpml_st_slug_translation_sanitize', $slug );
 	}
 
 	/**

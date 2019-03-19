@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML String Translation
 Plugin URI: https://wpml.org/
-Description: Adds theme and plugins localization capabilities to WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/string-translation-2-8-8/">WPML String Translation 2.8.8 release notes</a>
+Description: Adds theme and plugins localization capabilities to WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/string-translation-2-10-2/">WPML String Translation 2.10.2 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.8.8
+Version: 2.10.2
 Plugin Slug: wpml-string-translation
 */
 
@@ -13,7 +13,7 @@ if ( defined( 'WPML_ST_VERSION' ) || get_option( '_wpml_inactive' ) ) {
 	return;
 }
 
-define( 'WPML_ST_VERSION', '2.8.8' );
+define( 'WPML_ST_VERSION', '2.10.2' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -79,7 +79,9 @@ function wpml_st_core_loaded() {
 		'WPML_ST_Remote_String_Translation_Factory',
 		'WPML_ST_Privacy_Content_Factory',
 		'WPML_ST_Multisite_Filters_Cleaner_Factory',
+		'WPML_ST_String_Tracking_AJAX_Factory',
 		'WPML_ST_Translation_Memory_Factory',
+		'WPML_ST_Script_Translations_Hooks_Factory',
 	);
 
 	$action_filter_loader = new WPML_Action_Filter_Loader();
@@ -118,7 +120,7 @@ function load_wpml_st_basics() {
 	$st_theme_localization_type->add_hooks();
 
 	if ( $sitepress->is_setup_complete() ) {
-		$mo_scan_factory = new WPML_ST_MO_Scan_Factory();
+		$mo_scan_factory = new WPML_ST_Translations_File_Scan_Factory();
 
 		if ( $mo_scan_factory->check_core_dependencies() ) {
 			$mo_scan_hooks = $mo_scan_factory->create_hooks();

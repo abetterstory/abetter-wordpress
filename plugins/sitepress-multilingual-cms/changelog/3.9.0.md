@@ -3,6 +3,8 @@
 * [wpmlcore-4943] Improved UI for Custom Post Types, Taxonomies and Custom fields in Translation Options or Multilingual Content Setup pages
 * [wpmlcore-4933] Fixed wrong locale for Thai language
 * [wpmlcore-4912] Included menu classes to the autoloader in order to resolve compatibility issues with iThemes Sync
+* [wpmlcore-4876] Removed the "Blog posts to display" feature and used "Display as translated" instead.
+* [wpmlcore-4840] Added the possibility to translate images alt text when via the translation editor
 * [wpmlcore-4831] Added feedback and logging of failed attempts when downloading the remote configuration files for themes and plugins
 * [wpmlcore-4793] Implemented new feature allowing users to set a Post Type or a Taxonomy to display translations or fallback to original language if translations do not exist
 * [wpmlcore-4706] Language menu items are now added on `wp_get_nav_menu_items` instead of `wp_nav_menu_objects`

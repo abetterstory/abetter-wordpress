@@ -102,6 +102,8 @@ class WPML_TM_Dashboard_Document_Row {
 		$post_view_link = $post_link_factory->view_link_anchor( $current_document->ID, __( 'View', 'wpml-translation-management' ));
 		}
 
+		$jobs = $this->get_related_jobs_grouped_by_lang( $current_document->ID );
+
 	  $post_edit_link = apply_filters( 'wpml_document_edit_item_link', $post_edit_link, __( 'Edit', 'wpml-translation-management' ), $current_document, $element_type, $this->get_type() );
 	  if ( $post_edit_link ) {
 		  $post_actions[ ] = "<span class='edit'>" . $post_edit_link . "</span>";
@@ -139,7 +141,7 @@ class WPML_TM_Dashboard_Document_Row {
 					<?php
 					$note = '';
 					if ( ! $current_document->is_translation ) {
-						$note            = get_post_meta( $current_document->ID, '_icl_translator_note', true );
+						$note            = WPML_TM_Translator_Note::get( $current_document->ID );
 						$this->note_text = '';
 						if ( $note ) {
 							$this->note_text       = __( 'Edit note for the translators', 'wpml-translation-management' );
@@ -183,12 +185,20 @@ class WPML_TM_Dashboard_Document_Row {
             </td>
             <td scope="row" class="manage-column column-active-languages wpml-col-languages">
 				<?php
+				$has_jobs_in_progress       = false;
+
 				foreach ( $this->active_languages as $code => $lang ) {
-					if ( $code == $this->data->language_code ) {
+					if ( $code == $this->data->language_code) {
 						continue;
 					}
 
-					$status = $this->get_status_in_lang( $code );
+					if ( isset( $jobs[ $code ] ) ) {
+						$job    = $jobs[ $code ];
+						$status = $job['status'];
+					} else {
+						$status = $this->get_status_in_lang( $code );
+					}
+
 					switch ( $status ) {
 						case ICL_TM_NOT_TRANSLATED :
 							$translation_status_text = esc_attr( __( 'Not translated', 'wpml-translation-management' ) );
@@ -201,6 +211,12 @@ class WPML_TM_Dashboard_Document_Row {
 							break;
 						case ICL_TM_IN_PROGRESS :
 							$translation_status_text = esc_attr( __( 'In progress', 'wpml-translation-management' ) );
+							$has_jobs_in_progress = true;
+							break;
+						case ICL_TM_TRANSLATION_READY_TO_DOWNLOAD:
+							$translation_status_text = esc_attr( __( 'Translation ready to download',
+								'wpml-translation-management' ) );
+							$has_jobs_in_progress = true;
 							break;
 						case ICL_TM_DUPLICATE :
 							$translation_status_text = esc_attr( __( 'Duplicate', 'wpml-translation-management' ) );
@@ -218,7 +234,9 @@ class WPML_TM_Dashboard_Document_Row {
 					$status_icon_class = $iclTranslationManagement->status2icon_class( $status, ICL_TM_NEEDS_UPDATE === (int) $status );
 					?>
 
-                    <span data-document_status="<?php echo $status; ?>">
+                    <span data-document_status="<?php echo $status; ?>"
+                          id="wpml-job-status-<?php echo isset( $job['id'] ) ? $job['id'] : 0 ?>"
+                    >
                         <i class="<?php echo esc_attr( $status_icon_class ); ?>"
                            title="<?php echo esc_attr( $lang[ 'display_name' ] ); ?>: <?php echo $translation_status_text ?>"></i>
                 	</span>
@@ -236,14 +254,29 @@ class WPML_TM_Dashboard_Document_Row {
 				echo $this->get_general_status();
 				?>
 			</td>
-			<td scope="row" class="icl_tn_link" id="icl_tn_link_<?php echo $current_document->ID ?>">
+			<td class="column-actions" scope="row" >
 				<?php
 				if ( ! $current_document->is_translation ) {
 					?>
-					<a title="<?php echo $this->note_text ?>" href="#">
+					<a title="<?php echo $this->note_text ?>" href="#" class="icl_tn_link" id="icl_tn_link_<?php echo $current_document->ID ?>" >
                         <i class="<?php echo $this->note_icon_class; ?>"></i>
 					</a>
+
 				<?php
+					if ( $has_jobs_in_progress && $this->has_remote_jobs( $jobs ) ) {
+						?>
+                        <a class="otgs-ico-refresh wpml-sync-and-download-translation"
+                           data-element-id="<?php echo $current_document->ID ?>"
+                           data-jobs="<?php echo htmlspecialchars( json_encode( array_values( $jobs ) ) ) ?>"
+                           data-icons="<?php echo htmlspecialchars( json_encode( array(
+							   'completed' => $iclTranslationManagement->status2icon_class( ICL_TM_COMPLETE, false ),
+							   'canceled'  => $iclTranslationManagement->status2icon_class( ICL_TM_NOT_TRANSLATED, false ),
+                               'progress' => $iclTranslationManagement->status2icon_class( ICL_TM_IN_PROGRESS, false ),
+						   ) ) ) ?>"
+                           title="<?php esc_attr_e( 'Check status and get translations', 'wpml-translation-management' ) ?>"
+                        </a>
+						<?php
+					}
 				}
 				?>
 			</td>
@@ -268,6 +301,38 @@ class WPML_TM_Dashboard_Document_Row {
 
         return $date;
     }
+
+	private function has_remote_jobs( $jobs ) {
+		foreach ( $jobs as $job ) {
+			if ( ! $job['isLocal'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function get_related_jobs_grouped_by_lang( $original_element_id ) {
+		$repository = wpml_tm_get_jobs_repository();
+		$jobs       = $repository->get( new WPML_TM_Jobs_Search_Params( array(
+			'original_element_id' => $original_element_id
+		) ) );
+
+		$result = array();
+
+		/** @var WPML_TM_Post_Job_Entity $job */
+		foreach ( $jobs as $job ) {
+			$result[ $job->get_target_language() ] = array(
+				'id'             => $job->get_id(),
+				'type'           => $job->get_type(),
+				'status'         => $job->get_status(),
+				'targetLanguage' => $job->get_target_language(),
+				'isLocal'        => 'local' === $job->get_translation_service()
+			);
+		}
+
+		return $result;
+	}
 
     private function get_general_status() {
         if ( !$this->is_external_type() ) {

@@ -141,6 +141,29 @@ class WPML_TM_ATE_API {
 	}
 
 	/**
+	 * @param $wpml_job_ids
+	 *
+	 * @return array|mixed|object|WP_Error|null
+	 */
+	public function get_jobs_by_wpml_ids( $wpml_job_ids ) {
+		$verb = 'GET';
+
+		$url = $this->endpoints->get_ate_jobs_by_wpml_job_ids( $wpml_job_ids );
+		$url = $this->auth->get_signed_url( $verb, $url, null );
+
+		$result = $this->wp_http->request(
+			$url,
+			array(
+				'timeout' => 60,
+				'method'  => $verb,
+				'headers' => $this->json_headers(),
+			) );
+
+		return $this->get_response( $result );
+	}
+
+
+	/**
 	 * @param null|array $job_ids
 	 *
 	 * @return array|mixed|null|object|WP_Error

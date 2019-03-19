@@ -277,7 +277,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 						<?php endif; ?>
 					</div> <!-- wpml-section-content-inner -->
 
-					<?php if ( $inactive_content && $inactive_content->has_entries() ) : ?>
+					<?php if ( $setup_complete && $inactive_content && $inactive_content->has_entries() ) : ?>
 						<div class="wpml-section-content-inner">
 							<?php
 							$render_inactive_content = new WPML_Inactive_Content_Render(

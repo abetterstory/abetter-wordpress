@@ -28,6 +28,7 @@ define ( 'ICL_TM_NOT_TRANSLATED', 0);
 define ( 'ICL_TM_WAITING_FOR_TRANSLATOR', 1);
 define ( 'ICL_TM_IN_PROGRESS', 2);
 define ( 'ICL_TM_NEEDS_UPDATE', 3);  //virt. status code (based on needs_update)
+define ( 'ICL_TM_TRANSLATION_READY_TO_DOWNLOAD', 4); // when translation is ready in TP
 define ( 'ICL_TM_DUPLICATE', 9);
 define ( 'ICL_TM_COMPLETE', 10);
 define ( 'ICL_TM_IN_BASKET', 20);
@@ -95,8 +96,6 @@ define( 'ICL_PRO_TRANSLATION_PICKUP_POLLING', 1 );
 define( 'ICL_REMOTE_WPML_CONFIG_FILES_INDEX', 'http://cdn.wpml.org/' );
 
 define( 'ICL_ICONS_URL', ICL_PLUGIN_URL . '/res/img/' );
-define( 'ICL_ICON', ICL_ICONS_URL . 'icon.png' );
-define( 'ICL_ICON16', ICL_ICONS_URL . 'icon16.png' );
 
 define( 'WPML_ELEMENT_IS_NOT_TRANSLATED', 0 );
 define( 'WPML_ELEMENT_IS_TRANSLATED', 1 );

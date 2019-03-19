@@ -10,7 +10,7 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 		$query = $wpdb->prepare( "SELECT st.id,
                          s.language AS source_language_code,
                          st.language AS language_code,
-                         st.status,
+                         IF(cs.status IS NULL, st.status, cs.status) as status,
                          st.string_id,
                          s.name,
                          s.value,
@@ -26,6 +26,8 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 				      ON tb.id = st.batch_id
 			        LEFT JOIN {$wpdb->users} u
                       ON st.translator_id = u.ID
+                    LEFT JOIN {$wpdb->prefix}icl_string_status ss ON ss.string_translation_id = st.id
+                    LEFT JOIN {$wpdb->prefix}icl_core_status cs ON cs.rid = ss.rid  
                     WHERE st.id = %d
                     LIMIT 1",
 								 $string_translation_id );

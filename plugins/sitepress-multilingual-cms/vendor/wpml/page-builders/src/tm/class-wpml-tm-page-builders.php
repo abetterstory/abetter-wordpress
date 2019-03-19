@@ -22,7 +22,6 @@ class WPML_TM_Page_Builders {
 	 * @return array
 	 */
 	public function translation_job_data_filter( array $translation_package, $post ) {
-
 		if ( self::PACKAGE_TYPE_EXTERNAL !== $translation_package['type'] && isset( $post->ID ) ) {
 			$post_element        = new WPML_Post_Element( $post->ID, $this->sitepress );
 			$source_post_id      = $post->ID;
@@ -37,9 +36,9 @@ class WPML_TM_Page_Builders {
 
 			$string_packages = apply_filters( 'wpml_st_get_post_string_packages', false, $source_post_id );
 
-			if ( $string_packages ) {
+			$translation_package['contents']['body']['translate'] = apply_filters( 'wpml_pb_should_body_be_translated', $translation_package['contents']['body']['translate'], $post );
 
-				$translation_package['contents']['body']['translate'] = 0;
+			if ( $string_packages ) {
 
 				foreach ( $string_packages as $package_id => $string_package ) {
 
@@ -68,6 +67,9 @@ class WPML_TM_Page_Builders {
 								'format'    => 'base64',
 							);
 						}
+
+						$translation_package['contents']['body']['translate'] = 0;
+
 					}
 				}
 			}
@@ -100,7 +102,7 @@ class WPML_TM_Page_Builders {
 			}
 		}
 
-		do_action( 'wpml_pb_finished_adding_string_translations' );
+		do_action( 'wpml_pb_finished_adding_string_translations', $new_post_id, $job->original_doc_id, $fields );
 	}
 
 	/**
@@ -185,7 +187,7 @@ class WPML_TM_Page_Builders {
 
 		$status = $wpml_tm_translation_status->filter_translation_status( null, $trid, $lang );
 
-		if ( WPML_TM_Translation_Status_Display::BLOCKED_LINK !== $link && ICL_TM_NEEDS_UPDATE === $status ) {
+		if ( $link && ICL_TM_NEEDS_UPDATE === $status ) {
 			$args = array(
 				'update_needed' => 1,
 				'trid'          => $trid,

@@ -4,7 +4,16 @@
  * @author OnTheGo Systems
  */
 class WPML_Integrations {
+	const SCOPE_WP_CORE = 'wp-core';
+
 	private $components = array(
+		self::SCOPE_WP_CORE => array(
+			'block-editor' => array(
+				'name'            => 'WordPress Block Editor',
+				'function'        => 'parse_blocks',
+				'notices-display' => array(),
+			),
+		),
 		'page-builders' => array(
 			'js_composer'    => array(
 				'name'     => 'Visual Composer',

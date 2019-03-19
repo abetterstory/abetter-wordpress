@@ -65,10 +65,12 @@ class WPML_TM_XLIFF {
 		if ( $args ) {
 			$phase_items = array();
 			foreach ( $args as $name => $data ) {
-				if ( $name
-				     && array_key_exists( 'process-name', $data )
-				     && array_key_exists( 'note', $data )
-				     && $data['note'] ) {
+				if (
+					$name
+					&& array_key_exists( 'process-name', $data )
+					&& array_key_exists( 'note', $data )
+					&& $data['note']
+				) {
 
 					$phase = $this->dom->createElement( 'phase' );
 					$phase->setAttribute( 'phase-name', $name );
@@ -149,7 +151,10 @@ class WPML_TM_XLIFF {
 	private function appendData( $type, $trans_unit, $trans_unit_element ) {
 		if ( array_key_exists( $type, $trans_unit ) ) {
 			$source       = $this->dom->createElement( $type );
-			$source_cdata = $this->dom->createCDATASection( $trans_unit[ $type ]['content'] );
+			$datatype = isset( $trans_unit['attributes']['datatype'] ) ? $trans_unit['attributes']['datatype'] : '';
+			$source_cdata = $this->dom->createCDATASection(
+				$this->validate( $datatype, $trans_unit[ $type ]['content'] )
+			);
 			$source->appendChild( $source_cdata );
 
 			if ( array_key_exists( 'attributes', $trans_unit[ $type ] ) ) {
@@ -161,6 +166,25 @@ class WPML_TM_XLIFF {
 
 			$trans_unit_element->appendChild( $source );
 		}
+	}
+
+	/**
+	 * Validate content.
+	 *
+	 * @param string $datatype Type of content data.
+	 * @param string $content Content.
+	 *
+	 * @return string
+	 */
+	private function validate( $datatype, $content ) {
+		if ( 'html' === $datatype ) {
+			$validator = new WPML_TM_Validate_HTML();
+
+			$validator->validate( $content );
+			return $validator->get_html();
+		}
+
+		return $content;
 	}
 
 	public function toString() {

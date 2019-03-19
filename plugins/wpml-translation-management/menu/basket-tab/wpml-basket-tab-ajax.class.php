@@ -40,27 +40,17 @@ class WPML_Basket_Tab_Ajax {
 	 *
 	 */
 	function send_basket_chunk() {
-		/**
-		 * The items to be committed in this request
-		 * @var array $batch
-		 */
-		$batch = isset( $_POST['batch'] ) ? $_POST['batch'] : array();
-		/**
-		 * The translators to be used for these items
-		 * @var array $translators
-		 */
-		$translators = isset( $_POST['translators'] ) ? $_POST['translators'] : array();
+		$batch_factory = new WPML_TM_Translation_Batch_Factory( $this->basket );
 
-		$batch_options = array(
-			'basket_name'   => isset( $_POST['basket_name'] )
-				? filter_var( $_POST['basket_name'], FILTER_SANITIZE_STRING ) : '',
-			'deadline_date' => isset( $_POST['deadline_date'] )
-				? filter_var( $_POST['deadline_date'], FILTER_SANITIZE_STRING ) : null,
-		);
+		try {
+			$batch = $batch_factory->create( $_POST );
+			list( $has_error, $data, $error ) = $this->networking->commit_basket_chunk( $batch );
+		} catch ( InvalidArgumentException $e ) {
+			$has_error = true;
+			$data      = $e->getMessage();
+		}
 
-		list( $has_error, $data, $error ) = $this->networking->commit_basket_chunk( $batch, $translators, $batch_options );
-
-		if ( $has_error === true ) {
+		if ( $has_error ) {
 			wp_send_json_error( $data );
 		} else {
 			wp_send_json_success( $data );
@@ -92,19 +82,40 @@ class WPML_Basket_Tab_Ajax {
 			$response               = $this->project && $has_remote_translators ? $this->project->commit_batch_job() : true;
 			$response               = ! empty( $this->project->errors ) ? false : $response;
 			if ( $response !== false && is_object( $response ) ) {
-				$response->call_to_action = sprintf(
+
+				$current_service = $this->project->current_service();
+				if ( $current_service->redirect_to_ts ) {
+					$message = sprintf(
 						__(
 							'You\'ve sent the content for translation to %s. Please continue to their site, to make sure that the translation starts.',
 							'wpml-translation-management'
 						),
-						$this->project->current_service_name()
-				);
+						$current_service->name
+					);
+
+					$link_text = sprintf(
+						__( 'Continue to %s', 'wpml-translation-management' ),
+						$current_service->name
+					);
+				} else {
+					$message = sprintf(
+						__(
+							'You\'ve sent the content for translation to %1$s. Currently, we are processing it and delivering to %1$s.',
+							'wpml-translation-management'
+						),
+						$current_service->name
+					);
+
+					$link_text = __( 'Check the batch delivery status', 'wpml-translation-management' );
+				}
+
+
+				$response->call_to_action = $message;
+
 				$batch_url                = OTG_TRANSLATION_PROXY_URL . sprintf( '/projects/%d/external', $this->project->get_batch_job_id() );
 				$response->ts_batch_link  = array(
 					'href' => $batch_url,
-					'text' => sprintf( __( 'Continue to %s', 'wpml-translation-management' ),
-						$this->project->current_service_name()
-					),
+					'text' => $link_text,
 				);
 
 			}
@@ -201,15 +212,17 @@ class WPML_Basket_Tab_Ajax {
 			$message_content = __( 'No items found in basket', 'wpml-translation-management' );
 		} else {
 			$total_count             = 0;
-			$message_content_details = '';
+			$message_content_details = '<ul>';
 			foreach ( $basket_items_types as $item_type_name => $item_type ) {
 				if ( isset( $basket[ $item_type_name ] ) ) {
 					$count_item_type = count( $basket[ $item_type_name ] );
 					$total_count += $count_item_type;
-					$message_content_details .= '<br/>';
-					$message_content_details .= '- ' . $item_type_name . '(s): ' . $count_item_type;
+
+					$message_content_details .= '<li>' . $item_type_name . 's: ' . $count_item_type . '</li>';
 				}
 			}
+			$message_content_details .= '</ul>';
+
 			$message_content = sprintf( __( '%s items in basket:', 'wpml-translation-management' ), $total_count );
 			$message_content .= $message_content_details;
 		}

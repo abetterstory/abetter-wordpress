@@ -1,4 +1,5 @@
 # Features
+* [wpmltm-2047] Improved the "Translation notifications" tab
 * [wpmltm-2034] Implemented dismissal checkbox in the popup shown to users when Translation Editor is configured but the native one is used instead
 * [wpmltm-2014] Added background logic to migrate ICanLocalize users to the new version of the translation service which does not require to select translators
 * [wpmltm-1992] From WordPress 4.9, use the core CodeMirror script
