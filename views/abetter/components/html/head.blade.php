@@ -1,5 +1,4 @@
 <meta charset="UTF-8" />
-<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 
 @include('components.html.head.preload')
 @include('components.html.head.title')
