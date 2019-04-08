@@ -50,3 +50,5 @@ $Sitemap = new SitemapComponent();
 	@endforeach
 </urlset>
 @endif
+
+@debug('Default component: ~/views/<theme>/components/sitemap/sitemap.blade.php')

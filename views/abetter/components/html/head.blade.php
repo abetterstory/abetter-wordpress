@@ -1,3 +1,5 @@
+@debug('Default component: ~/views/<theme>/components/html/head.blade.php')
+
 <meta charset="UTF-8" />
 
 @include('components.html.head.preload')

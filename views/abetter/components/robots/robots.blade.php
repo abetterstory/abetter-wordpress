@@ -13,3 +13,5 @@ echo ($robots_disallow !== NULL) ? "Disallow: {$robots_disallow}".PHP_EOL : "";
 echo ($robots_allow !== NULL) ? "Allow: {$robots_allow}".PHP_EOL : "";
 
 @endphp
+
+@debug('Default component: ~/views/<theme>/components/robots/robots.blade.php','txt')

@@ -1,4 +1,5 @@
-@php _debug('social');
+@debug('Default component: ~/views/<theme>/components/html/head/social.blade.php')
+@php
 
 $post->ogsite = get_option('blogname');
 $post->ogtype = ($f = get_field('seo_type',$post)) ? $f : 'website';
@@ -25,7 +26,6 @@ if (!$post->ogtitle = get_field('seo_title',$post)) {
 }
 
 @endphp
-
 @if(!empty($post->ogsite))<meta property="og:site_name" content="{{ $post->ogsite }}" />@endif
 @if(!empty($post->ogtype))<meta property="og:type" content="{{ $post->ogtype }}" />@endif
 @if(!empty($post->ogtitle))<meta property="og:title" content="{{ $post->ogtitle }}" />@endif

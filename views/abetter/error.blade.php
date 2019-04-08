@@ -1,3 +1,5 @@
+@debug('Default template: override with /resources/views/<theme>/error.blade.php')
+
 @include('components.html.start')
 
 	@component('components.menu',TRUE)
