@@ -2,18 +2,16 @@
 
 define('ROOTPATH', realpath(dirname(__FILE__).'/../../../../'));
 
-require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Dotenv.php');
-require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Loader.php');
-require_once(ROOTPATH.'/vendor/vlucas/phpdotenv/src/Parser.php');
+require_once(ROOTPATH.'/vendor/autoload.php');
 
-$dotenv = new Dotenv\Dotenv(ROOTPATH);
+$dotenv = Dotenv\Dotenv::create(ROOTPATH);
 $dotenv->load();
 
-define('WP_HOME', getenv('WP_HOME'));
-define('WP_SITEURL', getenv('WP_HOME'));
+define('WP_HOME', ($e = getenv('WP_HOME')) ? $e : rtrim(getenv('APP_URL'),'/').'/wp/');
+define('WP_SITEURL', ($e = getenv('WP_HOME')) ? $e : rtrim(getenv('APP_URL'),'/').'/wp/');
 define('FS_METHOD', 'direct');
 define('COOKIEPATH', '/');
-define('DISABLE_WP_CRON', FALSE);
+define('DISABLE_WP_CRON', TRUE);
 
 /**
  * The base configuration for WordPress
@@ -36,19 +34,19 @@ define('DISABLE_WP_CRON', FALSE);
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', getenv('WP_DB_NAME'));
+define('DB_NAME', ($e = getenv('WP_DB_NAME')) ? $e : getenv('DB_DATABASE'));
 
 /** MySQL database username */
-define('DB_USER', getenv('WP_DB_USER'));
+define('DB_USER', ($e = getenv('WP_DB_USER')) ? $e : getenv('DB_USERNAME'));
 
 /** MySQL database password */
-define('DB_PASSWORD', getenv('WP_DB_PASSWORD'));
+define('DB_PASSWORD', ($e = getenv('WP_DB_PASSWORD')) ? $e : getenv('DB_PASSWORD'));
 
 /** MySQL hostname */
-define('DB_HOST', getenv('WP_DB_HOST'));
+define('DB_HOST', ($e = getenv('WP_DB_HOST')) ? $e : 'localhost');
 
 /** Database Charset to use in creating database tables. */
-define('DB_CHARSET', getenv('WP_DB_CHARSET'));
+define('DB_CHARSET', ($e = getenv('WP_DB_CHARSET')) ? $e : 'utf8');
 
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', getenv('WP_DB_COLLATE'));
@@ -79,7 +77,7 @@ define('NONCE_SALT',       getenv('WP_NONCE_SALT'));
  * You can have multiple installations in one database if you give each
  * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix = getenv('WP_DB_PREFIX');
+$table_prefix = ($e = getenv('WP_DB_PREFIX')) ? $e : 'wp_';
 
 /**
  * For developers: WordPress debugging mode.
@@ -93,7 +91,7 @@ $table_prefix = getenv('WP_DB_PREFIX');
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define('WP_DEBUG', getenv('WP_DEBUG'));
+define('WP_DEBUG', ($e = getenv('WP_DEBUG')) ? $e : getenv('APP_DEBUG'));
 
 /* That's all, stop editing! Happy blogging. */
 

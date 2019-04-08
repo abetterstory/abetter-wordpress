@@ -2,7 +2,6 @@
 
 	@component('components.menu',TRUE)
 
-	@component('components.header',TRUE)
 	@component('components.search',TRUE)
 
 	@component('components.footer',TRUE)

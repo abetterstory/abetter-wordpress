@@ -1,0 +1,1 @@
+@component('components.robots',TRUE)

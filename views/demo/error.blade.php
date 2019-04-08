@@ -2,7 +2,8 @@
 
 	@component('components.menu',TRUE)
 
-	@component('components.post',TRUE)
+	@component('components.header',TRUE)
+	@component('components.error',TRUE)
 
 	@component('components.footer',TRUE)
 

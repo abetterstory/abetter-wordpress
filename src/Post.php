@@ -80,7 +80,7 @@ class Post extends Model {
 	}
 
 	public static function getPostL10n() {
-		if (isset(self::$post->l10n)) return self::$post;
+		if (isset(self::$post->l10n) || empty(self::$post->ID)) return self::$post;
 		self::$post->l10n = new \StdClass();
 		self::$post->l10n->default = self::getDefaultLanguage();
 		self::$post->l10n->request = self::getRequestLanguage();

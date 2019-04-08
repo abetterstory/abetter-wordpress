@@ -135,7 +135,8 @@ class Controller extends BaseController {
 	// ---
 
 	public function getPostTemplateSuggestions() {
-		$suggestions = array();
+		$suggestions = [];
+		if (empty($this->post->ID)) return $suggestions;
 		$suggestions[] = ($this->post->post_type == 'post') ? 'page' : 'post';
 		$suggestions[] = $this->post->post_type;
 		$suggestions[] = $this->post->post_type.'--'.$this->post->post_name;
@@ -190,6 +191,7 @@ class Controller extends BaseController {
 				]);
 			}
 		}
+		if (empty($this->suggestions)) return "No template found in views.";
 		return "No template found in views.";
     }
 
