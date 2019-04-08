@@ -10,3 +10,4 @@ $site->lang = get_locale();
  version="{{ $site->version }}"
  xmlns:og="http://ogp.me/ns#"
  class=""
+ @debug('data-component="~/views/THEME/components/html/attr.blade.php"','attr')
