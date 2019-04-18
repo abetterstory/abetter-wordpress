@@ -59,7 +59,7 @@ class PostsComponent extends BaseComponent {
 		// ---
 
 		if (!$this->intro && $this->template == 'front') {
-			$this->intro = "<center><h1>"._lipsum('headline')."</h1><p>"._lipsum('normal')."</p></center>";
+			$this->intro = "<center><h1>"._lipsum('short')."</h1><p>"._lipsum('normal')."</p></center>";
 		}
 
 	}
