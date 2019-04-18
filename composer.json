@@ -1,11 +1,11 @@
 {
     "name": "abetter/wordpress",
-    "description": "ABetter Wordpress integration",
+    "description": "A Better Laravel + Wordpress integration, for exceptionally fast web applications.",
     "license": "MIT",
     "authors": [
         {
-            "name": "Johan Sjoland",
-            "email": "hello@abetter.app"
+            "name": "Johan Sjöland",
+            "email": "johan@sjoland.com"
         }
     ],
     "require": {
