@@ -174,7 +174,9 @@ if (!function_exists('_wp_title')) {
 if (!function_exists('_wp_template')) {
 
 	function _wp_template($post=NULL,$lang=NULL) {
-		return ($t = get_page_template_slug(_wp_id($post,$lang))) ? strtok($t,'.') : _wp_property('post_type',$post, $lang);
+		$id = _wp_id($post,$lang);
+		if (get_option('page_on_front') == $id) return 'front';
+		return ($t = get_page_template_slug($id)) ? strtok($t,'.') : _wp_property('post_type',$post, $lang);
 	}
 
 }
