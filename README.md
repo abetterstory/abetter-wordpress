@@ -1,71 +1,179 @@
-# LABS-ABetter-Wordpress v1.2.x
+# ABetter Wordpress
 
-ABetter Wordpress integration for Laravel 5+
+ABetter Wordpress is a turnkey solution for using Wordpress on top of Laravel to
+build exceptionally fast web applications – while still using the worlds most popular CMS to manage content and translations.
 
-## Install laravel + abetter + requirements
-- composer create-project laravel/laravel
-- mkdir resources/wordpress
-- mkdir storage/wordpress/uploads
-- chmod -r 777 storage
-- chmod -r 777 bootstrap/cache
-- chmod -r 777 resources/wordpress
-- chmod -r 777 storage/wordpress/uploads
-- composer require abetter/wordpress
+Our way of building fast web applications is all about Separation of Concerns (SoC). We let Wordpress handle the content back-end and Laravel the static front-end. Additional API and web services for dynamic content are also routed through Laravel.
 
-## Install optional dev tools
-- composer require itsgoingd/clockwork --dev
+With the ABetter Toolkit we give Blade some new powerful directives helping us separate as much as possible in standalone and resusable components – much inspired by ReactJS.
 
-## Add script command to root composer.json + update
-- "post-update-cmd": ["ABetter\\Wordpress\\ComposerScripts::postUpdate"]
-- composer update
+---
 
-## Register Middleware
-- Add to $middleware in app/Kernel.php
-- \ABetter\Wordpress\Middleware::class,
+## Requirements
 
-## Setup Wordpress config in .env
-- WP_DEBUG=
-- WP_HOME=
-- WP_THEME=
-- WP_DB_NAME=
-- WP_DB_USER=
-- WP_DB_PASSWORD=
-- WP_DB_HOST=
-- WP_DB_CHARSET=
-- WP_DB_COLLATE=
-- WP_DB_PREFIX=
-- WP_AUTH_KEY=
-- WP_SECURE_AUTH_KEY=
-- WP_LOGGED_IN_KEY=
-- WP_NONCE_KEY=
-- WP_AUTH_SALT=
-- WP_SECURE_AUTH_SALT=
-- WP_LOGGED_IN_SALT=
-- WP_NONCE_SALT=
+* PHP 7.2+
+* MySQL 5.7+
+* Composer 1.6+
+* Laravel 5.8+
+* Deployer 6+
+* Node 10.15+
+* NPM 6.4+
 
-## Create symlink to public/wp
-- cd public
-- ln -s ../vendor/abetter/wordpress/core wp
+---
 
-## Install Wordpress and configure
+## Installation
 
-## Activate Wordpress plugins + theme
+Via Composer:
 
-## Add theme functions in resources/wordpress/functions.php
-## Add theme templates in resources/wordpress/templates.php
-## Add editor styles in resources/wordpress/editor.css
+```bash
+composer create-project laravel/laravel .
+composer require abetter/wordpress
+```
 
-## Add system pages
-- Start : start (Front page)
-- News : news (Posts page)
-- Privacy Policy : privacy-policy
-- Search : search
-- 404 Not Found : 404-not-found
-- 403 Forbidden : 403-forbidden
+#### Laravel modifications
 
-## Add laravel routes/web.php:
-- Route::get('wp-admin', function() { return redirect('/wp/wp-admin/'); });
-- Route::get('wp-admin/{path}', function() { return redirect('/wp/wp-admin/'); })->where('path','.*');
-- Route::get('/', '\ABetterWordpressController@handle');
-- Route::get('sitemap', '\ABetterWordpressController@handle');
-- Route::get('{path}', '\ABetterWordpressController@handle')->where('path','.*');
+Add post install/update script to composer.json:
+
+```bash
+"scripts": {
+	"post-install-cmd": [
+		"ABetter\\Wordpress\\ComposerScripts::postInstall"
+	],
+	"post-update-cmd": [
+		"ABetter\\Wordpress\\ComposerScripts::postUpdate"
+	]
+}
+```
+
+Note: The script will modify any core files using the global _() method for translations and add a cross framework alternative. Wordpress core do not check for function_exists before defining global _(), which breaks Laravel + Wordpress compatibility.
+
+Add middleware to app/Http/Kernel.php:
+
+```bash
+protected $middleware = [
+	\ABetter\Toolkit\SandboxMiddleware::class,
+	\ABetter\Wordpress\Middleware::class,
+];
+```
+
+Note: The middleware helps Blade clear the view cache when developing many nested components.
+
+---
+
+## Preparations
+
+* Setup a local host domain using .loc, (e.g. www.abetter.loc)
+* Point the host to /public
+* Create a local mysql database
+
+## Setup Laravel
+
+Edit .env settings
+
+```bash
+APP_NAME=<name>
+APP_VERSION=<version>
+APP_ENV=<sandbox|local|dev|stage|production>
+APP_DEBUG=<true|false>
+APP_URL=<url>
+APP_PROXY=<url>
+DB_DATABASE=<database>
+DB_USERNAME=<username>
+DB_PASSWORD=<password>
+WP_THEME=<optional-views-subfolder>
+```
+
+Add routes to /routes/web.php
+
+```bash
+// ABetter Toolkit services
+Route::any('image/{style?}/{path}', '\ABetterToolkitController@handle')->where('path','.*');
+Route::any('proxy/{path}', '\ABetterToolkitController@handle')->where('path','.*');
+Route::any('browsersync/{event?}/{path}', '\ABetterToolkitController@handle')->where('path','.*');
+Route::any('service/{path?}.{type}', '\ABetterToolkitController@handle')->where(['path'=>'.*','type'=>'json']);
+
+// ABetter Wordpress main route
+Route::any('{path}', '\ABetterWordpressController@handle')->where('path','.*');
+```
+
+Note: Remove any other routes for root or wp paths (i.e default Welcome).
+
+Copy the Deployer file to root and run setup once:
+
+```bash
+cp vendor/abetter/toolkit/deploy/deploy.php deploy.php
+dep setuponce local
+```
+
+Run audit fix if needed:
+
+```bash
+npm audit fix
+```
+
+Note: Only run the setuponce on fresh projects, since it will replace files in /resources and /public.
+
+Test to build the app:
+```bash
+dep build local
+```
+
+## Setup Wordpress
+
+Go to host in browser (e.g. http://www.abetter.loc) and follow install instructions.
+
+Go to /Appearance/Themes, and activate ABetter theme.
+
+Go to /Plugins, and activate:
+
+* Advanced Custom Fields.
+* Disable Gutenberg (full support is coming soon...).
+* ... Any other of the supported plugins you need.
+
+Add default pages:
+
+```bash
+<name> : <slug> : <template> : <order>
+Start : start : default : -1
+News : news : default : 200
+Privacy Policy : privacy-policy : default : 200
+Search : search : search : 400
+403 Forbidden : 403-forbidden : error : 403
+404 Not found : 404-not-found : error : 404
+```
+
+Go to /Settings/Reading:
+
+* Select Start as homepage
+* Select News as post page
+
+Finaly, go to host in browser:
+
+**Congratulations to your new site!**
+
+---
+
+## Usage
+
+#### Development
+
+Start webpack and browsersync:
+
+```bash
+npm run watch
+```
+
+#### Deployment
+
+...
+
+---
+
+# Contributors
+
+[Johan Sjöland](https://www.abetterstory.com/]) <johan@sjoland.com>  
+Senior Product Developer: ABetter Story Sweden AB.
+
+## License
+
+MIT license. Please see the [license file](LICENSE) for more information.
