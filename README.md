@@ -45,7 +45,7 @@ Add post install/update script to composer.json:
 }
 ```
 
-Note: The script will modify any core files using the global _() method for translations and add a cross framework alternative. Wordpress core do not check for function_exists before defining global _(), which breaks Laravel + Wordpress compatibility.
+Note: The script will modify any core files using the global __() method for string translations and add a cross-framework workaround. Sadly wordpress core do not check for function_exists before defining global __(), which breaks Laravel + Wordpress compatibility without modification.
 
 Add middleware to app/Http/Kernel.php:
 
