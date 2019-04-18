@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/seo.blade.php')
+@debug('default:components/html/head/seo.blade.php')
 @php
 
 if (!$post->description = get_field('seo_description',$post)) {

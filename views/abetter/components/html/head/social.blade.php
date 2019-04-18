@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/social.blade.php')
+@debug('default:components/html/head/social.blade.php')
 @php
 
 $post->ogsite = get_option('blogname');

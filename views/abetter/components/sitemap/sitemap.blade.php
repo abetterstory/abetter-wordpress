@@ -51,4 +51,4 @@ $Sitemap = new SitemapComponent();
 </urlset>
 @endif
 
-@debug('Default component: ~/views/<theme>/components/sitemap/sitemap.blade.php')
+@debug('default:components/sitemap/sitemap.blade.php')

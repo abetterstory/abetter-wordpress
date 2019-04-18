@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/title.blade.php')
+@debug('default:components/html/head/title.blade.php')
 @php
 if (!$post->title = get_field('seo_title',$post)) {
 	$post->title = $item->headline ?? $post->post_title;

@@ -1,11 +1,14 @@
-@debug('Default template: override with /resources/views/<theme>/front.blade.php')
+@debug('default:front.blade.php')
 
 @include('components.html.start')
 
 	@component('components.menu',TRUE)
+	@component('components.cover',TRUE)
+	@component('components.main')
 
-	@component('components.canvas',TRUE)
+		@component('components.canvas',TRUE)
 
+	@endcomponent
 	@component('components.footer',TRUE)
 
 @include('components.html.end')

@@ -1,3 +1,3 @@
-@debug('Default component: ~/views/<theme>/components/html/head/fonts.blade.php')
+@debug('default:components/html/head/fonts.blade.php')
 @php
 @endphp

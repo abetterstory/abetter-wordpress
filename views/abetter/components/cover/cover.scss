@@ -1,0 +1,56 @@
+@import '_variables';
+
+.component--cover {
+
+	display: block;
+	position: relative;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+
+	background-color: #333;
+
+	> * {
+		opacity: 1;
+		//transition: all 1.0s linear;
+	}
+
+	.background {
+		opacity: 1;
+		transform: scale3d(1,1,1);
+		transform-origin: center;
+		transition: all 1.0s $ease-out;
+	}
+
+	&.cloak {
+		> * {
+			//opacity: 0;
+		}
+		.background {
+			opacity: 0;
+			transform: scale3d(1.5,1.5,1);
+		}
+	}
+
+	// ---
+
+	&.parallax {
+		background: #000;
+		.item--slide {
+			will-change: opacity;
+			//opacity: var(--cover--opacity);
+		}
+	}
+
+	// ---
+
+	@media (min-width: 375px) and (min-height: 512px) {
+		height: 80vh;
+	}
+
+	@media (min-width: 1024px) {
+		max-height: 75vw;
+	}
+
+}

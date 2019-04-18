@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/cloak.blade.php')
+@debug('default:components/html/head/cloak.blade.php')
 @php
 $site->cloak = TRUE;
 @endphp

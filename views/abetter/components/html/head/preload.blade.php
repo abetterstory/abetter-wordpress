@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/preload.blade.php')
+@debug('default:components/html/head/preload.blade.php')
 @php
 $site->prefetch = [
 	//'//www.google-analytics.com'

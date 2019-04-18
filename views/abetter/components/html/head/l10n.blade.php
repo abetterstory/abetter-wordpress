@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/l10n.blade.php')
+@debug('default:components/html/head/l10n.blade.php')
 @php
 $post->canonical_domain = ($canonical = env('APP_CANONICAL')) ? $canonical : url('/');
 $post->canonical_url = $post->canonical_domain.$item->url;

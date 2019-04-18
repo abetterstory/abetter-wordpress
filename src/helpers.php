@@ -66,10 +66,12 @@ if (!function_exists('_wp_view')) {
 if (!function_exists('_wp_post')) {
 
 	function _wp_page($id,$lang=NULL) {
+		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
-	function _wp_post($id,$lang=NULL) {
+	function _wp_post($id=NULL,$lang=NULL) {
+		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
@@ -77,7 +79,8 @@ if (!function_exists('_wp_post')) {
 
 if (!function_exists('_wp_content')) {
 
-	function _wp_content($post,$lang=NULL,$return=NULL) {
+	function _wp_content($post=NULL,$lang=NULL,$return=NULL) {
+		if (empty($post->ID)) $post = \ABetter\Wordpress\Post::$post ?? NULL;
 		$return = $post->post_content ?? ""; // Current
 		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
 		if ($lang && ($id = $post->l10n->translations[$lang] ?? NULL) && ($req = get_post($id))) {
@@ -89,11 +92,43 @@ if (!function_exists('_wp_content')) {
 		return $return; // Fallback
 	}
 
+	function _wp_render_content($post=NULL,$lang=NULL,$return=NULL) {
+		$content = _wp_content($post,$lang,$return);
+		return _render($content);
+	}
+
+}
+
+if (!function_exists('_wp_property')) {
+
+	function _wp_property($key,$post=NULL,$lang=NULL,$return=NULL) {
+		if (empty($post->ID)) $post = \ABetter\Wordpress\Post::$post ?? NULL;
+		$return = (!empty($post->{$key})) ? $post->{$key} : $return; // Current
+		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
+		if ($lang && ($id = $post->l10n->translations[$lang] ?? NULL) && ($req = get_post($id))) {
+			$return = (!empty($req->{$key})) ? $req->{$key} : $return; // Lang
+		}
+		if (!$return && ($id = $post->l10n->translations[$post->l10n->default] ?? NULL) && ($def = get_post($id))) {
+			$return = (!empty($def->{$key})) ? $def->{$key} : $return; // Default
+		}
+		return $return; // Fallback
+	}
+
+	function _wp_render_property($key,$post=NULL,$lang=NULL,$return=NULL) {
+		$property = _wp_property($key,$post,$lang,$return);
+		return _render($property);
+	}
+
+	function _wp_id($post=NULL,$lang=NULL,$return=NULL) {
+		return _wp_property('ID',$post,$lang,$return);
+	}
+
 }
 
 if (!function_exists('_wp_field')) {
 
-	function _wp_field($key,$post,$lang=NULL,$return=NULL) {
+	function _wp_field($key,$post=NULL,$lang=NULL,$return=NULL) {
+		if (empty($post->ID)) $post = \ABetter\Wordpress\Post::$post ?? NULL;
 		$return = ($f = get_field($key,$post)) ? $f : $return; // Current
 		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
 		if ($lang && ($id = $post->l10n->translations[$lang] ?? NULL) && ($req = get_post($id))) {
@@ -103,6 +138,11 @@ if (!function_exists('_wp_field')) {
 			$return = ($f = get_field($key,$def)) ? $f : $return; // Default
 		}
 		return $return; // Fallback
+	}
+
+	function _wp_render_field($key,$post=NULL,$lang=NULL,$return=NULL) {
+		$field = _wp_field($key,$post,$lang,$return);
+		return _render($field);
 	}
 
 }
@@ -117,16 +157,45 @@ if (!function_exists('_wp_option')) {
 
 if (!function_exists('_wp_url')) {
 
-	function _wp_url($post) {
-		return _relative(get_permalink($post));
+	function _wp_url($post=NULL,$lang=NULL) {
+		return _relative(get_permalink(_wp_id($post,$lang)));
 	}
 
 }
 
 if (!function_exists('_wp_title')) {
 
-	function _wp_title($post) {
-		return $post->post_title ?? "";
+	function _wp_title($post=NULL,$lang=NULL) {
+		return _wp_property('post_title',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_template')) {
+
+	function _wp_template($post=NULL,$lang=NULL) {
+		return ($t = get_page_template_slug(_wp_id($post,$lang))) ? strtok($t,'.') : _wp_property('post_type',$post, $lang);
+	}
+
+}
+
+if (!function_exists('_wp_autotitle')) {
+
+	function _wp_autotitle($content,$post=NULL,$lang=NULL) {
+		if (preg_match('/<h1/',$content) || preg_match('/^<(h1|h2)/i',trim($content))) return $content;
+		return '<h1 class="autotitle">'._wp_title($post,$lang).'</h1>'.$content;
+	}
+
+}
+
+if (!function_exists('_wp_fake')) {
+
+	function _wp_fake($post=NULL,$lang=NULL,$return="") {
+		if (empty($post->ID)) $post = \ABetter\Wordpress\Post::$post ?? NULL;
+		$return .= '<h1>'._wp_title($post,$lang).'</h1>';
+		$return .= '<p class="lead">'._lipsum('medium').'</p>';
+		$return .= '<p>'._lipsum('long').'</p>';
+		return $return;
 	}
 
 }

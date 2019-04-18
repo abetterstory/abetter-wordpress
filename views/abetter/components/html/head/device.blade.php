@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/device.blade.php')
+@debug('default:components/html/head/device.blade.php')
 @php
 @endphp
 <meta name="viewport" content="width=device-width, initial-scale=1" />

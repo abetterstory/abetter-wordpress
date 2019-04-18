@@ -84,8 +84,12 @@ add_filter('content_save_pre', function($content){
 
 // Filter @components and images in post_content
 add_filter('content_save_pre', function($content) {
-	$content = preg_replace('/<p>(<img[^<]+)<\/p>/', "\n$1\n", $content);
-	$content = preg_replace('/<p>(@[^<]+)<\/p>/', "\n$1\n", $content);
+	$content = preg_replace('/<p[^>]*>(<img[^<]+)<\/p>/', "\n$1\n", $content);
+	$content = preg_replace('/@componentend/', "@endcomponent", $content);
+	$content = preg_replace('/@blockend/', "@endblock", $content);
+	$content = preg_replace('/<p[^>]*>@(component|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+	$content = preg_replace('/<p[^>]*>@(endcomponent|endblock)<\/p>/', "\n@$1\n", $content);
+	$content = preg_replace('/></', ">\n<", $content);
 	return $content;
 });
 
@@ -116,9 +120,27 @@ add_filter('tiny_mce_before_init',function($init){
 			'wrapper' => FALSE
 		),
 		array(
+			'title' => 'Dateline',
+			'block' => 'p',
+			'classes' => 'dateline',
+			'wrapper' => FALSE
+		),
+		array(
+			'title' => 'Small',
+			'block' => 'p',
+			'classes' => 'small',
+			'wrapper' => FALSE
+		),
+		array(
 			'title' => 'Nowrap',
 			'inline' => 'span',
 			'classes' => 'nowrap',
+			'wrapper' => TRUE
+		),
+		array(
+			'title' => 'Center',
+			'block' => 'center',
+			'classes' => 'align-center',
 			'wrapper' => TRUE
 		),
 	);
@@ -209,6 +231,21 @@ add_action('locale', function($locale){
 	if (is_admin()) return 'en_US';
 	return $locale;
 });
+
+
+// ---
+
+add_filter('manage_pages_columns', function($columns){
+	$sorted = []; foreach($columns as $key => $label) {
+    	if ($key == 'author') $sorted['template'] = 'Template';
+		$sorted[$key] = $label;
+ 	}
+	return $sorted;
+});
+
+add_action('manage_pages_custom_column', function($column, $post_id){
+	if ($column == 'template') echo ($template = get_page_template_slug($post_id)) ? ucfirst(strtok($template,'.')) : '—';
+},10,2);
 
 // ---
 

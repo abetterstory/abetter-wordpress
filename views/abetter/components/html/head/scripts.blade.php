@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/scripts.blade.php')
+@debug('default:components/html/head/scripts.blade.php')
 @php
 //$site->scripts_manifest = 'scripts/manifest.js';
 //$site->scripts_vendor = 'scripts/vendor.js';

@@ -153,8 +153,20 @@ class Controller extends BaseController {
 
 	// ---
 
+	public function testRedirect() {
+		$redirect = '';
+		if (empty($this->args[0])) return $redirect;
+		if (preg_match('/^wp-admin/',$this->args[0])) {
+			$redirect = '/wp/'.$this->args[0].(($q = http_build_query($_GET??[])) ? '?'.$q : '');
+		}
+		return $redirect;
+	}
+
+	// ---
+
 	public function handle() {
 		$this->args = func_get_args();
+		if ($redirect = $this->testRedirect()) return redirect($redirect);
 		$this->user = $this->getUser();
 		$this->languages = $this->getAvailableLanguages();
 		$this->language = $this->getRequestLanguage();

@@ -1,0 +1,39 @@
+@import '_variables';
+
+.component--main {
+
+	display: block;
+	position: relative;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+
+	background-color: #fff;
+
+	padding-top: calc(40px + 5vw);
+	padding-bottom: calc(40px + 6vw);
+
+	&.template--front,
+	&.template--canvas {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	&.shadow:before {
+		content: "";
+		position: absolute;
+		z-index: 1;
+		top: -40px;
+		height: 40px;
+		left: 0;
+		width: 100%;
+		background: linear-gradient(rgba(#000,0), rgba(#000,0.4));
+	}
+
+	&.parallax {
+		will-change: transform;
+		transform: translate3d(0,calc(0px - var(--main--pos)),0);
+		margin-bottom: calc(0px - 50vh);
+	}
+
+}

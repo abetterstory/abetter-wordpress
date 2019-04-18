@@ -1,3 +1,3 @@
-@debug('Default component: ~/views/<theme>/components/html/head/static.blade.php')
+@debug('default:components/html/head/static.blade.php')
 @php
 @endphp

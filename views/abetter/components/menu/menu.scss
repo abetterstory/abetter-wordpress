@@ -1,0 +1,466 @@
+@import '_variables.scss';
+
+$back-top: rgba(#fff,0.0);
+$back-scroll: rgba(#fff,0.8);
+$back-hover: rgba(#fff,0.9);
+$back-mobile: rgba(#000,0.1);
+$back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
+
+.component--menu {
+
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 50px;
+	z-index: 999;
+
+	nav,aside,section,ul,li,a,figure {
+		margin: 0;
+		padding: 0;
+	}
+
+	// ---
+
+	nav {
+		opacity: 1;
+		transition: opacity 0.5s linear;
+	}
+
+	&.cloak nav {
+		//opacity: 0;
+	}
+
+	// ---
+
+	nav.bar {
+		display: block;
+		position: absolute;
+		z-index: 999;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: calc(100% + 0px);
+		opacity: 0;
+		background: transparent;
+		transition: all 0.2s linear;
+	}
+
+	// ---
+
+	opacity: 1;
+	transform: translateY(-80px);
+
+	&.scroll-down {
+		position: absolute;
+		background: $back-scroll;
+		transform: translateY(-80px);
+		transition: transform 0.2s linear, background 0s linear 0.5s;
+		&.scroll-change {
+			position: fixed;
+		}
+	}
+
+	&.scroll-up {
+		position: fixed;
+		background: $back-scroll;
+		border-bottom: 1px solid rgba($color-theme,0.2);
+		transform: translateY(0);
+		transition: transform 0.2s $ease 0.5s, border 0.2s $ease 0.5s;
+	}
+
+	&.scroll-top {
+		position: absolute;
+		background: $back-scroll;
+		border-bottom: 1px solid rgba($color-theme,0.0);
+		transform: translateY(0);
+		transition: background 0.2s linear, border 0.2s linear;
+	}
+
+	&.transparent {
+		&.scroll-top {
+			background: $back-top;
+			border-bottom: 1px solid rgba($color-theme,0);
+			transition: background 0.2s linear, border 0.2s linear, opacity 0.1s linear 0.5s; // Cloak fix
+			.theme-color {
+				color: #fff;
+				transition: color 0.1s linear;
+				span {
+					color: #fff;
+					transition: color 0.1s linear;
+				}
+				rect,line {
+					stroke: #fff;
+					transition: stroke 0.1s linear;
+				}
+				text {
+					fill: #fff;
+					transition: fill 0.1s linear;
+				}
+			}
+			&:hover {
+				background: $back-hover;
+				border-bottom: 1px solid rgba($color-theme,0.8);
+				transition: background 0.2s linear, border 0.2s linear;
+				.theme-color {
+					color: $color-theme;
+					transition: color 0.1s linear;
+					span {
+						color: $color-theme;
+						transition: color 0.1s linear;
+					}
+					rect,line {
+						stroke: $color-theme;
+						transition: stroke 0.1s linear;
+					}
+					text {
+						fill: $color-theme;
+						transition: fill 0.1s linear;
+					}
+				}
+			}
+		}
+	}
+
+	&:hover {
+		background: $back-hover;
+		transform: translateY(0);
+		transition: background 0.2s linear;
+	}
+
+	// ---
+
+	nav.main {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		//max-width: 1400px;
+		margin: 0 auto;
+		> ul {
+			display: flex;
+			height: 100%;
+			> li {
+				display: block;
+				height: 100%;
+				> a {
+					display: flex;
+					flex-direction: row;
+    				justify-content: center;
+					align-items: center;
+					height: 100%;
+					padding: 0 15px;
+					text-decoration: none;
+					span {
+						display: inline-block;
+					}
+				}
+			}
+		}
+	}
+
+	// ---
+
+	nav.main > ul > li.brand {
+		position: relative;
+		z-index: 999;
+		> a {
+			padding-left: 10px;
+		}
+		figure {
+			display: inline-block;
+			padding: 0px 0px;
+			svg {
+				display: inline-block;
+				margin-top: 2px;
+				height: 30px;
+				rect {
+					stroke: $color-theme;
+					transition: stroke 0.1s linear;
+				}
+				text {
+					fill: $color-theme;
+					transition: fill 0.1s linear;
+				}
+			}
+			transition: width 0.2s linear;
+		}
+		span {
+			display: none
+		}
+		a:hover {
+			svg rect {
+				stroke: #333;
+				transition: stroke 0.2s linear;
+			}
+			svg text {
+				fill: #333;
+				transition: fill 0.2s linear;
+			}
+		}
+	}
+
+	// ---
+
+	nav.main > ul > li.mobile-toggle {
+		position: relative;
+		z-index: 999;
+		figure {
+			display: inline-block;
+			padding: 0px 3px;
+			svg {
+				display: inline-block;
+				margin-top: 2px;
+				height: 20px;
+				line {
+					stroke: $color-theme;
+					stroke-width: 10px;
+					transform-origin: 50% 50%;
+					transition: all 0.1s linear;
+				}
+			}
+			svg line.line-1 {
+				transform: rotate(0deg) translateY(-30%);
+				transition: all 0.1s linear;
+			}
+			svg line.line-2 {
+				opacity: 1;
+				transition: all 0.1s linear;
+			}
+			svg line.line-3 {
+				transform: rotate(0deg) translateY(30%);
+				transition: all 0.1s linear;
+			}
+		}
+		span {
+			display: none;
+			padding-right: 6px;
+			text-transform: uppercase;
+			font-size: 0.82rem;
+			letter-spacing: 1px;
+			line-height: 1.6;
+			color: $color-theme;
+			transition: all 0.1s linear;
+		}
+		a:hover {
+			span {
+				color: #333;
+				transition: color 0.2s linear;
+			}
+			svg line {
+				stroke: #333;
+				transition: all 0.2s linear;
+			}
+		}
+	}
+
+	&.mobile-menu-open {
+		position: fixed;
+		nav.main > ul > li.brand {
+			a:hover {
+				svg rect {
+					stroke: #fff;
+					transition: all 0.2s linear;
+				}
+				svg text {
+					fill: #fff;
+					transition: all 0.2s linear;
+				}
+			}
+		}
+		nav.main > ul > li.mobile-toggle {
+			figure {
+				svg line.line-1 {
+					transform: rotate(45deg) translateY(0%);
+					transition: all 0.1s linear;
+				}
+				svg line.line-2 {
+					opacity: 0;
+					transition: all 0.1s linear;
+				}
+				svg line.line-3 {
+					transform: rotate(-45deg) translateY(0%);
+					transition: all 0.1s linear;
+				}
+			}
+			a:hover {
+				span {
+					color: #fff;
+					transition: all 0.2s linear;
+				}
+				svg line {
+					stroke: #fff;
+					transition: all 0.2s linear;
+				}
+			}
+		}
+	}
+
+	@media (min-width: 768px) {
+		nav.main > ul > li.mobile-toggle span {
+			display: inline-block;
+		}
+	}
+
+	// ---
+
+	.mobile-menu {
+		position: relative;
+		box-sizing: border-box;
+		top: 50px;
+		left: 0;
+		display: flex;
+		flex-direction: column;
+		padding: 0.75rem 0rem;
+		margin: calc(2vw) calc(4vw);
+		width: 100%;
+		height: 100%;
+		li.menu-item {
+			display: block;
+			> a {
+				display: inline-block;
+				padding: 0.75rem 1rem;
+				font-size: 2rem;
+				line-height: 1.1;
+				font-weight: bold;
+				text-decoration: none;
+				color: $color-theme;
+				transition: color 0.05s linear;
+			}
+			&.has-children > a > span:after {
+				content: "❯";
+				padding-left: 0.9rem;
+			}
+			&.back-item > a {
+				color: #fff;
+				opacity: 0.3;
+				font-size: 1.2rem;
+				padding-top: 1.1rem;
+				padding-bottom: 1.3rem;
+				> span:before {
+					content: "❮";
+					padding-left: 2px;
+					padding-right: 0.8rem;
+				}
+			}
+			&.current {
+				> a {
+					color: #fff;
+				}
+			}
+			> a:hover {
+				opacity: 1;
+				color: #fff;
+				transition: color 0.1s linear;
+			}
+		}
+		li.menu-divider {
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+			height: 1px;
+			border-top: 1px solid $color-theme;
+		}
+		// ---
+		ul.sub-menu {
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			box-sizing: border-box;
+			z-index: 0;
+			top: 0px;
+			left: 100%;
+			width: 100%;
+			min-height: 100%;
+			padding: 0.75rem 0rem;
+		}
+		li.is-active {
+			> ul.sub-menu {
+				display: block;
+				z-index: 1010;
+			}
+		}
+	}
+
+	// ---
+
+	nav.off-canvas {
+		display: block;
+		position: fixed;
+		z-index: 995;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: #333;
+	}
+
+	nav.off-canvas {
+		opacity: 0;
+		top: calc(-100vh - 50px);
+		transition: opacity 0.1s linear 0.4s, top 0.3s $ease-in-expo;
+		> ul {
+			opacity: 0;
+		}
+	}
+
+	&.mobile-menu-open {
+		nav.bar {
+			opacity: 1;
+			transition: opacity 0.2s linear;
+		}
+		nav.off-canvas {
+			opacity: 1;
+			top: 0px;
+			transition: top 0.5s $ease-out-expo;
+			> ul {
+				opacity: 1;
+				transition: opacity 0.3s linear 0.1s;
+			}
+		}
+	}
+
+	// ---
+
+	nav.off-canvas.slide-in {
+		> ul {
+			transform: translateX(-100%);
+			transition: transform 0.5s $ease;
+		}
+		&[data-level="2"] > ul { transform: translateX(-200%); }
+		&[data-level="3"] > ul { transform: translateX(-300%); }
+		&[data-level="4"] > ul { transform: translateX(-400%); }
+		&[data-level="5"] > ul { transform: translateX(-500%); }
+	}
+
+	nav.off-canvas.slide-out {
+		> ul {
+			transform: translateX(0);
+			transition: transform 0.5s $ease;
+		}
+		&[data-level="2"] > ul { transform: translateX(-100%); }
+		&[data-level="3"] > ul { transform: translateX(-200%); }
+		&[data-level="4"] > ul { transform: translateX(-300%); }
+		&[data-level="5"] > ul { transform: translateX(-400%); }
+	}
+
+}
+
+.component--menu--hit {
+	display: block;
+	position: fixed;
+	z-index: 998;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 20px;
+}
+
+body.menu-mobile-open {
+	overflow: hidden;
+}

@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head.blade.php')
+@debug('default:components/html/head.blade.php')
 
 <meta charset="UTF-8" />
 

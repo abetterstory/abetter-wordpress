@@ -34,7 +34,8 @@ class Index {
 		foreach (self::$posts AS $post) {
 			$item = new \StdClass();
 			$item->id = (int) $post->ID;
-			$item->label = (string) $post->post_title;
+			$item->title = (string) $post->post_title;
+			$item->label = $item->title;
 			$item->status = (string) $post->post_status;
 			$item->url = (string) _relative(get_permalink($post));
 			if ($item->status != 'publish') $item->url = preg_replace('/\?(page_id|p)=([0-9]+)/',"$1/$2/",$item->url);
@@ -47,6 +48,8 @@ class Index {
 			$item->front = Post::isFront($post,'front');
 			$item->l10n = Post::getL10n($post);
 			$item->language = $item->l10n->language;
+			$item->style = (string) "";
+			$item->target = (string) "";
 			$item->items = array();
 			self::$index[$item->id] = $item;
 		}

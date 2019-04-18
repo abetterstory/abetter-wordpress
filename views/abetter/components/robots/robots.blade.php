@@ -14,4 +14,4 @@ echo ($robots_allow !== NULL) ? "Allow: {$robots_allow}".PHP_EOL : "";
 
 @endphp
 
-@debug('Default component: ~/views/<theme>/components/robots/robots.blade.php','txt')
+@debug('default:components/robots/robots.blade.php','txt')

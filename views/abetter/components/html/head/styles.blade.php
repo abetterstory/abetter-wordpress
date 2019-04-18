@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/styles.blade.php')
+@debug('default:components/html/head/styles.blade.php')
 @php
 $site->styles_app = 'styles/app.css';
 $site->theme_css = _dictionary('theme_css',NULL,'');

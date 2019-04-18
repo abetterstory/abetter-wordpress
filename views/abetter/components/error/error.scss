@@ -1,0 +1,24 @@
+@import '_variables';
+
+.component--error {
+
+	display: block;
+	margin: 0;
+	padding: 0;
+
+	padding-bottom: calc(5vw + 40px);
+
+}
+
+body.template--error {
+	.component--page {
+		padding-bottom: 0;
+	}
+	.block--typography {
+		text-align: center;
+		> * {
+			text-align: center;
+			max-width: none;
+		}
+	}
+}

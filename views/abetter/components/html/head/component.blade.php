@@ -1,4 +1,4 @@
-@debug('Default component: ~/views/<theme>/components/html/head/component.blade.php')
+@debug('default:components/html/head/component.blade.php')
 @php
 $site->component = TRUE;
 @endphp

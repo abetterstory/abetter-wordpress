@@ -1,0 +1,28 @@
+@import '_variables';
+
+.component--search {
+
+	display: block;
+	margin: 0;
+	padding: 0;
+
+	.block--grid .row {
+		max-width: $limit-block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+}
+
+body.template--search {
+	.component--page {
+		padding-bottom: 0;
+	}
+	.block--typography {
+		text-align: center;
+		> * {
+			text-align: center;
+			max-width: none;
+		}
+	}
+}

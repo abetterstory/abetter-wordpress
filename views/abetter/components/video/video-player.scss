@@ -1,0 +1,77 @@
+@import '_variables';
+
+.component--video-player {
+
+	display: block;
+	position: fixed;
+	overflow: hidden;
+	z-index: 2998;
+	top: 0; height: 100%;
+	left: 0; width: 100%;
+	background-color: rgba(#000,1.0);
+
+	iframe {
+		display: block;
+		position: absolute;
+		top: 50px; height: calc(100% - 100px);
+		left: 0px; width: 100%;
+	}
+
+	> a {
+		display: block;
+		position: absolute;
+		top: 0; right: 0;
+		padding: 14px 18px;
+		z-index: 2999;
+		font-size: 1rem !important;
+		font-family: $font-body !important;
+		text-transform: none !important;
+		letter-spacing: normal !important;
+		color: #fff;
+		font-size: 1rem;
+		line-height: 1;
+		text-decoration: none;
+		cursor: pointer;
+		i {
+			display: inline-block;
+			position: relative;
+			font-size: 1.5rem;
+			font-style: normal;
+			font-weight: 100;
+			top: 3px;
+			padding-left: 10px;
+		}
+		&:hover {
+			color: $color-theme;
+			transition: color 0.1s linear;
+			text-decoration: none;
+		}
+	}
+
+	// ---
+
+	display: none;
+
+	&.video-block {
+		display: block;
+		opacity: 0;
+		transform: translateY(100%);
+		transition: opacity 0.5s linear, transform 0s linear 0.5s;
+	}
+	&.video-open {
+		transform: translateY(0);
+		opacity: 1;
+		transition: opacity 0.25s linear, transform 0.5s $ease-out 0s;
+	}
+	iframe {
+		opacity: 0;
+		transition: opacity 0.5s linear;
+	}
+	&.video-ready {
+		iframe {
+			opacity: 1;
+			transition: opacity 1s linear;
+		}
+	}
+
+}
