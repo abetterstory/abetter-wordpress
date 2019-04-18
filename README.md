@@ -1,4 +1,8 @@
-# ABetter Wordpress
+# A Better Wordpress
+
+[![Packagist Version](https://img.shields.io/packagist/v/abetter/wordpress.svg)](https://packagist.org/packages/abetter/wordpress)
+[![Total Downloads](https://poser.pugx.org/abetter/wordpress/downloads.svg)](https://packagist.org/packages/abetter/wordpress)
+[![License](https://poser.pugx.org/abetter/wordpress/license.svg)](https://packagist.org/packages/abetter/wordpress)
 
 ABetter Wordpress is a turnkey solution for using Wordpress on top of Laravel to
 build exceptionally fast web applications – while still using the worlds most popular CMS to manage content and translations.
