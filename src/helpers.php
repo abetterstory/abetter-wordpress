@@ -175,7 +175,11 @@ if (!function_exists('_wp_template')) {
 
 	function _wp_template($post=NULL,$lang=NULL) {
 		$id = _wp_id($post,$lang);
-		if (get_option('page_on_front') == $id) return 'front';
+		if (_wp_option('page_on_front') == $id) {
+			return 'front';
+		} else if (_wp_option('page_for_posts') == $id) {
+			return 'posts';
+		}
 		return ($t = get_page_template_slug($id)) ? strtok($t,'.') : _wp_property('post_type',$post, $lang);
 	}
 
