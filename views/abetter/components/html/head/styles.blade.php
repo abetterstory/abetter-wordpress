@@ -1,6 +1,6 @@
 @debug('default:components/html/head/styles.blade.php')
 @php
-$site->styles_app = 'styles/app.css';
+$site->styles_app = (($file = 'styles/app.css') && is_file(public_path().'/'.$file)) ? $file : '';
 $site->theme_css = _dictionary('theme_css',NULL,'');
 @endphp
 @if ($site->styles_app)
