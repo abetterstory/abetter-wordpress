@@ -13,7 +13,8 @@ $Ready(function(){
 
 	// ---
 
-	if ($this.classList.contains('parallax')) {
+	/*
+	if ($this.classList.contains('parallax') && !$doc.documentElement.classList.contains('is-msie')) {
 		$main.classList.add('parallax');
 		var parallax = window.BasicScroll.create({
 			elem: $this,
@@ -24,6 +25,7 @@ $Ready(function(){
 			}
 		}).start();
 	}
+	*/
 
 	// ---
 

@@ -21,7 +21,7 @@
 			<li class="mobile-toggle">
 				<a href="javascript:void(0);" onclick="menu_mobileToggle()">
 					<span class="theme-color">{{ $Menu->menu_label }}</span>
-					<figure class="theme-color">{!! $Menu->menu_svg !!}</figure>
+					<figure class="theme-color" nowrap>{!! $Menu->menu_svg !!}</figure>
 				</a>
 			</li>
 		</ul>

@@ -13,7 +13,7 @@
 	</hgroup>
 
 	@if(!empty($item->image))
-	<figure class="background image" @if(!empty($item->image_background))style="background-image:url('/image/w1400{{ $item->image_filter }}{{ $item->image }}')"@endif>
+	<figure class="background @if(!empty($item->image_background))image" style="background-image:url('/image/w1400{{ $item->image_filter }}{{ $item->image }}')@endif">
 		@if(empty($item->image_background))
 		<img src="/image/w1400{{ $item->image_filter }}{{ $item->image }}" />
 		@endif
@@ -29,5 +29,5 @@
 		</video>
 	</figure>
 	@endif
-	
+
 </div>

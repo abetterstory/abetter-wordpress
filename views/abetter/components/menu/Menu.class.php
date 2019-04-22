@@ -30,7 +30,7 @@ class MenuComponent extends BaseComponent {
 		$this->back_label = _dictionary('menu_back',NULL,'Back');
 
 		$this->menu_label = _dictionary('menu_label',NULL,'Menu');
-		$this->menu_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><line class="line-1" x1="0" y1="50" x2="100" y2="50"></line><line class="line-2" x1="0" y1="50" x2="100" y2="50"></line><line class="line-3" x1="0" y1="50" x2="100" y2="50"></line></g></svg></svg>';
+		$this->menu_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><line class="line-1" x1="0" y1="20" x2="100" y2="20"></line><line class="line-2" x1="0" y1="50" x2="100" y2="50"></line><line class="line-3" x1="0" y1="80" x2="100" y2="80"></line></g></svg></svg>';
 
 		// ---
 

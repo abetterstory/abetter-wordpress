@@ -188,15 +188,17 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		overflow: hidden;
-		img, video {
-			// Cover
-			position: absolute;
-			left:-10000%; right: -10000%;
-			top: -10000%; bottom: -10000%;
-			margin: auto auto;
-			min-width: 1000%;
-			min-height: 1000%;
-			transform: scale(0.1);
+		&.image,&.video {
+			img, video {
+				// Cover
+				position: absolute;
+				left:-10000%; right: -10000%;
+				top: -10000%; bottom: -10000%;
+				margin: auto auto;
+				min-width: 1000%;
+				min-height: 1000%;
+				transform: scale(0.1);
+			}
 		}
 	}
 

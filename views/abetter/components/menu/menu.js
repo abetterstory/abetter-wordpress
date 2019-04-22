@@ -10,6 +10,19 @@ $Ready(function(){
 
 	// ---
 
+	var msie = navigator.userAgent.match(/MSIE|IE |Trident/i);
+	if (msie) $thisclass.add('msie');
+
+	// ---
+
+	if (msie) {
+		// Fix fake logo width (svg ie11 bug)
+		var $svg = $doc.querySelector('svg[data-aspect]');
+		if ($svg) $svg.style.width = ($svg.clientHeight * Number($svg.getAttribute('data-aspect'))) + 'px';
+	}
+
+	// ---
+
 	var smo = 'mobile-menu-open';
 	var isTouch = (function(){ try { $doc.createEvent('TouchEvent'); return true; } catch (e) { return false; }})();
 

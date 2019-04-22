@@ -24,12 +24,12 @@
 		}
 		@media (min-width: 480px) {
 			.column {
-				flex: 0 0 calc(100% / 2);
+				width: calc(100% / 2);
 			}
 		}
 		@media (min-width: 768px) {
 			.column {
-				flex: 0 0 calc(100% / 3);
+				width: calc(100% / 3);
 			}
 			.column:not(.more):nth-child(n+4) {
 				display: block;

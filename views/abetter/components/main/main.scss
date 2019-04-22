@@ -31,7 +31,7 @@
 	}
 
 	&.parallax {
-		will-change: transform;
+		//will-change: transform;
 		transform: translate3d(0,calc(0px - var(--main--pos)),0);
 		margin-bottom: calc(0px - 50vh);
 	}

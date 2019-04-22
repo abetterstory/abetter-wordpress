@@ -138,21 +138,18 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 		align-items: center;
 		width: 100%;
 		height: 100%;
-		//max-width: 1400px;
 		margin: 0 auto;
 		> ul {
-			display: flex;
+			display: block;
 			height: 100%;
 			> li {
 				display: block;
 				height: 100%;
 				> a {
 					display: flex;
-					flex-direction: row;
-    				justify-content: center;
+					justify-content: center;
 					align-items: center;
 					height: 100%;
-					padding: 0 15px;
 					text-decoration: none;
 					span {
 						display: inline-block;
@@ -168,37 +165,37 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 		position: relative;
 		z-index: 999;
 		> a {
-			padding-left: 10px;
-		}
-		figure {
-			display: inline-block;
-			padding: 0px 0px;
-			svg {
-				display: inline-block;
-				margin-top: 2px;
-				height: 30px;
-				rect {
-					stroke: $color-theme;
-					transition: stroke 0.1s linear;
+			figure {
+				display: block;
+				position: relative;
+				margin: 0;
+				padding: 0 12px;
+				svg {
+					display: block;
+					height: 30px;
+					rect {
+						stroke: $color-theme;
+						transition: stroke 0.1s linear;
+					}
+					text {
+						fill: $color-theme;
+						transition: fill 0.1s linear;
+					}
 				}
-				text {
-					fill: $color-theme;
-					transition: fill 0.1s linear;
+				transition: width 0.2s linear;
+			}
+			span {
+				display: none
+			}
+			&:hover {
+				svg rect {
+					stroke: #333;
+					transition: stroke 0.2s linear;
 				}
-			}
-			transition: width 0.2s linear;
-		}
-		span {
-			display: none
-		}
-		a:hover {
-			svg rect {
-				stroke: #333;
-				transition: stroke 0.2s linear;
-			}
-			svg text {
-				fill: #333;
-				transition: fill 0.2s linear;
+				svg text {
+					fill: #333;
+					transition: fill 0.2s linear;
+				}
 			}
 		}
 	}
@@ -208,51 +205,53 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 	nav.main > ul > li.mobile-toggle {
 		position: relative;
 		z-index: 999;
-		figure {
-			display: inline-block;
-			padding: 0px 3px;
-			svg {
+		> a {
+			figure {
 				display: inline-block;
-				margin-top: 2px;
-				height: 20px;
-				line {
-					stroke: $color-theme;
-					stroke-width: 10px;
-					transform-origin: 50% 50%;
+				padding: 0px 18px;
+				overflow: hidden;
+				svg {
+					display: block;
+					width: 20px;
+					line {
+						stroke: $color-theme;
+						stroke-width: 10px;
+						transform-origin: 50% 50%;
+						transition: all 0.1s linear;
+					}
+				}
+				svg line.line-1 {
+					transform: rotate(0deg) translateY(0);
+					transition: all 0.1s linear;
+				}
+				svg line.line-2 {
+					opacity: 1;
+					transition: all 0.1s linear;
+				}
+				svg line.line-3 {
+					transform: rotate(0deg) translateY(0);
 					transition: all 0.1s linear;
 				}
 			}
-			svg line.line-1 {
-				transform: rotate(0deg) translateY(-30%);
-				transition: all 0.1s linear;
-			}
-			svg line.line-2 {
-				opacity: 1;
-				transition: all 0.1s linear;
-			}
-			svg line.line-3 {
-				transform: rotate(0deg) translateY(30%);
-				transition: all 0.1s linear;
-			}
-		}
-		span {
-			display: none;
-			padding-right: 6px;
-			text-transform: uppercase;
-			font-size: 0.82rem;
-			letter-spacing: 1px;
-			line-height: 1.6;
-			color: $color-theme;
-			transition: all 0.1s linear;
-		}
-		a:hover {
 			span {
-				color: #333;
-				transition: color 0.2s linear;
+				display: none;
+				padding-right: 6px;
+				text-transform: uppercase;
+				font-size: 0.82rem;
+				letter-spacing: 1px;
+				line-height: 1.6;
+				color: $color-theme;
+				transition: all 0.1s linear;
 			}
-			svg line {
-				stroke: #333;
-				transition: all 0.2s linear;
+			&:hover {
+				span {
+					color: #333;
+					transition: color 0.2s linear;
+				}
+				svg line {
+					stroke: #333;
+					transition: all 0.2s linear;
+				}
 			}
 		}
 	}
@@ -274,7 +273,7 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 		nav.main > ul > li.mobile-toggle {
 			figure {
 				svg line.line-1 {
-					transform: rotate(45deg) translateY(0%);
+					transform: rotate(45deg) translateY(30%);
 					transition: all 0.1s linear;
 				}
 				svg line.line-2 {
@@ -282,7 +281,7 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 					transition: all 0.1s linear;
 				}
 				svg line.line-3 {
-					transform: rotate(-45deg) translateY(0%);
+					transform: rotate(-45deg) translateY(-30%);
 					transition: all 0.1s linear;
 				}
 			}
@@ -294,6 +293,15 @@ $back-fade: linear-gradient(rgba(#000,0.3), rgba(#000,0.1) 50%, rgba(#000,0.0));
 				svg line {
 					stroke: #fff;
 					transition: all 0.2s linear;
+				}
+			}
+		}
+		&.msie {
+			nav.main > ul > li.mobile-toggle {
+				figure {
+					svg line.line-2 {
+						opacity: 1 !important;
+					}
 				}
 			}
 		}

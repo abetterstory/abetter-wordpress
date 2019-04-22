@@ -1,6 +1,7 @@
 # A Better Wordpress
 
 [![Packagist Version](https://img.shields.io/packagist/v/abetter/wordpress.svg)](https://packagist.org/packages/abetter/wordpress)
+[![Latest Stable Version](https://poser.pugx.org/abetter/wordpress/v/stable.svg)](https://packagist.org/packages/abetter/wordpress)
 [![Total Downloads](https://poser.pugx.org/abetter/wordpress/downloads.svg)](https://packagist.org/packages/abetter/wordpress)
 [![License](https://poser.pugx.org/abetter/wordpress/license.svg)](https://packagist.org/packages/abetter/wordpress)
 

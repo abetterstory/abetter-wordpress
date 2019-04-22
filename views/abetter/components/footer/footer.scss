@@ -54,6 +54,9 @@ body {
 	ul.legal {
 		text-align: center;
 		padding: 0.5rem 0;
+		a {
+			text-decoration: none;
+		}
 		figure {
 			display: inline-block;
 			margin: 0;
