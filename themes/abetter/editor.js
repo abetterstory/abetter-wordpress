@@ -22,35 +22,34 @@ editor.on('NodeChange', function(e) {
 
 function emptyNodeClass(node) {
 	if (!node || !node.nodeName.match(/p/i)) return;
-	if (node.classList.contains('empty') && node.textContent) {
+	if (node.classList.contains('empty') && (node.textContent || node.innerHTML)) {
 		node.classList.remove('empty');
 		if (!node.className) node.removeAttribute('class');
-	} else if (!node.textContent || node.innerHTML.match(/^(\<br)/)) {
+	} else if ((!node.textContent && !node.innerHTML) || node.innerHTML.match(/^(\<br)/)) {
 		node.classList.add('empty');
 	}
 }
 
 function directiveNode(node) {
 	if (!node || node.nodeName.match(/body|html/i) || !node.textContent.match(/@/)) return;
-	if (!node.textContent.match(/@(end|block|component)/i)) return;
-	var content = node.textContent.trim();
+	if (!node.textContent.match(/@(end|block|classname|slot|component)/i)) return;
+	var content = node.innerHTML.trim();
 	if (content.match(/@/g).length > 1) {
-		var c = content.split('@');
-		for (var i = 0; i < c.length; i++) {
-			var str = c[i].trim();
-			var klass = ''; //'--directive';
-			if (str.match(/^(endcomponent|component)/i)) {
-				klass = '--component';
-			} else if (str.match(/^(endblock|block)/i)) {
-				klass = '--block';
-			}
-			if (str && klass) node.insertAdjacentHTML('beforebegin','<p class="'+klass+'">@'+str+'</p>');
+		var parent = node.parentNode;
+		var fix = content.replace(/@([^@<]+)/g,'<p>@$1</p>');
+		node.insertAdjacentHTML('beforebegin',fix);
+		parent.removeChild(node);
+		for (var i = 0; i < parent.children.length; i++) {
+			directiveNode(parent.children[i]);
 		}
-		node.parentNode.removeChild(node);
 	} else {
 		var klass = ''; //'--directive';
 		if (content.match(/^@(endcomponent|component)/i)) {
 			klass = '--component';
+		} else if (content.match(/^@(endslot|slot)/i)) {
+			klass = '--slot';
+		} else if (content.match(/^@(classname)/i)) {
+			klass = '--var';
 		} else if (content.match(/^@(endblock|block)/i)) {
 			klass = '--block';
 		}

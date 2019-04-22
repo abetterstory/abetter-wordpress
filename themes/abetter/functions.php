@@ -84,11 +84,14 @@ add_filter('content_save_pre', function($content){
 
 // Filter @components and images in post_content
 add_filter('content_save_pre', function($content) {
-	$content = preg_replace('/<p[^>]*>(<img[^<]+)<\/p>/', "\n$1\n", $content);
-	$content = preg_replace('/@componentend/', "@endcomponent", $content);
-	$content = preg_replace('/@blockend/', "@endblock", $content);
-	$content = preg_replace('/<p[^>]*>@(component|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
-	$content = preg_replace('/<p[^>]*>@(endcomponent|endblock)<\/p>/', "\n@$1\n", $content);
+	if (preg_match('/@/',$content)) {
+		$content = preg_replace('/@(component|slot|block)end/', "@end$1", $content);
+		$content = preg_replace('/<p[^>]*>@(component|slot|classname|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+		$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
+		$content = preg_replace('/<p[^>]*>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
+		$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
+	}
+	$content = preg_replace('/<p[^>]*>\s*(<img[^<]+)\s*<\/p>/', "\n$1\n", $content);
 	$content = preg_replace('/></', ">\n<", $content);
 	return $content;
 });
