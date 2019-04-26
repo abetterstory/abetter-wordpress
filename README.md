@@ -88,6 +88,8 @@ DB_PASSWORD=<password>
 WP_THEME=<optional-views-subfolder>
 ```
 
+Note: Use sandbox as APP_ENV when developing with browsersync.
+
 Add routes to /routes/web.php
 
 ```bash
