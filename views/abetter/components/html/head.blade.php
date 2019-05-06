@@ -2,6 +2,7 @@
 
 <meta charset="UTF-8" />
 
+@include('components.html.head.base')
 @include('components.html.head.preload')
 @include('components.html.head.title')
 @include('components.html.head.seo')
