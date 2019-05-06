@@ -2,7 +2,7 @@
 @php
 
 $post->ogsite = get_option('blogname');
-$post->ogtype = ($f = get_field('seo_type',$post)) ? $f : 'website';
+$post->ogtype = 'website';
 $post->oglocale = get_locale();
 $post->ogdomain = ($canonical = env('APP_CANONICAL')) ? $canonical : url('/');
 
