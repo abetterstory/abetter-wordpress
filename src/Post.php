@@ -22,6 +22,7 @@ class Post extends Model {
 	public static $translation;
 	public static $translations;
 
+	public static $fake;
 	public static $cache;
 
 	// --- Constructor
@@ -88,6 +89,35 @@ class Post extends Model {
 		self::$post->l10n->translations = self::getTranslations(self::$post);
 		self::$post->language = self::$post->l10n->language;
 		return self::$post;
+	}
+
+	// ---
+
+	public static function fakePost($props=[]) {
+		self::$fake = (empty(self::$fake)) ? 0 : self::$fake; self::$fake--;
+		$post = new \StdClass();
+		$post->ID = self::$fake;
+		$post->post_author = 1;
+		$post->post_date = current_time('mysql');
+		$post->post_date_gmt = current_time('mysql', 1);
+		$post->post_title = (isset($props['post_title'])) ? $props['post_title'] : '';
+		$post->post_content = (isset($props['post_content'])) ? $props['post_content'] : '';
+		$post->post_status = (isset($props['post_status'])) ? $props['post_status'] : 'draft';
+		$post->post_type = (isset($props['post_type'])) ? $props['post_type'] : 'page';
+		$post->post_name = (isset($props['post_name'])) ? $props['post_name'] : 'fake-'.$post->post_type.self::$fake;
+		$post->post_parent = 0;
+		$post->menu_order = 0;
+		$post->item = new \StdClass();
+		$post->item->type = "fake";
+		$post->item->url = "#fake";
+		$post->item->label = '';
+		$post->item->title = '';
+		$post->item->headline = '';
+		$post->item->lead = '';
+		$post->item->excerpt = '';
+		$post->item->image = '';
+		$post->item->link = '';
+		return $post;
 	}
 
 	// ---

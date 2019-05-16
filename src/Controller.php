@@ -164,6 +164,44 @@ class Controller extends BaseController {
 
 	// ---
 
+	public function view($view) {
+		if ($theme = env('WP_THEME')) {
+			view()->addLocation(base_path().'/resources/views/'.$theme);
+			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
+		}
+		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		if (view()->exists($view)) {
+			$this->user = $this->getUser();
+			$this->languages = $this->getAvailableLanguages();
+			$this->language = $this->getRequestLanguage();
+			$this->language_default = $this->getDefaultLanguage();
+			$this->slug = $this->getRequestSlug();
+			$this->post = Post::fakePost();
+			$this->suggestions = [$view];
+			$this->error = NULL;
+			$this->expire = '1 minute';
+			$this->redirect = NULL;
+			$this->template = $view;
+			self::$handle->post = $this->post;
+			self::$handle->suggestions = $this->suggestions;
+			self::$handle->error = $this->error;
+			self::$handle->view = $view;
+			Post::$post = $this->post;
+			return view($view)->with([
+				'site' => Site::getSite(),
+				'post' => $this->post,
+				'item' => $this->post->item,
+				'error' => NULL,
+				'expire' => NULL,
+				'redirect' => NULL,
+				'template' => $view,
+			]);
+		}
+		return "No template found in views.";
+	}
+
+	// ---
+
 	public function handle() {
 		$this->args = func_get_args();
 		if ($redirect = $this->testRedirect()) return redirect($redirect);
