@@ -3,6 +3,15 @@
 Wordpress theme functions and definitions
 */
 
+// Login form
+add_action('login_enqueue_scripts', function(){ ?>
+    <style type="text/css">
+        #login h1, #login .privacy-policy-page-link, #backtoblog {
+			display: none;
+		}
+    </style>
+<?php });
+
 // Admin Menu Bar
 add_action('admin_bar_menu', function($wp_admin_bar){
 	$wp_admin_bar->add_node(array(
