@@ -5,8 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/abetter/wordpress/downloads.svg)](https://packagist.org/packages/abetter/wordpress)
 [![License](https://poser.pugx.org/abetter/wordpress/license.svg)](https://packagist.org/packages/abetter/wordpress)
 
-ABetter Wordpress is a turnkey solution for using Wordpress on top of Laravel to
-build exceptionally fast web applications – while still using the worlds most popular CMS to manage content and translations.
+ABetter Wordpress is a turnkey solution for using Wordpress on top of Laravel to build exceptionally fast web applications – while still using the worlds most popular CMS to manage content and translations.
 
 Our way of building fast web applications is all about Separation of Concerns (SoC). We let Wordpress handle the content back-end and Laravel the static front-end. Additional API and web services for dynamic content are also routed through Laravel.
 
@@ -21,7 +20,7 @@ With the ABetter Toolkit we give Blade some new powerful directives helping us s
 * Composer 1.6+
 * Laravel 5.8+
 * Deployer 6+
-* Node 10.15+
+* Node 10.0+
 * NPM 6.4+
 
 ---
@@ -86,6 +85,8 @@ DB_DATABASE=<database>
 DB_USERNAME=<username>
 DB_PASSWORD=<password>
 WP_THEME=<optional-views-subfolder>
+WP_AUTOLOGIN=<autologin-user-id>
+WP_FORCELOGIN=<force-login>
 ```
 
 Note: Use sandbox as APP_ENV when developing with browsersync.

@@ -29,6 +29,8 @@ class Controller extends BaseController {
 	public function __construct($args=NULL) {
 		self::$handle = new \StdClass();
 		self::loadWp();
+		self::autoLogin();
+		self::forceLogin();
 	}
 
 	// ---
@@ -37,6 +39,21 @@ class Controller extends BaseController {
 		if (defined('ABSPATH')) return;
 		define('WP_USE_THEMES', FALSE);
 		require_once public_path('wp').'/wp-load.php';
+	}
+
+	// ---
+
+	public static function autoLogin($default=1) {
+		if (env('APP_ENV') != 'sandbox' || (!$auto = env('WP_AUTOLOGIN')) || get_current_user_id()) return;
+		$user = get_user_by('id', (is_numeric($auto)) ? (int) $auto : $default);
+		wp_set_current_user($user->ID, $user->user_login);
+    	wp_set_auth_cookie($user->ID);
+    	do_action('wp_login', $user->user_login);
+	}
+
+	public static function forceLogin() {
+		if (!env('WP_FORCELOGIN') || env('APP_ENV') == 'production' || get_current_user_id()) return;
+		@header('Location:/wp/wp-login.php?redirect_to='.$_SERVER['REQUEST_URI']); exit;
 	}
 
 	// ---
