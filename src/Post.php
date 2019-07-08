@@ -57,9 +57,16 @@ class Post extends Model {
 			}
 		}
 		self::$post = self::getPostPreview();
+		self::$post = self::getPostPublished();
 		self::$post = self::getPostError();
 		self::$post = self::getPostL10n();
 		return self::prepared();
+	}
+
+	public static function getPostPublished() {
+		if (isset(self::$post->post_status) && self::$post->post_status == 'publish') return self::$post;
+		if (!get_current_user_id()) self::$post = NULL;
+		return self::$post;
 	}
 
 	public static function getPostPreview() {
