@@ -94,7 +94,10 @@ $table_prefix = ($e = getenv('WP_DB_PREFIX')) ? $e : 'wp_';
 define('WP_DEBUG', (($e = getenv('WP_DEBUG') ?: getenv('APP_DEBUG')) && ($e == 'true')) ? TRUE : FALSE);
 
 /* Test database connection */
-if (!WP_DEBUG && (!($mysqli = @mysqli_init()) || !(@$mysqli->real_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)))) die('Database Unavailable');
+if (!WP_DEBUG && (!($mysqli = @mysqli_init()) || !(@$mysqli->real_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)))) {
+	@header('Location:/404/');
+	die('Database Unavailable');
+}
 
 /* That's all, stop editing! Happy blogging. */
 
