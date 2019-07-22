@@ -116,7 +116,7 @@ class Posts {
 	// ---
 
 	public static function buildPost($post) {
-		if (!isset($post->ID)) return NULL;
+		if (!isset($post->ID) || !_wp_loaded()) return NULL;
 		$item = new \StdClass();
 		$item->post = $post;
 		$item->id = (int) $post->ID;
