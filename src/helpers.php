@@ -244,3 +244,30 @@ if (!function_exists('_wp_locale')) {
 	}
 
 }
+
+if (!function_exists('_wp_date')) {
+
+	function _wp_date($d='',$post=NULL) {
+		if (!_wp_loaded()) return;
+		return get_the_date($d,$post);
+	}
+
+}
+
+if (!function_exists('_wp_author_meta')) {
+
+	function _wp_author_meta($field='',$user_id=false) {
+		if (!_wp_loaded()) return;
+		return get_the_author_meta($field,$user_id);
+	}
+
+}
+
+if (!function_exists('_wp_bloginfo')) {
+
+	function _wp_bloginfo($show='',$filter='raw') {
+		if (!_wp_loaded()) return;
+		return get_bloginfo($show,$filter);
+	}
+
+}

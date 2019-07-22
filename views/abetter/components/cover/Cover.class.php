@@ -60,7 +60,7 @@ class CoverComponent extends BaseComponent {
 		if (!$this->visible && $this->template == 'front') {
 			$this->visible = TRUE;
 			$this->image = $this->image ? : _pixsum('photo:tech');
-			$this->headline = $this->headline ? : "Welcome to ".get_bloginfo();
+			$this->headline = $this->headline ? : "Welcome to "._wp_bloginfo();
 			$this->lead = $this->lead ? : _lipsum('normal');
 		}
 

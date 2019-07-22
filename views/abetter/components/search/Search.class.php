@@ -28,7 +28,7 @@ class SearchComponent extends BaseComponent {
 			$post->label = ucfirst($post->type);
 			$post->headline = (!empty($post->post_title)) ? $post->post_title : _lipsum('short');
 			$post->excerpt = _excerpt((!empty($post->post_content)) ? $post->post_content : _lipsum(), 150);
-			$post->dateline = ($f = get_the_date('l d F, Y',$post->ID)) ?: date('l d F, Y');
+			$post->dateline = ($f = _wp_date('l d F, Y',$post->ID)) ?: date('l d F, Y');
 			$post->url = _wp_url($post);
 			$post->link = "Read more";
 		} unset($post);

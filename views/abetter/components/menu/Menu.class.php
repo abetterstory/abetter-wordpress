@@ -19,7 +19,7 @@ class MenuComponent extends BaseComponent {
 		$this->front = _wp_page('start');
 		$this->front_url = _wp_url($this->front);
 
-		$this->brand_label = get_bloginfo();
+		$this->brand_label = _wp_bloginfo();
 		$this->brand_svg = _logosum($this->brand_label);
 
 		$this->search = _wp_page('search');

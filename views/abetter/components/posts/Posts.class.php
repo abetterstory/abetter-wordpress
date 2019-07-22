@@ -34,7 +34,7 @@ class PostsComponent extends BaseComponent {
 			$post->label = "News";
 			$post->headline = (!empty($post->post_title)) ? $post->post_title : _lipsum('short');
 			$post->excerpt = _excerpt((!empty($post->post_content)) ? $post->post_content : _lipsum(), 150);
-			$post->dateline = ($f = get_the_date('l d F, Y',$post->ID)) ?: date('l d F, Y');
+			$post->dateline = ($f = _wp_date('l d F, Y',$post->ID)) ?: date('l d F, Y');
 			$post->url = _wp_url($post);
 			$post->image = _pixsum('photo');
 			$post->link = "Read more";
