@@ -1,25 +1,25 @@
 @debug('default:components/html/head/social.blade.php')
 @php
 
-$post->ogsite = get_option('blogname');
+$post->ogsite = _wp_option('blogname');
 $post->ogtype = 'website';
-$post->oglocale = get_locale();
+$post->oglocale = _wp_locale();
 $post->ogdomain = ($canonical = env('APP_CANONICAL')) ? $canonical : url('/');
 
-$post->ogurl = $post->ogdomain . (($f = get_field('seo_url',$post)) ? _relative($f) : $item->url);
+$post->ogurl = $post->ogdomain . (($f = _wp_field('seo_url',$post)) ? _relative($f) : $item->url);
 $post->ogurl = rtrim($post->ogurl,'/'); // Laravel removes trailing slash
 
-if (!$post->ogimage = ($f = get_field('seo_image',$post)) ? $f : '') {
+if (!$post->ogimage = ($f = _wp_field('seo_image',$post)) ? $f : '') {
 	$post->ogimage = ($f = $item->image) ? $f : _dictionary('seo_image_default',NULL,'');
 }
 if ($post->ogimage) $post->ogimage = $post->ogdomain . _image($post->ogimage,'w1024');
 
-if (!$post->ogdescription = get_field('seo_description',$post)) {
+if (!$post->ogdescription = _wp_field('seo_description',$post)) {
 	$post->ogdescription = ($f = $item->excerpt) ? $f : _dictionary('seo_description_default',NULL,'');
 	$post->ogdescription = _excerpt($post->ogdescription,300);
 }
 
-if (!$post->ogtitle = get_field('seo_title',$post)) {
+if (!$post->ogtitle = _wp_field('seo_title',$post)) {
 	$post->ogtitle = ($f = $item->headline) ? $f : $post->post_title;
 	$post->ogtitle = str_replace('{TITLE}',$post->ogtitle,_dictionary('seo_title_default',NULL,$post->ogtitle));
 	$post->ogtitle = _excerpt($post->ogtitle,60);

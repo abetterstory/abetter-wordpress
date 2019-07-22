@@ -54,6 +54,16 @@ if (! function_exists('___')) {
 
 // ---
 
+if (!function_exists('_wp_loaded')) {
+
+	function _wp_loaded() {
+		return (defined('ABSPATH')) ? TRUE : FALSE;
+	}
+
+}
+
+// ---
+
 if (!function_exists('_wp_view')) {
 
 	function _wp_view($is=NULL) {
@@ -66,16 +76,19 @@ if (!function_exists('_wp_view')) {
 if (!function_exists('_wp_post')) {
 
 	function _wp_page($id,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
 	function _wp_post($id=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
 	function _wp_post_resolve($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		if (!empty($post->ID)) return $post;
 		if (is_numeric($post)) return \ABetter\Wordpress\Post::getPage($post,$lang);
 		return \ABetter\Wordpress\Post::$post ?? NULL;
@@ -86,6 +99,7 @@ if (!function_exists('_wp_post')) {
 if (!function_exists('_wp_content')) {
 
 	function _wp_content($post=NULL,$lang=NULL,$return=NULL) {
+		if (!_wp_loaded()) return;
 		$post = _wp_post_resolve($post,$lang);
 		$return = $post->post_content ?? ""; // Current
 		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
@@ -108,6 +122,7 @@ if (!function_exists('_wp_content')) {
 if (!function_exists('_wp_property')) {
 
 	function _wp_property($key,$post=NULL,$lang=NULL,$return=NULL) {
+		if (!_wp_loaded()) return;
 		$post = _wp_post_resolve($post,$lang);
 		$return = (!empty($post->{$key})) ? $post->{$key} : $return; // Current
 		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
@@ -134,6 +149,7 @@ if (!function_exists('_wp_property')) {
 if (!function_exists('_wp_field')) {
 
 	function _wp_field($key,$post=NULL,$lang=NULL,$return=NULL) {
+		if (!_wp_loaded()) return $return;
 		$post = _wp_post_resolve($post,$lang);
 		$return = ($f = get_field($key,$post)) ? $f : $return; // Current
 		if ($lang === FALSE || empty($post->l10n->translations)) return $return; // No WPML
@@ -156,6 +172,7 @@ if (!function_exists('_wp_field')) {
 if (!function_exists('_wp_url')) {
 
 	function _wp_url($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		$post = _wp_post_resolve($post,$lang);
 		return _relative(get_permalink(_wp_id($post,$lang)));
 	}
@@ -165,6 +182,7 @@ if (!function_exists('_wp_url')) {
 if (!function_exists('_wp_title')) {
 
 	function _wp_title($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		$post = _wp_post_resolve($post,$lang);
 		return _wp_property('post_title',$post,$lang);
 	}
@@ -174,6 +192,7 @@ if (!function_exists('_wp_title')) {
 if (!function_exists('_wp_template')) {
 
 	function _wp_template($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
 		$post = _wp_post_resolve($post,$lang);
 		$id = _wp_id($post,$lang);
 		if (_wp_option('page_on_front') == $id) {
@@ -211,7 +230,17 @@ if (!function_exists('_wp_fake')) {
 if (!function_exists('_wp_option')) {
 
 	function _wp_option($key) {
+		if (!_wp_loaded()) return;
 		return ($var = $GLOBALS['wpdb']->get_var('SELECT option_value FROM wp_options WHERE option_name = "'.$key.'"')) ? $var : NULL;
+	}
+
+}
+
+if (!function_exists('_wp_locale')) {
+
+	function _wp_locale() {
+		if (!_wp_loaded()) return 'en';
+		return get_locale();
 	}
 
 }

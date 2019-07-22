@@ -1,15 +1,15 @@
 @debug('default:components/html/head/seo.blade.php')
 @php
 
-if (!$post->description = get_field('seo_description',$post)) {
+if (!$post->description = _wp_field('seo_description',$post)) {
 	$post->description = ($f = $item->excerpt) ? $f : _dictionary('seo_description_default',NULL,'');
 	$post->description = _excerpt($post->description,300);
 }
 
-$post->keywords = ($f = get_field('seo_keywords',$post)) ? $f : _dictionary('seo_keywords_default',NULL,'');
-$post->author = ($f = get_field('seo_author',$post)) ? $f : _dictionary('seo_author_default',NULL,'');
+$post->keywords = ($f = _wp_field('seo_keywords',$post)) ? $f : _dictionary('seo_keywords_default',NULL,'');
+$post->author = ($f = _wp_field('seo_author',$post)) ? $f : _dictionary('seo_author_default',NULL,'');
 
-$post->robots = ($f = get_field('seo_robots',$post)) ? $f : _dictionary('seo_robots_default',NULL,'index,follow');;
+$post->robots = ($f = _wp_field('seo_robots',$post)) ? $f : _dictionary('seo_robots_default',NULL,'index,follow');;
 
 if (env('APP_ENV') != 'production') $post->robots = 'noindex,nofollow';
 
