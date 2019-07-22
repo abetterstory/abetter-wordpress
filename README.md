@@ -7,9 +7,9 @@
 
 ABetter Wordpress is a turnkey solution for using Wordpress on top of Laravel to build exceptionally fast web applications – while still using the worlds most popular CMS to manage content and translations.
 
-Our way of building fast web applications is all about Separation of Concerns (SoC). We let Wordpress handle the content back-end and Laravel the static front-end. Additional API and web services for dynamic content are also routed through Laravel.
+Our methodology to fast web applications is all about Separation of Concerns (SoC) and Scalable Static Caching. We let Wordpress handle the content back-end and Laravel the standalone front-end. Additional API and web services for dynamic content are also routed through Laravel.
 
-With the ABetter Toolkit we give Blade some new powerful directives helping us separate as much as possible in standalone and resusable components – much inspired by ReactJS.
+With the ABetter Toolkit we give Laravel/Blade some new powerful directives helping us separate as much as possible in standalone and resusable components – much inspired by ReactJS/VueJS.
 
 ---
 
@@ -85,11 +85,11 @@ DB_DATABASE=<database>
 DB_USERNAME=<username>
 DB_PASSWORD=<password>
 WP_THEME=<optional-views-subfolder>
-WP_AUTOLOGIN=<autologin-user-id>
-WP_FORCELOGIN=<force-login>
+WP_AUTOLOGIN=<autologin-user>
+WP_REQUIRELOGIN=<require-login-to-view>
 ```
 
-Note: Use sandbox as APP_ENV when developing with browsersync.
+Note: Use APP_ENV=sandbox when developing with browsersync.
 
 Add routes to /routes/web.php
 

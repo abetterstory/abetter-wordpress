@@ -52,7 +52,7 @@ class Controller extends BaseController {
 	}
 
 	public static function forceLogin() {
-		if (!env('WP_FORCELOGIN') || env('APP_ENV') == 'production' || get_current_user_id()) return;
+		if (!env('WP_REQUIRELOGIN') || env('APP_ENV') == 'production' || get_current_user_id()) return;
 		@header('Location:/wp/wp-login.php?redirect_to='.$_SERVER['REQUEST_URI']); exit;
 	}
 
