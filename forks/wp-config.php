@@ -91,7 +91,10 @@ $table_prefix = ($e = getenv('WP_DB_PREFIX')) ? $e : 'wp_';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define('WP_DEBUG', ($e = getenv('WP_DEBUG')) ? $e : getenv('APP_DEBUG'));
+define('WP_DEBUG', (($e = getenv('WP_DEBUG') ?: getenv('APP_DEBUG')) && ($e == 'true')) ? TRUE : FALSE);
+
+/* Test database connection */
+if (!WP_DEBUG && (!($mysqli = @mysqli_init()) || !(@$mysqli->real_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)))) die('Database Unavailable');
 
 /* That's all, stop editing! Happy blogging. */
 
