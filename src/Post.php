@@ -105,8 +105,8 @@ class Post extends Model {
 		$post = new \StdClass();
 		$post->ID = self::$fake;
 		$post->post_author = 1;
-		$post->post_date = current_time('mysql');
-		$post->post_date_gmt = current_time('mysql', 1);
+		$post->post_date = gmdate('Y-m-d H:i:s');
+		$post->post_date_gmt = gmdate('Y-m-d H:i:s');
 		$post->post_title = (isset($props['post_title'])) ? $props['post_title'] : '';
 		$post->post_content = (isset($props['post_content'])) ? $props['post_content'] : '';
 		$post->post_status = (isset($props['post_status'])) ? $props['post_status'] : 'draft';

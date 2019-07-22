@@ -28,9 +28,6 @@ class Controller extends BaseController {
 
 	public function __construct($args=NULL) {
 		self::$handle = new \StdClass();
-		self::loadWp();
-		self::autoLogin();
-		self::forceLogin();
 	}
 
 	// ---
@@ -39,6 +36,8 @@ class Controller extends BaseController {
 		if (defined('ABSPATH')) return;
 		define('WP_USE_THEMES', FALSE);
 		require_once public_path('wp').'/wp-load.php';
+		self::autoLogin();
+		self::forceLogin();
 	}
 
 	// ---
@@ -64,7 +63,7 @@ class Controller extends BaseController {
 			global $sitepress;
 			return $sitepress->get_default_language();
 		}
-		return strtolower(strtok(get_bloginfo('language'),'-'));
+		return (function_exists('get_bloginfo')) ? strtolower(strtok(get_bloginfo('language'),'-')) : 'en';
 	}
 
 	public function getAvailableLanguages() {
@@ -139,7 +138,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function getUser() {
-		return wp_get_current_user();
+		return (function_exists('wp_get_current_user')) ? wp_get_current_user() : NULL;
 	}
 
 	// ---
@@ -182,6 +181,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function view($view) {
+		if (defined('WP_SETUP_CONFIG')) self::loadWp(); // Allow bypass Wordpress
 		if ($theme = env('WP_THEME')) {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
@@ -220,6 +220,7 @@ class Controller extends BaseController {
 	// ---
 
 	public function handle() {
+		self::loadWp();
 		$this->args = func_get_args();
 		if ($redirect = $this->testRedirect()) return redirect($redirect);
 		$this->user = $this->getUser();
