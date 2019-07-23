@@ -171,10 +171,42 @@ Start webpack and browsersync:
 ```bash
 npm run watch
 ```
+#### Component file structure
+
+    .
+    ├── public                                   # Handled by build script (will be overwritten)
+	├── routes                                   # Add any development routes to /web.php
+	├── resources                                #
+	│   ├── scripts                              # Global scripts in "app.js"
+	│   ├── styles                               # Global styles in "app.scss"
+    │   ├── fonts                                # Fonts here (will copy to /public on build)
+	│   ├── images                               # Images here (will copy to /public on build)
+	│   ├── videos                               # Videos here (will copy to /public on build)
+	│   ├── views                                #
+	│   │   ├── <theme>                          # Subfolder defined in .env / WP_THEME
+	│   │   │   ├── template.blade.php           # Template file requested in route
+	│   │   │   │   ├── components               #
+	│   │   │   │   │   ├── menu                 # Component subfolder:
+	│   │   │   │   │   │   ├── menu.blade.php   # Template file : @component('components.menu',TRUE)
+	│   │   │   │   │   │   ├── menu.scss        # Sass file : @style('menu.scss')
+	│   │   │   │   │   │   ├── menu.js          # Javascript file : @script('menu.js')
+	...
+
+    /vendor/abetter/wordpress/                   # Default components will be used if not overridden!
+	├── views                                    # (e.g. html head start/end is rendered from here)
+	│   ├── default                              #
+	│   │   ├── robots.blade.php                 # Default Robots.txt template
+	│   │   ├── sitemap.blade.php                # Default Sitemap.xml template
+	│   │   ├── components                       #
+	│   │   │   │   ├── html                     # Default HTML head components
+	│   │   │   │   ├── missing                  # Default debugging for missing components
+	│   │   │   │   ├── robots                   # Default Robots.txt component
+	│   │   │   │   ├── sitemap                  # Default Sitemap.xml component
+	...
 
 #### Deployment
 
-...
+(coming soon)
 
 ---
 
