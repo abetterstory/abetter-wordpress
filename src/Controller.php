@@ -186,7 +186,7 @@ class Controller extends BaseController {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
 		}
-		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/default');
 		if (view()->exists($view)) {
 			$this->user = $this->getUser();
 			$this->languages = $this->getAvailableLanguages();
@@ -241,7 +241,7 @@ class Controller extends BaseController {
 			view()->addLocation(base_path().'/resources/views/'.$theme);
 			view()->addLocation(base_path().'/vendor/abetter/wordpress/views/'.$theme);
 		}
-		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/abetter');
+		view()->addLocation(base_path().'/vendor/abetter/wordpress/views/default');
 		if ($this->isRobots()) return response()->view('robots')->header('Content-Type','text/plain');
 		if ($this->isSitemap()) return response()->view('sitemap')->header('Content-Type','text/xml');
 		foreach ($this->suggestions AS $suggestion) {
