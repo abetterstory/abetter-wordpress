@@ -8,9 +8,10 @@ class SitemapComponent extends Component {
 		$this->domain = ($canonical = env('APP_CANONICAL')) ? $canonical : url('/');
 		$this->baseurl = $this->domain.'/sitemap';
 		$this->query = trim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/');
-		$this->types = Post::getPostTypes();
+		$this->types = (_wp_loaded()) ? Post::getPostTypes() : [];
 		$this->type = (preg_match('/sitemap\_?([^\.]+)\.xml$/',$this->query,$match)) ? $match[1] : '';
-		$this->index = (in_array($this->type,$this->types)) ? FALSE : TRUE;
+		$this->index = ($this->type && in_array($this->type,$this->types)) ? FALSE : TRUE;
+		$this->items = [];
 
 		if (!$this->index) {
 			$this->limit = 999;
@@ -20,6 +21,15 @@ class SitemapComponent extends Component {
 			$this->not_in = ($this->blacklist && ($p = new Posts(['post_name__in' => $this->blacklist]))) ? $p->ids : [];
 			$this->posts = new Posts(['post_type' => $this->type, 'post__not_in' => $this->not_in, 'orderby' => $this->sort, 'order' => $this->order, 'posts_per_page' => $this->limit]);
 			$this->items = $this->posts->items;
+		}
+
+		if ($this->index && !$this->types) {
+			$front = new \StdClass();
+			$front->url = '/';
+			$front->timestamp = time();
+			$front->front = 'front';
+			$this->items[] = $front;
+			$this->index = FALSE;
 		}
 
 	}

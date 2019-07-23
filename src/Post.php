@@ -208,7 +208,7 @@ class Post extends Model {
 			global $sitepress;
 			self::$language_default = $sitepress->get_default_language();
 		} else {
-			self::$language_default = strtolower(strtok(get_bloginfo('language'),'-'));
+			self::$language_default = strtolower(strtok(_wp_bloginfo('language'),'-'));
 		}
 		return self::$language_default;
 	}
@@ -225,7 +225,7 @@ class Post extends Model {
 
 	public static function getPostTypes() {
 		if (isset(self::$posttypes)) return self::$posttypes;
-		self::$posttypes = array_merge(['page','post'],array_keys(get_post_types(['public'=>1,'_builtin'=>0],'names')));
+		self::$posttypes = array_merge(['page','post'],array_keys(_wp_post_types(['public'=>1,'_builtin'=>0],'names')));
 		return self::$posttypes;
 	}
 

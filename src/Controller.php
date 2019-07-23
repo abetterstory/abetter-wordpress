@@ -231,8 +231,8 @@ class Controller extends BaseController {
 		$this->post = $this->getPost();
 		$this->suggestions = $this->getPostTemplateSuggestions();
 		$this->error = (isset($this->post->error)) ? $this->post->error : NULL;
-		$this->expire = ($expire = get_field('settings_expire',$this->post)) ? $expire : '1 hour';
-		$this->redirect = ($redirect = get_field('settings_redirect',$this->post)) ? $redirect : NULL;
+		$this->expire = ($expire = _wp_field('settings_expire',$this->post)) ? $expire : '1 hour';
+		$this->redirect = ($redirect = _wp_field('settings_redirect',$this->post)) ? $redirect : NULL;
 		self::$handle->post = $this->post;
 		self::$handle->suggestions = $this->suggestions;
 		self::$handle->error = $this->error;
