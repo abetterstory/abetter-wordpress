@@ -63,7 +63,7 @@ class Controller extends BaseController {
 			global $sitepress;
 			return $sitepress->get_default_language();
 		}
-		return (function_exists('get_bloginfo')) ? strtolower(strtok(get_bloginfo('language'),'-')) : 'en';
+		return strtolower(strtok(_wp_bloginfo('language'),'-'));
 	}
 
 	public function getAvailableLanguages() {
@@ -120,7 +120,7 @@ class Controller extends BaseController {
 	}
 
 	public function isPosts() {
-		return (($i = get_option('page_for_posts')) && $i == $this->post->ID) ? TRUE : FALSE;
+		return (($i = _wp_option('page_for_posts')) && $i == $this->post->ID) ? TRUE : FALSE;
 	}
 
 	public function isSitemap() {
@@ -214,6 +214,7 @@ class Controller extends BaseController {
 				'template' => $view,
 			]);
 		}
+		if (in_array(strtolower(env('APP_ENV')),['production','stage'])) abort(404);
 		return "No template found in views.";
 	}
 
@@ -259,7 +260,7 @@ class Controller extends BaseController {
 				]);
 			}
 		}
-		if (empty($this->suggestions)) return "No template found in views.";
+		if (in_array(strtolower(env('APP_ENV')),['production','stage'])) abort(404);
 		return "No template found in views.";
     }
 
