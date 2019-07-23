@@ -204,9 +204,11 @@ npm run watch
 	│   │   │   │   ├── sitemap                  # Default Sitemap.xml component
 	...
 
-	Note: Linked JS/Sass files in components will be external files in development to support browsersync live, but will be embedded in html source on Stage/Production environments for better caching.
+Note: Component names will be auto-resolved if the blade file has same basename as folder.
 
-	Note: You can auto-terminate a @component with TRUE as the second paramater, to avoid writing out @endcomponent, e.g when not using any slots or nested content.
+Note: Linked JS/Sass files in components will be external files in development to support browsersync live, but will be embedded in html source on Stage/Production environments for better caching.
+
+Note: You can auto-terminate a @component with TRUE as the second paramater, to avoid writing out @endcomponent, e.g when not using any slots or nested content.
 
 #### Deployment
 
