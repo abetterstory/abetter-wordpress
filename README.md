@@ -77,6 +77,7 @@ Edit .env settings
 ```bash
 APP_NAME=<name>
 APP_VERSION=<version>
+APP_KEY=base64:insert/base64/encoded/aes256/encryption/key=
 APP_ENV=<sandbox|local|dev|stage|production>
 APP_DEBUG=<true|false>
 APP_URL=<url>
@@ -85,8 +86,8 @@ DB_DATABASE=<database>
 DB_USERNAME=<username>
 DB_PASSWORD=<password>
 WP_THEME=<optional-views-subfolder>
-WP_AUTOLOGIN=<autologin-user>
-WP_REQUIRELOGIN=<require-login-to-view>
+WP_AUTOLOGIN=<optional-autologin-user>
+WP_REQUIRELOGIN=<optional-require-login-to-view>
 ```
 
 Note: Use APP_ENV=sandbox when developing with browsersync.
