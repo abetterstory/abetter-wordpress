@@ -249,6 +249,7 @@ add_action('locale', function($locale){
 
 add_filter('manage_pages_columns', function($columns){
 	$sorted = []; foreach($columns as $key => $label) {
+		if ($key == 'author') $sorted['order'] = 'Order';
     	if ($key == 'author') $sorted['template'] = 'Template';
 		$sorted[$key] = $label;
  	}
@@ -256,7 +257,9 @@ add_filter('manage_pages_columns', function($columns){
 });
 
 add_action('manage_pages_custom_column', function($column, $post_id){
+	global $post;
 	if ($column == 'template') echo ($template = get_page_template_slug($post_id)) ? ucfirst(strtok($template,'.')) : '—';
+	if ($column == 'order') echo $post->menu_order;
 },10,2);
 
 // ---
