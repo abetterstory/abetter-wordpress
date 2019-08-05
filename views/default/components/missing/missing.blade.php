@@ -1,1 +1,1 @@
-<!-- missing:{{ $path ?? 'n/a' }} -->
+<!-- missing-component:{{ $path ?? 'n/a' }} -->
