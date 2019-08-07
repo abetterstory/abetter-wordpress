@@ -82,6 +82,7 @@ class Menu {
 	// ---
 
 	public static function build($id,$props=NULL) {
+		if (!_wp_loaded()) return;
 		if (empty(self::$menu[$id])) self::$menu[$id] = new \StdClass();
 		$menu = &self::$menu[$id];
 		$menu->slug = strtolower($id);
