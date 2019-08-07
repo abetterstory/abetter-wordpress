@@ -262,6 +262,18 @@ add_action('manage_pages_custom_column', function($column, $post_id){
 	if ($column == 'order') echo $post->menu_order;
 },10,2);
 
+add_filter('manage_dictionary_posts_columns', function($columns){
+	$sorted = []; foreach($columns as $key => $label) {
+		if ($key == 'date') $sorted['slug'] = 'Slug';
+		$sorted[$key] = $label;
+ 	}
+	return $sorted;
+});
+
+add_action('manage_dictionary_posts_custom_column', function($column, $post_id){
+	if ($column == 'slug') echo get_post($post_id)->post_name;
+},10,2);
+
 // ---
 
 add_filter('post_type_link', function($url,$post=0){
