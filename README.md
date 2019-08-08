@@ -171,6 +171,9 @@ Start webpack and browsersync:
 ```bash
 npm run watch
 ```
+
+NOTE: If you are using "> php artisan serve", you need to modify APP_PROXY in .env to http://127.0.0.1:8000, and run "> npm run watch" in another terminal window.
+
 #### Component file structure
 
     .
