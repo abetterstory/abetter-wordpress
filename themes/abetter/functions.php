@@ -95,7 +95,7 @@ add_filter('content_save_pre', function($content){
 add_filter('content_save_pre', function($content) {
 	if (preg_match('/@/',$content)) {
 		$content = preg_replace('/@(component|slot|block)end/', "@end$1", $content);
-		$content = preg_replace('/<p[^>]*>@(component|slot|classname|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+		$content = preg_replace('/<p[^>]*>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
 		$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
 		$content = preg_replace('/<p[^>]*>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
 		$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
@@ -127,19 +127,19 @@ add_filter('tiny_mce_before_init',function($init){
 	$styles = array(
 		array(
 			'title' => 'Lead',
-			'block' => 'p',
+			'selector' => 'p',
 			'classes' => 'lead',
 			'wrapper' => FALSE
 		),
 		array(
 			'title' => 'Dateline',
-			'block' => 'p',
+			'selector' => 'p',
 			'classes' => 'dateline',
 			'wrapper' => FALSE
 		),
 		array(
 			'title' => 'Small',
-			'block' => 'p',
+			'selector' => 'p',
 			'classes' => 'small',
 			'wrapper' => FALSE
 		),
@@ -150,10 +150,87 @@ add_filter('tiny_mce_before_init',function($init){
 			'wrapper' => TRUE
 		),
 		array(
+			'title' => 'Prewrap',
+			'inline' => 'span',
+			'classes' => 'prewrap',
+			'wrapper' => TRUE
+		),
+		array(
+			'title' => 'Baseline',
+			'inline' => 'span',
+			'classes' => 'nowrap',
+			'wrapper' => TRUE
+		),
+		array(
 			'title' => 'Center',
 			'block' => 'center',
 			'classes' => 'align-center',
 			'wrapper' => TRUE
+		),
+		array(
+			'title' => 'Width 100%',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'w100',
+		),
+		array(
+			'title' => 'Width 75%',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'w75',
+		),
+		array(
+			'title' => 'Width 50%',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'w50',
+		),
+		array(
+			'title' => 'Width 25%',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'w25',
+		),
+		array(
+			'title' => 'Float Left',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'float-left',
+		),
+		array(
+			'title' => 'Float Right',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'float-right',
+		),
+		array(
+			'title' => 'Float Break',
+			'selector' => 'span,h1,h2,h3,h4,h5,h6,blockquote,pre,img',
+			'classes' => 'float-break',
+		),
+		array(
+			'title' => 'Column 75%',
+			'selector' => 'p',
+			'classes' => 'w75',
+		),
+		array(
+			'title' => 'Column 50%',
+			'selector' => 'p',
+			'classes' => 'w50',
+		),
+		array(
+			'title' => 'Column 25%',
+			'selector' => 'p',
+			'classes' => 'w25',
+		),
+		array(
+			'title' => 'Column Left',
+			'selector' => 'p',
+			'classes' => 'float-left',
+		),
+		array(
+			'title' => 'Column Right',
+			'selector' => 'p',
+			'classes' => 'float-right',
+		),
+		array(
+			'title' => 'Column Break',
+			'selector' => 'p',
+			'classes' => 'float-break',
 		),
 	);
 	$init['style_formats'] = json_encode($styles);

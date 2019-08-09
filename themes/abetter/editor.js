@@ -32,7 +32,7 @@ function emptyNodeClass(node) {
 
 function directiveNode(node) {
 	if (!node || node.nodeName.match(/body|html/i)) return;
-	if (node.textContent.match(/@(end|block|classname|slot|component)/i)) {
+	if (node.textContent.match(/@(end|block|classname|slot|component|dateline|byline)/i)) {
 		var content = node.innerHTML.trim();
 		if (content.match(/@/g).length > 1) {
 			var parent = node.parentNode;
@@ -52,7 +52,7 @@ function directiveNode(node) {
 				klass = '--component';
 			} else if (content.match(/^@(endslot|slot)/i)) {
 				klass = '--slot';
-			} else if (content.match(/^@(classname)/i)) {
+			} else if (content.match(/^@(classname|dateline|byline)/i)) {
 				klass = '--var';
 			} else if (content.match(/^@(endblock|block)/i)) {
 				klass = '--block';
