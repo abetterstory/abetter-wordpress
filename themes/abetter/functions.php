@@ -321,6 +321,12 @@ add_action('locale', function($locale){
 	return $locale;
 });
 
+// Remove update notice on prod/stage
+if (_is_live()) {
+add_filter('pre_site_transient_update_core','__return_null');
+add_filter('pre_site_transient_update_plugins','__return_null');
+add_filter('pre_site_transient_update_themes','__return_null');
+}
 
 // ---
 
