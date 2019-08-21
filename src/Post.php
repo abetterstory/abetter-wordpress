@@ -187,7 +187,7 @@ class Post extends Model {
 
 	public static function getTranslated($post,$language=NULL) {
 		if (!function_exists('icl_object_id') || empty($post->l10n) || self::getDefaultLanguage() == self::getRequestLanguage()) return $post;
-		if ($id = $post->l10n->translations[self::getRequestLanguage()]) {
+		if ($id = ($post->l10n->translations[self::getRequestLanguage()] ?? NULL)) {
 			$post = get_post($id);
 			$post->l10n = $post->l10n ?? self::getL10n($post);
 		}
