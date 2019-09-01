@@ -392,6 +392,13 @@ add_filter('get_attached_file', function($url){
 
 // ---
 
+add_action('save_post', function($post_id){
+	if (in_array(get_post_type($post_id),['acf-field','acf-field-group','nav_menu_item','attachment','revision','dictionary','slide'])) return;
+	if ($route = _wp_url($post_id)) $GLOBALS['wpdb']->get_results("UPDATE wp_posts SET guid = 'route:{$route}' WHERE ID = '{$post_id}'");
+});
+
+// ---
+
 if (is_file(ROOTPATH.'/resources/wordpress/functions.php')) {
 	require_once(ROOTPATH.'/resources/wordpress/functions.php');
 }

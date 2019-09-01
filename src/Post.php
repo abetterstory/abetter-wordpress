@@ -22,6 +22,8 @@ class Post extends Model {
 	public static $translation;
 	public static $translations;
 
+	public static $routes;
+
 	public static $fake;
 	public static $cache;
 
@@ -29,6 +31,28 @@ class Post extends Model {
 
 	public function __construct(array $attributes = []) {
 		parent::__construct($attributes);
+	}
+
+	// ---
+
+	public static function getRoutes($updatedb=TRUE) {
+		if (isset(self::$routes)) return self::$routes;
+		self::$routes = [];
+		$posts = ($result = $GLOBALS['wpdb']->get_results("SELECT ID,guid FROM wp_posts WHERE post_type NOT IN ('acf-field','acf-field-group','nav_menu_item','attachment','revision','dictionary','slide')")) ? $result : [];
+		foreach ($posts AS $post) {
+			if (preg_match('/^route\:(.+)$/',$post->guid,$match)) {
+				$route = $match[1];
+			} else {
+				$route = _wp_url($post->ID);
+				if ($updatedb) $GLOBALS['wpdb']->get_results("UPDATE wp_posts SET guid = 'route:{$route}' WHERE ID = '{$post->ID}'");
+			}
+			self::$routes[trim($route,'/')] = $post->ID;
+		}
+		return self::$routes;
+	}
+
+	public static function getPostByRoute($slug) {
+		return ($id = self::getRoutes()[trim($slug,'/')] ?? NULL) ? get_post($id) : NULL;
 	}
 
 	// ---
@@ -46,8 +70,10 @@ class Post extends Model {
 		if ($draft && get_current_user_id()) {
 			self::$post = ($p = get_post($draft)) ? $p : NULL;
 		} else {
-			if (!self::$post = ($p = get_page_by_path($request,OBJECT,self::getPostTypes())) ? $p : NULL) {
-				self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
+			if (!self::$post = ($p = self::getPostByRoute($slug)) ? $p : NULL) {
+				if (!self::$post = ($p = get_page_by_path($request,OBJECT,self::getPostTypes())) ? $p : NULL) {
+					self::$post = ($p = get_page_by_path($slug,OBJECT,self::getPostTypes())) ? $p : NULL;
+				}
 			}
 		}
 		// Fix WPML problem with identical slugs on translations
