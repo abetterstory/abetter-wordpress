@@ -16,6 +16,7 @@ With the ABetter Toolkit we give Laravel/Blade some new powerful directives help
 ## Requirements
 
 * PHP 7.2+
+* Imagick 3+
 * MySQL 5.7+
 * Composer 1.6+
 * Laravel 5.8+
