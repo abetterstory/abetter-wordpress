@@ -250,6 +250,31 @@ if (function_exists('acf_add_options_page')) {
 	acf_add_options_page();
 }
 
+// Custom taxonomy
+add_action('init', function(){
+	// Component
+	register_taxonomy('components',['post','page'],[
+		'hierarchical' => FALSE,
+		'show_ui' => TRUE,
+		'show_admin_column' => TRUE,
+		'query_var' => TRUE,
+		'rewrite' => ['slug' => 'component'],
+		'labels' => [
+			'name' => _x('Components', 'taxonomy general name'),
+			'singular_name' => _x('Component', 'taxonomy singular name'),
+			'search_items' => __('Search Components'),
+			'all_items' => __('All Components'),
+			'parent_item' => __('Parent Component'),
+			'parent_item_colon' => __('Parent Component:'),
+			'edit_item' => __('Edit Component'),
+			'update_item' => __('Update Component'),
+			'add_new_item' => __('Add New Component'),
+			'new_item_name' => __('New Component Name'),
+			'menu_name' => __('Components'),
+		],
+	]);
+});
+
 // Custom content
 add_action('init', function(){
 	// Page
