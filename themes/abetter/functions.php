@@ -95,6 +95,7 @@ add_filter('content_save_pre', function($content){
 add_filter('content_save_pre', function($content) {
 	if (preg_match('/@/',$content)) {
 		$content = preg_replace('/@(component|slot|block)end/', "@end$1", $content);
+		$content = preg_replace('/<p class[^>]+--(component|slot|block|var)[^>]+>/', '<p>', $content);
 		$content = preg_replace('/<p>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
 		$content = preg_replace('/<p>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
 		$content = preg_replace('/<p>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
