@@ -5,18 +5,9 @@
  */
 class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translatable_Nodes {
 
-	const SETTINGS_FIELD = 'settings';
-	const TYPE           = 'widgetType';
-
-	/**
-	 * @var string
-	 */
-	private $settings_field;
-
-	/**
-	 * @var string
-	 */
-	private $type;
+	const SETTINGS_FIELD      = 'settings';
+	const TYPE                = 'widgetType';
+	const DEFAULT_HEADING_TAG = 'h2';
 
 	/**
 	 * @var array
@@ -24,15 +15,7 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 	private $nodes_to_translate;
 
 	/**
-	 * WPML_Elementor_Translatable_Nodes constructor.
-	 */
-	public function __construct() {
-		$this->settings_field = self::SETTINGS_FIELD;
-		$this->type           = 'widgetType';
-	}
-
-	/**
-	 * @param string|int $node_id
+	 * @param string|int $node_id Translatable node id.
 	 * @param array $element
 	 *
 	 * @return WPML_PB_String[]
@@ -48,30 +31,34 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 		foreach ( $this->nodes_to_translate as $node_type => $node_data ) {
 			if ( $this->conditions_ok( $node_data, $element ) ) {
 				foreach ( $node_data['fields'] as $key => $field ) {
-					$field_key = $field['field'];
+					$field_key    = $field['field'];
+					$string_value = null;
 
-					if ( is_numeric( $key ) && isset( $element[ $this->settings_field ][ $field_key ] ) && trim( $element[ $this->settings_field ][ $field_key ] ) ) {
-						$string    = new WPML_PB_String(
-							$element[ $this->settings_field ][ $field_key ],
+					if ( $this->is_flat_field( $element, $field_key ) ) {
+						$string_value = $element[ self::SETTINGS_FIELD ][ $field_key ];
+					} elseif ( $this->is_array_field( $element, $key, $field_key ) ) {
+						$string_value =	$element[ self::SETTINGS_FIELD ][ $key ][ $field_key ];
+					}
+
+					if ( $string_value ) {
+						$strings[] = new WPML_PB_String(
+							$string_value,
 							$this->get_string_name( $node_id, $field, $element ),
 							$field['type'],
-							$field['editor_type']
+							$field['editor_type'],
+							$this->get_wrap_tag( $element )
 						);
-						$strings[] = $string;
-					} else if ( isset( $element[ $this->settings_field ][ $key ][ $field_key ] ) && trim( $element[ $this->settings_field ][ $key ][ $field_key ] ) ) {
-						$string    = new WPML_PB_String(
-							$element[ $this->settings_field ][ $key ][ $field_key ],
-							$this->get_string_name( $node_id, $field, $element ),
-							$field['type'],
-							$field['editor_type']
-						);
-						$strings[] = $string;
 					}
 				}
+
 				if ( isset( $node_data['integration-class'] ) ) {
 					foreach ( $this->get_integration_classes( $node_data ) as $class ) {
 						try {
-							$node    = new $class();
+							if ( $class instanceof \WPML_Elementor_Module_With_Items ) {
+								$node = $class;
+							} else {
+								$node = new $class();
+							}
 							$strings = $node->get( $node_id, $element, $strings );
 						} catch ( Exception $e ) {
 						}
@@ -103,20 +90,24 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					$field_key = $field['field'];
 
 					if ( $this->get_string_name( $node_id, $field, $element ) === $string->get_name() ) {
-						if ( is_numeric( $key ) ) {
-							$element[ $this->settings_field ][ $field_key ] = $string->get_value();
-						} else {
-							$element[ $this->settings_field ][ $key ][ $field_key ] = $string->get_value();
+						if ( $this->is_flat_field( $element, $field_key ) ) {
+							$element[ self::SETTINGS_FIELD ][ $field_key ] = $string->get_value();
+						} elseif ( $this->is_array_field( $element, $key, $field_key )) {
+							$element[ self::SETTINGS_FIELD ][ $key ][ $field_key ] = $string->get_value();
 						}
 					}
 				}
 				if ( isset( $node_data['integration-class'] ) ) {
 					foreach ( $this->get_integration_classes( $node_data ) as $class ) {
 						try {
-							$node = new $class();
+							if ( $class instanceof \WPML_Elementor_Module_With_Items ) {
+								$node = $class;
+							} else {
+								$node = new $class();
+							}
 							$item = $node->update( $node_id, $element, $string );
 							if ( $item ) {
-								$element[ $this->settings_field ][ $node->get_items_field() ][ $item['index'] ] = $item;
+								$element[ self::SETTINGS_FIELD ][ $node->get_items_field() ][ $item['index'] ] = $item;
 							}
 						} catch ( Exception $e ) {
 
@@ -127,6 +118,30 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 		}
 
 		return $element;
+	}
+
+	/**
+	 * @param array  $element
+	 * @param string $field_key
+	 *
+	 * @return bool
+	 */
+	private function is_flat_field( $element, $field_key ) {
+		return isset( $element[ self::SETTINGS_FIELD ][ $field_key ] )
+		       && is_string( $element[ self::SETTINGS_FIELD ][ $field_key ] )
+		       && trim( $element[ self::SETTINGS_FIELD ][ $field_key ] );
+	}
+
+	/**
+	 * @param array      $element
+	 * @param string|int $field_wrapper
+	 * @param string     $field_key
+	 *
+	 * @return bool
+	 */
+	private function is_array_field( $element, $field_wrapper, $field_key ) {
+		return isset( $element[ self::SETTINGS_FIELD ][ $field_wrapper ][ $field_key ] )
+		       && trim( $element[ self::SETTINGS_FIELD ][ $field_wrapper ][ $field_key ] );
 	}
 
 	/**
@@ -152,7 +167,27 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 	 * @return string
 	 */
 	public function get_string_name( $node_id, $field, $settings ) {
-		return $field['field'] . '-' . $settings[ $this->type ] . '-' . $node_id;
+		$field_id = isset( $field['field_id'] ) ? $field['field_id'] : $field['field'];
+		return $field_id . '-' . $settings[ self::TYPE ] . '-' . $node_id;
+	}
+
+	/**
+	 * Get wrap tag for string.
+	 * Used for SEO, can contain (h1...h6, etc.)
+	 *
+	 * @param array $settings Field settings.
+	 *
+	 * @return string
+	 */
+	private function get_wrap_tag( $settings ) {
+		if ( isset( $settings[ self::TYPE ] ) && 'heading' === $settings[ self::TYPE ] ) {
+			$header_size = isset( $settings[ self::SETTINGS_FIELD ]['header_size'] ) ?
+				$settings[ self::SETTINGS_FIELD ]['header_size'] : self::DEFAULT_HEADING_TAG;
+
+			return $header_size;
+		}
+
+		return '';
 	}
 
 	/**
@@ -182,6 +217,11 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'field'       => 'title',
 						'type'        => __( 'Heading', 'sitepress' ),
 						'editor_type' => 'LINE'
+					),
+					'link' => array(
+						'field'       => 'url',
+						'type'        => __( 'Heading: Link URL', 'sitepress' ),
+						'editor_type' => 'LINK'
 					),
 				),
 			),
@@ -216,6 +256,21 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'vimeo_link',
 						'type'        => __( 'Video: Vimeo link', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'youtube_url',
+						'type'        => __( 'Video: Youtube URL', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'vimeo_url',
+						'type'        => __( 'Video: Vimeo URL', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'dailymotion_url',
+						'type'        => __( 'Video: DailyMotion URL', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 				),
@@ -428,6 +483,11 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'type'        => __( 'Image Box: Description text', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
+					'link' => array(
+						'field'       => 'url',
+						'type'        => __( 'Image Box: Link', 'sitepress' ),
+						'editor_type' => 'LINK'
+					),
 				),
 			),
 			'animated-headline'   => array(
@@ -452,6 +512,11 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'field'       => 'after_text',
 						'type'        => __( 'Animated Headline: After text', 'sitepress' ),
 						'editor_type' => 'LINE'
+					),
+					'link' => array(
+						'field'       => 'url',
+						'type'        => __( 'Animated Headline: Link URL', 'sitepress' ),
+						'editor_type' => 'LINK'
 					),
 				),
 			),
@@ -626,7 +691,7 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					),
 					array(
 						'field'       => 'email_subject_2',
-						'type'        => __( 'Form: Email subject', 'sitepress' ),
+						'type'        => __( 'Form: Email subject 2', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 					array(
@@ -652,6 +717,16 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'invalid_message',
 						'type'        => __( 'Form: Invalid message', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'required_field_message',
+						'type'        => __( 'Form: Required message', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'redirect_to',
+						'type'        => __( 'Form: Redirect to URL', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 				),
@@ -689,6 +764,71 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'field'       => 'anchor',
 						'type'        => __( 'Menu Anchor', 'sitepress' ),
 						'editor_type' => 'LINE'
+					),
+				),
+			),
+			'archive-posts' => array(
+			    'conditions' => array( self::TYPE => 'archive-posts' ),
+			    'fields'     => array(
+			        array(
+			            'field'       => 'archive_cards_meta_separator',
+			            'type'        => __( 'Cards: Separator Between', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			        array(
+			            'field'       => 'archive_cards_read_more_text',
+			            'type'        => __( 'Cards: Read More Text', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			        array(
+			            'field'       => 'nothing_found_message',
+			            'type'        => __( 'Nothing Found Message', 'sitepress' ),
+			            'editor_type' => 'AREA'
+			        ),
+			        array(
+			            'field'       => 'pagination_prev_label',
+			            'type'        => __( 'Previous Label', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			        array(
+			            'field'       => 'pagination_next_label',
+			            'type'        => __( 'Next Label', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			        array(
+			            'field'       => 'archive_classic_meta_separator',
+			            'type'        => __( 'Classic: Separator Between', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			        array(
+			            'field'       => 'archive_classic_read_more_text',
+			            'type'        => __( 'Classic: Read More Text', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			    ),
+			),
+			'search-form' => array(
+			    'conditions' => array( self::TYPE => 'search-form' ),
+			    'fields'     => array(
+			        array(
+			            'field'       => 'placeholder',
+			            'type'        => __( 'Placeholder', 'sitepress' ),
+			            'editor_type' => 'LINE'
+			        ),
+			    ),
+			),
+			'post-navigation' => array(
+				'conditions' => array( self::TYPE => 'post-navigation' ),
+				'fields'     => array(
+					array(
+						'field'       => 'prev_label',
+						'type'        => __( 'Previous Label', 'sitepress' ),
+						'editor_type' => 'LINE',
+					),
+					array(
+						'field'       => 'next_label',
+						'type'        => __( 'Next Label', 'sitepress' ),
+						'editor_type' => 'LINE',
 					),
 				),
 			),

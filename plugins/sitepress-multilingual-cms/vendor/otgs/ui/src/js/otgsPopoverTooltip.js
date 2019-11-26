@@ -21,6 +21,10 @@ export function initSingle(element) {
 		sticky:      true,
 		interactive: true,
 	};
+	if ( !element.getAttribute('data-tippy-content') && element.getAttribute('title') ) {
+		args.content = element.getAttribute('title');
+		element.removeAttribute('title');
+	}
 	tippy(element, args);
 }
 
@@ -29,7 +33,7 @@ export function initialize() {
 	 * @param {NodeList} elements
 	 */
 		//TODO change all .wpml-popover to otgs-popover
-	const elements = document.querySelectorAll('.js-otgs-popover-tooltip, .js-wpml-popover-tooltip');
+	const elements = [...document.querySelectorAll('.js-otgs-popover-tooltip, .js-wpml-popover-tooltip')];
 
 	/**
 	 * @param {Element} element

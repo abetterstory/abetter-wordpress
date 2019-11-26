@@ -5,34 +5,41 @@ class WPML_Translation_Jobs_Migration_Hooks_Factory implements IWPML_Backend_Act
 	/**
 	 * It creates an instance of WPML_Translation_Jobs_Migration_Notice.
 	 *
-	 * @return null|WPML_Translation_Jobs_Migration_Hooks
+	 * @return null|WPML_Translation_Jobs_Migration_Hooks|WPML_TM_Restore_Skipped_Migration
 	 */
 	public function create() {
-		$migrate_all_jobs = false;
+		$fixing_migration = false;
 
 		$wpml_notices = wpml_get_admin_notices();
 		$wpml_notices->remove_notice( WPML_Translation_Jobs_Migration_Notice::NOTICE_GROUP_ID, 'all-translation-jobs-migration' );
 		$wpml_notices->remove_notice( WPML_Translation_Jobs_Migration_Notice::NOTICE_GROUP_ID, 'translation-jobs-migration' );
 
+		if ( ! $this->should_add_migration_hooks() ) {
+			return null;
+		}
 
-		if ( WPML_Translation_Jobs_Migration::is_migrated() ) {
+		$migration_state = new WPML_TM_Jobs_Migration_State();
+		if ( $migration_state->is_skipped() ) {
+			return new WPML_TM_Restore_Skipped_Migration( $migration_state );
+		}
 
-			if ( ! WPML_Translation_Jobs_Migration::are_all_jobs_migrated() ) {
-				$migrate_all_jobs = true;
-			} else {
+		if ( $migration_state->is_migrated() ) {
+			if ( $migration_state->is_fixing_migration_done() ) {
 				return null;
 			}
+
+			$fixing_migration = true;
 		}
 
 		$template_service = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/translation-jobs-migration/' ) );
 
-		if ( $migrate_all_jobs ) {
+		if ( $fixing_migration ) {
 			$notice = new WPML_All_Translation_Jobs_Migration_Notice( $wpml_notices, $template_service->get_template() );
 		} else {
 			$notice = new WPML_Translation_Jobs_Missing_TP_ID_Migration_Notice( $wpml_notices, $template_service->get_template() );
 		}
 
-		$jobs_migration_repository = new WPML_Translation_Jobs_Migration_Repository( wpml_tm_get_jobs_repository(), $migrate_all_jobs );
+		$jobs_migration_repository = new WPML_Translation_Jobs_Migration_Repository( wpml_tm_get_jobs_repository(), $fixing_migration );
 
 		global $wpml_post_translations, $wpml_term_translations, $wpdb;
 
@@ -40,20 +47,64 @@ class WPML_Translation_Jobs_Migration_Hooks_Factory implements IWPML_Backend_Act
 		$wpml_tm_records = new WPML_TM_Records( $wpdb, $wpml_post_translations, $wpml_term_translations );
 		$cms_id_helper   = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );
 		$jobs_migration  = new WPML_Translation_Jobs_Migration( $jobs_migration_repository, $cms_id_helper, $wpdb, wpml_tm_get_tp_jobs_api() );
-		if ( $migrate_all_jobs ) {
+		if ( $fixing_migration ) {
 			$ajax_handler = new WPML_Translation_Jobs_Fixing_Migration_Ajax(
 				$jobs_migration,
 				$jobs_migration_repository,
-				$notice
+				$migration_state
 			);
 		} else {
 			$ajax_handler = new WPML_Translation_Jobs_Migration_Ajax(
 				$jobs_migration,
 				$jobs_migration_repository,
-				$notice
+				$migration_state
 			);
 		}
 
-		return new WPML_Translation_Jobs_Migration_Hooks( $notice, $ajax_handler, $jobs_migration_repository, wpml_get_upgrade_schema() );
+		return new WPML_Translation_Jobs_Migration_Hooks(
+			$notice,
+			$ajax_handler,
+			$jobs_migration_repository,
+			wpml_get_upgrade_schema(),
+			$migration_state
+		);
+	}
+
+	/**
+	 * Check if location is allowed to add migration hooks.
+	 */
+	private function should_add_migration_hooks() {
+		$allowed_uris = array(
+			'/.*page=sitepress-multilingual-cms.*/',
+			'/.*page=wpml-string-translation.*/',
+			'/.*page=wpml-translation-management.*/',
+		);
+
+		if ( wp_doing_ajax() ) {
+			return true;
+		}
+
+		$uri = $this->get_request_uri();
+
+		foreach ( $allowed_uris as $pattern ) {
+			if ( preg_match( $pattern, $uri ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get request uri.
+	 *
+	 * @return string
+	 */
+	private function get_request_uri() {
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			return filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
+		}
+
+		return '';
 	}
 }

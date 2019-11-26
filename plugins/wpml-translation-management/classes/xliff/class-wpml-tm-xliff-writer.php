@@ -245,11 +245,14 @@ class WPML_TM_Xliff_Writer {
 						$field_data_translated = $this->remove_invalid_chars( $field_data );
 					}
 					if ( $this->is_valid_unit_content( $field_data ) ) {
-						$translation_units[] = $this->get_translation_unit_data( $element->field_type,
-						                                                         $element->field_type,
-						                                                         $field_data,
-						                                                         $field_data_translated,
-						                                                         $element->translated_from_memory );
+						$translation_units[] = $this->get_translation_unit_data(
+							$element->field_type,
+							$element->field_type,
+							$field_data,
+							$field_data_translated,
+							$element->translated_from_memory,
+							$element->field_wrap_tag
+						);
 					}
 				}
 			}
@@ -293,7 +296,26 @@ class WPML_TM_Xliff_Writer {
 		return $elements;
 	}
 
-	private function get_translation_unit_data( $field_id, $field_name, $field_data, $field_data_translated, $is_translated_from_memory = false ) {
+	/**
+	 * Get translation unit data.
+	 *
+	 * @param string  $field_id                  Field ID.
+	 * @param string  $field_name                Field name.
+	 * @param string  $field_data                Field content.
+	 * @param string  $field_data_translated     Field translated content.
+	 * @param boolean $is_translated_from_memory Boolean flag - is translated from memory.
+	 * @param string  $field_wrap_tag            Field wrap tag (h1...h6, etc.)
+	 *
+	 * @return array
+	 */
+	private function get_translation_unit_data(
+		$field_id,
+		$field_name,
+		$field_data,
+		$field_data_translated,
+		$is_translated_from_memory = false,
+		$field_wrap_tag = ''
+	) {
 		global $sitepress;
 
 		$field_data = $this->remove_invalid_chars( $field_data );
@@ -312,8 +334,9 @@ class WPML_TM_Xliff_Writer {
 		$translation_unit['attributes']['restype']  = 'string';
 		$translation_unit['attributes']['datatype'] = 'html';
 		$translation_unit['attributes']['id']       = $field_id;
-		$translation_unit['source'] = array( 'content' => $field_data );
-		$translation_unit['target'] = array( 'content' => $field_data_translated );
+		$translation_unit['source']                 = array( 'content' => $field_data );
+		$translation_unit['target']                 = array( 'content' => $field_data_translated );
+		$translation_unit['note']                   = array( 'content' => $field_wrap_tag );
 
 		if ( $is_translated_from_memory ) {
 			$translation_unit['target']['attributes'] = array(

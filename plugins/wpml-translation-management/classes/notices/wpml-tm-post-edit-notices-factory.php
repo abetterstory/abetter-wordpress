@@ -29,7 +29,8 @@ class WPML_TM_Post_Edit_Notices_Factory {
 			$template_service,
 			$super_globals,
 			$wpml_tm_status_display_filter,
-			new WPML_Translation_Element_Factory( $sitepress, new WPML_WP_Cache() )
+			new WPML_Translation_Element_Factory( $sitepress, new WPML_WP_Cache() ),
+			new WPML_TM_ATE()
 		);
 	}
 }

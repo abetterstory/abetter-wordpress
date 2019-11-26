@@ -1,5 +1,7 @@
 <?php
 
+use WPML\TM\ATE\JobRecords;
+
 class WPML_TM_ATE_Job_Data_Fallback implements IWPML_Action {
 	/** @var WPML_TM_ATE_API */
 	private $ate_api;
@@ -32,6 +34,6 @@ class WPML_TM_ATE_Job_Data_Fallback implements IWPML_Action {
 			return $data;
 		}
 
-		return array( 'ateJobId' => $response->{$wpml_job_id}->ate_job_id );
+		return array( JobRecords::FIELD_ATE_JOB_ID => $response->{$wpml_job_id}->ate_job_id );
 	}
 }

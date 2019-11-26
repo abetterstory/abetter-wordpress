@@ -29,8 +29,6 @@ class WPML_TM_MCS_ATE_Strings {
 
 		$this->authentication_data = get_option( WPML_TM_ATE_Authentication::AMS_DATA_KEY, array() );
 
-		$ate_console_link = $this->get_console_link();
-
 		$this->statuses = array(
 			WPML_TM_ATE_Authentication::AMS_STATUS_NON_ACTIVE => array(
 				'type'   => 'error',
@@ -53,7 +51,7 @@ class WPML_TM_MCS_ATE_Strings {
 				'type'   => 'success',
 				'message'   => array(
 					'status' => __( 'Advanced Translation Editor is enabled and active', 'wpml-translation-management' ),
-					'text'   => $ate_console_link,
+					'text'   => '',
 				),
 				'button' => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
 			),
@@ -61,7 +59,7 @@ class WPML_TM_MCS_ATE_Strings {
 				'type'   => 'success',
 				'message'   => array(
 					'status' => __( "WPML's Advanced Translation Editor is enabled, but not all your translators can use it.", 'wpml-translation-management' ),
-					'text'   => $ate_console_link,
+					'text'   => '',
 				),
 				'button' => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
 			),
@@ -105,38 +103,6 @@ class WPML_TM_MCS_ATE_Strings {
 		$message = $this->get_status_attribute( $status, 'message' );
 
 		return '<strong>' . $message['status'] . '</strong>' . $message['text'];
-	}
-
-	/**
-	 * @return string
-	 */
-	private function get_console_link() {
-
-		$ate_console_link = '';
-		if ( current_user_can( WPML_Manage_Translations_Role::CAPABILITY )
-		     || $this->is_authenticated_user() ) {
-			$ate_console_link_text = __( "Manage translators' access", 'wpml-translation-management' );
-			$ate_console_link_url  = $this->get_auto_login();
-			$ate_console_link      = '<a class="wpml-external-link js-ate-console" href="'
-			                         . $ate_console_link_url
-			                         . '" target="_blank">'
-			                         . $ate_console_link_text
-			                         . '</a>';
-
-		}
-
-		return $ate_console_link;
-	}
-
-	/**
-	 * @return bool
-	 */
-	private function is_authenticated_user() {
-		$authenticated_user_id = 0;
-		if ( isset( $this->authentication_data['user_id'] ) ) {
-			$authenticated_user_id = $this->authentication_data['user_id'];
-		}
-		return get_current_user_id() === $authenticated_user_id;
 	}
 
 	/**

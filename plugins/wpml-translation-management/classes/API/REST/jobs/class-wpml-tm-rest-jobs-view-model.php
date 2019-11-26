@@ -65,26 +65,33 @@ class WPML_TM_Rest_Jobs_View_Model {
 		}
 
 		return array(
-			'id'                  => $job->get_id(),
-			'type'                => $job->get_type(),
-			'tp_id'               => $job->get_tp_id(),
-			'status'              => $job->get_status(),
-			'languages'           => array(
+			'id'                     => $job->get_id(),
+			'type'                   => $job->get_type(),
+			'tp_id'                  => $job->get_tp_id(),
+			'status'                 => $job->get_status(),
+			'needs_update'           => $job->does_need_update(),
+			'language_codes'         => array(
+				'source' => $job->get_source_language(),
+				'target' => $job->get_target_language(),
+			),
+			'languages'              => array(
 				'source' => $this->language_names->get( $job->get_source_language() ),
 				'target' => $this->language_names->get( $job->get_target_language() ),
 			),
-			'translation_service' => $this->translation_service->get_name( $job->get_translation_service() ),
-			'sent_date'           => $job->get_sent_date()->format( 'Y-m-d' ),
-			'deadline'            => $job->get_deadline() ? $job->get_deadline()->format( 'Y-m-d' ) : '',
-			'ts_status'           => (string) $job->get_ts_status(),
-			'element'             => $this->element_info->get( $job->get_original_element_id(), $job->get_type() ),
-			'translator_name'     => $job->get_translator_id() ? $this->translator_name->get( $job->get_translator_id() ) : '',
-			'progress'            => $this->progress->get( $job ),
-			'batch'               => array(
+			'translation_service_id' => $job->get_translation_service(),
+			'translation_service'    => $this->translation_service->get_name( $job->get_translation_service() ),
+			'sent_date'              => $job->get_sent_date()->format( 'Y-m-d' ),
+			'deadline'               => $job->get_deadline() ? $job->get_deadline()->format( 'Y-m-d' ) : '',
+			'ts_status'              => (string) $job->get_ts_status(),
+			'element'                => $this->element_info->get( $job->get_original_element_id(), $job->get_type() ),
+			'translator_name'        => $job->get_translator_id() ? $this->translator_name->get( $job->get_translator_id() ) : '',
+			'progress'               => $this->progress->get( $job ),
+			'batch' => array(
 				'id'    => $job->get_batch()->get_id(),
+				'name'  => $job->get_batch()->get_name(),
 				'tp_id' => $job->get_batch()->get_tp_id(),
 			),
-			'extra_data'          => $extra_data,
+			'extra_data'             => $extra_data,
 		);
 	}
 

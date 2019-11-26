@@ -97,6 +97,11 @@ class WPML_Integrations {
 					'wpml-translation-editor',
 				),
 			),
+			'wordpress-seo'   => array(
+				'name'  => 'Yoast SEO',
+				'constant' => 'WPSEO_VERSION',
+				'notices-display' => array(),
+			),
 		),
 	);
 	private $items = array();

@@ -5,6 +5,8 @@
  * @package wpml-core
  */
 
+use function WPML\Container\make;
+
 /**
  * Returns true if the site uses ICanLocalize.
  *
@@ -763,7 +765,9 @@ function wpml_http_build_query( $query_data ) {
  */
 function wpml_array_unique( $array, $sort_flags = SORT_REGULAR ) {
 	if ( version_compare( phpversion(), '5.2.9', '>=' ) ) {
+		// phpcs:disable PHPCompatibility.FunctionUse.NewFunctionParameters.array_unique_sort_flagsFound -- This statement is preceded by a version check
 		return array_unique( $array, $sort_flags );
+		// phpcs:enable PHPCompatibility.FunctionUse.NewFunctionParameters.array_unique_sort_flagsFound
 	}
 
 	return wpml_array_unique_fallback( $array, true );
@@ -801,9 +805,22 @@ function wpml_array_unique_fallback( $array, $keep_key_assoc ) {
 	return $keep_key_assoc ? $array : array_values( $array );
 }
 
-
+/**
+ * @return bool
+ */
 function wpml_is_rest_request() {
-	return array_key_exists( 'rest_route', $_REQUEST ) || false !== strpos( $_SERVER['REQUEST_URI'], 'wp-json' );
+	return make( WPML_REST_Request_Analyze::class )->is_rest_request();
+}
+
+/**
+ * @return bool
+ */
+function wpml_is_rest_enabled() {
+	return make( \WPML\Core\REST\Status::class )->isEnabled();
+}
+
+function wpml_is_cli() {
+	return defined( 'WP_CLI' ) && WP_CLI;
 }
 
 function wpml_sticky_post_sync( Sitepress $sitepress = null ) {
@@ -827,4 +844,29 @@ function wpml_sticky_post_sync( Sitepress $sitepress = null ) {
 	}
 
 	return $instance;
+}
+
+/**
+ * @return WP_Filesystem_Direct
+ */
+function wpml_get_filesystem_direct() {
+	static $instance;
+
+	if ( ! $instance ) {
+		$wp_api   = new WPML_WP_API();
+		$instance = $wp_api->get_wp_filesystem_direct();
+	}
+
+	return $instance;
+}
+
+/**
+ * @param array       $postarray It will be escaped inside the function
+ * @param string|null $lang
+ * @param bool        $wp_error
+ *
+ * @return int|\WP_Error
+ */
+function wpml_update_escaped_post( array $postarray, $lang = null, $wp_error = false ) {
+	return wpml_get_create_post_helper()->insert_post( $postarray, $lang, $wp_error );
 }

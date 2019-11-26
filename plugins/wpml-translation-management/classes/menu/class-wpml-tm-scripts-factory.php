@@ -198,7 +198,7 @@ class WPML_TM_Scripts_Factory {
 
 	private function get_endpoints() {
 		if ( ! $this->endpoints ) {
-			$this->endpoints = new WPML_TM_ATE_AMS_Endpoints();
+			$this->endpoints = WPML\Container\make( 'WPML_TM_ATE_AMS_Endpoints' );;
 		}
 
 		return $this->endpoints;

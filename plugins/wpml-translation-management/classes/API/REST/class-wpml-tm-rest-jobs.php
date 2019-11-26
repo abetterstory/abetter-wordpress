@@ -1,29 +1,59 @@
 <?php
+/**
+ * WPML_TM_REST_Jobs class file.
+ *
+ * @package wpml-translation-management
+ */
 
+/**
+ * Class WPML_TM_REST_Jobs
+ */
 class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	const CAPABILITY = 'translate';
 
-	/** @var WPML_TM_Jobs_Repository */
+	/**
+	 * Jobs repository
+	 *
+	 * @var WPML_TM_Jobs_Repository
+	 */
 	private $jobs_repository;
 
-	/** @var WPML_TM_Rest_Jobs_Criteria_Parser */
+	/**
+	 * Rest jobs criteria parser
+	 *
+	 * @var WPML_TM_Rest_Jobs_Criteria_Parser
+	 */
 	private $criteria_parser;
 
-	/** @var WPML_TM_Rest_Jobs_View_Model */
+	/**
+	 * View model
+	 *
+	 * @var WPML_TM_Rest_Jobs_View_Model
+	 */
 	private $view_model;
 
-	/** @var WPML_TP_Sync_Update_Job */
+	/**
+	 * Update jobs synchronisation
+	 *
+	 * @var WPML_TP_Sync_Update_Job
+	 */
 	private $update_jobs;
 
-	/** @var WPML_TM_Last_Picked_Up $wpml_tm_last_picked_up */
+	/**
+	 * Last picked up jobs
+	 *
+	 * @var WPML_TM_Last_Picked_Up $wpml_tm_last_picked_up
+	 */
 	private $wpml_tm_last_picked_up;
 
 	/**
-	 * @param WPML_TM_Jobs_Repository           $jobs_repository
-	 * @param WPML_TM_Rest_Jobs_Criteria_Parser $criteria_parser
-	 * @param WPML_TM_Rest_Jobs_View_Model      $view_model
-	 * @param WPML_TP_Sync_Update_Job           $update_jobs
-	 * @param WPML_TM_Last_Picked_Up            $wpml_tm_last_picked_up
+	 * WPML_TM_REST_Jobs constructor.
+	 *
+	 * @param WPML_TM_Jobs_Repository           $jobs_repository        Jobs repository.
+	 * @param WPML_TM_Rest_Jobs_Criteria_Parser $criteria_parser        Rest jobs criteria parser.
+	 * @param WPML_TM_Rest_Jobs_View_Model      $view_model             View model.
+	 * @param WPML_TP_Sync_Update_Job           $update_jobs            Update jobs synchronisation.
+	 * @param WPML_TM_Last_Picked_Up            $wpml_tm_last_picked_up Last picked up jobs.
 	 */
 	public function __construct(
 		WPML_TM_Jobs_Repository $jobs_repository,
@@ -42,19 +72,30 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	}
 
 
+	/**
+	 * Add hooks
+	 */
 	public function add_hooks() {
 		$this->register_routes();
 	}
 
+	/**
+	 * Register routes
+	 */
 	public function register_routes() {
-		parent::register_route( '/jobs',
+		parent::register_route(
+			'/jobs',
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_jobs' ),
 				'args'     => array(
+					'local_job_ids' => array(
+						'type'              => 'string',
+						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
+					),
 					'scope'           => array(
 						'type'              => 'string',
-						'validate_callback' => array( $this, 'validate_scope' ),
+						'validate_callback' => array( 'WPML_TM_Jobs_Search_Params', 'is_valid_scope' ),
 						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
 					),
 					'title'           => array(
@@ -72,6 +113,10 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 					'status'          => array(
 						'type'              => 'string',
 						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
+					),
+					'needs_update' => array(
+						'type' => 'string',
+						'validate_callback' => array( 'WPML_TM_Jobs_Needs_Update_Param', 'is_valid' ),
 					),
 					'limit'           => array(
 						'type'              => 'integer',
@@ -108,7 +153,8 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 			)
 		);
 
-		parent::register_route( '/jobs/assign',
+		parent::register_route(
+			'/jobs/assign',
 			array(
 				'methods'  => 'POST',
 				'callback' => array( $this, 'assign_job' ),
@@ -131,7 +177,8 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 			)
 		);
 
-		parent::register_route( '/jobs/cancel',
+		parent::register_route(
+			'/jobs/cancel',
 			array(
 				'methods'  => 'POST',
 				'callback' => array( $this, 'cancel_jobs' ),
@@ -140,7 +187,9 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	}
 
 	/**
-	 * @param WP_REST_Request $request
+	 * Get jobs
+	 *
+	 * @param WP_REST_Request $request REST request.
 	 *
 	 * @return array|WP_Error
 	 */
@@ -162,16 +211,19 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	}
 
 	/**
-	 * @param WP_REST_Request $request
+	 * Assign job.
+	 *
+	 * @param WP_REST_Request $request REST request.
 	 *
 	 * @return array
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException Exception on error.
 	 */
 	public function assign_job( WP_REST_Request $request ) {
 		$result = null;
 
 		/**
 		 * It can be job_id from icl_translate_job or id from icl_string_translations
+		 *
 		 * @var int $job_id
 		 */
 		$job_id           = $request->get_param( 'jobId' );
@@ -182,44 +234,61 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 		if ( $user ) {
 			$assign_to = wpml_tm_assign_translation_job( $job_id, $user->ID, 'local', $job_type );
 			if ( $assign_to ) {
-				$result = array( 'assigned' => $assign_to, );
+				$result = array( 'assigned' => $assign_to );
 			}
 		}
 
 		return $result;
 	}
 
+	/**
+	 * Cancel job
+	 *
+	 * @param WP_REST_Request $request REST request.
+	 *
+	 * @return array|WP_Error
+	 */
 	public function cancel_jobs( WP_REST_Request $request ) {
-		$result = array();
+		try {
+			$result = array();
 
-		$jobs = array_filter( $request->get_params(), array( $this, 'validate_job' ) );
-		if ( $jobs ) {
-			foreach ( $jobs as $job_id ) {
-				$job = $this->jobs_repository->get_job( $job_id['id'], $job_id['type'] );
-				if ( $job ) {
-					$job->set_status( ICL_TM_NOT_TRANSLATED );
-					$this->update_jobs->update_state( $job );
+			$jobs = array_filter( $request->get_params(), array( $this, 'validate_job' ) );
+			if ( $jobs ) {
+				foreach ( $jobs as $job_id ) {
+					$job = $this->jobs_repository->get_job( $job_id['id'], $job_id['type'] );
+					if ( $job ) {
+						$job->set_status( ICL_TM_NOT_TRANSLATED );
+						$this->update_jobs->update_state( $job );
 
-					$result[] = $job_id;
+						$result[] = $job_id;
+					}
 				}
 			}
-		}
 
-		return $result;
+			return $result;
+		} catch ( Exception $e ) {
+			return new WP_Error( 500, $e->getMessage() );
+		}
 	}
 
+	/**
+	 * Get allowed capabilities
+	 *
+	 * @param WP_REST_Request $request REST request.
+	 *
+	 * @return array|string
+	 */
 	public function get_allowed_capabilities( WP_REST_Request $request ) {
 		return array( WPML_Manage_Translations_Role::CAPABILITY, WPML_Translator_Role::CAPABILITY );
 	}
 
-	public function validate_scope( $scope ) {
-		return in_array( $scope, array(
-			WPML_TM_Jobs_Search_Params::SCOPE_ALL,
-			WPML_TM_Jobs_Search_Params::SCOPE_REMOTE,
-			WPML_TM_Jobs_Search_Params::SCOPE_LOCAL,
-		), true );
-	}
-
+	/**
+	 * Validate sorting
+	 *
+	 * @param mixed $sorting Sorting parameters.
+	 *
+	 * @return bool
+	 */
 	public function validate_sorting( $sorting ) {
 		if ( ! is_array( $sorting ) ) {
 			return false;
@@ -237,19 +306,34 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	}
 
 	/**
-	 * @param array $job
+	 * Validate job
+	 *
+	 * @param mixed $job Job.
 	 *
 	 * @return bool
 	 */
-	private function validate_job( array $job ) {
-		return isset( $job['id'] ) && isset( $job['type'] ) && $this->validate_job_type( $job['type'] );
+	private function validate_job( $job ) {
+		return is_array( $job ) && isset( $job['id'] ) && isset( $job['type'] ) && $this->validate_job_type( $job['type'] );
 	}
 
+	/**
+	 * Validate job type
+	 *
+	 * @param string $value Job type.
+	 *
+	 * @return bool
+	 */
 	public function validate_job_type( $value ) {
-		return ! $value || in_array( $value, array(
-				WPML_TM_Job_Entity::POST_TYPE,
-				WPML_TM_Job_Entity::STRING_TYPE,
-				WPML_TM_Job_Entity::PACKAGE_TYPE
-			) );
+		return
+			! $value ||
+			in_array(
+				$value,
+				array(
+					WPML_TM_Job_Entity::POST_TYPE,
+					WPML_TM_Job_Entity::STRING_TYPE,
+					WPML_TM_Job_Entity::PACKAGE_TYPE,
+				),
+				true
+			);
 	}
 }

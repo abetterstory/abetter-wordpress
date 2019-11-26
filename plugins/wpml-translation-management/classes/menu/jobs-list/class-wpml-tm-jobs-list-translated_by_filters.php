@@ -39,7 +39,7 @@ class WPML_TM_Jobs_List_Translated_By_Filters {
 		if ( $translators ) {
 			$options[] = array(
 				'value' => 'any-local-translator',
-				'label' => __( 'Any Local Translator', 'wpml-translation-management' ),
+				'label' => __( 'Any WordPress Translator', 'wpml-translation-management' ),
 			);
 		}
 

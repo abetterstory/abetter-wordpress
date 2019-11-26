@@ -19,7 +19,9 @@ if ( ! defined( 'ICL_PLUGIN_INACTIVE' ) ) {
 }
 
 if ( defined( 'PHP_INT_MIN' ) ) {
+	// phpcs:disable PHPCompatibility.Constants.NewConstants.php_int_minFound -- A check for the presence of the constant is made
 	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', PHP_INT_MIN );
+	// phpcs:enable PHPCompatibility.Constants.NewConstants.php_int_minFound
 } else {
 	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', ~PHP_INT_MAX );
 }

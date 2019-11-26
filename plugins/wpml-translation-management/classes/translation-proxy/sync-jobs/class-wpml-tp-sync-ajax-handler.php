@@ -64,11 +64,10 @@ class WPML_TP_Sync_Ajax_Handler {
 	 */
 	public function map_job_to_result( WPML_TM_Job_Entity $job ) {
 		return array(
-			'id'     => $job->get_id(),
-			'type'   => $job->get_type(),
-			'status' => $job->get_status(),
+			'id'                      => $job->get_id(),
+			'type'                    => $job->get_type(),
+			'status'                  => $job->get_status(),
+			'hasCompletedTranslation' => $job->has_completed_translation(),
 		);
 	}
-
-
 }

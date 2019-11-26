@@ -56,6 +56,9 @@ class WPML_URL_Converter_Domain_Strategy extends WPML_URL_Converter_Abstract_Str
 	}
 
 	private function convert_url( $source_url, $lang ) {
+		if ( $this->skip_convert_url_string( $source_url, $lang ) ) {
+			return $source_url;
+		}
 
 		$base_url = isset( $this->domains[ $lang ] ) ? $this->domains[ $lang ] : $this->get_url_helper()->get_abs_home();
 

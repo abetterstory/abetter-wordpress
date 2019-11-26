@@ -45,6 +45,10 @@ class WPML_TM_Translation_Batch {
 		return $this->elements;
 	}
 
+	public function add_element( WPML_TM_Translation_Batch_Element $element ) {
+		$this->elements[] = $element;
+	}
+
 	/**
 	 * @param string $type
 	 *

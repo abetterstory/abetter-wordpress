@@ -66,7 +66,7 @@ class WPML_TM_AMS_Synchronize_Users_On_Access_Denied {
 	 */
 	private function get_ate_jobs() {
 		if ( ! $this->ate_jobs ) {
-			$ate_jobs_records = new WPML_TM_ATE_Job_Records();
+			$ate_jobs_records = wpml_tm_get_ate_job_records();
 			$this->ate_jobs   = new WPML_TM_ATE_Jobs( $ate_jobs_records );
 		}
 

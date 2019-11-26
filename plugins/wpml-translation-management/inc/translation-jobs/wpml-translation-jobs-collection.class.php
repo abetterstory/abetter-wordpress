@@ -209,6 +209,7 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 			$sql_statements[] = "SELECT s.translator_id,
 						j.job_id,
 						IF(p.post_type IS NOT NULL, 'post', 'package') AS element_type_prefix,
+						p.post_type AS post_type,
 						s.batch_id
 				FROM {$this->wpdb->prefix}icl_translation_status s
 				JOIN {$this->wpdb->prefix}icl_translations t

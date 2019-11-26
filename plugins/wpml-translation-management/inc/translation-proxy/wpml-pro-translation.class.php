@@ -265,29 +265,6 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 	}
 
 	/**
-	 * @param array $args
-	 * @param bool  $bypass_auth
-	 *
-	 * @return int|string
-	 */
-	function poll_updated_job_status_with_log( $args, $bypass_auth = false ) {
-		$project = TranslationProxy::get_current_project();
-		$update  = new WPML_TM_Job_Update( $this, $project );
-
-		$ret = $update->updated_job_status_with_log( $args, $bypass_auth );
-
-		if ( null !== $update->get_last_job_data() ) {
-			$logger_settings = new WPML_Jobs_Fetch_Log_Settings();
-			$fetch_log_job   = new WPML_Jobs_Fetch_Log_Job( $this );
-			$logger          = new WPML_Jobs_Poll_Fetch_Log( $this, $logger_settings, $fetch_log_job );
-
-			$logger->log_job_data( $update->get_last_job_data() );
-		}
-
-		return $ret;
-	}
-
-	/**
 	 * @return WPML_WP_API
 	 */
 	function get_wpml_wp_api() {

@@ -19,6 +19,7 @@ class WPML_Notices {
 	private $notices_to_remove  = array();
 	private $dismissed;
 	private $user_dismissed;
+	private $original_notices_md5;
 
 	/**
 	 * WPML_Notices constructor.
@@ -26,9 +27,10 @@ class WPML_Notices {
 	 * @param WPML_Notice_Render     $notice_render
 	 */
 	public function __construct( WPML_Notice_Render $notice_render ) {
-		$this->notice_render     = $notice_render;
-		$this->notices           = $this->filter_invalid_notices( $this->get_all_notices() );
-		$this->dismissed         = $this->get_all_dismissed();
+		$this->notice_render        = $notice_render;
+		$this->notices              = $this->filter_invalid_notices( $this->get_all_notices() );
+		$this->dismissed            = $this->get_all_dismissed();
+		$this->original_notices_md5 = md5( maybe_serialize( $this->notices ) );
 	}
 
 	/**
@@ -164,7 +166,15 @@ class WPML_Notices {
 
 	private function save_notices() {
 		$this->remove_notices();
-		update_option( self::NOTICES_OPTION_KEY, $this->notices, false );
+		if ( ! has_action( 'shutdown' , array( $this, 'save_to_option' ) ) ) {
+			add_action( 'shutdown', array( $this, 'save_to_option' ), 1000 );
+		}
+	}
+
+	public function save_to_option() {
+		if ( $this->original_notices_md5 !== md5( maybe_serialize( $this->notices ) ) ) {
+			update_option( self::NOTICES_OPTION_KEY, $this->notices, false );
+		}
 	}
 
 	private function save_dismissed() {
@@ -456,7 +466,7 @@ class WPML_Notices {
 		}
 
 		if ( $is_dismissed && method_exists( $notice, 'can_be_dismissed_for_different_text' )
-			 && ! $notice->can_be_dismissed_for_different_text() ) {
+		     && ! $notice->can_be_dismissed_for_different_text() ) {
 			$is_dismissed = md5( $notice->get_text() ) === $this->dismissed[ $group ][ $id ];
 		}
 

@@ -52,7 +52,7 @@ class WPML_String_Translation_Table {
 		?>
 		<<?php echo $tag; ?>>
 		<tr>
-			<th scope="col" class="manage-column column-cb check-column"><input type="checkbox"/></th>
+			<td scope="col" class="manage-column column-cb check-column"><input type="checkbox"/></td>
 			<th scope="col"><?php esc_html_e( 'Domain', 'wpml-string-translation' ) ?></th>
 			<th scope="col"><?php esc_html_e( 'Context', 'wpml-string-translation' ) ?></th>
 			<th scope="col"><?php esc_html_e( 'Name', 'wpml-string-translation' ) ?></th>
@@ -90,7 +90,7 @@ class WPML_String_Translation_Table {
 			</td>
 			<td class="wpml-st-col-string">
 				<div class="icl-st-original"<?php _icl_string_translation_rtl_div( $icl_string['string_language'] ) ?>>
-					<img src="<?php echo esc_url( $sitepress->get_flag_url( $icl_string['string_language'] ) ) ?>"> <?php echo esc_html( $icl_string['value'] ) ?>
+					<img width="18" height="12" src="<?php echo esc_url( $sitepress->get_flag_url( $icl_string['string_language'] ) ) ?>"> <?php echo esc_html( $icl_string['value'] ) ?>
 				</div>
 				<div style="float:right;">
 					<a href="#icl-st-toggle-translations" class="js-wpml-st-toggle-translations"><?php esc_html_e( 'translations', 'wpml-string-translation' ) ?></a>

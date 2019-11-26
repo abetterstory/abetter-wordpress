@@ -72,7 +72,7 @@ class WPML_TM_Setup_Wizard extends WPML_Wizard {
 
 		wp_enqueue_script( 'wpml-tm-set-translation-roles',
 			WPML_TM_URL . '/res/js/set-translation-role.js',
-			array(),
+			array( 'underscore' ),
 			WPML_TM_VERSION );
 
 		wp_register_style( 'wpml-tm-wizard', WPML_TM_URL . '/res/css/wpml-tm-wizard.css' );

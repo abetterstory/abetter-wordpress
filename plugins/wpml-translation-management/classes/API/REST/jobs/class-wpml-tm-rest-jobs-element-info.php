@@ -33,6 +33,14 @@ class WPML_TM_Rest_Jobs_Element_Info {
 				break;
 		}
 
+		if ( empty( $result ) ) {
+			$result = array(
+				'name' => '',
+				'url'  => null,
+			);
+			do_action( 'wpml_tm_jobs_log', 'WPML_TM_Rest_Jobs_Element_Info::get', array( $id, $type ), 'Empty result' );
+		}
+
 		$result['url'] = apply_filters( 'wpml_tm_job_list_element_url', $result['url'], $id, $type );
 
 		return $result;

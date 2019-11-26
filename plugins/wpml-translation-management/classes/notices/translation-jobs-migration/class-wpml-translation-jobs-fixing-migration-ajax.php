@@ -6,18 +6,24 @@ class WPML_Translation_Jobs_Fixing_Migration_Ajax {
 	const JOBS_MIGRATED_PER_REQUEST = 100;
 	const PAGINATION_OPTION         = 'wpml_translation_jobs_migration_processed';
 
+	/** @var WPML_Translation_Jobs_Migration  */
 	private $jobs_migration;
+
+	/** @var WPML_Translation_Jobs_Migration_Repository  */
 	private $jobs_repository;
-	private $notice;
+
+	/** @var WPML_TM_Jobs_Migration_State */
+	private $migration_state;
+
 
 	public function __construct(
 		WPML_Translation_Jobs_Migration $jobs_migration,
 		WPML_Translation_Jobs_Migration_Repository $jobs_repository,
-		WPML_Translation_Jobs_Migration_Notice $notice
+		WPML_TM_Jobs_Migration_State $migration_state
 	) {
-		$this->jobs_migration  = $jobs_migration;
+		$this->jobs_migration = $jobs_migration;
 		$this->jobs_repository = $jobs_repository;
-		$this->notice          = $notice;
+		$this->migration_state = $migration_state;
 	}
 
 	public function run_migration() {
@@ -32,7 +38,14 @@ class WPML_Translation_Jobs_Fixing_Migration_Ajax {
 
 		if ( $offset < $total_jobs ) {
 			$jobs_chunk = array_slice( $jobs, $offset, self::JOBS_MIGRATED_PER_REQUEST );
-			$this->jobs_migration->migrate_jobs( $jobs_chunk, true );
+
+			try {
+				$this->jobs_migration->migrate_jobs( $jobs_chunk, true );
+			} catch ( Exception $e ) {
+				wp_send_json_error( $e->getMessage(), 500 );
+
+				return;
+			}
 
 			$done             = $total_jobs <= $offset + self::JOBS_MIGRATED_PER_REQUEST;
 			$jobs_chunk_total = count( $jobs_chunk );
@@ -50,8 +63,7 @@ class WPML_Translation_Jobs_Fixing_Migration_Ajax {
 		);
 
 		if ( $done ) {
-			WPML_Translation_Jobs_Migration::mark_all_jobs_migration_as_done();
-			$this->notice->remove_notice();
+			$this->migration_state->mark_fixing_migration_as_done();
 			delete_option( self::PAGINATION_OPTION );
 		}
 

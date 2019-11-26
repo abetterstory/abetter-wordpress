@@ -32,6 +32,10 @@ jQuery(document).ready(function ($) {
 				if (batchLinkAnchor && typeof result.ts_batch_link !== 'undefined') {
 					batchLinkAnchor.attr('href', result.ts_batch_link.href);
 					batchLinkAnchor.text(result.ts_batch_link.text);
+					$(batchLinkAnchor).on('click', function () {
+						dialog.dialog('close');
+					});
+
 					batchLink.show();
 					hasAdditionalContent = true;
 				}

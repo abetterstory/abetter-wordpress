@@ -52,7 +52,6 @@ function acf_get_field_group( $id = 0 ) {
 	 *
 	 * @param	array The field_group array.
 	 */
-	$field_group = apply_filters( 'acf/get_field_group', $field_group );
 	$field_group = apply_filters( 'acf/load_field_group', $field_group );
 	
 	// Store field group using aliasses to also find via key, ID and name.
@@ -222,6 +221,10 @@ function acf_validate_field_group( $field_group = array() ) {
 		'description'			=> '',
 	));
 	
+	// Convert types.
+	$field_group['ID'] = (int) $field_group['ID'];
+	$field_group['menu_order'] = (int) $field_group['menu_order'];
+	
 	// Field group is now valid.
 	$field_group['_valid'] = 1;
 	
@@ -319,7 +322,6 @@ function acf_get_field_groups( $filter = array() ) {
 		}
 	}
 	
-	
 	/**
 	 * Filters the $field_groups array.
 	 *
@@ -329,7 +331,6 @@ function acf_get_field_groups( $filter = array() ) {
 	 * @param	array $field_groups The array of field_groups.
 	 */
 	$field_groups = apply_filters( 'acf/load_field_groups', $field_groups );
-	$field_groups = apply_filters( 'acf/get_field_groups', $field_groups );
 	
 	// Filter results.
 	if( $filter ) {
@@ -455,7 +456,7 @@ function acf_get_field_group_visibility( $field_group, $args = array() ) {
 			// Loop over rules and determine if all rules match.
 			$match_group = true;
 			foreach( $group as $rule ) {
-				if( !acf_match_location_rule( $rule, $screen ) ) {
+				if( !acf_match_location_rule( $rule, $screen, $field_group ) ) {
 					$match_group = false;
 					break;
 				}
@@ -518,6 +519,8 @@ function acf_update_field_group( $field_group ) {
     	'post_excerpt'	=> sanitize_title( $field_group['title'] ),
     	'post_content'	=> maybe_serialize( $_field_group ),
     	'menu_order'	=> $field_group['menu_order'],
+    	'comment_status' => 'closed',
+    	'ping_status'	=> 'closed',
 	);
 	
 	// Unhook wp_targeted_link_rel() filter from WP 5.1 corrupting serialized data.
@@ -1038,7 +1041,7 @@ function acf_import_field_group( $field_group ) {
 			
 			// Only add menu order if doesn't already exist.
 			// Allows Flexible Content field to set custom order.
-			if( empty($field['menu_order']) ) {
+			if( !isset($field['menu_order']) ) {
 				$field['menu_order'] = ($count[ $field['parent'] ] - 1);
 			}
 			

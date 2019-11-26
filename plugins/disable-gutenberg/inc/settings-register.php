@@ -2,16 +2,6 @@
 
 if (!defined('ABSPATH')) exit;
 
-function disable_gutenberg_get_options() {
-	
-	global $DisableGutenberg;
-	
-	$default = $DisableGutenberg->options();
-	
-	return get_option('disable_gutenberg_options', $default);
-	
-}
-
 function disable_gutenberg_register_settings() {
 	
 	// register_setting( $option_group, $option_name, $sanitize_callback );
@@ -151,7 +141,7 @@ function disable_gutenberg_settings_section_3() {
 
 function disable_gutenberg_settings_section_4() {
 	
-	echo '<p>'. esc_html__('Select the theme template files for which Gutenberg should be disabled.', 'disable-gutenberg') .'</p>';
+	echo '<p>'. esc_html__('Select the theme template files for which Gutenberg should be disabled (e.g., custom-page.php).', 'disable-gutenberg') .'</p>';
 	
 }
 

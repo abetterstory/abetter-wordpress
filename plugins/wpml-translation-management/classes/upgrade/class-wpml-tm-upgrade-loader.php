@@ -38,7 +38,8 @@ class WPML_TM_Upgrade_Loader implements IWPML_Action {
 	public function wpml_tm_upgrade() {
 
 		$commands = array(
-			$this->factory->create_command_definition( 'WPML_TM_Upgrade_Translation_Priorities_For_Posts', array(), array( 'admin', 'ajax', 'front-end' ) ),
+			$this->factory->create_command_definition( 'WPML_TM_Upgrade_Translation_Priorities_For_Posts', array(),
+				array( 'admin', 'ajax', 'front-end' ) ),
 
 			$this->factory->create_command_definition(
 				'WPML_TM_Upgrade_Default_Editor_For_Old_Jobs',
@@ -58,7 +59,20 @@ class WPML_TM_Upgrade_Loader implements IWPML_Action {
 			$this->factory->create_command_definition( 'WPML_TM_Upgrade_WPML_Site_ID_ATE', array( $this->upgrade_schema ), array( 'admin' ) ),
 			$this->factory->create_command_definition(
 				'WPML_TM_Upgrade_Cancel_Orphan_Jobs',
-				array( new WPML_TP_Sync_Orphan_Jobs_Factory() ), array( 'admin' )
+				array( new WPML_TP_Sync_Orphan_Jobs_Factory(), new WPML_TM_Jobs_Migration_State() ), array( 'admin' )
+			),
+			$this->factory->create_command_definition(
+				WPML\TM\Upgrade\Commands\MigrateAteRepository::class,
+				[ $this->upgrade_schema ], [ 'admin' ]
+			),
+			$this->factory->create_command_definition(
+				WPML\TM\Upgrade\Commands\SynchronizeSourceIdOfATEJobs\Command::class,
+				[], [ 'admin' ], null,
+				[ new WPML\TM\Upgrade\Commands\SynchronizeSourceIdOfATEJobs\CommandFactory(), 'create' ]
+				),
+			$this->factory->create_command_definition(
+				WPML\TM\Upgrade\Commands\CreateAteDownloadQueueTable::class,
+				[ $this->upgrade_schema ], [ 'admin' ]
 			),
 		);
 

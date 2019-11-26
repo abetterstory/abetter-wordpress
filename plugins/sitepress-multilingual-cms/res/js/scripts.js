@@ -211,6 +211,29 @@ function fadeOutAjxResp(spot){
     jQuery(spot).fadeOut();
 }
 
+/**
+ * Create custom event
+ * A kind of simple "polyfill" to support IE11
+ *
+ * @param eventName
+ * @param eventDetail
+ */
+function wpmlCustomEvent( eventName, eventDetail ) {
+	if ( !!window.MSInputMethodContext && !!document.documentMode ) {
+		// Internet Explorer 11
+		const event = document.createEvent( 'CustomEvent' );
+		event.initCustomEvent(
+			eventName,
+			false,
+			false,
+			false
+		);
+		document.dispatchEvent(event);
+	} else {
+		document.dispatchEvent( new CustomEvent( eventName, eventDetail ) );
+	}
+}
+
 var icl_ajxloaderimg = '<img src="'+icl_ajxloaderimg_src+'" alt="loading" width="16" height="16" />';
 
 var iclHaltSave = false; // use this for multiple 'submit events'
@@ -246,7 +269,7 @@ function iclSaveForm() {
 				}
 				var action = this.data.split( '&' )[0];
 				action     = action.split( '=' )[1];
-				document.dispatchEvent( new CustomEvent( 'icl-save-form-' + action ) );
+				wpmlCustomEvent('icl-save-form-' + action );
 			} else {
 				var icl_form_errors = jQuery('form[name="' + form_name + '"] .icl_form_errors');
 				var error_html = (typeof spl[1] != 'undefined') ? spl[1] : spl[0];

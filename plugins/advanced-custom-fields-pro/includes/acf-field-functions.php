@@ -233,6 +233,10 @@ function acf_validate_field( $field = array() ) {
 		//'attributes'		=> array()
 	));
 	
+	// Convert types.
+	$field['ID'] = (int) $field['ID'];
+	$field['menu_order'] = (int) $field['menu_order'];
+	
 	// Add backwards compatibility for wrapper attributes.
 	// Todo: Remove need for this.
 	$field['wrapper'] = wp_parse_args($field['wrapper'], array(
@@ -329,7 +333,7 @@ add_action('acf/validate_field', 'acf_translate_field');
  * @date	30/09/13
  * @since	5.0.0
  *
- * @param	array $parent The field group or field array.
+ * @param	(int|string|array) $parent The field group or field settings. Also accepts the field group ID or key.
  * @return	array
  */
 function acf_get_fields( $parent ) {
@@ -369,7 +373,6 @@ function acf_get_fields( $parent ) {
 	 * @param	array $fields The array of fields.
 	 */
 	$fields = apply_filters( 'acf/load_fields', $fields, $parent );
-	$fields = apply_filters( 'acf/get_fields', $fields, $parent );
 	
 	// Return fields
 	return $fields;	
@@ -694,6 +697,7 @@ function acf_render_field_wrap( $field, $element = 'div', $instruction = 'label'
 	// Todo: Move from $wrapper out into $field.
 	$width = acf_extract_var( $wrapper, 'width' );
 	if( $width ) {
+		$width = acf_numval( $width );
 		if( $element !== 'tr' && $element !== 'td' ) {
 			$wrapper['data-width'] = $width;
 			$wrapper['style'] .= " width:{$width}%;";
@@ -1330,7 +1334,7 @@ function acf_get_field_ancestors( $field ) {
 	$ancestors = array();
 	
 	// Loop over parents.
-	while( $field = acf_get_field($field['parent']) ) {
+	while( $field['parent'] && $field = acf_get_field($field['parent']) ) {
 		$ancestors[] = $field['ID'] ? $field['ID'] : $field['key'];
 	}
 	
@@ -1369,7 +1373,8 @@ function acf_duplicate_fields( $fields = array(), $parent_id = 0 ) {
 		
 	// Duplicate fields.
 	foreach( $fields as $field ) {
-		$duplicates[] = acf_duplicate_field( $field['ID'], $parent_id );
+		$field_id = $field['ID'] ? $field['ID'] : $field['key'];
+		$duplicates[] = acf_duplicate_field( $field_id, $parent_id );
 	}
 	
 	// Return.

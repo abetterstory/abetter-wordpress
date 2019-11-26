@@ -1,15 +1,33 @@
 <?php
+/**
+ * WPML_File class file.
+ *
+ * @package wpml-core
+ */
 
+/**
+ * Class WPML_File
+ */
 class WPML_File {
-	/* @var WPML_WP_API $wp_api */
+	/**
+	 * WPML WP API instance.
+	 *
+	 * @var WPML_WP_API $wp_api
+	 */
 	private $wp_api;
 
-	/** @var WP_Filesystem_Direct */
+	/**
+	 * WP_Filesystem_Direct instance.
+	 *
+	 * @var WP_Filesystem_Direct
+	 */
 	private $filesystem;
 
 	/**
-	 * @param WPML_WP_API|null $wp_api
-	 * @param WP_Filesystem_Direct|null $filesystem
+	 * WPML_File constructor.
+	 *
+	 * @param WPML_WP_API|null          $wp_api     WPML WP API instance.
+	 * @param WP_Filesystem_Direct|null $filesystem WP_Filesystem_Direct instance.
 	 */
 	public function __construct( WPML_WP_API $wp_api = null, WP_Filesystem_Direct $filesystem = null ) {
 		if ( ! $wp_api ) {
@@ -26,17 +44,22 @@ class WPML_File {
 	}
 
 	/**
-	 * @param string $path
+	 * Fix directory separator if backslash is used.
+	 *
+	 * @param string $path Path to fix.
 	 *
 	 * @return string
 	 */
 	public function fix_dir_separator( $path ) {
 		$directory_separator = $this->wp_api->constant( 'DIRECTORY_SEPARATOR' );
+
 		return ( '\\' === $directory_separator ) ? str_replace( '/', '\\', $path ) : str_replace( '\\', '/', $path );
 	}
 
 	/**
-	 * @param string $path
+	 * Get uri from file path.
+	 *
+	 * @param string $path File path.
 	 *
 	 * @return string
 	 */
@@ -65,20 +88,25 @@ class WPML_File {
 		$relative_path = substr( $path, strlen( $base['path'] ) );
 		$relative_path = str_replace( array( '/', '\\' ), '/', $relative_path );
 		$relative_path = ltrim( $relative_path, '/' );
+
 		return trailingslashit( $base['uri'] ) . $relative_path;
 	}
 
 	/**
-	 * @param string $path
+	 * Get path relative to ABSPATH.
+	 *
+	 * @param string $path File path.
 	 *
 	 * @return string
 	 */
 	public function get_relative_path( $path ) {
-		return str_replace( $this->fix_dir_separator( ABSPATH ), '', $path );
+		return str_replace( $this->fix_dir_separator( ABSPATH ), '', $this->fix_dir_separator( $path ) );
 	}
 
 	/**
-	 * @param string $path
+	 * Get full file path.
+	 *
+	 * @param string $path File path.
 	 *
 	 * @return string
 	 */
@@ -87,7 +115,9 @@ class WPML_File {
 	}
 
 	/**
-	 * @param string $path
+	 * Check if file exists.
+	 *
+	 * @param string $path File path.
 	 *
 	 * @return bool
 	 */
@@ -96,7 +126,9 @@ class WPML_File {
 	}
 
 	/**
-	 * @param string $path
+	 * Get file modification time.
+	 *
+	 * @param string $path File path.
 	 *
 	 * @return int
 	 */

@@ -154,7 +154,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 				$limit_to_page[] = WPML_ST_FOLDER . '/menu/string-translation.php';
 			}
 
-			// if we have some stings in the basket on ST page
+			// if we have something in the basket
 			if ( self::is_st_page() && $basket_items_count > 0 && ( !isset($_GET['clear_basket']) || $_GET['clear_basket'] != 1 ) && ( !isset($_GET['action']) || $_GET['action'] != 'delete' ) ){
 
 				$text =  __( 'The items you have selected are now in the translation basket &ndash;', 'wpml-translation-management' );

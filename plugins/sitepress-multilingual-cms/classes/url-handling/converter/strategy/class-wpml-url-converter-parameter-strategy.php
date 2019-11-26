@@ -7,11 +7,18 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 	}
 
 	public function convert_url_string( $source_url, $lang_code ) {
+		if ( $this->skip_convert_url_string( $source_url, $lang_code ) ) {
+			return $source_url;
+		}
+
 		if ( ! $lang_code || $lang_code === $this->default_language ) {
 			$lang_code = '';
 		}
 
-		$url_parts  = wpml_parse_url( $source_url );
+		$url_parts = wpml_parse_url( $source_url );
+		if ( ! is_array( $url_parts ) ) {
+			$url_parts = [];
+		}
 		$query_args = $this->get_query_args( $url_parts );
 
 		if ( $lang_code ) {

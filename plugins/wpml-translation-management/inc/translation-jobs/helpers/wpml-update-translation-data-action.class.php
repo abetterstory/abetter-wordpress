@@ -106,9 +106,8 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 		global $wpml_translation_job_factory;
 
 		$job = $wpml_translation_job_factory->get_translation_job( $job_id, false, 0, true );
-		if ( $translation_status->translation_service === 'local' ) {
-			if ( $this->get_tm_setting( array( 'notification', 'new-job' ) ) == ICL_TM_NOTIFICATION_IMMEDIATELY
-			) {
+		if ( $job && $translation_status->translation_service === 'local' ) {
+			if ( $this->get_tm_setting( array( 'notification', 'new-job' ) ) == ICL_TM_NOTIFICATION_IMMEDIATELY ) {
 				if ( $job_id ) {
 					if ( empty( $translator_id ) ) {
 						do_action( 'wpml_tm_new_job_notification', $job );

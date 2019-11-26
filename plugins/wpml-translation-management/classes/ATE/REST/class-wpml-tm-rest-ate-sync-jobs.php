@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @todo: Remove this endpoint
+ */
 class WPML_TM_REST_ATE_Sync_Jobs extends WPML_TM_ATE_Required_Rest_Base {
 	/** @var array  */
 	private $capabilities = array( 'manage_translations', 'translate' );
@@ -27,7 +30,7 @@ class WPML_TM_REST_ATE_Sync_Jobs extends WPML_TM_ATE_Required_Rest_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( WPML_TM_ATE_AMS_Endpoints::SYNC_JOBS,
+		parent::register_route( '/ate/jobs/old-sync',
 			array(
 				'methods'  => 'POST',
 				'callback' => array( $this, 'sync' ),

@@ -45,6 +45,9 @@ class WPML_Notice {
 	 */
 	private $nonce_action;
 
+	/** @var bool */
+	private $text_only = false;
+
 	/**
 	 * WPML_Admin_Notification constructor.
 	 *
@@ -357,4 +360,17 @@ class WPML_Notice {
 		return $this->flash;
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function should_be_text_only() {
+		return $this->text_only;
+	}
+
+	/**
+	 * @param bool $text_only
+	 */
+	public function set_text_only( $text_only ) {
+		$this->text_only = $text_only;
+	}
 }

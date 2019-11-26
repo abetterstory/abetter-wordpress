@@ -256,6 +256,16 @@ class WPML_ST_String {
 	}
 
 	/**
+	 * Set string wrap tag.
+	 * Used for SEO significance, can contain values as h1 ... h6, etc.
+	 *
+	 * @param string $wrap Wrap tag.
+	 */
+	public function set_wrap_tag( $wrap_tag ) {
+		$this->set_property( 'wrap_tag', $wrap_tag );
+	}
+
+	/**
 	 * @param string $property
 	 * @param mixed  $value
 	 */

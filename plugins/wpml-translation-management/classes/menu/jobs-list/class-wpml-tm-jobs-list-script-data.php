@@ -37,7 +37,8 @@ class WPML_TM_Jobs_List_Script_Data {
 			$translators = new WPML_TM_Jobs_List_Translators(
 				new WPML_Translator_Records(
 					$wpdb,
-					new WPML_WP_User_Query_Factory()
+					new WPML_WP_User_Query_Factory(),
+					wp_roles()
 				)
 			);
 		}
@@ -55,19 +56,25 @@ class WPML_TM_Jobs_List_Script_Data {
 		$this->services             = $services;
 	}
 
-
+	/**
+	 * @return array
+	 */
 	public function get() {
 		$translation_service = TranslationProxy::get_current_service();
 		if ( $translation_service ) {
-			$translation_service = array(
+			$translation_service = [
 				'id'   => $translation_service->id,
 				'name' => $translation_service->name,
-			);
+			];
+		} else {
+			$translation_service = [
+				'id'   => 0,
+				'name' => '?',
+			];
 		}
 
-
-		return array(
-			'strings'             => array(
+		return [
+			'strings'             => [
 				'bulkActions'            => __( 'Bulk actions', 'wpml-translation-management' ),
 				'cancelJobs'             => __( 'Cancel jobs', 'wpml-translation-management' ),
 				'getTranslations'        => __( 'Get translations', 'wpml-translation-management' ),
@@ -85,11 +92,12 @@ class WPML_TM_Jobs_List_Script_Data {
 				'actions'                => __( 'Actions', 'wpml-translation-management' ),
 				'externalActionsTooltip' => __(
 					'Actions that will happen on the translation service',
-					'wpml-translaton-management'
+					'wpml-translation-management'
 				),
 				'selectAll'              => __( 'Select all', 'wpml-translation-management' ),
-				'filters'                => array(
+				'filters'                => [
 					'title'        => __( 'Title', 'wpml-translation-management' ),
+					'batch_name'   => __( 'Batch name', 'wpml-translation-management' ),
 					'anyLanguage'  => __( 'Any language', 'wpml-translation-management' ),
 					'languageFrom' => __( 'from', 'wpml-translation-management' ),
 					'languageTo'   => __( 'to', 'wpml-translation-management' ),
@@ -106,34 +114,41 @@ class WPML_TM_Jobs_List_Script_Data {
 					'deadline'     => __( 'with deadline between', 'wpml-translation-management' ),
 					'reset'        => __( 'Reset filters', 'wpml-translation-management' ),
 					'selectStatus' => __( 'Select status', 'wpml-translation-management' ),
-				),
-				'progressMessages'       => array(
+				],
+				'progressMessages'       => [
 					'loadingJobs'          => __( 'Loading jobs...', 'wpml-translation-management' ),
 					'applyingTranslations' => __( 'Downloading translations...', 'wpml-translation-management' ),
 					'syncBatch'            => __( 'Synchronizing batch...', 'wpml-translation-management' ),
 					'cancelJobs'           => __( 'Canceling jobs...', 'wpml-translation-management' ),
 					'assignTranslator'     => __( 'Assigning translator...', 'wpml-translation-management' ),
 					'downloadingXliff'     => __( 'Downloading XLIFF file...', 'wpml-translation-management' ),
-				),
-				'confirmations'          => array(
+				],
+				'confirmations'          => [
 					'applyingTranslations' => __( 'Translations downloaded', 'wpml-translation-management' ),
-					'syncBatch'            => __( 'Batch synchronization has been sent',
-						'wpml-translation-management' ),
+					'syncBatch'            => __(
+						'Batch synchronization has been sent',
+						'wpml-translation-management'
+					),
 					'cancelJobs'           => __( 'Jobs canceled', 'wpml-translation-management' ),
 					'assignTranslator'     => __( 'Translator assigned', 'wpml-translation-management' ),
 					'downloadingXliff'     => __( 'XLIFF file downloaded', 'wpml-translation-management' ),
-				),
-				'jobActions'             => array(
-					'checkStatus'         => __( 'Check status', 'wpml-translation-management' ),
-					'disabledCheckStatus' => __(
-						'Translation is ready, no need to check its status',
-						'wpml-translation-management'
-					),
+				],
+				'jobActions'             => [
+					'checkStatus' => [
+						'active'          => __( 'Check status', 'wpml-translation-management' ),
+						'completed'       => __( 'Translation is ready, no need to check its status', 'wpml-translation-management' ),
+						'cancelled'       => __( 'Translation is cancelled, no need to check its status', 'wpml-translation-management' ),
+						'readyToDownload' => __( 'Translation is ready to download, no need to check its status', 'wpml-translation-management' ),
+						'alreadySynced'   => __( 'Translation has already been synchronized, no need to check its status', 'wpml-translation-management' ),
+						'local'           => __( 'This is a local job, no need to check its status', 'wpml-translation-management' ),
+					],
 
-					'downloadXLIFF' => array(
+					'downloadXLIFF' => [
 						'activeIconText' => __( 'Download the translated XLIFF file', 'wpml-translation-management' ),
-						'localJob'       => __( 'This is a local job so it does not have an XLIFF file to download',
-							'wpml-translation-management' ),
+						'localJob'       => __(
+							'This is a local job so it does not have an XLIFF file to download',
+							'wpml-translation-management'
+						),
 						'notReady'       => __(
 							'You cannot download the translation as it has not been completed',
 							'wpml-translation-management'
@@ -142,16 +157,17 @@ class WPML_TM_Jobs_List_Script_Data {
 							'You cannot download the XLIFF file because TS_NAME has canceled the job',
 							'wpml-translation-management'
 						),
-					),
+					],
 
-					'cancel' => array(
+					'cancel' => [
 						'activeIconText'  => __( 'Cancel job', 'wpml-translation-management' ),
-						'notLocalJob'     => __( 'You can cancel only a local job', 'wpml-translation-management' ),
+						// translators: "%s" is replaced with the name of the translation service associated with the job.
+						'notLocalJob'     => sprintf( __( 'Contact %s for cancellation', 'wpml-translation-management' ), $translation_service['name'] ),
 						'alreadyFinished' => __( 'The job is already finished', 'wpml-translation-management' ),
 						'alreadyCanceled' => __( 'The job is already canceled', 'wpml-translation-management' ),
-					),
+					],
 
-					'getTranslations' => array(
+					'getTranslations' => [
 						'activeIconText' => __( 'Get translations', 'wpml-translation-management' ),
 						'localJob'       => __(
 							'You cannot download the translation for a local job',
@@ -169,23 +185,23 @@ class WPML_TM_Jobs_List_Script_Data {
 							'You cannot download this job because TS_NAME has canceled it',
 							'wpml-translation-management'
 						),
-					),
-				),
-				'tpJobId' => __( 'TP ID: %d', 'wpml-translation-management' ),
-			),
-			'settings'            => array(
+					],
+				],
+				'tpJobId'                => 'TP ID: %d',
+			],
+			'settings'            => [
 				'columns'  => WPML_TM_Rest_Jobs_Columns::get_columns(),
 				'sortable' => WPML_TM_Rest_Jobs_Columns::get_sortable(),
 				'pageSize' => 10,
-			),
+			],
 			'jobStatuses'         => WPML_TM_Jobs_List_Status_Names::get_statuses(),
 			'languages'           => $this->language_names->get_active_languages(),
 			'translatedByFilters' => $this->translated_by_filter->get(),
 			'localTranslators'    => $this->translators->get(),
 			'translationService'  => $translation_service,
 			'siteKey'             => WP_Installer::instance()->get_site_key( 'wpml' ),
-			'batchUrl'            => OTG_TRANSLATION_PROXY_URL . '/projects/%d/external'
-		);
+			'batchUrl'            => OTG_TRANSLATION_PROXY_URL . '/projects/%d/external',
+		];
 	}
 
 }

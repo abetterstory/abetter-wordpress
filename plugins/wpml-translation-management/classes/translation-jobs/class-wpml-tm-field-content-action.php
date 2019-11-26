@@ -73,6 +73,7 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 				'field_data'            => $this->sanitize_field_content( $element->field_data ),
 				'field_data_translated' => $this->sanitize_field_content( $element->field_data_translated ),
 				'diff'                  => $this->get_diff( $element, $previous_element ),
+				'field_wrap_tag'        => $element->field_wrap_tag,
 			);
 		}
 

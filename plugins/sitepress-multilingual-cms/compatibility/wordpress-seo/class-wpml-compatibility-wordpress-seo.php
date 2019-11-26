@@ -1,13 +1,23 @@
 <?php
 
-class WPML_Compatibility_Wordpress_Seo_Categories implements IWPML_Action {
+/**
+ * @deprecated version 4.3.0   use 'wp-seo-multilingual` plugin instead.
+ */
+class WPML_Compatibility_Wordpress_Seo_Categories_Old implements IWPML_Action {
 
 	public function add_hooks() {
 		add_filter( 'category_rewrite_rules', array( $this, 'append_categories_hook' ), 1, 1 );
+		add_filter( 'category_rewrite_rules', array( $this, 'turn_off_get_terms_filter' ), PHP_INT_MAX, 1 );
 	}
 
 	public function append_categories_hook( $rules ) {
 		add_filter( 'get_terms', array( $this, 'append_categories_translations' ), 10, 2 );
+
+		return $rules;
+	}
+
+	public function turn_off_get_terms_filter( $rules ) {
+		remove_filter( 'get_terms', array( $this, 'append_categories_translations' ) );
 
 		return $rules;
 	}
@@ -20,14 +30,12 @@ class WPML_Compatibility_Wordpress_Seo_Categories implements IWPML_Action {
 		global $wpdb;
 
 		$sql = "
-			SELECT t.* FROM {$wpdb->terms} t
+			SELECT t.term_id FROM {$wpdb->terms} t
 			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
 			WHERE tt.taxonomy = 'category'
 		";
 
-		remove_filter( 'get_terms', array( $this, 'append_categories_translations' ) );
-
-		return array_map( array( $this, 'map_to_term' ), $wpdb->get_results( $sql ) );
+		return array_filter( array_map( array( $this, 'map_to_term' ), $wpdb->get_col( $sql ) ) );
 	}
 
 	/**
@@ -39,7 +47,12 @@ class WPML_Compatibility_Wordpress_Seo_Categories implements IWPML_Action {
 		return current( $terms ) instanceof WP_Term;
 	}
 
-	protected function map_to_term( $raw_data ) {
-		return new WP_Term( $raw_data );
+	/**
+	 * @param $term_id
+	 *
+	 * @return false|WP_Term
+	 */
+	protected function map_to_term( $term_id ) {
+		return get_term_by( 'term_id', $term_id, 'category' );
 	}
 }

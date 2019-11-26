@@ -16,8 +16,10 @@ class WPML_TM_Page_Builders {
 	}
 
 	/**
-	 * @param array $translation_package
-	 * @param mixed $post
+	 * Filter translation job data.
+	 *
+	 * @param array $translation_package Translation package.
+	 * @param mixed $post                Post.
 	 *
 	 * @return array
 	 */
@@ -42,28 +44,38 @@ class WPML_TM_Page_Builders {
 
 				foreach ( $string_packages as $package_id => $string_package ) {
 
-					/* @var WPML_Package $string_package */
+					/**
+					 * String package.
+					 *
+					 * @var WPML_Package $string_package
+					 */
 					$strings             = $string_package->get_package_strings();
 					$string_translations = array();
-					
+
 					if ( $job_source_is_not_post_source ) {
 						$string_translations = $string_package->get_translated_strings( array() );
 					}
 
 					foreach ( $strings as $string ) {
 
-						if ( $string->type != self::FIELD_STYLE_LINK ) {
+						if ( self::FIELD_STYLE_LINK !== $string->type ) {
 							$string_value = $string->value;
 
 							if ( isset( $string_translations[ $string->name ][ $job_lang_from ]['value'] ) ) {
 								$string_value = $string_translations[ $string->name ][ $job_lang_from ]['value'];
 							}
 
-							$field_name = WPML_TM_Page_Builders_Field_Wrapper::generate_field_slug( $package_id, $string->id );
+							$field_name = WPML_TM_Page_Builders_Field_Wrapper::generate_field_slug(
+								$package_id,
+								$string->id
+							);
 
 							$translation_package['contents'][ $field_name ] = array(
 								'translate' => 1,
+								// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 								'data'      => base64_encode( $string_value ),
+								// phpcs:enable
+								'wrap_tag'  => WPML_TM_Page_Builders_Field_Wrapper::get_wrap_tag( $string ),
 								'format'    => 'base64',
 							);
 						}
@@ -106,8 +118,10 @@ class WPML_TM_Page_Builders {
 	}
 
 	/**
-	 * @param array    $fields
-	 * @param stdClass $job
+	 * Adjust translation fields.
+	 *
+	 * @param array    $fields Translation fields.
+	 * @param stdClass $job    Translation job.
 	 *
 	 * @return array
 	 */
@@ -119,6 +133,12 @@ class WPML_TM_Page_Builders {
 
 			if ( $string_title ) {
 				$field['title'] = $string_title;
+			}
+
+			if ( isset( $field['field_wrap_tag'] ) && $field['field_wrap_tag'] ) {
+				$field['title'] = isset( $field['title'] ) ? $field['title'] : '';
+
+				$field['title'] .= ' (' . $field['field_wrap_tag'] . ')';
 			}
 
 			if ( false !== $type ) {

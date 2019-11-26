@@ -22,8 +22,7 @@ class WPML_Translations_Queue_Factory {
 
 		return new WPML_Translations_Queue(
 			$sitepress,
-			$screen_options_factory,
-			wpml_tm_load_old_jobs_editor()
+			$screen_options_factory
 		);
 	}
 }

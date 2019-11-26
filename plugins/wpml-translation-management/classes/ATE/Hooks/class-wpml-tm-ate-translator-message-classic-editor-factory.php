@@ -2,6 +2,9 @@
 
 class WPML_TM_ATE_Translator_Message_Classic_Editor_Factory implements IWPML_Backend_Action_Loader, IWPML_AJAX_Action_Loader {
 
+	/**
+	 * @return \WPML_TM_ATE_Translator_Message_Classic_Editor|\IWPML_Action|null
+	 */
 	public function create() {
 		global $wpdb;
 
@@ -12,7 +15,8 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor_Factory implements IWPML_Bac
 			return new WPML_TM_ATE_Translator_Message_Classic_Editor(
 				new WPML_Translation_Manager_Records(
 					$wpdb,
-					wpml_tm_get_wp_user_query_factory()
+					wpml_tm_get_wp_user_query_factory(),
+					wp_roles()
 				),
 				wpml_tm_get_wp_user_factory(),
 				new WPML_TM_ATE_Request_Activation_Email(
@@ -28,7 +32,9 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor_Factory implements IWPML_Bac
 	 * @return bool
 	 */
 	private function is_editing_old_translation_and_te_is_used_for_old_translation() {
-		return WPML_TM_Editors::WPML === get_option( WPML_TM_Old_Jobs_Editor::OPTION_NAME ) && isset( $_GET['job_id'] ) ;
+		return array_key_exists( 'job_id', $_GET )
+			   && filter_var( $_GET['job_id'], FILTER_SANITIZE_STRING )
+			   && get_option( WPML_TM_Old_Jobs_Editor::OPTION_NAME ) === WPML_TM_Editors::WPML;
 	}
 
 	/**

@@ -13,7 +13,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 * @return mixed
 	 */
 	protected function replace_xliff_new_line_tag_with_new_line( $string ) {
-		return preg_replace( '/<br class="xliff-newline"\s*\/>/i', "\n", $string );
+		return WPML_TP_Xliff_Parser::restore_new_line( $string );
 	}
 
 	/**
@@ -171,7 +171,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 */
 	function validate_file_name( $filename ) {
 		$ignored_files = apply_filters( 'wpml_xliff_ignored_files', array( '__MACOSX' ) );
-		return !( preg_match( '/(\/)/', $filename ) || in_array( $filename, $ignored_files, false ) );
+		return ! ( preg_match( '/(\/)/', $filename ) || in_array( $filename, $ignored_files, false ) );
 	}
 
 	protected function is_user_the_job_owner( $current_user, $job ) {
@@ -213,7 +213,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 *
 	 * @throws ErrorException
 	 */
-	protected function error_handler( $errno, $errstr, $errfile, $errline ){
+	protected function error_handler( $errno, $errstr, $errfile, $errline ) {
 		throw new ErrorException( $errstr, $errno, 1, $errfile, $errline );
 	}
 

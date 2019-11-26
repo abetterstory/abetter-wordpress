@@ -16,6 +16,10 @@ class WPML_All_Translation_Jobs_Migration_Notice extends WPML_Translation_Jobs_M
 				/* translators: this is shown between two number: processed items and total number of items to process */
 				'of'            => __( 'of', 'wpml-translation-management' ),
 				'jobs_migrated' => __( 'jobs fixed', 'wpml-translation-management' ),
+				'communicationError' => __(
+					'The communication error with Translation Proxy has appeared. Please try later.',
+					'wpml-translation-management'
+				),
 			),
 			'nonce'   => wp_nonce_field(
 				WPML_Translation_Jobs_Migration_Ajax::ACTION,

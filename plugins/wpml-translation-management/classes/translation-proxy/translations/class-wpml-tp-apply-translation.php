@@ -63,8 +63,8 @@ class WPML_TP_Apply_Translations {
 	 */
 	private function get_jobs( array $params ) {
 		if ( $params ) {
-			if ( isset( $params['original_element_id'] ) ) {
-				$jobs = $this->get_jobs_by_original_element_id( $params['original_element_id'] );
+			if ( isset( $params['original_element_id'], $params['element_type'] ) ) {
+				$jobs = $this->get_jobs_by_original_element( $params['original_element_id'], $params['element_type'] );
 			} else {
 				$jobs = $this->get_jobs_by_ids( $params );
 			}
@@ -76,15 +76,18 @@ class WPML_TP_Apply_Translations {
 	}
 
 	/**
-	 * @param int $original_element_id
+	 * @param int    $original_element_id
+	 * @param string $element_type
 	 *
 	 * @return WPML_TM_Jobs_Collection
 	 */
-	private function get_jobs_by_original_element_id( $original_element_id ) {
-		return $this->jobs_repository->get( new WPML_TM_Jobs_Search_Params( array(
-			'scope'               => WPML_TM_Jobs_Search_Params::SCOPE_REMOTE,
-			'original_element_id' => $original_element_id,
-		) ) );
+	private function get_jobs_by_original_element( $original_element_id, $element_type ) {
+		$params = new WPML_TM_Jobs_Search_Params();
+		$params->set_scope( WPML_TM_Jobs_Search_Params::SCOPE_REMOTE );
+		$params->set_original_element_id( $original_element_id );
+		$params->set_job_types( $element_type );
+
+		return $this->jobs_repository->get( $params );
 	}
 
 	/**

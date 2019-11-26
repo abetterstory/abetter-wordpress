@@ -62,7 +62,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	/**
 	 * Checks whether the input user is allowed to edit this job
 	 *
-	 * @param stdClass|WP_User $user
+	 * @param WP_User $user
 	 *
 	 * @return bool
 	 */
@@ -82,9 +82,9 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 			)
 		);
 
-		return ( $user_can_take_this_job && $translator_has_job_language_pairs )
-			   || ( method_exists( $user, 'has_cap' ) && $user->has_cap( 'manage_options' ) )
-			   || ( ! method_exists( $user, 'has_cap' ) && user_can( $user->ID, 'manage_options' ) );
+		$user_can_translate = ( $user_can_take_this_job && $translator_has_job_language_pairs )
+		                      || user_can( $user, 'manage_options' );
+		return apply_filters( 'wpml_user_can_translate', $user_can_translate, $user );
 	}
 
 	/**
@@ -336,46 +336,38 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 
 			$translator .= wpml_tm_get_translators_dropdown()->render( $args );
 			$translator .= '<input type="hidden" id="icl_tj_ov_'
-			               . $job_id
-			               . '" value="'
-			               . (int) $job->translator_id
-			               . '" />';
+						   . $job_id
+						   . '" value="'
+						   . (int) $job->translator_id
+						   . '" />';
 			$translator .= '<input type="hidden" id="icl_tj_ty_'
-			               . $job_id
-			               . '" value="'
-			               . strtolower( $this->get_type() )
-			               . '" />';
+						   . $job_id
+						   . '" value="'
+						   . strtolower( $this->get_type() )
+						   . '" />';
 			$translator .= '<span class="icl_tj_select_translator_controls" id="icl_tj_tc_' . ( $job_id ) . '">';
 			$translator .= '<input type="button" class="button-secondary icl_tj_ok" value="'
-			               . __( 'Send',
-			                     'wpml-translation-management' )
-			               . '" />&nbsp;';
+						. __(
+							'Send',
+							'wpml-translation-management'
+						)
+						   . '" />&nbsp;';
 			$translator .= '<input type="button" class="button-secondary icl_tj_cancel" value="'
-			               . __( 'Cancel',
-			                     'wpml-translation-management' )
-			               . '" />';
+						. __(
+							'Cancel',
+							'wpml-translation-management'
+						)
+						   . '" />';
 			$translator .= '</span>';
 		}
 
 		return $translator;
 	}
 
-	protected function load_batch_id() {
-		global $wpdb;
-
-		list( $table, $col ) = $this->get_batch_id_table_col();
-		$this->batch_id      = $wpdb->get_var(
-			$wpdb->prepare(
-				" SELECT batch_id
-															FROM {$table}
-															WHERE {$col} = %d
-															LIMIT 1",
-				$this->job_id
-			)
-		);
-	}
-
-	abstract protected function get_batch_id_table_col();
+	/**
+	 * Retrieves the batch ID associated to the job ID
+	 */
+	abstract protected function load_batch_id();
 
 	/**
 	 * @return string

@@ -263,6 +263,15 @@
 					return encodeURIComponent(string);
 				};
 
+				var sending_only_to_professional_translation = function (translators) {
+					var isProfessionalTranslator = function (translator) {
+						return translator.match(/^ts-\d+$/);
+					};
+
+					var translatorsArray = Object.values(translators);
+					return translatorsArray.length === translatorsArray.filter(isProfessionalTranslator).length;
+				};
+
 				var submit_form = function (e) {
 					//Prevent submitting the form
 					if (typeof e.preventDefault !== 'undefined') {
@@ -279,7 +288,6 @@
 
 					var basket_name = get_basket_name();
 					var translators = get_translators();
-
 					translation_jobs_basket_form.find('.row-actions').hide();
 
 					form_send_button.attr('disabled', 'disabled').hide();
@@ -287,7 +295,11 @@
 
 					message_box.show();
 
-					update_message('<h4>' + tm_basket_data.strings['sending_batch'].replace('%s', '<span>' + basket_name + '</span>') + '</h4>', true, 'sending', false);
+					var header = sending_only_to_professional_translation(translators) ?
+						tm_basket_data.strings['sending_batch_to_ts'] :
+						tm_basket_data.strings['sending_batch'];
+
+					update_message('<h4>' + header + '</h4>', true, 'sending', false);
 
 
 					if (typeof translators === 'undefined' || translators.length === 0) {
@@ -353,16 +365,9 @@
 				};
 
                 var progressbar_finish_text = '100%';
-                var progressbar_callback = function(){
-                    // trigger an event that it's complete.
-					var progressBarWrapper = progress_bar_object.getDomElement().parent();
-					progressBarWrapper.append('<div class="alignright"><input type="button" class="button-primary wpml-basket-done-btn" value="' + tm_basket_data.strings['done_msg'] + '"></div>');
-					jQuery(document).trigger('wpml-tm-basket-commit-complete', progress_bar_object);
-
-					jQuery( 'body' ).on('click', '.wpml-basket-done-btn', function () {
-						location.href = wpmlTMBasket.redirection;
-					});
-                };
+				var progressbar_callback = function (progress_bar) {
+					progress_bar.dom.remove();
+				};
 
 				var update_basket_badge_count = function (count) {
 					var badge = jQuery('#wpml-basket-items');
@@ -493,7 +498,15 @@
                                 var success = result.success;
                                 result = result.data;
 								if (success) {
-                                    var message = jQuery(tm_basket_data.strings['jobs_committed']);
+                                    if(typeof result.result.is_local !== 'undefined' && result.result.is_local ) {
+                                        var message = tm_basket_data.strings['jobs_sent_to_local_translator'];
+
+                                        if(typeof result.result.emails_did_not_sent !== 'undefined' && result.result.emails_did_not_sent ){
+                                        	message = message.replace(/<ul><li>[\s\S]*?<\/li>/, '<ul>' + tm_basket_data.strings['jobs_emails_local_did_not_sent'] );
+										}
+                                    }else{
+                                        var message = tm_basket_data.strings['jobs_committed'];
+									}
 									if (typeof result.links !== 'undefined') {
 										var links = jQuery('<ul></ul>');
 										jQuery.each(
@@ -509,7 +522,7 @@
 										);
 										links.appendTo(message);
 									}
-									update_message(message, false, 'updated', true);
+									update_message(message, false, 'updated', false);
 									var call_to_action = false;
 									/** @namespace result.result.call_to_action */
 									if(typeof result.result.call_to_action !== 'undefined') {

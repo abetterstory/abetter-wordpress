@@ -82,7 +82,7 @@ class WPML_TM_Dashboard {
 	private function remove_empty_arguments( $args ) {
 		$output = array();
 		foreach ( $args as $argument_name => $argument_value ) {
-			if ( '' !== $argument_value ) {
+			if ( '' !== $argument_value && null !== $argument_value ) {
 				$output[ $argument_name ] = $argument_value;
 			}
 		}
@@ -240,8 +240,11 @@ class WPML_TM_Dashboard {
 			return array();
 		}
 
-		if ( array_key_exists( 'type', $args ) && ! empty( $args['type'] ) ) {
+		$sql_calc_found_rows = '';
+		$must_count_rows = array_key_exists( 'type', $args ) && ! empty( $args['type'] );
+		if ( $must_count_rows ) {
 			$offset = $args['page'] * $args['limit_no'];
+			$sql_calc_found_rows = 'SQL_CALC_FOUND_ROWS';
 		}
 
 		if ( ! is_plugin_active( 'wpml-string-translation/plugin.php' ) ) {
@@ -254,7 +257,9 @@ class WPML_TM_Dashboard {
 		}
 
 		$where = $this->create_string_packages_where( $args );
-		$sql = "SELECT DISTINCT 
+
+
+		$sql = "SELECT DISTINCT {$sql_calc_found_rows}
 				 st_table.ID, 
 				 st_table.kind_slug, 
 				 st_table.title, 
@@ -272,7 +277,10 @@ class WPML_TM_Dashboard {
 				 OFFSET {$offset}";
 		$sql = apply_filters( 'wpml_tm_dashboard_external_type_sql_query', $sql, $args );
 		$packages = $this->wpdb->get_results( $sql );
-		$this->found_documents += $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+
+		if ( $must_count_rows ) {
+			$this->found_documents += $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		}
 		foreach ( $packages as $package ) {
 			$package_obj                           = new stdClass();
 			$package_obj->ID                       = $package->ID;

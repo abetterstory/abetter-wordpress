@@ -95,48 +95,6 @@ class TranslationProxy_Project {
 	}
 
 	/**
-	 * Create and configure project (Translation Service)
-	 *
-	 * @param array $blog_info
-	 * @param array $client_data
-	 *
-	 * @param string $delivery
-	 *
-	 * @return bool
-	 * @throws WPMLTranslationProxyApiException
-	 * @throws Exception
-	 */
-	public function create(
-		array $blog_info,
-		array $client_data,
-		$delivery = 'xmlrpc'
-	) {
-		global $sitepress;
-
-		$networking          = wpml_tm_load_tp_networking();
-
-		$project_data = array_merge( $blog_info, array(
-			'delivery_method'    => $delivery,
-			'sitekey'            => WP_Installer_API::get_site_key( 'wpml' ),
-			'client_external_id' => WP_Installer_API::get_ts_client_id(),
-		) );
-
-		$project_creation    = new WPML_TP_Project_Creation( $this, $sitepress, $networking  );
-		$response_project = $project_creation->run( $project_data, $client_data );
-
-		$this->id            = $response_project->id;
-		$this->access_key    = $response_project->accesskey;
-		$this->ts_id         = $response_project->ts_id;
-		$this->ts_access_key = $response_project->ts_accesskey;
-
-		if ( isset( $response_project->polling_method ) && $response_project->polling_method !== $delivery ) {
-			$this->service->delivery_method = $response_project->polling_method;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Convert WPML language code to service language
 	 *
 	 * @param $language string

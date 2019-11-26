@@ -174,7 +174,7 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 						$postarr['post_date_gmt'] = $existing_post->post_date_gmt;
 					}
 
-					$new_post_id = $iclTranslationManagement->icl_insert_post( $postarr, $job->language_code );
+					$new_post_id = wpml_get_create_post_helper()->insert_post( $postarr, $job->language_code );
 
 					icl_cache_clear( $postarr['post_type'] . 's_per_language' ); // clear post counter per language in cache
 

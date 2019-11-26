@@ -3,7 +3,7 @@
 /**
  * Class WPML_Gutenberg_Integration
  */
-class WPML_Gutenberg_Integration {
+class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 
 	const PACKAGE_ID              = 'Gutenberg';
 	const GUTENBERG_OPENING_START = '<!-- wp:';
@@ -11,7 +11,7 @@ class WPML_Gutenberg_Integration {
 	const CLASSIC_BLOCK_NAME      = 'core/classic-block';
 
 	/**
-	 * @var WPML_Gutenberg_Strings_In_Block
+	 * @var WPML\PB\Gutenberg\StringsInBlock\StringsInBlock
 	 */
 	private $strings_in_blocks;
 
@@ -21,24 +21,17 @@ class WPML_Gutenberg_Integration {
 	private $config_option;
 
 	/**
-	 * @var SitePress
-	 */
-	private $sitepress;
-
-	/**
 	 * @var WPML_Gutenberg_Strings_Registration $strings_registration
 	 */
 	private $strings_registration;
 
 	public function __construct(
-		WPML_Gutenberg_Strings_In_Block $strings_in_block,
+		WPML\PB\Gutenberg\StringsInBlock\StringsInBlock $strings_in_block,
 		WPML_Gutenberg_Config_Option $config_option,
-		SitePress $sitepress,
 		WPML_Gutenberg_Strings_Registration $strings_registration
 	) {
 		$this->strings_in_blocks    = $strings_in_block;
 		$this->config_option        = $config_option;
-		$this->sitepress            = $sitepress;
 		$this->strings_registration = $strings_registration;
 	}
 
@@ -120,9 +113,7 @@ class WPML_Gutenberg_Integration {
 				$content .= $this->render_block( $block );
 			}
 
-			$this->sitepress->switch_lang( $lang );
-			wp_update_post( array( 'ID' => $translated_post_id, 'post_content' => $content ) );
-			$this->sitepress->switch_lang( null );
+			wpml_update_escaped_post( [ 'ID' => $translated_post_id, 'post_content' => $content ], $lang );
 		}
 
 	}
@@ -140,9 +131,6 @@ class WPML_Gutenberg_Integration {
 			$block = self::sanitize_block( $block );
 			$block = $this->strings_in_blocks->update( $block, $string_translations, $lang );
 
-			if ( isset( $block->blockName ) && 'core/block' === $block->blockName ) {
-				$block->attrs['ref'] = apply_filters( 'wpml_object_id', $block->attrs['ref'], 'wp_block', true, $lang );
-			}
 			if ( isset( $block->innerBlocks ) ) {
 				$block->innerBlocks = $this->update_block_translations(
 					$block->innerBlocks,
@@ -170,7 +158,7 @@ class WPML_Gutenberg_Integration {
 
 			$block_attributes = '';
 			if ( $this->has_non_empty_attributes( $block ) ) {
-				$block_attributes = ' ' . json_encode( $block->attrs );
+				$block_attributes = ' ' . json_encode( $block->attrs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE );
 			}
 			$content .= self::GUTENBERG_OPENING_START . $block_type . $block_attributes . ' -->';
 

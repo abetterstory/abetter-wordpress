@@ -2,9 +2,10 @@
 
 class WPML_Translation_Basket {
 
+	/** @var wpdb $wpdb */
 	private $wpdb;
 
-	public function __construct( $wpdb ) {
+	public function __construct( \wpdb $wpdb ) {
 		$this->wpdb = $wpdb;
 	}
 
@@ -192,6 +193,15 @@ class WPML_Translation_Basket {
 	 */
 	public function remove_item( $id, $kind ) {
 		TranslationProxy_Basket::delete_item_from_basket( $id, $kind );
+	}
+
+	/**
+	 * Merge the basket portion with the saved basket
+	 *
+	 * @param array $basket_portion
+	 */
+	public function update_basket( $basket_portion = array() ) {
+		TranslationProxy_Basket::update_basket( $basket_portion );
 	}
 
 	private function sanitize_basket_name( $basket_name, $max_length ) {

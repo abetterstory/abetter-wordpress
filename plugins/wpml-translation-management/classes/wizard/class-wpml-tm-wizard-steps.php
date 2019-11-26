@@ -122,25 +122,20 @@ class WPML_TM_Wizard_Steps implements IWPML_Action {
 		}
 
 		if ( 'false' === $who_will_translate_mode['leaveChoice'] ) {
-			$this->translation_manager_records->delete_all();
+			$translation_managers = $this->translation_manager_records->get_users_with_capability();
+			foreach( $translation_managers as $translation_manager ) {
+				if ( ! user_can( $translation_manager->ID, 'manage_options') ) {
+					$this->translation_manager_records->delete( $translation_manager->ID );
+				}
+			}
 		}
 
 		if ( isset( $who_will_translate_mode['translationService'] ) && 'false' === $who_will_translate_mode['translationService'] ) {
 			$this->sitepress->set_setting( 'translation_service', false, true );
+			do_action( 'wpml_tp_service_dectivated' );
 		}
 
-		if ( current_user_can( 'manage_options' ) ) {
-
-			if ( 'false' === $who_will_translate_mode['leaveChoice'] ) {
-				$this->set_current_user_as_translation_manager();
-				update_option( WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_MANAGER, true );
-			}
-
-			update_option( WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_ADMIN, true );
-		} else {
-
-			update_option( WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_MANAGER, true );
-		}
+		update_user_option( get_current_user_id(), WPML_TM_Wizard_Options::WIZARD_COMPLETE_FOR_MANAGER, true );
 
 		if ( 'true' === $who_will_translate_mode['onlyI'] ) {
 			$this->set_current_user_to_translate_all_langs();

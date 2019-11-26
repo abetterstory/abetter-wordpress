@@ -86,7 +86,7 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @param $services
 	 */
 	private function cache_services( $services ) {
-		update_option( self::CACHED_SERVICES_KEY_DATA, $services );
+		update_option( self::CACHED_SERVICES_KEY_DATA, $services, 'no' );
 		update_option( self::CACHED_SERVICES_KEY_TIMESTAMP, time() );
 	}
 

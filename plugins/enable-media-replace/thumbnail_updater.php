@@ -2,6 +2,9 @@
 if ( ! defined( 'ABSPATH' ) )
 	exit; // Exit if accessed directly.
 
+use EnableMediaReplace\ShortPixelLogger\ShortPixelLogger as Log;
+use EnableMediaReplace\Notices\NoticeController as Notices;
+
 /* Simple class for updating thumbnails.
 *
 *
@@ -40,12 +43,14 @@ class ThumbnailUpdater
       if (isset($metadata['sizes']))
         $this->newMeta = $metadata;
 
+
       // extract month prefix to prevent overwriting wrong images.
       $file = $metadata['file'];
       $pos = strrpos($metadata['file'], '/');
       $month_path = substr($file, 0, $pos);
       $this->relPath = trailingslashit($month_path);
   }
+
 
   public function updateThumbnails()
   {
@@ -58,7 +63,12 @@ class ThumbnailUpdater
          if (isset($this->newMeta['sizes'][$sizeName]))
          {
 
-           $oldFile = $data['file'];
+           //in some rare cases 'file' is missing
+           $oldFile = isset($data['file']) ? $data['file'] : null;
+           if(is_array($oldFile)) { $oldFile = $oldFile[0];} // HelpScout case 709692915
+           if(empty($oldFile)) {
+               return false; //make sure we don't replace in this case as we will break the URLs for all the images in the folder.
+           }
            $newFile = $this->newMeta['sizes'][$sizeName]['file'];
 
            // if images are not same size.
@@ -82,6 +92,7 @@ class ThumbnailUpdater
     global $wpdb;
     $sql = "UPDATE " . $this->post_table . " set post_content = REPLACE(post_content, %s, %s)";
 
+		Log::addDebug('Thumbnail Updater - Converting Thumbnails for sizes', $this->convertArray);
     foreach($this->convertArray as $convert_item)
     {
         $from = $convert_item['imageFrom'];
@@ -89,7 +100,6 @@ class ThumbnailUpdater
 
         $replace_sql = $wpdb->prepare($sql, $from, $to );
         $wpdb->query($replace_sql);
-
     }
   }
 
@@ -110,13 +120,22 @@ class ThumbnailUpdater
 
           if ( $thisdiff  < $diff )
           {
-              $diff = $thisdiff;
               $closest_file = $data['file'];
-              $found_metasize = true;
+              if(is_array($closest_file)) { $closest_file = $closest_file[0];} // HelpScout case 709692915
+              if(!empty($closest_file)) {
+                  $diff = $thisdiff;
+                  $found_metasize = true;
+              }
           }
       }
 
-      $this->convertArray[] = array('imageFrom' => $this->relPath .  $oldData['file'], 'imageTo' => $this->relPath . $closest_file);
+      if(empty($closest_file)) return;
+      $oldFile = $oldData['file'];
+      if(is_array($oldFile)) { $oldFile = $oldFile[0];} // HelpScout case 709692915
+      if(empty($oldFile)) {
+          return; //make sure we don't replace in this case as we will break the URLs for all the images in the folder.
+      }
+      $this->convertArray[] = array('imageFrom' => $this->relPath .  $oldFile, 'imageTo' => $this->relPath . $closest_file);
 
   }
 

@@ -48,6 +48,12 @@ class WPML_TM_Job_Entity {
 	/** @var WPML_TM_Job_TS_Status */
 	private $ts_status;
 
+	/** @var bool */
+	private $needs_update;
+
+	/** @var bool  */
+	private $has_completed_translation = false;
+
 	/**
 	 * @param int                $id
 	 * @param string             $type
@@ -274,5 +280,33 @@ class WPML_TM_Job_Entity {
 	 */
 	public function is_equal( WPML_TM_Job_Entity $job ) {
 		return $this->get_id() === $job->get_id() && $this->get_type() === $job->get_type();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function does_need_update() {
+		return $this->needs_update;
+	}
+
+	/**
+	 * @param bool $needs_update
+	 */
+	public function set_needs_update( $needs_update ) {
+		$this->needs_update = (bool) $needs_update;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function has_completed_translation() {
+		return $this->has_completed_translation;
+	}
+
+	/**
+	 * @param bool $has_completed_translation
+	 */
+	public function set_has_completed_translation( $has_completed_translation ) {
+		$this->has_completed_translation = (bool) $has_completed_translation;
 	}
 }

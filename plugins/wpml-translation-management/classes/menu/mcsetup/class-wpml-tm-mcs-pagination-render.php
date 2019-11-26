@@ -1,4 +1,9 @@
 <?php
+/**
+ * WPML_TM_MCS_Pagination_Render class file.
+ *
+ * @package wpml-translation-management
+ */
 
 /**
  * Class WPML_TM_MCS_Pagination_Render
@@ -11,31 +16,43 @@ class WPML_TM_MCS_Pagination_Render {
 	const TM_MCS_PAGINATION_TEMPLATE = 'tm-mcs-pagination.twig';
 
 	/**
+	 * Twig template service.
+	 *
 	 * @var IWPML_Template_Service
 	 */
 	private $template;
 
 	/**
+	 * Admin pagination instance.
+	 *
 	 * @var WPML_Admin_Pagination
 	 */
 	private $pagination;
 
 	/**
+	 * Items per page.
+	 *
 	 * @var int Items per page
 	 */
 	private $items_per_page;
 
 	/**
+	 * Total items.
+	 *
 	 * @var int Total items
 	 */
 	private $total_items;
 
 	/**
+	 * Current page number.
+	 *
 	 * @var int Current page
 	 */
 	private $current_page;
 
 	/**
+	 * Total number of pages.
+	 *
 	 * @var int Total pages
 	 */
 	private $total_pages;
@@ -43,8 +60,8 @@ class WPML_TM_MCS_Pagination_Render {
 	/**
 	 * WPML_TM_MCS_Pagination_Render constructor.
 	 *
-	 * @param IWPML_Template_Service $template Twig template service.
-	 * @param WPML_Admin_Pagination $pagination Admin pagination object.
+	 * @param IWPML_Template_Service $template   Twig template service.
+	 * @param WPML_Admin_Pagination  $pagination Admin pagination object.
 	 */
 	public function __construct( IWPML_Template_Service $template, WPML_Admin_Pagination $pagination ) {
 		$this->template       = $template;
@@ -69,22 +86,23 @@ class WPML_TM_MCS_Pagination_Render {
 		}
 
 		$model = array(
-			'strings'        => array(
+			'strings'          => array(
 				'displaying'    => __( 'Displaying', 'wpml-translation-management' ),
 				'of'            => __( 'of', 'wpml-translation-management' ),
 				'display_all'   => __( 'Display all results', 'wpml-translation-management' ),
 				'display_less'  => __( 'Display 20 results per page', 'wpml-translation-management' ),
 				'nothing_found' => __( 'Nothing found', 'wpml-translation-management' ),
 			),
-			'pagination'     => $this->pagination,
-			'from'           => number_format_i18n( $from ),
-			'to'             => number_format_i18n( $to ),
-			'current_page'   => number_format_i18n( $this->current_page ),
-			'total_items'    => $this->total_items,
-			'total_pages'    => $this->total_pages,
-			'paginate_links' => $this->paginate_links(),
-			'select'         => array( 10, 20, 50, 100 ),
-			'select_value'   => $this->items_per_page,
+			'pagination'       => $this->pagination,
+			'from'             => number_format_i18n( $from ),
+			'to'               => number_format_i18n( $to ),
+			'current_page'     => $this->current_page,
+			'total_items'      => $this->total_items,
+			'total_items_i18n' => number_format_i18n( $this->total_items ),
+			'total_pages'      => $this->total_pages,
+			'paginate_links'   => $this->paginate_links(),
+			'select'           => array( 10, 20, 50, 100 ),
+			'select_value'     => $this->items_per_page,
 		);
 
 		return $model;

@@ -10,6 +10,9 @@ class WPML_TM_Post_Job_Entity extends WPML_TM_Job_Entity {
 	/** @var string */
 	private $editor;
 
+	/** @var int */
+	private $editor_job_id;
+
 	/** @var null|DateTime */
 	private $completed_date;
 
@@ -66,6 +69,20 @@ class WPML_TM_Post_Job_Entity extends WPML_TM_Job_Entity {
 	 */
 	public function set_editor( $editor ) {
 		$this->editor = (string) $editor;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_editor_job_id() {
+		return $this->editor_job_id;
+	}
+
+	/**
+	 * @param int $editor_job_id
+	 */
+	public function set_editor_job_id( $editor_job_id ) {
+		$this->editor_job_id = (int) $editor_job_id;
 	}
 
 	/**

@@ -73,9 +73,9 @@ function acf_decode_post_id( $post_id = 0 ) {
 function acf_get_meta( $post_id = 0 ) {
 	
 	// Allow filter to short-circuit load_value logic.
-	$pre = apply_filters( "acf/pre_load_meta", null, $post_id );
-    if( $pre !== null ) {
-	    return $pre;
+	$null = apply_filters( "acf/pre_load_meta", null, $post_id );
+    if( $null !== null ) {
+	    return ( $null === '__return_null' ) ? null : $null;
     }
     
 	// Decode $post_id for $type and $id.
@@ -92,12 +92,14 @@ function acf_get_meta( $post_id = 0 ) {
 	
 	// Loop over meta and check that a reference exists for each value.
 	$meta = array();
-	foreach( $allmeta as $key => $value ) {
-		
-		// If a reference exists for this value, add it to the meta array.
-		if( isset($allmeta["_$key"]) ) {
-			$meta[ $key ] = $allmeta[ $key ][0];
-			$meta[ "_$key" ] = $allmeta[ "_$key" ][0];
+	if( $allmeta ) {
+		foreach( $allmeta as $key => $value ) {
+			
+			// If a reference exists for this value, add it to the meta array.
+			if( isset($allmeta["_$key"]) ) {
+				$meta[ $key ] = $allmeta[ $key ][0];
+				$meta[ "_$key" ] = $allmeta[ "_$key" ][0];
+			}
 		}
 	}
 	
@@ -178,9 +180,9 @@ function acf_get_option_meta( $prefix = '' ) {
 function acf_get_metadata( $post_id = 0, $name = '', $hidden = false ) {
 	
 	// Allow filter to short-circuit logic.
-	$pre = apply_filters( "acf/pre_load_metadata", null, $post_id, $name, $hidden );
-    if( $pre !== null ) {
-	    return $pre;
+	$null = apply_filters( "acf/pre_load_metadata", null, $post_id, $name, $hidden );
+    if( $null !== null ) {
+	    return ( $null === '__return_null' ) ? null : $null;
     }
     
 	// Decode $post_id for $type and $id.

@@ -145,6 +145,13 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 				'close' => '</strong>',
 			),
 
+			'translation_roles' => array(
+				'open'  => '<strong>',
+				/* translators: "Translation Roles" will be used in other strings and wrapped with HTML tags to make it more prominent */
+				'text'  => esc_html__( 'Translation Roles', 'wpml-translation-management' ),
+				'close' => '</strong>',
+			),
+
 			'wpml_tm_translators' => array(
 				'open'  => '<strong>',
 				/* translators: "WPML > Translations" will be used in other strings and wrapped with HTML tags to make it more prominent */
@@ -250,7 +257,8 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 			array(
 				'open'         => '<p>',
 				'close'        => '</p>',
-				'text'         => sprintf( esc_html__( 'To add more users of this site as translators, go to the %1$s page and click the %2$s tab.', 'wpml-translation-management' ), $this->get_placeholder_value( 'wpml_tm_management' ), $this->get_placeholder_value( 'translators' ) ),
+				// translators: %1$s and %2$s will be replaced with "Translation Management" and "Translation Roles" respectively.
+				'text'         => sprintf( esc_html__( 'To add more users of this site as translators, go to the %1$s page and click the %2$s tab.', 'wpml-translation-management' ), $this->get_placeholder_value( 'wpml_tm_management' ), $this->get_placeholder_value( 'translation_roles' ) ),
 				'capabilities' => array( 'only_i' ),
 			),
 

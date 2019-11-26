@@ -121,6 +121,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 				'job_id'                => $job_id,
 				'content_id'            => 0,
 				'field_type'            => $field,
+				'field_wrap_tag'        => isset( $value['wrap_tag'] ) ? $value['wrap_tag'] : '',
 				'field_format'          => isset( $value['format'] ) ? $value['format'] : '',
 				'field_translate'       => $value['translate'],
 				'field_data'            => $value['data'],
@@ -141,6 +142,11 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 		$wpdb->show_errors( $show );
 	}
 
+	/**
+	 * @param array $job_translate
+	 *
+	 * @return mixed|void
+	 */
 	private function filter_non_translatable_fields( $job_translate ) {
 
 		if ( $job_translate['field_translate'] ) {
@@ -148,10 +154,9 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 			if ( 'base64' === $job_translate['field_format'] ) {
 				$data = base64_decode( $data );
 			}
-			if (
-				WPML_String_Functions::is_not_translatable( $data ) ||
-				! apply_filters( 'wpml_translation_job_post_meta_value_translated', 1, $job_translate['field_type'] )
-			) {
+			$is_translatable = ! WPML_String_Functions::is_not_translatable( $data ) && apply_filters( 'wpml_translation_job_post_meta_value_translated', 1, $job_translate['field_type'] );
+			$is_translatable = (bool) apply_filters( 'wpml_tm_job_field_is_translatable', $is_translatable, $job_translate );
+			if ( ! $is_translatable ) {
 				$job_translate['field_translate']       = 0;
 				$job_translate['field_data_translated'] = $job_translate['field_data'];
 				$job_translate['field_finished']        = 1;
@@ -163,8 +168,8 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 
 	/**
 	 * @param object $job
-	 * @param int $post_id
-	 * @param array $fields
+	 * @param int    $post_id
+	 * @param array  $fields
 	 */
 	function save_job_custom_fields( $job, $post_id, $fields ) {
 		$field_names = array();
@@ -202,7 +207,8 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 						$field_translation = str_replace( '&#0A;', "\n", $field_translation );
 						// always decode html entities  eg decode &amp; to &.
 						$field_translation = html_entity_decode( $field_translation );
-						$meta_keys         = explode( '-', preg_replace( '#' . $field_name . '-?#', '', $field_id_string ) );
+						$field_id_string   = $this->remove_field_name_from_start( $field_name, $field_id_string );
+						$meta_keys         = explode( '-', $field_id_string );
 						$meta_keys         = array_map( array( 'WPML_TM_Field_Type_Encoding', 'decode_hyphen' ), $meta_keys );
 						$field_names       = $this->insert_under_keys(
 							array_merge( array( $field_name ), $meta_keys ), $field_names, $field_translation
@@ -213,6 +219,17 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 		}
 
 		$this->save_custom_field_values( $field_names, $post_id );
+	}
+
+	/**
+	 * Remove the field from the start of the string.
+	 *
+	 * @param string $field_name The field to remove.
+	 * @param string $field_id_string The full field identifier.
+	 * @return string
+	 */
+	private function remove_field_name_from_start( $field_name, $field_id_string ) {
+		return preg_replace( '#' . $field_name . '-?#', '', $field_id_string, 1 );
 	}
 
 	/**
@@ -237,24 +254,49 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 		return $array;
 	}
 
+	/**
+	 * @param array $fields_in_job
+	 * @param int   $post_id
+	 */
 	private function save_custom_field_values( $fields_in_job, $post_id ) {
 		$encodings = $this->get_tm_setting( array( 'custom_fields_encoding' ) );
 		foreach ( $fields_in_job as $name => $contents ) {
 			$this->wp_api->delete_post_meta( $post_id, $name );
 
-			foreach ( $contents as $index => $value ) {
-				if ( isset( $encodings[ $name ] ) ) {
-					$contents[ $index ] = WPML_Encoding::encode( $value, $encodings[ $name ] );
-				}
-				$contents[ $index ] = apply_filters( 'wpml_encode_custom_field', $contents[ $index ], $name );
-			}
-
-			$single   = count( $contents ) === 1;
 			$contents = (array) $contents;
-			foreach ( $contents as $val ) {
-				$this->wp_api->add_post_meta( $post_id, $name, $val, $single );
+			$single   = count( $contents ) === 1;
+			$encoding = isset( $encodings[ $name ] ) ? $encodings[ $name ] : '';
+
+			foreach ( $contents as $index => $value ) {
+
+				if ( $encoding ) {
+					$value = WPML_Encoding::encode( $value, $encoding );
+				}
+
+				$value = apply_filters( 'wpml_encode_custom_field', $value, $name );
+				$value = $this->prevent_strip_slash_on_json( $value, $encoding );
+
+				$this->wp_api->add_post_meta( $post_id, $name, $value, $single );
 			}
 		}
+	}
+
+	/**
+	 * The core function `add_post_meta` always performs
+	 * a `stripslashes_deep` on the value. We need to escape
+	 * once more before to call the function.
+	 *
+	 * @param string $value
+	 * @param string $encoding
+	 *
+	 * @return string
+	 */
+	private function prevent_strip_slash_on_json( $value, $encoding ) {
+		if ( in_array( 'json', explode( ',', $encoding ) ) ) {
+			$value = wp_slash( $value );
+		}
+
+		return $value;
 	}
 
 	/**

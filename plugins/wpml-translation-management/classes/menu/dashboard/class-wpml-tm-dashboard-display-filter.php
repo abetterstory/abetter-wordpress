@@ -273,7 +273,7 @@ class WPML_TM_Dashboard_Display_Filter {
 	}
 
 	private function display_button() {
-		$reset_url = $this->get_admin_page_url( array( 'page' => WPML_TM_FOLDER . '/menu/main.php', 'sm' => 'dashboard', 'action' => 'reset' ) );
+		$reset_url = $this->get_admin_page_url( array( 'page' => WPML_TM_FOLDER . '/menu/main.php', 'sm' => 'dashboard', 'icl_tm_action' => 'reset_dashboard_filters' ) );
 		?>
 		<input id="translation_dashboard_filter" name="translation_dashboard_filter"
 			   class="button-secondary" type="submit"

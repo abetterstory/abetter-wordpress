@@ -1134,14 +1134,13 @@ function wpml_element_has_translations_filter( $empty_value, $element_id, $eleme
 		$wpml_element_type = apply_filters( 'wpml_element_type', $element_type );
 
 		if ( strpos( $wpml_element_type, 'tax_' ) === 0 ) {
+			/** @var WPML_Term_Translation $wpml_term_translations*/
 			global $wpml_term_translations;
-			$term_language_code = $wpml_term_translations->lang_code_by_termid( $element_id );
-			$element_id         = $wpml_term_translations->term_id_in( $element_id, $term_language_code );
+			$element_id = $wpml_term_translations->adjust_ttid_for_term_id( $element_id );
 		}
 
 		$trid = $sitepress->get_element_trid( $element_id, $wpml_element_type );
 
-		//$translations = $sitepress->get_element_translations($trid);
 		$translations = apply_filters( 'wpml_get_element_translations_filter', '', $trid, $wpml_element_type );
 
 		if ( $translations && count( $translations ) > 1 ) {

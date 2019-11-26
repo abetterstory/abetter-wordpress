@@ -153,7 +153,7 @@ class WPML_Package {
 			$results = $cache->get( $cache_key, $found );
 			if ( ! $found ) {
 				$results_query   = "
-					SELECT id, name, value, type, title
+					SELECT id, name, value, wrap_tag, type, title
 					FROM {$wpdb->prefix}icl_strings
 					WHERE string_package_id=%d
 					ORDER BY location, id ASC";

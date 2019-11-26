@@ -2,6 +2,9 @@
 
 class WPML_TM_Translation_Roles_Section_Factory implements IWPML_TM_Admin_Section_Factory {
 
+	/**
+	 * @return \WPML_TM_Admin_Section|\WPML_TM_Translation_Roles_Section
+	 */
 	public function create() {
 		global $wpdb;
 
@@ -9,7 +12,7 @@ class WPML_TM_Translation_Roles_Section_Factory implements IWPML_TM_Admin_Sectio
 
 		$translation_manager_settings = new WPML_Translation_Manager_Settings(
 			new WPML_Translation_Manager_View(),
-			new WPML_Translation_Manager_Records( $wpdb, $user_query_factory )
+			new WPML_Translation_Manager_Records( $wpdb, $user_query_factory, wp_roles() )
 		);
 
 		$translator_settings = new WPML_Translator_Settings_Proxy( array( $this, 'create_translator_settings' ) );
@@ -17,6 +20,9 @@ class WPML_TM_Translation_Roles_Section_Factory implements IWPML_TM_Admin_Sectio
 		return new WPML_TM_Translation_Roles_Section( $translation_manager_settings, $translator_settings );
 	}
 
+	/**
+	 * @return \WPML_Translator_Settings
+	 */
 	public function create_translator_settings() {
 		global $wpdb, $sitepress;
 
@@ -25,10 +31,9 @@ class WPML_TM_Translation_Roles_Section_Factory implements IWPML_TM_Admin_Sectio
 		$user_query_factory = new WPML_WP_User_Query_Factory();
 
 		return new WPML_Translator_Settings(
-			new WPML_Translator_Records( $wpdb, $user_query_factory ),
+			new WPML_Translator_Records( $wpdb, $user_query_factory, wp_roles() ),
 			new WPML_Language_Collection( $sitepress, array_keys( $sitepress->get_active_languages() ) ),
-			$sitepress->get_default_language(),
-			new WPML_TM_AMS_Translator_Activation_Records( new WPML_WP_User_Factory() )
+			$sitepress->get_default_language()
 		);
 	}
 }

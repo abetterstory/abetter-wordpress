@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	/**
 	 * @param {NodeList} elementS
 	 */
-	const elements = document.querySelectorAll('.js-otgs-table-sticky-header');
+	const elements = [...document.querySelectorAll('.js-otgs-table-sticky-header')];
 	const args = {
 		fixedOffset: jQuery('#wpadminbar')
 	};

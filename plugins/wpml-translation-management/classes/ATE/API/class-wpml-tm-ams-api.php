@@ -1,5 +1,8 @@
 <?php
 
+use WPML\TM\ATE\Log\Entry;
+use WPML\TM\ATE\Log\ErrorEvents;
+
 /**
  * @author OnTheGo Systems
  */
@@ -66,7 +69,7 @@ class WPML_TM_AMS_API {
 		$url = $this->endpoints->get_subscription_status();
 
 		$url = str_replace( '{translator_email}', base64_encode( $translator_email ), $url );
-		$url = str_replace( '{WEBSITE_UUID}', wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE ), $url );
+		$url = str_replace( '{WEBSITE_UUID}', $this->auth->get_site_id(), $url );
 
 		$response = $this->signed_request( 'GET', $url );
 
@@ -261,6 +264,17 @@ class WPML_TM_AMS_API {
 			}
 		}
 
+		if ( $response_errors ) {
+			$entry              = new Entry();
+			$entry->event       = ErrorEvents::SERVER_AMS;
+			$entry->description = $response_errors->get_error_message();
+			$entry->extraData   = [
+				'errorData' => $response_errors->get_error_data(),
+			];
+
+			wpml_tm_ate_ams_log( $entry );
+		}
+
 		return $response_errors;
 	}
 
@@ -290,7 +304,7 @@ class WPML_TM_AMS_API {
 	/**
 	 * @return array
 	 */
-	private function get_registration_data() {
+	public function get_registration_data() {
 		return get_option( WPML_TM_ATE_Authentication::AMS_DATA_KEY, array() );
 	}
 
@@ -425,4 +439,9 @@ class WPML_TM_AMS_API {
 
 		return $url;
 	}
+
+	public function override_site_id( $site_id ) {
+		$this->auth->override_site_id( $site_id);
+	}
+
 }

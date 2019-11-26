@@ -2,8 +2,6 @@
 
 class WPML_Translation_Jobs_Migration {
 
-	const MIGRATION_DONE_KEY          = 'wpml-tm-translation-jobs-migration';
-	const ALL_JOBS_MIGRATION_DONE_KEY = 'wpml-tm-all-translation-jobs-migration';
 	const MIGRATION_FIX_LOG_KEY       = 'wpml_fixing_migration_log';
 
 	private $jobs_repository;
@@ -26,31 +24,80 @@ class WPML_Translation_Jobs_Migration {
 	/**
 	 * @param WPML_TM_Post_Job_Entity[] $jobs
 	 * @param bool                      $recover_status
+	 *
+	 * @throws WPML_TP_API_Exception
 	 */
 	public function migrate_jobs( array $jobs, $recover_status = false ) {
 		$mapped_jobs = $this->map_cms_id_job_id( $jobs );
 
 		if ( $mapped_jobs ) {
-			try {
-				$tp_jobs = $this->jobs_api->get_jobs_per_cms_ids( array_values( $mapped_jobs ), true );
-			} catch ( Exception $e ) {
-				$tp_jobs = array();
-			}
+			$tp_jobs = $this->get_tp_jobs( $mapped_jobs );
 
 			foreach ( $jobs as $job ) {
 				$cms_id = array_key_exists( $job->get_id(), $mapped_jobs ) ? $mapped_jobs[ $job->get_id() ] : '';
 				list( $tp_id, $revision_id ) = $this->get_tp_id_revision_id( $cms_id, $tp_jobs );
 
-				if ( $tp_id !== $job->get_tp_id() ) {
-					$new_status = false;
-					if ( $recover_status ) {
-						$new_status = $this->get_new_status( $job, $tp_id );
-						$this->log( $job->get_id(), $job->get_tp_id(), $tp_id, $job->get_status(), $new_status );
-					}
-					$this->fix_job_fields( $tp_id, $revision_id, $new_status, $job->get_id() );
+				if ( $recover_status ) {
+					$this->recovery_mode( $job, $tp_id, $revision_id );
+				} else {
+					$this->first_migration_mode( $job, $tp_id, $revision_id );
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param array $mapped_jobs
+	 *
+	 * @throws WPML_TP_API_Exception
+	 * @return array
+	 */
+	private function get_tp_jobs( array $mapped_jobs ) {
+		return $this->get_latest_jobs_grouped_by_cms_id(
+			$this->jobs_api->get_jobs_per_cms_ids( array_values( $mapped_jobs ), true )
+		);
+	}
+
+	/**
+	 * @param WPML_TM_Post_Job_Entity $job
+	 * @param int                        $tp_id
+	 * @param int                        $revision_id
+	 */
+	private function recovery_mode( WPML_TM_Post_Job_Entity $job, $tp_id, $revision_id ) {
+		if ( $tp_id !== $job->get_tp_id() ) {
+			$new_status = $this->get_new_status( $job, $tp_id );
+			$this->log( $job->get_id(), $job->get_tp_id(), $tp_id, $job->get_status(), $new_status );
+
+			$this->fix_job_fields( $tp_id, $revision_id, $new_status, $job->get_id() );
+		}
+	}
+
+	/**
+	 * @param WPML_TM_Post_Job_Entity $job
+	 * @param int                        $tp_id
+	 * @param int                        $revision_id
+	 */
+	private function first_migration_mode( WPML_TM_Post_Job_Entity $job, $tp_id, $revision_id ) {
+		$this->fix_job_fields( $tp_id, $revision_id, false, $job->get_id() );
+	}
+
+	/**
+	 * @param array $tp_jobs
+	 *
+	 * @return array
+	 */
+	private function get_latest_jobs_grouped_by_cms_id( $tp_jobs ) {
+		$result = array();
+
+		foreach ( $tp_jobs as $tp_job ) {
+			if ( ! isset( $result[ $tp_job->cms_id ] ) ) {
+				$result[ $tp_job->cms_id ] = $tp_job;
+			} elseif ( $tp_job->id > $result[ $tp_job->cms_id ]->id ) {
+				$result[ $tp_job->cms_id ] = $tp_job;
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -87,19 +134,15 @@ class WPML_Translation_Jobs_Migration {
 	 * @return array
 	 */
 	private function get_tp_id_revision_id( $cms_id, $tp_jobs ) {
-		$tp_id       = 0;
-		$revision_id = 0;
-
-		foreach ( $tp_jobs as $tp_job ) {
-			if ( $tp_job->cms_id === $cms_id ) {
-				$tp_id       = $tp_job->id;
-				$revision_id = $tp_job->translation_revision;
-
-				break;
-			}
+		$result = array( 0, 0 );
+		if ( isset ( $tp_jobs[ $cms_id ] ) ) {
+			$result = array(
+				$tp_jobs[ $cms_id ]->id,
+				$tp_jobs[ $cms_id ]->translation_revision
+			);
 		}
 
-		return array( $tp_id, $revision_id );
+		return $result;
 	}
 
 	/**
@@ -139,26 +182,6 @@ class WPML_Translation_Jobs_Migration {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public static function is_migrated() {
-		return (bool) get_option( self::MIGRATION_DONE_KEY );
-	}
-
-	public static function are_all_jobs_migrated() {
-		return (bool) get_option( self::ALL_JOBS_MIGRATION_DONE_KEY );
-	}
-
-	public static function mark_migration_as_done() {
-		update_option( self::MIGRATION_DONE_KEY, 1 );
-	}
-
-	public static function mark_all_jobs_migration_as_done() {
-		update_option( self::ALL_JOBS_MIGRATION_DONE_KEY, 1 );
-	}
-
-
-	/**
 	 * @return DateTime
 	 * @throws Exception
 	 */
@@ -187,6 +210,6 @@ class WPML_Translation_Jobs_Migration {
 			'new_status' => $new_status,
 		);
 
-		update_option( self::MIGRATION_FIX_LOG_KEY, $log );
+		update_option( self::MIGRATION_FIX_LOG_KEY, $log, false );
 	}
 }

@@ -103,41 +103,18 @@ class WPML_TM_Jobs_Query_Builder {
 	}
 
 	/**
-	 * @param                            $column
-	 * @param WPML_TM_Jobs_Search_Params $params
+	 * @param string     $column
+	 * @param array|null $values
 	 *
-	 * @return self
+	 * @return $this
 	 */
-	public function set_scope_filter( $local, $remote, WPML_TM_Jobs_Search_Params $params ) {
-		switch ( $params->get_scope() ) {
-			case WPML_TM_Jobs_Search_Params::SCOPE_LOCAL:
-				$this->where[] = $local;
-				break;
-			case WPML_TM_Jobs_Search_Params::SCOPE_REMOTE:
-				$this->where[] = $remote;
-				break;
-		}
+	public function set_multi_value_text_filter( $column, $values ) {
+		if ( $values ) {
+			$where = \wpml_collect( $values )->map( function ( $value ) use ( $column ) {
+				return $this->wpdb->prepare( "{$column} LIKE %s", '%' . $value . '%' );
+			} )->toArray();
 
-		return $this;
-	}
-
-	/**
-	 * @param                            $column
-	 * @param WPML_TM_Jobs_Search_Params $params
-	 *
-	 * @return self
-	 */
-	public function set_title_filter( $column, WPML_TM_Jobs_Search_Params $params ) {
-		if ( $params->get_title() ) {
-			$title_where = array();
-			foreach ( $params->get_title() as $title ) {
-				$title_where[] = $this->wpdb->prepare(
-					"{$column} LIKE %s",
-					'%' . $title . '%'
-				);
-			}
-
-			$this->where[] = '( ' . implode( ' OR ', $title_where ) . ' )';
+			$this->where[] = '( ' . implode( ' OR ', $where ) . ' )';
 		}
 
 		return $this;
@@ -199,13 +176,17 @@ class WPML_TM_Jobs_Query_Builder {
 
 	/**
 	 * @param string $column
-	 * @param int    $value
+	 * @param int|int[]    $value
 	 *
 	 * @return $this
 	 */
 	public function set_numeric_value_filter( $column, $value ) {
 		if ( $value ) {
-			$this->where[] = sprintf( "{$column} = %d", $value );
+			if ( is_array( $value ) ) {
+				$this->where[] = sprintf( "{$column} IN(%s)", wpml_prepare_in( $value, '%d' ) );
+			} else {
+				$this->where[] = sprintf( "{$column} = %d", $value );
+			}
 		}
 
 		return $this;
@@ -250,7 +231,8 @@ class WPML_TM_Jobs_Query_Builder {
 			$sql_parts[] = $this->wpdb->prepare( $column . ' >= %s', $date_range->get_begin()->format( 'Y-m-d' ) );
 		}
 		if ( $date_range->get_end() ) {
-			$sql_parts[] = $this->wpdb->prepare( $column . ' <= %s', $date_range->get_end()->format( 'Y-m-d 23:59:59' ) );
+			$sql_parts[] = $this->wpdb->prepare( $column . ' <= %s',
+				$date_range->get_end()->format( 'Y-m-d 23:59:59' ) );
 		}
 
 		if ( $sql_parts ) {

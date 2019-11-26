@@ -36,7 +36,7 @@ abstract class WPML_Cornerstone_Module_With_Items implements IWPML_Page_Builders
 
 	/**
 	 * @param string|int $node_id
-	 * @param object $settings
+	 * @param array $settings
 	 * @param WPML_PB_String[] $strings
 	 *
 	 * @return WPML_PB_String[]

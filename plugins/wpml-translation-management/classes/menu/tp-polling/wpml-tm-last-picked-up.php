@@ -48,6 +48,6 @@ class WPML_TM_Last_Picked_Up {
 	 * Set last_picked_up setting.
 	 */
 	public function set() {
-		$this->sitepress->set_setting( 'last_picked_up', current_time( 'timestamp' ), true );
+		$this->sitepress->set_setting( 'last_picked_up', current_time( 'timestamp', true ), true );
 	}
 }

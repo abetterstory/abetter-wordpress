@@ -5,6 +5,10 @@ var WPMLTranslationServicesDialog = function () {
 
 	var self = this;
 
+	self.INVALIDATION_ACTION = 'translation_service_invalidation';
+	self.AUTHENTICATION_ACTION = 'translation_service_authentication';
+	self.UPDATE_CREDENTIALS_ACTION = 'translation_service_update_credentials';
+
 	self.preventEventDefault = function (event) {
 		if ('undefined' !== event && 'undefined' !== typeof(event.preventDefault)) {
 			event.preventDefault();
@@ -60,7 +64,7 @@ var WPMLTranslationServicesDialog = function () {
 
 			button = jQuery(this);
 			serviceId = jQuery(this).data('id');
-			self.translationServiceAuthentication(serviceId, button, 1);
+			self.translationServiceAuthentication(serviceId, button, self.INVALIDATION_ACTION, 1);
 
 			return false;
 		});
@@ -74,7 +78,7 @@ var WPMLTranslationServicesDialog = function () {
 			return false;
 		});
 
-		self.activeServiceWrapper.on('click', '.js-authenticate-service', function (event) {
+		var credentialSettingHandler = function (event, action) {
 			var customFields;
 			var serviceId;
 			self.preventEventDefault(event);
@@ -82,9 +86,16 @@ var WPMLTranslationServicesDialog = function () {
 			serviceId = jQuery(this).data('id');
 			customFields = jQuery(this).data('custom-fields');
 
-			self.serviceAuthenticationDialog(customFields, serviceId);
+			self.serviceAuthenticationDialog(customFields, serviceId, action);
 
 			return false;
+		};
+		self.activeServiceWrapper.on('click', '.js-authenticate-service', function (event) {
+			return credentialSettingHandler.bind(this)(event, self.AUTHENTICATION_ACTION);
+		});
+
+		self.activeServiceWrapper.on('click', '.js-update-service-credentials', function (event) {
+			return credentialSettingHandler.bind(this)(event, self.UPDATE_CREDENTIALS_ACTION );
 		});
 
 		self.refreshTSInfo();
@@ -180,7 +191,7 @@ var WPMLTranslationServicesDialog = function () {
 		}
 	}
 
-	self.serviceAuthenticationDialog = function (customFields, serviceId) {
+	self.serviceAuthenticationDialog = function (customFields, serviceId, action) {
 		self.serviceDialog.dialog({
 			dialogClass: 'wpml-dialog otgs-ui-dialog',
 			width:       'auto',
@@ -209,7 +220,7 @@ var WPMLTranslationServicesDialog = function () {
 					text:    "Submit",
 					click:   function () {
 						self.hideButtons();
-						self.translationServiceAuthentication(serviceId, false, 0);
+						self.translationServiceAuthentication(serviceId, false, action, 0);
 					},
 					'class': 'button-primary js-submit'
 				}
@@ -269,20 +280,8 @@ var WPMLTranslationServicesDialog = function () {
 		}
 	};
 
-	self.translationServiceAuthentication = function (serviceId, button, invalidateService, successCallback) {
-		var invalidate;
+	self.translationServiceAuthentication = function (serviceId, button, action, successCallback) {
 		var nonce = jQuery( '.translation_service_authentication' ).val();
-
-		invalidate = invalidateService;
-		if ('undefined' === typeof invalidateService) {
-			invalidate = 0;
-		}
-
-		if (isNaN(serviceId)) {
-			alert('service_id isNAN');
-		} else if (isNaN(invalidate)) {
-			alert('invalidate isNAN');
-		}
 
 		self.disableButton(button);
 
@@ -290,10 +289,9 @@ var WPMLTranslationServicesDialog = function () {
 			type:     "POST",
 			url:      ajaxurl,
 			data:     {
-				'action':        invalidate ? 'translation_service_invalidation' : 'translation_service_authentication',
+				'action':        action,
 				'nonce':         nonce,
 				'service_id':    serviceId,
-				'invalidate':    invalidate,
 				'custom_fields': self.getSerializedCustomFields()
 			},
 			dataType: 'json',

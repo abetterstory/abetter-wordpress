@@ -38,6 +38,13 @@ class WPML_TP_Jobs_API extends WPML_TP_API {
 		return $this->client->send_request( $request );
 	}
 
+	/**
+	 * @param array $cms_ids
+	 * @param bool  $archived
+	 *
+	 * @return array|mixed|stdClass|string
+	 * @throws WPML_TP_API_Exception
+	 */
 	public function get_jobs_per_cms_ids( array $cms_ids, $archived = false ) {
 		$request = new WPML_TP_API_Request( '/jobs.json' );
 
