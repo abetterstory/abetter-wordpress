@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["plugins"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 322);
+/******/ 	return __webpack_require__(__webpack_require__.s = 363);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -98,6 +98,51 @@ this["wp"] = this["wp"] || {}; this["wp"]["plugins"] =
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _defineProperty; });
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+/***/ }),
+
+/***/ 11:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _createClass; });
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+/***/ }),
+
+/***/ 12:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _classCallCheck; });
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -107,13 +152,13 @@ function _classCallCheck(instance, Constructor) {
 
 /***/ }),
 
-/***/ 12:
+/***/ 13:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _possibleConstructorReturn; });
-/* harmony import */ var _helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
-/* harmony import */ var _assertThisInitialized__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _assertThisInitialized__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
 
 
 function _possibleConstructorReturn(self, call) {
@@ -126,7 +171,7 @@ function _possibleConstructorReturn(self, call) {
 
 /***/ }),
 
-/***/ 13:
+/***/ 14:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -140,7 +185,7 @@ function _getPrototypeOf(o) {
 
 /***/ }),
 
-/***/ 14:
+/***/ 15:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -170,28 +215,6 @@ function _inherits(subClass, superClass) {
     }
   });
   if (superClass) _setPrototypeOf(subClass, superClass);
-}
-
-/***/ }),
-
-/***/ 15:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _defineProperty; });
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
 }
 
 /***/ }),
@@ -228,14 +251,14 @@ function _extends() {
 
 /***/ }),
 
-/***/ 23:
+/***/ 27:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["hooks"]; }());
 
 /***/ }),
 
-/***/ 28:
+/***/ 31:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -258,44 +281,29 @@ function _typeof(obj) {
 
 /***/ }),
 
-/***/ 3:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _assertThisInitialized; });
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-/***/ }),
-
-/***/ 322:
+/***/ 363:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
-var classCallCheck = __webpack_require__(10);
+var classCallCheck = __webpack_require__(12);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
-var createClass = __webpack_require__(9);
+var createClass = __webpack_require__(11);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
-var possibleConstructorReturn = __webpack_require__(12);
+var possibleConstructorReturn = __webpack_require__(13);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
-var getPrototypeOf = __webpack_require__(13);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js + 1 modules
-var inherits = __webpack_require__(14);
+var getPrototypeOf = __webpack_require__(14);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
-var assertThisInitialized = __webpack_require__(3);
+var assertThisInitialized = __webpack_require__(5);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js + 1 modules
+var inherits = __webpack_require__(15);
 
 // EXTERNAL MODULE: external {"this":["wp","element"]}
 var external_this_wp_element_ = __webpack_require__(0);
@@ -304,13 +312,13 @@ var external_this_wp_element_ = __webpack_require__(0);
 var external_lodash_ = __webpack_require__(2);
 
 // EXTERNAL MODULE: external {"this":["wp","hooks"]}
-var external_this_wp_hooks_ = __webpack_require__(23);
+var external_this_wp_hooks_ = __webpack_require__(27);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/extends.js
 var esm_extends = __webpack_require__(18);
 
 // EXTERNAL MODULE: external {"this":["wp","compose"]}
-var external_this_wp_compose_ = __webpack_require__(7);
+var external_this_wp_compose_ = __webpack_require__(8);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/plugins/build-module/components/plugin-context/index.js
 
@@ -352,10 +360,10 @@ var plugin_context_withPluginContext = function withPluginContext(mapContextToPr
 };
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread.js
-var objectSpread = __webpack_require__(8);
+var objectSpread = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-var esm_typeof = __webpack_require__(28);
+var esm_typeof = __webpack_require__(31);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/plugins/build-module/api/index.js
 
@@ -382,10 +390,75 @@ var plugins = {};
 /**
  * Registers a plugin to the editor.
  *
- * @param {string}                    name            The name of the plugin.
+ * @param {string}                    name            A string identifying the plugin. Must be unique across all registered plugins.
  * @param {Object}                    settings        The settings for this plugin.
- * @param {Function}                  settings.render The function that renders the plugin.
- * @param {string|WPElement|Function} settings.icon   An icon to be shown in the UI.
+ * @param {string|WPElement|Function} settings.icon   An icon to be shown in the UI. It can be a slug of the Dashicon,
+ * or an element (or function returning an element) if you choose to render your own SVG.
+ * @param {Function}                  settings.render A component containing the UI elements to be rendered.
+ *
+ * @example <caption>ES5</caption>
+ * ```js
+ * // Using ES5 syntax
+ * var el = wp.element.createElement;
+ * var Fragment = wp.element.Fragment;
+ * var PluginSidebar = wp.editPost.PluginSidebar;
+ * var PluginSidebarMoreMenuItem = wp.editPost.PluginSidebarMoreMenuItem;
+ * var registerPlugin = wp.plugins.registerPlugin;
+ *
+ * function Component() {
+ * 	return el(
+ * 		Fragment,
+ * 		{},
+ * 		el(
+ * 			PluginSidebarMoreMenuItem,
+ * 			{
+ * 				target: 'sidebar-name',
+ * 			},
+ * 			'My Sidebar'
+ * 		),
+ * 		el(
+ * 			PluginSidebar,
+ * 			{
+ * 				name: 'sidebar-name',
+ * 				title: 'My Sidebar',
+ * 			},
+ * 			'Content of the sidebar'
+ * 		)
+ * 	);
+ * }
+ * registerPlugin( 'plugin-name', {
+ * 	icon: 'smiley',
+ * 	render: Component,
+ * } );
+ * ```
+ *
+ * @example <caption>ESNext</caption>
+ * ```js
+ * // Using ESNext syntax
+ * const { PluginSidebar, PluginSidebarMoreMenuItem } = wp.editPost;
+ * const { registerPlugin } = wp.plugins;
+ *
+ * const Component = () => (
+ * 	<>
+ * 		<PluginSidebarMoreMenuItem
+ * 			target="sidebar-name"
+ * 		>
+ * 			My Sidebar
+ * 		</PluginSidebarMoreMenuItem>
+ * 		<PluginSidebar
+ * 			name="sidebar-name"
+ * 			title="My Sidebar"
+ * 		>
+ * 			Content of the sidebar
+ * 		</PluginSidebar>
+ * 	</>
+ * );
+ *
+ * registerPlugin( 'plugin-name', {
+ * 	icon: 'smiley',
+ * 	render: Component,
+ * } );
+ * ```
  *
  * @return {Object} The final plugin settings object.
  */
@@ -428,6 +501,22 @@ function registerPlugin(name, settings) {
  * Unregisters a plugin by name.
  *
  * @param {string} name Plugin name.
+ *
+ * @example <caption>ES5</caption>
+ * ```js
+ * // Using ES5 syntax
+ * var unregisterPlugin = wp.plugins.unregisterPlugin;
+ *
+ * unregisterPlugin( 'plugin-name' );
+ * ```
+ *
+ * @example <caption>ESNext</caption>
+ * ```js
+ * // Using ESNext syntax
+ * const { unregisterPlugin } = wp.plugins;
+ *
+ * unregisterPlugin( 'plugin-name' );
+ * ```
  *
  * @return {?WPPlugin} The previous plugin settings object, if it has been
  *                     successfully unregistered; otherwise `undefined`.
@@ -493,6 +582,35 @@ function getPlugins() {
 /**
  * A component that renders all plugin fills in a hidden div.
  *
+ * @example <caption>ES5</caption>
+ * ```js
+ * // Using ES5 syntax
+ * var el = wp.element.createElement;
+ * var PluginArea = wp.plugins.PluginArea;
+ *
+ * function Layout() {
+ * 	return el(
+ * 		'div',
+ * 		{},
+ * 		'Content of the page',
+ * 		PluginArea
+ * 	);
+ * }
+ * ```
+ *
+ * @example <caption>ESNext</caption>
+ * ```js
+ * // Using ESNext syntax
+ * const { PluginArea } = wp.plugins;
+ *
+ * const Layout = () => (
+ * 	<div>
+ * 		Content of the page
+ * 		<PluginArea />
+ * 	</div>
+ * );
+ * ```
+ *
  * @return {WPElement} Plugin area.
  */
 
@@ -507,7 +625,7 @@ function (_Component) {
     Object(classCallCheck["a" /* default */])(this, PluginArea);
 
     _this = Object(possibleConstructorReturn["a" /* default */])(this, Object(getPrototypeOf["a" /* default */])(PluginArea).apply(this, arguments));
-    _this.setPlugins = _this.setPlugins.bind(Object(assertThisInitialized["a" /* default */])(Object(assertThisInitialized["a" /* default */])(_this)));
+    _this.setPlugins = _this.setPlugins.bind(Object(assertThisInitialized["a" /* default */])(_this));
     _this.state = _this.getCurrentPluginsState();
     return _this;
   }
@@ -587,19 +705,27 @@ function (_Component) {
 
 /***/ }),
 
-/***/ 7:
-/***/ (function(module, exports) {
+/***/ 5:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-(function() { module.exports = this["wp"]["compose"]; }());
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _assertThisInitialized; });
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
 
 /***/ }),
 
-/***/ 8:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectSpread; });
-/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 
 function _objectSpread(target) {
   for (var i = 1; i < arguments.length; i++) {
@@ -622,26 +748,10 @@ function _objectSpread(target) {
 
 /***/ }),
 
-/***/ 9:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ 8:
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _createClass; });
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
+(function() { module.exports = this["wp"]["compose"]; }());
 
 /***/ })
 

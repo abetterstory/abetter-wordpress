@@ -72,11 +72,11 @@ abstract class WP_Widget_Media extends WP_Widget {
 			'edit_media'                 => _x( 'Edit Media', 'label for button in the media widget; should preferably not be longer than ~13 characters long' ),
 			'add_to_widget'              => __( 'Add to Widget' ),
 			'missing_attachment'         => sprintf(
-				/* translators: %s: URL to media library */
+				/* translators: %s: URL to media library. */
 				__( 'We can&#8217;t find that file. Check your <a href="%s">media library</a> and make sure it wasn&#8217;t deleted.' ),
 				esc_url( admin_url( 'upload.php' ) )
 			),
-			/* translators: %d: widget count */
+			/* translators: %d: Widget count. */
 			'media_library_state_multi'  => _n_noop( 'Media Widget (%d)', 'Media Widget (%d)' ),
 			'media_library_state_single' => __( 'Media Widget' ),
 			'unsupported_file_type'      => __( 'Looks like this isn&#8217;t the correct kind of file. Please link to an appropriate file instead.' ),
@@ -122,7 +122,7 @@ abstract class WP_Widget_Media extends WP_Widget {
 	/**
 	 * Get schema for properties of a widget instance (item).
 	 *
-	 * @since  4.8.0
+	 * @since 4.8.0
 	 *
 	 * @see WP_REST_Controller::get_item_schema()
 	 * @see WP_REST_Controller::get_additional_fields()
@@ -411,7 +411,9 @@ abstract class WP_Widget_Media extends WP_Widget {
 			</p>
 			<div class="media-widget-preview <?php echo esc_attr( $this->id_base ); ?>">
 				<div class="attachment-media-view">
-					<div class="placeholder"><?php echo esc_html( $this->l10n['no_media_selected'] ); ?></div>
+					<button type="button" class="select-media button-add-media not-selected">
+						<?php echo esc_html( $this->l10n['add_media'] ); ?>
+					</button>
 				</div>
 			</div>
 			<p class="media-widget-buttons">
@@ -423,9 +425,6 @@ abstract class WP_Widget_Media extends WP_Widget {
 					<?php echo esc_html( $this->l10n['replace_media'] ); ?>
 				</button>
 			<?php endif; ?>
-				<button type="button" class="button select-media not-selected">
-					<?php echo esc_html( $this->l10n['add_media'] ); ?>
-				</button>
 			</p>
 			<div class="media-widget-fields">
 			</div>

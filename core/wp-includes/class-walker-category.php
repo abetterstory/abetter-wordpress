@@ -97,18 +97,16 @@ class Walker_Category extends Walker {
 	 */
 	public function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
 		/** This filter is documented in wp-includes/category-template.php */
-		$cat_name = apply_filters(
-			'list_cats',
-			esc_attr( $category->name ),
-			$category
-		);
+		$cat_name = apply_filters( 'list_cats', esc_attr( $category->name ), $category );
 
 		// Don't generate an element if the category name is empty.
 		if ( '' === $cat_name ) {
 			return;
 		}
 
-		$link = '<a href="' . esc_url( get_term_link( $category ) ) . '" ';
+		$atts         = array();
+		$atts['href'] = get_term_link( $category );
+
 		if ( $args['use_desc_for_title'] && ! empty( $category->description ) ) {
 			/**
 			 * Filters the category description for display.
@@ -118,11 +116,40 @@ class Walker_Category extends Walker {
 			 * @param string $description Category description.
 			 * @param object $category    Category object.
 			 */
-			$link .= 'title="' . esc_attr( strip_tags( apply_filters( 'category_description', $category->description, $category ) ) ) . '"';
+			$atts['title'] = strip_tags( apply_filters( 'category_description', $category->description, $category ) );
 		}
 
-		$link .= '>';
-		$link .= $cat_name . '</a>';
+		/**
+		 * Filters the HTML attributes applied to a category list item's anchor element.
+		 *
+		 * @since 5.2.0
+		 *
+		 * @param array   $atts {
+		 *     The HTML attributes applied to the list item's `<a>` element, empty strings are ignored.
+		 *
+		 *     @type string $href  The href attribute.
+		 *     @type string $title The title attribute.
+		 * }
+		 * @param WP_Term $category Term data object.
+		 * @param int     $depth    Depth of category, used for padding.
+		 * @param array   $args     An array of arguments.
+		 * @param int     $id       ID of the current category.
+		 */
+		$atts = apply_filters( 'category_list_link_attributes', $atts, $category, $depth, $args, $id );
+
+		$attributes = '';
+		foreach ( $atts as $attr => $value ) {
+			if ( is_scalar( $value ) && '' !== $value && false !== $value ) {
+				$value       = ( 'href' === $attr ) ? esc_url( $value ) : esc_attr( $value );
+				$attributes .= ' ' . $attr . '="' . $value . '"';
+			}
+		}
+
+		$link = sprintf(
+			'<a%s>%s</a>',
+			$attributes,
+			$cat_name
+		);
 
 		if ( ! empty( $args['feed_image'] ) || ! empty( $args['feed'] ) ) {
 			$link .= ' ';
@@ -134,6 +161,7 @@ class Walker_Category extends Walker {
 			$link .= '<a href="' . esc_url( get_term_feed_link( $category->term_id, $category->taxonomy, $args['feed_type'] ) ) . '"';
 
 			if ( empty( $args['feed'] ) ) {
+				/* translators: %s: Category name. */
 				$alt = ' alt="' . sprintf( __( 'Feed for all posts filed under %s' ), $cat_name ) . '"';
 			} else {
 				$alt   = ' alt="' . $args['feed'] . '"';
@@ -168,8 +196,8 @@ class Walker_Category extends Walker {
 			if ( ! empty( $args['current_category'] ) ) {
 				// 'current_category' can be an array, so we use `get_terms()`.
 				$_current_terms = get_terms(
-					$category->taxonomy,
 					array(
+						'taxonomy'   => $category->taxonomy,
 						'include'    => $args['current_category'],
 						'hide_empty' => false,
 					)
@@ -178,6 +206,7 @@ class Walker_Category extends Walker {
 				foreach ( $_current_terms as $_current_term ) {
 					if ( $category->term_id == $_current_term->term_id ) {
 						$css_classes[] = 'current-cat';
+						$link          = str_replace( '<a', '<a aria-current="page"', $link );
 					} elseif ( $category->term_id == $_current_term->parent ) {
 						$css_classes[] = 'current-cat-parent';
 					}

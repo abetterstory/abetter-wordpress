@@ -82,16 +82,35 @@ this["wp"] = this["wp"] || {}; this["wp"]["escapeHtml"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 275);
+/******/ 	return __webpack_require__(__webpack_require__.s = 367);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 275:
+/***/ 367:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/escape-html/build-module/escape-greater.js
+/**
+ * Returns a string with greater-than sign replaced.
+ *
+ * Note that if a resolution for Trac#45387 comes to fruition, it is no longer
+ * necessary for `__unstableEscapeGreaterThan` to exist.
+ *
+ * See: https://core.trac.wordpress.org/ticket/45387
+ *
+ * @param {string} value Original string.
+ *
+ * @return {string} Escaped string.
+ */
+function __unstableEscapeGreaterThan(value) {
+  return value.replace(/>/g, '&gt;');
+}
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/escape-html/build-module/index.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeAmpersand", function() { return escapeAmpersand; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeQuotationMark", function() { return escapeQuotationMark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeLessThan", function() { return escapeLessThan; });
@@ -99,16 +118,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeHTML", function() { return escapeHTML; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isValidAttributeName", function() { return isValidAttributeName; });
 /**
+ * Internal dependencies
+ */
+
+/**
  * Regular expression matching invalid attribute names.
  *
  * "Attribute names must consist of one or more characters other than controls,
  * U+0020 SPACE, U+0022 ("), U+0027 ('), U+003E (>), U+002F (/), U+003D (=),
  * and noncharacters."
  *
- * @link https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
  *
  * @type {RegExp}
  */
+
 var REGEXP_INVALID_ATTRIBUTE_NAME = /[\u007F-\u009F "'>/="\uFDD0-\uFDEF]/;
 /**
  * Returns a string with ampersands escaped. Note that this is an imperfect
@@ -116,9 +140,9 @@ var REGEXP_INVALID_ATTRIBUTE_NAME = /[\u007F-\u009F "'>/="\uFDD0-\uFDEF]/;
  * named, decimal, or hexadecimal character references are escaped. Invalid
  * named references (i.e. ambiguous ampersand) are are still permitted.
  *
- * @link https://w3c.github.io/html/syntax.html#character-references
- * @link https://w3c.github.io/html/syntax.html#ambiguous-ampersand
- * @link https://w3c.github.io/html/syntax.html#named-character-references
+ * @see https://w3c.github.io/html/syntax.html#character-references
+ * @see https://w3c.github.io/html/syntax.html#ambiguous-ampersand
+ * @see https://w3c.github.io/html/syntax.html#named-character-references
  *
  * @param {string} value Original string.
  *
@@ -153,10 +177,18 @@ function escapeLessThan(value) {
 /**
  * Returns an escaped attribute value.
  *
- * @link https://w3c.github.io/html/syntax.html#elements-attributes
+ * @see https://w3c.github.io/html/syntax.html#elements-attributes
  *
  * "[...] the text cannot contain an ambiguous ampersand [...] must not contain
  * any literal U+0022 QUOTATION MARK characters (")"
+ *
+ * Note we also escape the greater than symbol, as this is used by wptexturize to
+ * split HTML strings. This is a WordPress specific fix
+ *
+ * Note that if a resolution for Trac#45387 comes to fruition, it is no longer
+ * necessary for `__unstableEscapeGreaterThan` to be used.
+ *
+ * See: https://core.trac.wordpress.org/ticket/45387
  *
  * @param {string} value Attribute value.
  *
@@ -164,12 +196,12 @@ function escapeLessThan(value) {
  */
 
 function escapeAttribute(value) {
-  return escapeQuotationMark(escapeAmpersand(value));
+  return __unstableEscapeGreaterThan(escapeQuotationMark(escapeAmpersand(value)));
 }
 /**
  * Returns an escaped HTML element value.
  *
- * @link https://w3c.github.io/html/syntax.html#writing-html-documents-elements
+ * @see https://w3c.github.io/html/syntax.html#writing-html-documents-elements
  *
  * "the text must not contain the character U+003C LESS-THAN SIGN (<) or an
  * ambiguous ampersand."

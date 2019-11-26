@@ -82,12 +82,12 @@ this["wp"] = this["wp"] || {}; this["wp"]["isShallowEqual"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 277);
+/******/ 	return __webpack_require__(__webpack_require__.s = 327);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 277:
+/***/ 327:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -96,8 +96,8 @@ this["wp"] = this["wp"] || {}; this["wp"]["isShallowEqual"] =
 /**
  * Internal dependencies;
  */
-var isShallowEqualObjects = __webpack_require__( 278 );
-var isShallowEqualArrays = __webpack_require__( 279 );
+var isShallowEqualObjects = __webpack_require__( 328 );
+var isShallowEqualArrays = __webpack_require__( 329 );
 
 var isArray = Array.isArray;
 
@@ -123,11 +123,13 @@ function isShallowEqual( a, b ) {
 }
 
 module.exports = isShallowEqual;
+module.exports.isShallowEqualObjects = isShallowEqualObjects;
+module.exports.isShallowEqualArrays = isShallowEqualArrays;
 
 
 /***/ }),
 
-/***/ 278:
+/***/ 328:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -144,7 +146,7 @@ var keys = Object.keys;
  * @return {boolean} Whether the two objects are shallow equal.
  */
 function isShallowEqualObjects( a, b ) {
-	var aKeys, bKeys, i, key;
+	var aKeys, bKeys, i, key, aValue;
 
 	if ( a === b ) {
 		return true;
@@ -161,7 +163,17 @@ function isShallowEqualObjects( a, b ) {
 
 	while ( i < aKeys.length ) {
 		key = aKeys[ i ];
-		if ( a[ key ] !== b[ key ] ) {
+		aValue = a[ key ];
+
+		if (
+			// In iterating only the keys of the first object after verifying
+			// equal lengths, account for the case that an explicit `undefined`
+			// value in the first is implicitly undefined in the second.
+			//
+			// Example: isShallowEqualObjects( { a: undefined }, { b: 5 } )
+			( aValue === undefined && ! b.hasOwnProperty( key ) ) ||
+			aValue !== b[ key ]
+		) {
 			return false;
 		}
 
@@ -176,7 +188,7 @@ module.exports = isShallowEqualObjects;
 
 /***/ }),
 
-/***/ 279:
+/***/ 329:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

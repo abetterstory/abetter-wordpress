@@ -112,7 +112,7 @@ if ( isset( $_REQUEST['action'] ) && 'adduser' == $_REQUEST['action'] ) {
 
 			$switched_locale = switch_to_locale( get_user_locale( $user_details ) );
 
-			/* translators: 1: Site name, 2: site URL, 3: role, 4: activation URL */
+			/* translators: 1: Site title, 2: Site URL, 3: User role, 4: Activation URL. */
 			$message = __(
 				'Hi,
 
@@ -122,7 +122,22 @@ You\'ve been invited to join \'%1$s\' at
 Please click the following link to confirm the invite:
 %4$s'
 			);
-			wp_mail( $new_user_email, sprintf( __( '[%s] Joining confirmation' ), wp_specialchars_decode( get_option( 'blogname' ) ) ), sprintf( $message, get_option( 'blogname' ), home_url(), wp_specialchars_decode( translate_user_role( $role['name'] ) ), home_url( "/newbloguser/$newuser_key/" ) ) );
+
+			wp_mail(
+				$new_user_email,
+				sprintf(
+					/* translators: Joining confirmation notification email subject. %s: Site title. */
+					__( '[%s] Joining Confirmation' ),
+					wp_specialchars_decode( get_option( 'blogname' ) )
+				),
+				sprintf(
+					$message,
+					get_option( 'blogname' ),
+					home_url(),
+					wp_specialchars_decode( translate_user_role( $role['name'] ) ),
+					home_url( "/newbloguser/$newuser_key/" )
+				)
+			);
 
 			if ( $switched_locale ) {
 				restore_previous_locale();
@@ -238,20 +253,20 @@ get_current_screen()->add_help_tab(
 		'id'      => 'user-roles',
 		'title'   => __( 'User Roles' ),
 		'content' => '<p>' . __( 'Here is a basic overview of the different user roles and the permissions associated with each one:' ) . '</p>' .
-							 '<ul>' .
-							 '<li>' . __( 'Subscribers can read comments/comment/receive newsletters, etc. but cannot create regular site content.' ) . '</li>' .
-							 '<li>' . __( 'Contributors can write and manage their posts but not publish posts or upload media files.' ) . '</li>' .
-							 '<li>' . __( 'Authors can publish and manage their own posts, and are able to upload files.' ) . '</li>' .
-							 '<li>' . __( 'Editors can publish posts, manage posts as well as manage other people&#8217;s posts, etc.' ) . '</li>' .
-							 '<li>' . __( 'Administrators have access to all the administration features.' ) . '</li>' .
-							 '</ul>',
+							'<ul>' .
+							'<li>' . __( 'Subscribers can read comments/comment/receive newsletters, etc. but cannot create regular site content.' ) . '</li>' .
+							'<li>' . __( 'Contributors can write and manage their posts but not publish posts or upload media files.' ) . '</li>' .
+							'<li>' . __( 'Authors can publish and manage their own posts, and are able to upload files.' ) . '</li>' .
+							'<li>' . __( 'Editors can publish posts, manage posts as well as manage other people&#8217;s posts, etc.' ) . '</li>' .
+							'<li>' . __( 'Administrators have access to all the administration features.' ) . '</li>' .
+							'</ul>',
 	)
 );
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-	'<p>' . __( '<a href="https://codex.wordpress.org/Users_Add_New_Screen">Documentation on Adding New Users</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://wordpress.org/support/">Support Forums</a>' ) . '</p>'
+	'<p>' . __( '<a href="https://wordpress.org/support/article/users-add-new-screen/">Documentation on Adding New Users</a>' ) . '</p>' .
+	'<p>' . __( '<a href="https://wordpress.org/support/">Support</a>' ) . '</p>'
 );
 
 wp_enqueue_script( 'wp-ajax-response' );
@@ -291,12 +306,13 @@ if ( isset( $_GET['update'] ) ) {
 				$messages[] = __( 'Invitation email sent to user. A confirmation link must be clicked for them to be added to your site.' );
 				break;
 			case 'addnoconfirmation':
-				if ( empty( $edit_link ) ) {
-					$messages[] = __( 'User has been added to your site.' );
-				} else {
-					/* translators: %s: edit page url */
-					$messages[] = sprintf( __( 'User has been added to your site. <a href="%s">Edit user</a>' ), $edit_link );
+				$message = __( 'User has been added to your site.' );
+
+				if ( $edit_link ) {
+					$message .= sprintf( ' <a href="%s">%s</a>', $edit_link, __( 'Edit user' ) );
 				}
+
+				$messages[] = $message;
 				break;
 			case 'addexisting':
 				$messages[] = __( 'That user is already a member of this site.' );
@@ -391,7 +407,7 @@ if ( is_multisite() && current_user_can( 'promote_users' ) ) {
 <input name="action" type="hidden" value="adduser" />
 	<?php wp_nonce_field( 'add-user', '_wpnonce_add-user' ); ?>
 
-<table class="form-table">
+<table class="form-table" role="presentation">
 	<tr class="form-field form-required">
 		<th scope="row"><label for="adduser-email"><?php echo $label; ?></label></th>
 		<td><input name="email" type="<?php echo $type; ?>" id="adduser-email" class="wp-suggest-user" value="" /></td>
@@ -460,7 +476,7 @@ if ( current_user_can( 'create_users' ) ) {
 	$new_user_ignore_pass       = $creating && isset( $_POST['noconfirmation'] ) ? wp_unslash( $_POST['noconfirmation'] ) : '';
 
 	?>
-<table class="form-table">
+<table class="form-table" role="presentation">
 	<tr class="form-field form-required">
 		<th scope="row"><label for="user_login"><?php _e( 'Username' ); ?> <span class="description"><?php _e( '(required)' ); ?></span></label></th>
 		<td><input name="user_login" type="text" id="user_login" value="<?php echo esc_attr( $new_user_login ); ?>" aria-required="true" autocapitalize="none" autocorrect="off" maxlength="60" /></td>
@@ -498,10 +514,11 @@ if ( current_user_can( 'create_users' ) ) {
 					<input type="password" name="pass1" id="pass1" class="regular-text" autocomplete="off" data-reveal="1" data-pw="<?php echo esc_attr( $initial_password ); ?>" aria-describedby="pass-strength-result" />
 				</span>
 				<button type="button" class="button wp-hide-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Hide password' ); ?>">
-					<span class="dashicons dashicons-hidden"></span>
+					<span class="dashicons dashicons-hidden" aria-hidden="true"></span>
 					<span class="text"><?php _e( 'Hide' ); ?></span>
 				</button>
 				<button type="button" class="button wp-cancel-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Cancel password change' ); ?>">
+					<span class="dashicons dashicons-no" aria-hidden="true"></span>
 					<span class="text"><?php _e( 'Cancel' ); ?></span>
 				</button>
 				<div style="display:none" id="pass-strength-result" aria-live="polite"></div>

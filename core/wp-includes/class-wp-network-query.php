@@ -197,6 +197,31 @@ class WP_Network_Query {
 		 */
 		do_action_ref_array( 'pre_get_networks', array( &$this ) );
 
+		$network_data = null;
+
+		/**
+		 * Filter the network data before the query takes place.
+		 *
+		 * Return a non-null value to bypass WordPress's default network queries.
+		 *
+		 * The expected return type from this filter depends on the value passed in the request query_vars.
+		 * When `$this->query_vars['count']` is set, the filter should return the network count as an int.
+		 * When `'ids' === $this->query_vars['fields']`, the filter should return an array of network ids.
+		 * Otherwise the filter should return an array of WP_Network objects.
+		 *
+		 * @since 5.2.0
+		 *
+		 * @param array|null       $network_data Return an array of network data to short-circuit WP's network query,
+		 *                                       the network count as an integer if `$this->query_vars['count']` is set,
+		 *                                       or null to allow WP to run its normal queries.
+		 * @param WP_Network_Query $this         The WP_Network_Query instance, passed by reference.
+		 */
+		$network_data = apply_filters_ref_array( 'networks_pre_query', array( $network_data, &$this ) );
+
+		if ( null !== $network_data ) {
+			return $network_data;
+		}
+
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$_args = wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) );
 
@@ -249,7 +274,8 @@ class WP_Network_Query {
 		// Fetch full network objects from the primed cache.
 		$_networks = array();
 		foreach ( $network_ids as $network_id ) {
-			if ( $_network = get_network( $network_id ) ) {
+			$_network = get_network( $network_id );
+			if ( $_network ) {
 				$_networks[] = $_network;
 			}
 		}
@@ -479,7 +505,7 @@ class WP_Network_Query {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @global wpdb  $wpdb WordPress database abstraction object.
+	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param string   $string  Search string.
 	 * @param string[] $columns Array of columns to search.

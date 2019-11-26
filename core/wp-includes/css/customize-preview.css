@@ -41,13 +41,13 @@
 	height: 30px;
 	min-width: 30px;
 	min-height: 30px;
-	line-height: 1em !important;
+	line-height: 1 !important;
 	font-size: 18px;
 	z-index: 5;
 	background: #0085ba !important;
 	border-radius: 50%;
 	border: 2px solid #fff;
-	box-shadow: 0 2px 1px rgba(46,68,83,0.15);
+	box-shadow: 0 2px 1px rgba(46, 68, 83, 0.15);
 	text-align: center;
 	cursor: pointer;
 	box-sizing: border-box;

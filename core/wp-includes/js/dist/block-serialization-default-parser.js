@@ -82,18 +82,66 @@ this["wp"] = this["wp"] || {}; this["wp"]["blockSerializationDefaultParser"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 197);
+/******/ 	return __webpack_require__(__webpack_require__.s = 235);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 197:
+/***/ 23:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
+var arrayWithHoles = __webpack_require__(38);
+
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
+function _iterableToArrayLimit(arr, i) {
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
+var nonIterableRest = __webpack_require__(39);
+
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _slicedToArray; });
+
+
+
+function _slicedToArray(arr, i) {
+  return Object(arrayWithHoles["a" /* default */])(arr) || _iterableToArrayLimit(arr, i) || Object(nonIterableRest["a" /* default */])();
+}
+
+/***/ }),
+
+/***/ 235:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parse", function() { return parse; });
-/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(23);
 
 var document;
 var offset;
@@ -128,9 +176,9 @@ var stack;
  *    not captured. thus, we find the long string of `a`s and remember it, then
  *    reference it as a whole unit inside our pattern
  *
- *    @cite http://instanceof.me/post/52245507631/regex-emulate-atomic-grouping-with-lookahead
- *    @cite http://blog.stevenlevithan.com/archives/mimic-atomic-groups
- *    @cite https://javascript.info/regexp-infinite-backtracking-problem
+ *    @see http://instanceof.me/post/52245507631/regex-emulate-atomic-grouping-with-lookahead
+ *    @see http://blog.stevenlevithan.com/archives/mimic-atomic-groups
+ *    @see https://javascript.info/regexp-infinite-backtracking-problem
  *
  *    once browsers reliably support atomic grouping or possessive
  *    quantifiers natively we should remove this trick and simplify
@@ -166,6 +214,84 @@ function Frame(block, tokenStart, tokenLength, prevOffset, leadingHtmlStart) {
     leadingHtmlStart: leadingHtmlStart
   };
 }
+/**
+ * Parser function, that converts input HTML into a block based structure.
+ *
+ * @param {string} doc The HTML document to parse.
+ *
+ * @example
+ * Input post:
+ * ```html
+ * <!-- wp:columns {"columns":3} -->
+ * <div class="wp-block-columns has-3-columns"><!-- wp:column -->
+ * <div class="wp-block-column"><!-- wp:paragraph -->
+ * <p>Left</p>
+ * <!-- /wp:paragraph --></div>
+ * <!-- /wp:column -->
+ *
+ * <!-- wp:column -->
+ * <div class="wp-block-column"><!-- wp:paragraph -->
+ * <p><strong>Middle</strong></p>
+ * <!-- /wp:paragraph --></div>
+ * <!-- /wp:column -->
+ *
+ * <!-- wp:column -->
+ * <div class="wp-block-column"></div>
+ * <!-- /wp:column --></div>
+ * <!-- /wp:columns -->
+ * ```
+ *
+ * Parsing code:
+ * ```js
+ * import { parse } from '@wordpress/block-serialization-default-parser';
+ *
+ * parse( post ) === [
+ *     {
+ *         blockName: "core/columns",
+ *         attrs: {
+ *             columns: 3
+ *         },
+ *         innerBlocks: [
+ *             {
+ *                 blockName: "core/column",
+ *                 attrs: null,
+ *                 innerBlocks: [
+ *                     {
+ *                         blockName: "core/paragraph",
+ *                         attrs: null,
+ *                         innerBlocks: [],
+ *                         innerHTML: "\n<p>Left</p>\n"
+ *                     }
+ *                 ],
+ *                 innerHTML: '\n<div class="wp-block-column"></div>\n'
+ *             },
+ *             {
+ *                 blockName: "core/column",
+ *                 attrs: null,
+ *                 innerBlocks: [
+ *                     {
+ *                         blockName: "core/paragraph",
+ *                         attrs: null,
+ *                         innerBlocks: [],
+ *                         innerHTML: "\n<p><strong>Middle</strong></p>\n"
+ *                     }
+ *                 ],
+ *                 innerHTML: '\n<div class="wp-block-column"></div>\n'
+ *             },
+ *             {
+ *                 blockName: "core/column",
+ *                 attrs: null,
+ *                 innerBlocks: [],
+ *                 innerHTML: '\n<div class="wp-block-column"></div>\n'
+ *             }
+ *         ],
+ *         innerHTML: '\n<div class="wp-block-columns has-3-columns">\n\n\n\n</div>\n'
+ *     }
+ * ];
+ * ```
+ * @return {Array} A block-based representation of the input HTML.
+ */
+
 
 var parse = function parse(doc) {
   document = doc;
@@ -399,55 +525,7 @@ function addBlockFromStack(endOffset) {
 
 /***/ }),
 
-/***/ 25:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
-var arrayWithHoles = __webpack_require__(35);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
-function _iterableToArrayLimit(arr, i) {
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
-var nonIterableRest = __webpack_require__(36);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _slicedToArray; });
-
-
-
-function _slicedToArray(arr, i) {
-  return Object(arrayWithHoles["a" /* default */])(arr) || _iterableToArrayLimit(arr, i) || Object(nonIterableRest["a" /* default */])();
-}
-
-/***/ }),
-
-/***/ 35:
+/***/ 38:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -458,7 +536,7 @@ function _arrayWithHoles(arr) {
 
 /***/ }),
 
-/***/ 36:
+/***/ 39:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

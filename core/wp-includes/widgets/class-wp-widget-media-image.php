@@ -12,6 +12,7 @@
  *
  * @since 4.8.0
  *
+ * @see WP_Widget_Media
  * @see WP_Widget
  */
 class WP_Widget_Media_Image extends WP_Widget_Media {
@@ -19,7 +20,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 	/**
 	 * Constructor.
 	 *
-	 * @since  4.8.0
+	 * @since 4.8.0
 	 */
 	public function __construct() {
 		parent::__construct(
@@ -39,11 +40,11 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 				'replace_media'              => _x( 'Replace Image', 'label for button in the image widget; should preferably not be longer than ~13 characters long' ),
 				'edit_media'                 => _x( 'Edit Image', 'label for button in the image widget; should preferably not be longer than ~13 characters long' ),
 				'missing_attachment'         => sprintf(
-					/* translators: %s: URL to media library */
+					/* translators: %s: URL to media library. */
 					__( 'We can&#8217;t find that image. Check your <a href="%s">media library</a> and make sure it wasn&#8217;t deleted.' ),
 					esc_url( admin_url( 'upload.php' ) )
 				),
-				/* translators: %d: widget count */
+				/* translators: %d: Widget count. */
 				'media_library_state_multi'  => _n_noop( 'Image Widget (%d)', 'Image Widget (%d)' ),
 				'media_library_state_single' => __( 'Image Widget' ),
 			)
@@ -53,7 +54,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 	/**
 	 * Get schema for properties of a widget instance (item).
 	 *
-	 * @since  4.8.0
+	 * @since 4.8.0
 	 *
 	 * @see WP_REST_Controller::get_item_schema()
 	 * @see WP_REST_Controller::get_additional_fields()
@@ -62,7 +63,6 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 	 */
 	public function get_instance_schema() {
 		return array_merge(
-			parent::get_instance_schema(),
 			array(
 				'size'              => array(
 					'type'        => 'string',
@@ -161,14 +161,15 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 				 * - height (redundant when size is not custom)
 				 * - width (redundant when size is not custom)
 				 */
-			)
+			),
+			parent::get_instance_schema()
 		);
 	}
 
 	/**
 	 * Render the media on the frontend.
 	 *
-	 * @since  4.8.0
+	 * @since 4.8.0
 	 *
 	 * @param array $instance Widget instance props.
 	 * @return void
@@ -266,7 +267,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 			$link .= '>';
 			$link .= $image;
 			$link .= '</a>';
-			$image = $link;
+			$image = wp_targeted_link_rel( $link );
 		}
 
 		if ( $caption ) {
@@ -334,12 +335,11 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 			<# if ( data.url ) { #>
 			<p class="media-widget-image-link">
 				<label for="{{ elementIdPrefix }}linkUrl"><?php esc_html_e( 'Link to:' ); ?></label>
-				<input id="{{ elementIdPrefix }}linkUrl" type="text" class="widefat link" value="{{ data.link_url }}" placeholder="http://" pattern="((\w+:)?\/\/\w.*|\w+:(?!\/\/$)|\/|\?|#).*">
+				<input id="{{ elementIdPrefix }}linkUrl" type="text" class="widefat link" value="{{ data.link_url }}" placeholder="https://" pattern="((\w+:)?\/\/\w.*|\w+:(?!\/\/$)|\/|\?|#).*">
 			</p>
 			<# } #>
 		</script>
 		<script type="text/html" id="tmpl-wp-media-widget-image-preview">
-			<# var describedById = 'describedBy-' + String( Math.random() ); #>
 			<# if ( data.error && 'missing_attachment' === data.error ) { #>
 				<div class="notice notice-error notice-alt notice-missing-attachment">
 					<p><?php echo $this->l10n['missing_attachment']; ?></p>
@@ -349,15 +349,21 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 					<p><?php _e( 'Unable to preview media due to an unknown error.' ); ?></p>
 				</div>
 			<# } else if ( data.url ) { #>
-				<img class="attachment-thumb" src="{{ data.url }}" draggable="false" alt="{{ data.alt }}" <# if ( ! data.alt && data.currentFilename ) { #> aria-describedby="{{ describedById }}" <# } #> />
-				<# if ( ! data.alt && data.currentFilename ) { #>
-					<p class="hidden" id="{{ describedById }}">
-					<?php
-						/* translators: %s: image filename */
-						echo sprintf( __( 'Current image: %s' ), '{{ data.currentFilename }}' );
-					?>
-					</p>
-				<# } #>
+				<img class="attachment-thumb" src="{{ data.url }}" draggable="false" alt="{{ data.alt }}"
+					<# if ( ! data.alt && data.currentFilename ) { #>
+						aria-label="
+						<?php
+						echo esc_attr(
+							sprintf(
+								/* translators: %s: The image file name. */
+								__( 'The current image has no alternative text. The file name is: %s' ),
+								'{{ data.currentFilename }}'
+							)
+						);
+						?>
+						"
+					<# } #>
+				/>
 			<# } #>
 		</script>
 		<?php

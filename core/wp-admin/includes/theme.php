@@ -76,7 +76,11 @@ function delete_theme( $stylesheet, $redirect = '' ) {
 	$deleted    = $wp_filesystem->delete( $theme_dir, true );
 
 	if ( ! $deleted ) {
-		return new WP_Error( 'could_not_remove_theme', sprintf( __( 'Could not fully remove the theme %s.' ), $stylesheet ) );
+		return new WP_Error(
+			'could_not_remove_theme',
+			/* translators: %s: Theme name. */
+			sprintf( __( 'Could not fully remove the theme %s.' ), $stylesheet )
+		);
 	}
 
 	$theme_translations = wp_get_installed_translations( 'themes' );
@@ -195,47 +199,47 @@ function get_theme_update_available( $theme ) {
 
 		if ( ! is_multisite() ) {
 			if ( ! current_user_can( 'update_themes' ) ) {
-				/* translators: 1: theme name, 2: theme details URL, 3: additional link attributes, 4: version number */
 				$html = sprintf(
+					/* translators: 1: Theme name, 2: Theme details URL, 3: Additional link attributes, 4: Version number. */
 					'<p><strong>' . __( 'There is a new version of %1$s available. <a href="%2$s" %3$s>View version %4$s details</a>.' ) . '</strong></p>',
 					$theme_name,
 					esc_url( $details_url ),
 					sprintf(
 						'class="thickbox open-plugin-details-modal" aria-label="%s"',
-						/* translators: 1: theme name, 2: version number */
+						/* translators: 1: Theme name, 2: Version number. */
 						esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $theme_name, $update['new_version'] ) )
 					),
 					$update['new_version']
 				);
 			} elseif ( empty( $update['package'] ) ) {
-				/* translators: 1: theme name, 2: theme details URL, 3: additional link attributes, 4: version number */
 				$html = sprintf(
+					/* translators: 1: Theme name, 2: Theme details URL, 3: Additional link attributes, 4: Version number. */
 					'<p><strong>' . __( 'There is a new version of %1$s available. <a href="%2$s" %3$s>View version %4$s details</a>. <em>Automatic update is unavailable for this theme.</em>' ) . '</strong></p>',
 					$theme_name,
 					esc_url( $details_url ),
 					sprintf(
 						'class="thickbox open-plugin-details-modal" aria-label="%s"',
-						/* translators: 1: theme name, 2: version number */
+						/* translators: 1: Theme name, 2: Version number. */
 						esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $theme_name, $update['new_version'] ) )
 					),
 					$update['new_version']
 				);
 			} else {
-				/* translators: 1: theme name, 2: theme details URL, 3: additional link attributes, 4: version number, 5: update URL, 6: additional link attributes */
 				$html = sprintf(
+					/* translators: 1: Theme name, 2: Theme details URL, 3: Additional link attributes, 4: Version number, 5: Update URL, 6: Additional link attributes. */
 					'<p><strong>' . __( 'There is a new version of %1$s available. <a href="%2$s" %3$s>View version %4$s details</a> or <a href="%5$s" %6$s>update now</a>.' ) . '</strong></p>',
 					$theme_name,
 					esc_url( $details_url ),
 					sprintf(
 						'class="thickbox open-plugin-details-modal" aria-label="%s"',
-						/* translators: 1: theme name, 2: version number */
+						/* translators: 1: Theme name, 2: Version number. */
 						esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $theme_name, $update['new_version'] ) )
 					),
 					$update['new_version'],
 					$update_url,
 					sprintf(
 						'aria-label="%s" id="update-theme" data-slug="%s"',
-						/* translators: %s: theme name */
+						/* translators: %s: Theme name. */
 						esc_attr( sprintf( __( 'Update %s now' ), $theme_name ) ),
 						$stylesheet
 					)
@@ -303,7 +307,8 @@ function get_theme_feature_list( $api = true ) {
 		return $features;
 	}
 
-	if ( ! $feature_list = get_site_transient( 'wporg_theme_feature_list' ) ) {
+	$feature_list = get_site_transient( 'wporg_theme_feature_list' );
+	if ( ! $feature_list ) {
 		set_site_transient( 'wporg_theme_feature_list', array(), 3 * HOUR_IN_SECONDS );
 	}
 
@@ -490,7 +495,8 @@ function themes_api( $action, $args = array() ) {
 		);
 
 		$http_url = $url;
-		if ( $ssl = wp_http_supports( array( 'ssl' ) ) ) {
+		$ssl      = wp_http_supports( array( 'ssl' ) );
+		if ( $ssl ) {
 			$url = set_url_scheme( $url, 'https' );
 		}
 
@@ -503,9 +509,9 @@ function themes_api( $action, $args = array() ) {
 			if ( ! wp_doing_ajax() ) {
 				trigger_error(
 					sprintf(
-						/* translators: %s: support forums URL */
+						/* translators: %s: Support forums URL. */
 						__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
-						__( 'https://wordpress.org/support/' )
+						__( 'https://wordpress.org/support/forums/' )
 					) . ' ' . __( '(WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.)' ),
 					headers_sent() || WP_DEBUG ? E_USER_WARNING : E_USER_NOTICE
 				);
@@ -517,9 +523,9 @@ function themes_api( $action, $args = array() ) {
 			$res = new WP_Error(
 				'themes_api_failed',
 				sprintf(
-					/* translators: %s: support forums URL */
+					/* translators: %s: Support forums URL. */
 					__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
-					__( 'https://wordpress.org/support/' )
+					__( 'https://wordpress.org/support/forums/' )
 				),
 				$request->get_error_message()
 			);
@@ -532,9 +538,9 @@ function themes_api( $action, $args = array() ) {
 				$res = new WP_Error(
 					'themes_api_failed',
 					sprintf(
-						/* translators: %s: support forums URL */
+						/* translators: %s: Support forums URL. */
 						__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
-						__( 'https://wordpress.org/support/' )
+						__( 'https://wordpress.org/support/forums/' )
 					),
 					wp_remote_retrieve_body( $request )
 				);
@@ -680,7 +686,7 @@ function wp_prepare_themes_for_js( $themes = null ) {
 	 *
 	 * @since 3.8.0
 	 *
-	 * @param array $prepared_themes Array of themes.
+	 * @param array $prepared_themes Array of theme data.
 	 */
 	$prepared_themes = apply_filters( 'wp_prepare_themes_for_js', $prepared_themes );
 	$prepared_themes = array_values( $prepared_themes );
@@ -715,18 +721,33 @@ function customize_themes_print_templates() {
 					<# if ( data.active ) { #>
 						<span class="current-label"><?php _e( 'Current Theme' ); ?></span>
 					<# } #>
-					<h2 class="theme-name">{{{ data.name }}}<span class="theme-version"><?php printf( __( 'Version: %s' ), '{{ data.version }}' ); ?></span></h2>
-					<h3 class="theme-author"><?php printf( __( 'By %s' ), '{{{ data.authorAndUri }}}' ); ?></h3>
+					<h2 class="theme-name">{{{ data.name }}}<span class="theme-version">
+						<?php
+						/* translators: %s: Theme version. */
+						printf( __( 'Version: %s' ), '{{ data.version }}' );
+						?>
+					</span></h2>
+					<h3 class="theme-author">
+						<?php
+						/* translators: %s: Theme author link. */
+						printf( __( 'By %s' ), '{{{ data.authorAndUri }}}' );
+						?>
+					</h3>
 
 					<# if ( data.stars && 0 != data.num_ratings ) { #>
 						<div class="theme-rating">
 							{{{ data.stars }}}
-							<span class="num-ratings">
+							<a class="num-ratings" target="_blank" href="{{ data.reviews_url }}">
 								<?php
-								/* translators: %s: number of ratings */
-								echo sprintf( __( '(%s ratings)' ), '{{ data.num_ratings }}' );
+								printf(
+									'%1$s <span class="screen-reader-text">%2$s</span>',
+									/* translators: %s: Number of ratings. */
+									sprintf( __( '(%s ratings)' ), '{{ data.num_ratings }}' ),
+									/* translators: Accessibility text. */
+									__( '(opens in a new tab)' )
+								);
 								?>
-							</span>
+							</a>
 						</div>
 					<# } #>
 
@@ -738,7 +759,15 @@ function customize_themes_print_templates() {
 					<# } #>
 
 					<# if ( data.parent ) { #>
-						<p class="parent-theme"><?php printf( __( 'This is a child theme of %s.' ), '<strong>{{{ data.parent }}}</strong>' ); ?></p>
+						<p class="parent-theme">
+							<?php
+							printf(
+								/* translators: %s: Theme name. */
+								__( 'This is a child theme of %s.' ),
+								'<strong>{{{ data.parent }}}</strong>'
+							);
+							?>
+						</p>
 					<# } #>
 
 					<p class="theme-description">{{{ data.description }}}</p>
@@ -767,4 +796,141 @@ function customize_themes_print_templates() {
 		</div>
 	</script>
 	<?php
+}
+
+/**
+ * Determines whether a theme is technically active but was paused while
+ * loading.
+ *
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/
+ * Conditional Tags} article in the Theme Developer Handbook.
+ *
+ * @since 5.2.0
+ *
+ * @param string $theme Path to the theme directory relative to the themes directory.
+ * @return bool True, if in the list of paused themes. False, not in the list.
+ */
+function is_theme_paused( $theme ) {
+	if ( ! isset( $GLOBALS['_paused_themes'] ) ) {
+		return false;
+	}
+
+	if ( get_stylesheet() !== $theme && get_template() !== $theme ) {
+		return false;
+	}
+
+	return array_key_exists( $theme, $GLOBALS['_paused_themes'] );
+}
+
+/**
+ * Gets the error that was recorded for a paused theme.
+ *
+ * @since 5.2.0
+ *
+ * @param string $theme Path to the theme directory relative to the themes
+ *                      directory.
+ * @return array|false Array of error information as it was returned by
+ *                     `error_get_last()`, or false if none was recorded.
+ */
+function wp_get_theme_error( $theme ) {
+	if ( ! isset( $GLOBALS['_paused_themes'] ) ) {
+		return false;
+	}
+
+	if ( ! array_key_exists( $theme, $GLOBALS['_paused_themes'] ) ) {
+		return false;
+	}
+
+	return $GLOBALS['_paused_themes'][ $theme ];
+}
+
+/**
+ * Tries to resume a single theme.
+ *
+ * If a redirect was provided and a functions.php file was found, we first ensure that
+ * functions.php file does not throw fatal errors anymore.
+ *
+ * The way it works is by setting the redirection to the error before trying to
+ * include the file. If the theme fails, then the redirection will not be overwritten
+ * with the success message and the theme will not be resumed.
+ *
+ * @since 5.2.0
+ *
+ * @param string $theme    Single theme to resume.
+ * @param string $redirect Optional. URL to redirect to. Default empty string.
+ * @return bool|WP_Error True on success, false if `$theme` was not paused,
+ *                       `WP_Error` on failure.
+ */
+function resume_theme( $theme, $redirect = '' ) {
+	list( $extension ) = explode( '/', $theme );
+
+	/*
+	 * We'll override this later if the theme could be resumed without
+	 * creating a fatal error.
+	 */
+	if ( ! empty( $redirect ) ) {
+		$functions_path = '';
+		if ( strpos( STYLESHEETPATH, $extension ) ) {
+			$functions_path = STYLESHEETPATH . '/functions.php';
+		} elseif ( strpos( TEMPLATEPATH, $extension ) ) {
+			$functions_path = TEMPLATEPATH . '/functions.php';
+		}
+
+		if ( ! empty( $functions_path ) ) {
+			wp_redirect(
+				add_query_arg(
+					'_error_nonce',
+					wp_create_nonce( 'theme-resume-error_' . $theme ),
+					$redirect
+				)
+			);
+
+			// Load the theme's functions.php to test whether it throws a fatal error.
+			ob_start();
+			if ( ! defined( 'WP_SANDBOX_SCRAPING' ) ) {
+				define( 'WP_SANDBOX_SCRAPING', true );
+			}
+			include $functions_path;
+			ob_clean();
+		}
+	}
+
+	$result = wp_paused_themes()->delete( $extension );
+
+	if ( ! $result ) {
+		return new WP_Error(
+			'could_not_resume_theme',
+			__( 'Could not resume the theme.' )
+		);
+	}
+
+	return true;
+}
+
+/**
+ * Renders an admin notice in case some themes have been paused due to errors.
+ *
+ * @since 5.2.0
+ */
+function paused_themes_notice() {
+	if ( 'themes.php' === $GLOBALS['pagenow'] ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'resume_themes' ) ) {
+		return;
+	}
+
+	if ( ! isset( $GLOBALS['_paused_themes'] ) || empty( $GLOBALS['_paused_themes'] ) ) {
+		return;
+	}
+
+	printf(
+		'<div class="notice notice-error"><p><strong>%s</strong><br>%s</p><p><a href="%s">%s</a></p></div>',
+		__( 'One or more themes failed to load properly.' ),
+		__( 'You can find more details and make changes on the Themes screen.' ),
+		esc_url( admin_url( 'themes.php' ) ),
+		__( 'Go to the Themes screen' )
+	);
 }

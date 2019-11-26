@@ -288,6 +288,31 @@ class WP_Site_Query {
 			$this->meta_query_clauses = $this->meta_query->get_sql( 'blog', $wpdb->blogs, 'blog_id', $this );
 		}
 
+		$site_data = null;
+
+		/**
+		 * Filter the site data before the get_sites query takes place.
+		 *
+		 * Return a non-null value to bypass WordPress's default site queries.
+		 *
+		 * The expected return type from this filter depends on the value passed in the request query_vars:
+		 * When `$this->query_vars['count']` is set, the filter should return the site count as an int.
+		 * When `'ids' == $this->query_vars['fields']`, the filter should return an array of site ids.
+		 * Otherwise the filter should return an array of WP_Site objects.
+		 *
+		 * @since 5.2.0
+		 *
+		 * @param array|int|null $site_data Return an array of site data to short-circuit WP's site query,
+		 *                                  the site count as an integer if `$this->query_vars['count']` is set,
+		 *                                  or null to run the normal queries.
+		 * @param WP_Site_Query  $this      The WP_Site_Query instance, passed by reference.
+		 */
+		$site_data = apply_filters_ref_array( 'sites_pre_query', array( $site_data, &$this ) );
+
+		if ( null !== $site_data ) {
+			return $site_data;
+		}
+
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$_args = wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) );
 
@@ -342,7 +367,8 @@ class WP_Site_Query {
 		// Fetch full site objects from the primed cache.
 		$_sites = array();
 		foreach ( $site_ids as $site_id ) {
-			if ( $_site = get_site( $site_id ) ) {
+			$_site = get_site( $site_id );
+			if ( $_site ) {
 				$_sites[] = $_site;
 			}
 		}
@@ -670,7 +696,7 @@ class WP_Site_Query {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @global wpdb  $wpdb WordPress database abstraction object.
+	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param string   $string  Search string.
 	 * @param string[] $columns Array of columns to search.

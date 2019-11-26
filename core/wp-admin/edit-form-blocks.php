@@ -1,6 +1,6 @@
 <?php
 /**
- * The Block Editor page.
+ * The block editor page.
  *
  * @since 5.0.0
  *
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * @global string       $post_type
  * @global WP_Post_Type $post_type_object
- * @global WP_Post      $post
+ * @global WP_Post      $post             Global post object.
  * @global string       $title
  * @global array        $editor_styles
  * @global array        $wp_meta_boxes
@@ -48,6 +48,8 @@ $preload_paths = array(
 	sprintf( '/wp/v2/types/%s?context=edit', $post_type ),
 	sprintf( '/wp/v2/users/me?post_type=%s&context=edit', $post_type ),
 	array( '/wp/v2/media', 'OPTIONS' ),
+	array( '/wp/v2/blocks', 'OPTIONS' ),
+	sprintf( '/wp/v2/%s/%d/autosaves?context=edit', $rest_base, $post->ID ),
 );
 
 /**
@@ -116,10 +118,10 @@ wp_add_inline_script(
 $meta_box_url = admin_url( 'post.php' );
 $meta_box_url = add_query_arg(
 	array(
-		'post'            => $post->ID,
-		'action'          => 'edit',
-		'meta-box-loader' => true,
-		'_wpnonce'        => wp_create_nonce( 'meta-box-loader' ),
+		'post'                  => $post->ID,
+		'action'                => 'edit',
+		'meta-box-loader'       => true,
+		'meta-box-loader-nonce' => wp_create_nonce( 'meta-box-loader' ),
 	),
 	$meta_box_url
 );
@@ -174,7 +176,7 @@ $styles = array(
 	),
 );
 
-/* Translators: Use this to specify the CSS font family for the default font */
+/* translators: Use this to specify the CSS font family for the default font. */
 $locale_font_family = esc_html_x( 'Noto Serif', 'CSS Font Family for Editor Font' );
 $styles[]           = array(
 	'css' => "body { font-family: '$locale_font_family' }",
@@ -191,7 +193,7 @@ if ( $editor_styles && current_theme_supports( 'editor-styles' ) ) {
 			}
 		} else {
 			$file = get_theme_file_path( $style );
-			if ( file_exists( $file ) ) {
+			if ( is_file( $file ) ) {
 				$styles[] = array(
 					'css'     => file_get_contents( $file ),
 					'baseURL' => get_theme_file_uri( $style ),
@@ -225,6 +227,8 @@ foreach ( $image_size_names as $image_size_slug => $image_size_name ) {
 // Lock settings.
 $user_id = wp_check_post_lock( $post->ID );
 if ( $user_id ) {
+	$locked = false;
+
 	/** This filter is documented in wp-admin/includes/post.php */
 	if ( apply_filters( 'show_post_locked_dialog', true, $post, $user_id ) ) {
 		$locked = true;
@@ -246,9 +250,13 @@ if ( $user_id ) {
 } else {
 	// Lock the post.
 	$active_post_lock = wp_set_post_lock( $post->ID );
-	$lock_details     = array(
+	if ( $active_post_lock ) {
+		$active_post_lock = esc_attr( implode( ':', $active_post_lock ) );
+	}
+
+	$lock_details = array(
 		'isLocked'       => false,
-		'activePostLock' => esc_attr( implode( ':', $active_post_lock ) ),
+		'activePostLock' => $active_post_lock,
 	);
 }
 
@@ -306,7 +314,7 @@ if ( false !== $color_palette ) {
 	$editor_settings['colors'] = $color_palette;
 }
 
-if ( ! empty( $font_sizes ) ) {
+if ( false !== $font_sizes ) {
 	$editor_settings['fontSizes'] = $font_sizes;
 }
 
@@ -408,9 +416,9 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 			<p>
 				<?php
 					$message = sprintf(
-						/* translators: %s: Classic Editor plugin URL */
+						/* translators: %s: A link to install the Classic Editor plugin. */
 						__( 'The block editor requires JavaScript. Please enable JavaScript in your browser settings, or try the <a href="%s">Classic Editor plugin</a>.' ),
-						__( 'https://wordpress.org/plugins/classic-editor/' )
+						esc_url( wp_nonce_url( self_admin_url( 'plugin-install.php?tab=favorites&user=wordpressdotorg&save=0' ), 'save_wporg_username_' . get_current_user_id() ) )
 					);
 
 					/**

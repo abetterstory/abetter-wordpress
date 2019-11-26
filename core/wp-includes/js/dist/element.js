@@ -82,12 +82,12 @@ this["wp"] = this["wp"] || {}; this["wp"]["element"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 319);
+/******/ 	return __webpack_require__(__webpack_require__.s = 359);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 15:
+/***/ 10:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -160,14 +160,14 @@ function _objectWithoutProperties(source, excluded) {
 
 /***/ }),
 
-/***/ 26:
+/***/ 28:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["React"]; }());
 
 /***/ }),
 
-/***/ 28:
+/***/ 31:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -190,20 +190,20 @@ function _typeof(obj) {
 
 /***/ }),
 
-/***/ 319:
+/***/ 359:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread.js
-var objectSpread = __webpack_require__(8);
+var objectSpread = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js + 1 modules
 var objectWithoutProperties = __webpack_require__(21);
 
 // EXTERNAL MODULE: external "React"
-var external_React_ = __webpack_require__(26);
+var external_React_ = __webpack_require__(28);
 
 // EXTERNAL MODULE: external "lodash"
 var external_lodash_ = __webpack_require__(2);
@@ -216,6 +216,10 @@ var external_lodash_ = __webpack_require__(2);
  * External dependencies
  */
 
+
+/**
+ * Object that provides utilities for dealing with React children.
+ */
 
 
 /**
@@ -292,6 +296,75 @@ var external_lodash_ = __webpack_require__(2);
  */
 
 
+/**
+ * @see https://reactjs.org/docs/react-api.html#reactmemo
+ */
+
+
+/**
+ * Component that activates additional checks and warnings for its descendants.
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usecallback
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usecontext
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usedebugvalue
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#useeffect
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#useimperativehandle
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#uselayouteffect
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usememo
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usereducer
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#useref
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/hooks-reference.html#usestate
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/react-api.html#reactlazy
+ */
+
+
+/**
+ * @see https://reactjs.org/docs/react-api.html#reactsuspense
+ */
+
 
 /**
  * Concatenate two or more React children objects.
@@ -306,7 +379,7 @@ function concatChildren() {
     childrenArguments[_key] = arguments[_key];
   }
 
-  return childrenArguments.reduce(function (memo, children, i) {
+  return childrenArguments.reduce(function (result, children, i) {
     external_React_["Children"].forEach(children, function (child, j) {
       if (child && 'string' !== typeof child) {
         child = Object(external_React_["cloneElement"])(child, {
@@ -314,9 +387,9 @@ function concatChildren() {
         });
       }
 
-      memo.push(child);
+      result.push(child);
     });
-    return memo;
+    return result;
   }, []);
 }
 /**
@@ -347,7 +420,7 @@ function switchChildrenNodeName(children, nodeName) {
 }
 
 // EXTERNAL MODULE: external "ReactDOM"
-var external_ReactDOM_ = __webpack_require__(48);
+var external_ReactDOM_ = __webpack_require__(57);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/react-platform.js
 /**
@@ -413,17 +486,17 @@ var utils_isEmptyElement = function isEmptyElement(element) {
 };
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-var esm_typeof = __webpack_require__(28);
+var esm_typeof = __webpack_require__(31);
 
 // EXTERNAL MODULE: external {"this":["wp","escapeHtml"]}
-var external_this_wp_escapeHtml_ = __webpack_require__(61);
+var external_this_wp_escapeHtml_ = __webpack_require__(71);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/raw-html.js
 
 
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 
 /**
@@ -432,7 +505,9 @@ var external_this_wp_escapeHtml_ = __webpack_require__(61);
  * To preserve additional props, a `div` wrapper _will_ be created if any props
  * aside from `children` are passed.
  *
+ * @param {Object} props
  * @param {string} props.children HTML to render.
+ * @param {Object} props.props    Any additonal props to be set on the containing div.
  *
  * @return {WPElement} Dangerously-rendering element.
  */
@@ -501,12 +576,15 @@ function RawHTML(_ref) {
 var _createContext = Object(external_React_["createContext"])(),
     Provider = _createContext.Provider,
     Consumer = _createContext.Consumer;
+
+var ForwardRef = Object(external_React_["forwardRef"])(function () {
+  return null;
+});
 /**
  * Valid attribute types.
  *
  * @type {Set}
  */
-
 
 var ATTRIBUTES_TYPES = new Set(['string', 'boolean', 'number']);
 /**
@@ -749,6 +827,9 @@ function renderElement(element, context) {
 
     case Consumer.$$typeof:
       return renderElement(props.children(context || type._currentValue), context, legacyContext);
+
+    case ForwardRef.$$typeof:
+      return renderElement(type.render(props), context, legacyContext);
   }
 
   return '';
@@ -944,7 +1025,20 @@ function renderStyle(style) {
 /* concated harmony reexport forwardRef */__webpack_require__.d(__webpack_exports__, "forwardRef", function() { return external_React_["forwardRef"]; });
 /* concated harmony reexport Fragment */__webpack_require__.d(__webpack_exports__, "Fragment", function() { return external_React_["Fragment"]; });
 /* concated harmony reexport isValidElement */__webpack_require__.d(__webpack_exports__, "isValidElement", function() { return external_React_["isValidElement"]; });
+/* concated harmony reexport memo */__webpack_require__.d(__webpack_exports__, "memo", function() { return external_React_["memo"]; });
 /* concated harmony reexport StrictMode */__webpack_require__.d(__webpack_exports__, "StrictMode", function() { return external_React_["StrictMode"]; });
+/* concated harmony reexport useCallback */__webpack_require__.d(__webpack_exports__, "useCallback", function() { return external_React_["useCallback"]; });
+/* concated harmony reexport useContext */__webpack_require__.d(__webpack_exports__, "useContext", function() { return external_React_["useContext"]; });
+/* concated harmony reexport useDebugValue */__webpack_require__.d(__webpack_exports__, "useDebugValue", function() { return external_React_["useDebugValue"]; });
+/* concated harmony reexport useEffect */__webpack_require__.d(__webpack_exports__, "useEffect", function() { return external_React_["useEffect"]; });
+/* concated harmony reexport useImperativeHandle */__webpack_require__.d(__webpack_exports__, "useImperativeHandle", function() { return external_React_["useImperativeHandle"]; });
+/* concated harmony reexport useLayoutEffect */__webpack_require__.d(__webpack_exports__, "useLayoutEffect", function() { return external_React_["useLayoutEffect"]; });
+/* concated harmony reexport useMemo */__webpack_require__.d(__webpack_exports__, "useMemo", function() { return external_React_["useMemo"]; });
+/* concated harmony reexport useReducer */__webpack_require__.d(__webpack_exports__, "useReducer", function() { return external_React_["useReducer"]; });
+/* concated harmony reexport useRef */__webpack_require__.d(__webpack_exports__, "useRef", function() { return external_React_["useRef"]; });
+/* concated harmony reexport useState */__webpack_require__.d(__webpack_exports__, "useState", function() { return external_React_["useState"]; });
+/* concated harmony reexport lazy */__webpack_require__.d(__webpack_exports__, "lazy", function() { return external_React_["lazy"]; });
+/* concated harmony reexport Suspense */__webpack_require__.d(__webpack_exports__, "Suspense", function() { return external_React_["Suspense"]; });
 /* concated harmony reexport concatChildren */__webpack_require__.d(__webpack_exports__, "concatChildren", function() { return concatChildren; });
 /* concated harmony reexport switchChildrenNodeName */__webpack_require__.d(__webpack_exports__, "switchChildrenNodeName", function() { return switchChildrenNodeName; });
 /* concated harmony reexport createPortal */__webpack_require__.d(__webpack_exports__, "createPortal", function() { return external_ReactDOM_["createPortal"]; });
@@ -963,26 +1057,19 @@ function renderStyle(style) {
 
 /***/ }),
 
-/***/ 48:
+/***/ 57:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["ReactDOM"]; }());
 
 /***/ }),
 
-/***/ 61:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["wp"]["escapeHtml"]; }());
-
-/***/ }),
-
-/***/ 8:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectSpread; });
-/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 
 function _objectSpread(target) {
   for (var i = 1; i < arguments.length; i++) {
@@ -1002,6 +1089,13 @@ function _objectSpread(target) {
 
   return target;
 }
+
+/***/ }),
+
+/***/ 71:
+/***/ (function(module, exports) {
+
+(function() { module.exports = this["wp"]["escapeHtml"]; }());
 
 /***/ })
 

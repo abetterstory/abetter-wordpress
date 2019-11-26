@@ -82,26 +82,26 @@ this["wp"] = this["wp"] || {}; this["wp"]["deprecated"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 268);
+/******/ 	return __webpack_require__(__webpack_require__.s = 323);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 23:
+/***/ 27:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["hooks"]; }());
 
 /***/ }),
 
-/***/ 268:
+/***/ 323:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logged", function() { return logged; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return deprecated; });
-/* harmony import */ var _wordpress_hooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(23);
+/* harmony import */ var _wordpress_hooks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
 /* harmony import */ var _wordpress_hooks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_hooks__WEBPACK_IMPORTED_MODULE_0__);
 /**
  * WordPress dependencies
@@ -125,6 +125,20 @@ var logged = Object.create(null);
  * @param {?string} options.plugin      Plugin name if it's a plugin feature
  * @param {?string} options.link        Link to documentation
  * @param {?string} options.hint        Additional message to help transition away from the deprecated feature.
+ *
+ * @example
+ * ```js
+ * import deprecated from '@wordpress/deprecated';
+ *
+ * deprecated( 'Eating meat', {
+ * 	version: 'the future',
+ * 	alternative: 'vegetables',
+ * 	plugin: 'the earth',
+ * 	hint: 'You may find it beneficial to transition gradually.',
+ * } );
+ *
+ * // Logs: 'Eating meat is deprecated and will be removed from the earth in the future. Please use vegetables instead. Note: You may find it beneficial to transition gradually.'
+ * ```
  */
 
 function deprecated(feature) {
@@ -135,11 +149,11 @@ function deprecated(feature) {
       link = options.link,
       hint = options.hint;
   var pluginMessage = plugin ? " from ".concat(plugin) : '';
-  var versionMessage = version ? "".concat(pluginMessage, " in ").concat(version) : '';
+  var versionMessage = version ? " and will be removed".concat(pluginMessage, " in version ").concat(version) : '';
   var useInsteadMessage = alternative ? " Please use ".concat(alternative, " instead.") : '';
   var linkMessage = link ? " See: ".concat(link) : '';
   var hintMessage = hint ? " Note: ".concat(hint) : '';
-  var message = "".concat(feature, " is deprecated and will be removed").concat(versionMessage, ".").concat(useInsteadMessage).concat(linkMessage).concat(hintMessage); // Skip if already logged.
+  var message = "".concat(feature, " is deprecated").concat(versionMessage, ".").concat(useInsteadMessage).concat(linkMessage).concat(hintMessage); // Skip if already logged.
 
   if (message in logged) {
     return;

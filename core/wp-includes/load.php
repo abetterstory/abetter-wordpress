@@ -13,7 +13,7 @@
  * @return string The HTTP protocol. Default: HTTP/1.0.
  */
 function wp_get_server_protocol() {
-	$protocol = $_SERVER['SERVER_PROTOCOL'];
+	$protocol = isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : '';
 	if ( ! in_array( $protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ) ) ) {
 		$protocol = 'HTTP/1.0';
 	}
@@ -26,7 +26,7 @@ function wp_get_server_protocol() {
  * @since 2.1.0
  * @access private
  */
-function wp_unregister_GLOBALS() {
+function wp_unregister_GLOBALS() {  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	if ( ! ini_get( 'register_globals' ) ) {
 		return;
 	}
@@ -109,7 +109,8 @@ function wp_fix_server_vars() {
 	// Fix empty PHP_SELF
 	$PHP_SELF = $_SERVER['PHP_SELF'];
 	if ( empty( $PHP_SELF ) ) {
-		$_SERVER['PHP_SELF'] = $PHP_SELF = preg_replace( '/(\?.*)?$/', '', $_SERVER['REQUEST_URI'] );
+		$_SERVER['PHP_SELF'] = preg_replace( '/(\?.*)?$/', '', $_SERVER['REQUEST_URI'] );
+		$PHP_SELF            = $_SERVER['PHP_SELF'];
 	}
 }
 
@@ -130,22 +131,26 @@ function wp_check_php_mysql_versions() {
 	$php_version = phpversion();
 
 	if ( version_compare( $required_php_version, $php_version, '>' ) ) {
-		wp_load_translations_early();
-
 		$protocol = wp_get_server_protocol();
 		header( sprintf( '%s 500 Internal Server Error', $protocol ), true, 500 );
 		header( 'Content-Type: text/html; charset=utf-8' );
-		/* translators: 1: Current PHP version number, 2: WordPress version number, 3: Minimum required PHP version number */
-		die( sprintf( __( 'Your server is running PHP version %1$s but WordPress %2$s requires at least %3$s.' ), $php_version, $wp_version, $required_php_version ) );
+		printf( 'Your server is running PHP version %1$s but WordPress %2$s requires at least %3$s.', $php_version, $wp_version, $required_php_version );
+		exit( 1 );
 	}
 
 	if ( ! extension_loaded( 'mysql' ) && ! extension_loaded( 'mysqli' ) && ! extension_loaded( 'mysqlnd' ) && ! file_exists( WP_CONTENT_DIR . '/db.php' ) ) {
+		require_once( ABSPATH . WPINC . '/functions.php' );
 		wp_load_translations_early();
-
-		$protocol = wp_get_server_protocol();
-		header( sprintf( '%s 500 Internal Server Error', $protocol ), true, 500 );
-		header( 'Content-Type: text/html; charset=utf-8' );
-		die( __( 'Your PHP installation appears to be missing the MySQL extension which is required by WordPress.' ) );
+		$args = array(
+			'exit' => false,
+			'code' => 'mysql_not_found',
+		);
+		wp_die(
+			__( 'Your PHP installation appears to be missing the MySQL extension which is required by WordPress.' ),
+			__( 'Requirements Not Met' ),
+			$args
+		);
+		exit( 1 );
 	}
 }
 
@@ -214,31 +219,16 @@ function wp_maintenance() {
 		die();
 	}
 
+	require_once( ABSPATH . WPINC . '/functions.php' );
 	wp_load_translations_early();
 
-	$protocol = wp_get_server_protocol();
-	header( "$protocol 503 Service Unavailable", true, 503 );
-	header( 'Content-Type: text/html; charset=utf-8' );
 	header( 'Retry-After: 600' );
 
-	$dir_attr = '';
-	if ( is_rtl() ) {
-		$dir_attr = ' dir="rtl"';
-	}
-	?>
-	<!DOCTYPE html>
-	<html xmlns="http://www.w3.org/1999/xhtml"<?php echo $dir_attr; ?>>
-	<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title><?php _e( 'Maintenance' ); ?></title>
-
-	</head>
-	<body>
-		<h1><?php _e( 'Briefly unavailable for scheduled maintenance. Check back in a minute.' ); ?></h1>
-	</body>
-	</html>
-	<?php
-	die();
+	wp_die(
+		__( 'Briefly unavailable for scheduled maintenance. Check back in a minute.' ),
+		__( 'Maintenance' ),
+		503
+	);
 }
 
 /**
@@ -359,7 +349,7 @@ function wp_debug_mode() {
 	}
 
 	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() || wp_is_json_request() ) {
-		@ini_set( 'display_errors', 0 );
+		ini_set( 'display_errors', 0 );
 	}
 }
 
@@ -413,7 +403,7 @@ function wp_set_lang_dir() {
  *
  * @since 2.5.0
  *
- * @global wpdb $wpdb The WordPress database class.
+ * @global wpdb $wpdb WordPress database abstraction object.
  */
 function require_wp_db() {
 	global $wpdb;
@@ -444,7 +434,7 @@ function require_wp_db() {
  * @since 3.0.0
  * @access private
  *
- * @global wpdb   $wpdb         The WordPress database class.
+ * @global wpdb   $wpdb         WordPress database abstraction object.
  * @global string $table_prefix The database table prefix.
  */
 function wp_set_wpdb_vars() {
@@ -496,8 +486,8 @@ function wp_set_wpdb_vars() {
 	if ( is_wp_error( $prefix ) ) {
 		wp_load_translations_early();
 		wp_die(
-			/* translators: 1: $table_prefix, 2: wp-config.php */
 			sprintf(
+				/* translators: 1: $table_prefix, 2: wp-config.php */
 				__( '<strong>ERROR</strong>: %1$s in %2$s can only contain numbers, letters, and underscores.' ),
 				'<code>$table_prefix</code>',
 				'<code>wp-config.php</code>'
@@ -642,7 +632,8 @@ function wp_get_mu_plugins() {
 	if ( ! is_dir( WPMU_PLUGIN_DIR ) ) {
 		return $mu_plugins;
 	}
-	if ( ! $dh = opendir( WPMU_PLUGIN_DIR ) ) {
+	$dh = opendir( WPMU_PLUGIN_DIR );
+	if ( ! $dh ) {
 		return $mu_plugins;
 	}
 	while ( ( $plugin = readdir( $dh ) ) !== false ) {
@@ -697,6 +688,43 @@ function wp_get_active_and_valid_plugins() {
 		}
 	}
 
+	/*
+	 * Remove plugins from the list of active plugins when we're on an endpoint
+	 * that should be protected against WSODs and the plugin is paused.
+	 */
+	if ( wp_is_recovery_mode() ) {
+		$plugins = wp_skip_paused_plugins( $plugins );
+	}
+
+	return $plugins;
+}
+
+/**
+ * Filters a given list of plugins, removing any paused plugins from it.
+ *
+ * @since 5.2.0
+ *
+ * @param array $plugins List of absolute plugin main file paths.
+ * @return array Filtered value of $plugins, without any paused plugins.
+ */
+function wp_skip_paused_plugins( array $plugins ) {
+	$paused_plugins = wp_paused_plugins()->get_all();
+
+	if ( empty( $paused_plugins ) ) {
+		return $plugins;
+	}
+
+	foreach ( $plugins as $index => $plugin ) {
+		list( $plugin ) = explode( '/', plugin_basename( $plugin ) );
+
+		if ( array_key_exists( $plugin, $paused_plugins ) ) {
+			unset( $plugins[ $index ] );
+
+			// Store list of paused plugins for displaying an admin notice.
+			$GLOBALS['_paused_plugins'][ $plugin ] = $paused_plugins[ $plugin ];
+		}
+	}
+
 	return $plugins;
 }
 
@@ -725,7 +753,144 @@ function wp_get_active_and_valid_themes() {
 
 	$themes[] = TEMPLATEPATH;
 
+	/*
+	 * Remove themes from the list of active themes when we're on an endpoint
+	 * that should be protected against WSODs and the theme is paused.
+	 */
+	if ( wp_is_recovery_mode() ) {
+		$themes = wp_skip_paused_themes( $themes );
+
+		// If no active and valid themes exist, skip loading themes.
+		if ( empty( $themes ) ) {
+			add_filter( 'wp_using_themes', '__return_false' );
+		}
+	}
+
 	return $themes;
+}
+
+/**
+ * Filters a given list of themes, removing any paused themes from it.
+ *
+ * @since 5.2.0
+ *
+ * @param array $themes List of absolute theme directory paths.
+ * @return array Filtered value of $themes, without any paused themes.
+ */
+function wp_skip_paused_themes( array $themes ) {
+	$paused_themes = wp_paused_themes()->get_all();
+
+	if ( empty( $paused_themes ) ) {
+		return $themes;
+	}
+
+	foreach ( $themes as $index => $theme ) {
+		$theme = basename( $theme );
+
+		if ( array_key_exists( $theme, $paused_themes ) ) {
+			unset( $themes[ $index ] );
+
+			// Store list of paused themes for displaying an admin notice.
+			$GLOBALS['_paused_themes'][ $theme ] = $paused_themes[ $theme ];
+		}
+	}
+
+	return $themes;
+}
+
+/**
+ * Is WordPress in Recovery Mode.
+ *
+ * In this mode, plugins or themes that cause WSODs will be paused.
+ *
+ * @since 5.2.0
+ *
+ * @return bool
+ */
+function wp_is_recovery_mode() {
+	return wp_recovery_mode()->is_active();
+}
+
+/**
+ * Determines whether we are currently on an endpoint that should be protected against WSODs.
+ *
+ * @since 5.2.0
+ *
+ * @return bool True if the current endpoint should be protected.
+ */
+function is_protected_endpoint() {
+	// Protect login pages.
+	if ( isset( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] ) {
+		return true;
+	}
+
+	// Protect the admin backend.
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return true;
+	}
+
+	// Protect AJAX actions that could help resolve a fatal error should be available.
+	if ( is_protected_ajax_action() ) {
+		return true;
+	}
+
+	/**
+	 * Filters whether the current request is against a protected endpoint.
+	 *
+	 * This filter is only fired when an endpoint is requested which is not already protected by
+	 * WordPress core. As such, it exclusively allows providing further protected endpoints in
+	 * addition to the admin backend, login pages and protected AJAX actions.
+	 *
+	 * @since 5.2.0
+	 *
+	 * @param bool $is_protected_endpoint Whether the currently requested endpoint is protected. Default false.
+	 */
+	return (bool) apply_filters( 'is_protected_endpoint', false );
+}
+
+/**
+ * Determines whether we are currently handling an AJAX action that should be protected against WSODs.
+ *
+ * @since 5.2.0
+ *
+ * @return bool True if the current AJAX action should be protected.
+ */
+function is_protected_ajax_action() {
+	if ( ! wp_doing_ajax() ) {
+		return false;
+	}
+
+	if ( ! isset( $_REQUEST['action'] ) ) {
+		return false;
+	}
+
+	$actions_to_protect = array(
+		'edit-theme-plugin-file', // Saving changes in the core code editor.
+		'heartbeat',              // Keep the heart beating.
+		'install-plugin',         // Installing a new plugin.
+		'install-theme',          // Installing a new theme.
+		'search-plugins',         // Searching in the list of plugins.
+		'search-install-plugins', // Searching for a plugin in the plugin install screen.
+		'update-plugin',          // Update an existing plugin.
+		'update-theme',           // Update an existing theme.
+	);
+
+	/**
+	 * Filters the array of protected AJAX actions.
+	 *
+	 * This filter is only fired when doing AJAX and the AJAX request has an 'action' property.
+	 *
+	 * @since 5.2.0
+	 *
+	 * @param array $actions_to_protect Array of strings with AJAX actions to protect.
+	 */
+	$actions_to_protect = (array) apply_filters( 'wp_protected_ajax_actions', $actions_to_protect );
+
+	if ( ! in_array( $_REQUEST['action'], $actions_to_protect, true ) ) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -740,6 +905,7 @@ function wp_get_active_and_valid_themes() {
 function wp_set_internal_encoding() {
 	if ( function_exists( 'mb_internal_encoding' ) ) {
 		$charset = get_option( 'blog_charset' );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		if ( ! $charset || ! @mb_internal_encoding( $charset ) ) {
 			mb_internal_encoding( 'UTF-8' );
 		}
@@ -756,13 +922,6 @@ function wp_set_internal_encoding() {
  * @access private
  */
 function wp_magic_quotes() {
-	// If already slashed, strip.
-	if ( get_magic_quotes_gpc() ) {
-		$_GET    = stripslashes_deep( $_GET );
-		$_POST   = stripslashes_deep( $_POST );
-		$_COOKIE = stripslashes_deep( $_COOKIE );
-	}
-
 	// Escape with wpdb.
 	$_GET    = add_magic_quotes( $_GET );
 	$_POST   = add_magic_quotes( $_POST );
@@ -816,7 +975,7 @@ function wp_clone( $object ) {
  *
  * @since 1.5.1
  *
- * @global WP_Screen $current_screen
+ * @global WP_Screen $current_screen WordPress current screen object.
  *
  * @return bool True if inside WordPress administration interface, false otherwise.
  */
@@ -840,7 +999,7 @@ function is_admin() {
  *
  * @since 3.1.0
  *
- * @global WP_Screen $current_screen
+ * @global WP_Screen $current_screen WordPress current screen object.
  *
  * @return bool True if inside WordPress blog administration pages.
  */
@@ -862,9 +1021,12 @@ function is_blog_admin() {
  * Does not check if the user is an administrator; use current_user_can()
  * for checking roles and capabilities.
  *
+ * Does not check if the site is a Multisite network; use is_multisite()
+ * for checking if Multisite is enabled.
+ *
  * @since 3.1.0
  *
- * @global WP_Screen $current_screen
+ * @global WP_Screen $current_screen WordPress current screen object.
  *
  * @return bool True if inside WordPress network administration pages.
  */
@@ -888,7 +1050,7 @@ function is_network_admin() {
  *
  * @since 3.1.0
  *
- * @global WP_Screen $current_screen
+ * @global WP_Screen $current_screen WordPress current screen object.
  *
  * @return bool True if inside WordPress user administration pages.
  */
@@ -969,7 +1131,7 @@ function get_current_network_id() {
  * @since 3.4.0
  * @access private
  *
- * @global WP_Locale $wp_locale The WordPress date and time locale object.
+ * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
  * @staticvar bool $loaded
  */
@@ -998,7 +1160,8 @@ function wp_load_translations_early() {
 	// General libraries
 	require_once ABSPATH . WPINC . '/plugin.php';
 
-	$locales = $locations = array();
+	$locales   = array();
+	$locations = array();
 
 	while ( true ) {
 		if ( defined( 'WPLANG' ) ) {
@@ -1285,6 +1448,9 @@ function wp_start_scraping_edited_file_errors() {
 		echo "###### wp_scraping_result_end:$key ######";
 		die();
 	}
+	if ( ! defined( 'WP_SANDBOX_SCRAPING' ) ) {
+		define( 'WP_SANDBOX_SCRAPING', true );
+	}
 	register_shutdown_function( 'wp_finalize_scraping_edited_file_errors', $key );
 }
 
@@ -1326,4 +1492,64 @@ function wp_is_json_request() {
 
 	return false;
 
+}
+
+/**
+ * Checks whether current request is a JSONP request, or is expecting a JSONP response.
+ *
+ * @since 5.2.0
+ *
+ * @return bool True if JSONP request, false otherwise.
+ */
+function wp_is_jsonp_request() {
+	if ( ! isset( $_GET['_jsonp'] ) ) {
+		return false;
+	}
+
+	if ( ! function_exists( 'wp_check_jsonp_callback' ) ) {
+		require_once ABSPATH . WPINC . '/functions.php';
+	}
+
+	$jsonp_callback = $_GET['_jsonp'];
+	if ( ! wp_check_jsonp_callback( $jsonp_callback ) ) {
+		return false;
+	}
+
+	/** This filter is documented in wp-includes/rest-api/class-wp-rest-server.php */
+	$jsonp_enabled = apply_filters( 'rest_jsonp_enabled', true );
+
+	return $jsonp_enabled;
+
+}
+
+/**
+ * Checks whether current request is an XML request, or is expecting an XML response.
+ *
+ * @since 5.2.0
+ *
+ * @return bool True if Accepts or Content-Type headers contain xml, false otherwise.
+ */
+function wp_is_xml_request() {
+	$accepted = array(
+		'text/xml',
+		'application/rss+xml',
+		'application/atom+xml',
+		'application/rdf+xml',
+		'text/xml+oembed',
+		'application/xml+oembed',
+	);
+
+	if ( isset( $_SERVER['HTTP_ACCEPT'] ) ) {
+		foreach ( $accepted as $type ) {
+			if ( false !== strpos( $_SERVER['HTTP_ACCEPT'], $type ) ) {
+				return true;
+			}
+		}
+	}
+
+	if ( isset( $_SERVER['CONTENT_TYPE'] ) && in_array( $_SERVER['CONTENT_TYPE'], $accepted, true ) ) {
+		return true;
+	}
+
+	return false;
 }

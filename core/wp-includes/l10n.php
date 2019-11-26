@@ -53,8 +53,13 @@ function get_locale() {
 	// If multisite, check options.
 	if ( is_multisite() ) {
 		// Don't check blog option when installing.
-		if ( wp_installing() || ( false === $ms_locale = get_option( 'WPLANG' ) ) ) {
+		if ( wp_installing() ) {
 			$ms_locale = get_site_option( 'WPLANG' );
+		} else {
+			$ms_locale = get_option( 'WPLANG' );
+			if ( false === $ms_locale ) {
+				$ms_locale = get_site_option( 'WPLANG' );
+			}
 		}
 
 		if ( $ms_locale !== false ) {
@@ -767,10 +772,11 @@ function load_default_textdomain( $locale = null ) {
  * @since 1.5.0
  * @since 4.6.0 The function now tries to load the .mo file from the languages directory first.
  *
- * @param string $domain          Unique identifier for retrieving translated strings
- * @param string $deprecated      Optional. Use the $plugin_rel_path parameter instead. Default false.
- * @param string $plugin_rel_path Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
- *                                Default false.
+ * @param string       $domain          Unique identifier for retrieving translated strings
+ * @param string|false $deprecated      Optional. Deprecated. Use the $plugin_rel_path parameter instead.
+ *                                      Default false.
+ * @param string|false $plugin_rel_path Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
+ *                                      Default false.
  * @return bool True when textdomain is successfully loaded, false otherwise.
  */
 function load_plugin_textdomain( $domain, $deprecated = false, $plugin_rel_path = false ) {
@@ -942,20 +948,43 @@ function load_script_textdomain( $handle, $domain = 'default', $path = null ) {
 
 	$src_url     = wp_parse_url( $src );
 	$content_url = wp_parse_url( content_url() );
+	$plugins_url = wp_parse_url( plugins_url() );
 	$site_url    = wp_parse_url( site_url() );
 
 	// If the host is the same or it's a relative URL.
 	if (
-		strpos( $src_url['path'], $content_url['path'] ) === 0 &&
+		( ! isset( $content_url['path'] ) || strpos( $src_url['path'], $content_url['path'] ) === 0 ) &&
 		( ! isset( $src_url['host'] ) || $src_url['host'] === $content_url['host'] )
 	) {
 		// Make the src relative the specific plugin or theme.
-		$relative = trim( substr( $src_url['path'], strlen( $content_url['path'] ) ), '/' );
+		if ( isset( $content_url['path'] ) ) {
+			$relative = substr( $src_url['path'], strlen( $content_url['path'] ) );
+		} else {
+			$relative = $src_url['path'];
+		}
+		$relative = trim( $relative, '/' );
 		$relative = explode( '/', $relative );
 
 		$languages_path = WP_LANG_DIR . '/' . $relative[0];
 
-		$relative = array_slice( $relative, 2 );
+		$relative = array_slice( $relative, 2 ); // Remove plugins/<plugin name> or themes/<theme name>.
+		$relative = implode( '/', $relative );
+	} elseif (
+		( ! isset( $plugins_url['path'] ) || strpos( $src_url['path'], $plugins_url['path'] ) === 0 ) &&
+		( ! isset( $src_url['host'] ) || $src_url['host'] === $plugins_url['host'] )
+	) {
+		// Make the src relative the specific plugin.
+		if ( isset( $plugins_url['path'] ) ) {
+			$relative = substr( $src_url['path'], strlen( $plugins_url['path'] ) );
+		} else {
+			$relative = $src_url['path'];
+		}
+		$relative = trim( $relative, '/' );
+		$relative = explode( '/', $relative );
+
+		$languages_path = WP_LANG_DIR . '/plugins';
+
+		$relative = array_slice( $relative, 1 ); // Remove <plugin name>.
 		$relative = implode( '/', $relative );
 	} elseif ( ! isset( $src_url['host'] ) || $src_url['host'] === $site_url['host'] ) {
 		if ( ! isset( $site_url['path'] ) ) {
@@ -1024,10 +1053,10 @@ function load_script_translations( $file, $handle, $domain ) {
 	 *
 	 * @since 5.0.2
 	 *
-	 * @param string|false $translations JSON-encoded translation data. Default null.
-	 * @param string|false $file         Path to the translation file to load. False if there isn't one.
-	 * @param string       $handle       Name of the script to register a translation domain to.
-	 * @param string       $domain       The text domain.
+	 * @param string|false|null $translations JSON-encoded translation data. Default null.
+	 * @param string|false      $file         Path to the translation file to load. False if there isn't one.
+	 * @param string            $handle       Name of the script to register a translation domain to.
+	 * @param string            $domain       The text domain.
 	 */
 	$translations = apply_filters( 'pre_load_script_translations', null, $file, $handle, $domain );
 
@@ -1232,12 +1261,15 @@ function is_textdomain_loaded( $domain ) {
  * won't suffer from that problem.
  *
  * @since 2.8.0
+ * @since 5.2.0 Added the `$domain` parameter.
  *
- * @param string $name The role name.
+ * @param string $name   The role name.
+ * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                       Default 'default'.
  * @return string Translated role name on success, original name on failure.
  */
-function translate_user_role( $name ) {
-	return translate_with_gettext_context( before_last_bar( $name ), 'User role' );
+function translate_user_role( $name, $domain = 'default' ) {
+	return translate_with_gettext_context( before_last_bar( $name ), 'User role', $domain );
 }
 
 /**
@@ -1521,7 +1553,7 @@ function wp_dropdown_languages( $args = array() ) {
  *
  * @since 3.0.0
  *
- * @global WP_Locale $wp_locale
+ * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
  * @return bool Whether locale is RTL.
  */
@@ -1538,7 +1570,7 @@ function is_rtl() {
  *
  * @since 4.7.0
  *
- * @global WP_Locale_Switcher $wp_locale_switcher
+ * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
  * @param string $locale The locale.
  * @return bool True on success, false on failure.
@@ -1555,7 +1587,7 @@ function switch_to_locale( $locale ) {
  *
  * @since 4.7.0
  *
- * @global WP_Locale_Switcher $wp_locale_switcher
+ * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
  * @return string|false Locale on success, false on error.
  */
@@ -1571,7 +1603,7 @@ function restore_previous_locale() {
  *
  * @since 4.7.0
  *
- * @global WP_Locale_Switcher $wp_locale_switcher
+ * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
  * @return string|false Locale on success, false on error.
  */
@@ -1587,7 +1619,7 @@ function restore_current_locale() {
  *
  * @since 4.7.0
  *
- * @global WP_Locale_Switcher $wp_locale_switcher
+ * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
  * @return bool True if the locale has been switched, false otherwise.
  */
