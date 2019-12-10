@@ -255,7 +255,7 @@ if (function_exists('acf_add_options_page')) {
 add_action('init', function(){
 	// Component
 	register_taxonomy('components',['post','page'],[
-		'hierarchical' => FALSE,
+		'hierarchical' => TRUE,
 		'show_ui' => TRUE,
 		'show_admin_column' => TRUE,
 		'query_var' => TRUE,
