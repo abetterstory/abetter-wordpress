@@ -11,41 +11,61 @@ if($aDBc_db_size >= 1024){
 $aDBc_unused_elements = aDBc_count_all_elements_to_clean();
 $aDBc_total_unused = 0;
 foreach($aDBc_unused_elements as $element_type => $element_info){
-	$aDBc_total_unused += $element_info['count'];
+	// Count total unused elements. DO not take into account transient with expiration and not expiring transients because they are not intended to be cleaned
+	if($element_type != "transients-with-expiration" && $element_type != "transients-with-no-expiration")
+		$aDBc_total_unused += $element_info['count'];
 }
 // Total tables
 $aDBc_total_tables = $wpdb->get_var("SELECT count(*) FROM information_schema.tables WHERE table_schema = '" . DB_NAME . "'");
 // Total options
 if(function_exists('is_multisite') && is_multisite()){
-	$aDBc_options_toolip = "<a style='line-height: 18px' class='aDBc-tooltips'>
-								<img class='aDBc-margin-l-3' src='".  ADBC_PLUGIN_DIR_PATH . '/images/notice.png' . "'/>
-								<span>" . __('Indicates the total number of rows in your option tables of all your network sites, including transients...','advanced-database-cleaner') ." </span>
-							 </a>";
+							 
+	$aDBc_options_toolip = "<span class='aDBc-tooltips-headers'>
+					<img class='aDBc-info-image' src='".  ADBC_PLUGIN_DIR_PATH . '/images/information2.svg' . "'/>
+					<span>" . __('Indicates the total number of rows in your option tables of all your network sites, including transients...','advanced-database-cleaner') ." </span>
+				  </span>";	
+				  
 }else{
-	$aDBc_options_toolip = "<a style='line-height: 18px' class='aDBc-tooltips'>
-								<img class='aDBc-margin-l-3' src='".  ADBC_PLUGIN_DIR_PATH . '/images/notice.png' . "'/>
-								<span>" . __('Indicates the total number of rows in your option table, including transients...','advanced-database-cleaner') ." </span>
-							 </a>";
+							 
+	$aDBc_options_toolip = "<span class='aDBc-tooltips-headers'>
+					<img class='aDBc-info-image' src='".  ADBC_PLUGIN_DIR_PATH . '/images/information2.svg' . "'/>
+					<span>" . __('Indicates the total number of rows in your options table, including transients...','advanced-database-cleaner') ." </span>
+				  </span>";				 
+							 
 }
+// Total options
 $aDBc_total_options = 0;
 if(function_exists('is_multisite') && is_multisite()){
 	$blogs_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 	foreach($blogs_ids as $blog_id){
 		switch_to_blog($blog_id);
-			$aDBc_total_options += $wpdb->get_var("SELECT count(*) FROM $wpdb->options");
+		global $wpdb;
+		$aDBc_total_options += $wpdb->get_var("SELECT count(*) FROM $wpdb->options");
 		restore_current_blog();
 	}
 }else{
+	// Count total options
 	$aDBc_total_options = $wpdb->get_var("SELECT count(*) FROM $wpdb->options");
 }
-// Total tables to optimize
-$aDBc_tables_to_optimize = $wpdb->get_var("SELECT count(*) FROM information_schema.tables WHERE table_schema = '" . DB_NAME . "' and Engine <> 'InnoDB' and data_free > 0");
+
 // Total scheduled tasks
 $aDBc_all_tasks = aDBc_get_all_scheduled_tasks();
 $aDBc_total_tasks = 0;
-foreach($aDBc_all_tasks as $hook => $task_info){
-	$aDBc_total_tasks += count($task_info['sites']);
+if(function_exists('is_multisite') && is_multisite()){
+	foreach($aDBc_all_tasks as $hook => $task_info){
+		foreach($task_info['sites'] as $site => $info){
+			$aDBc_total_tasks += count($task_info['sites'][$site]['args']);
+		}
+	}
+}else{
+	foreach($aDBc_all_tasks as $hook => $task_info){
+		$aDBc_total_tasks += count($task_info['sites'][1]['args']);
+	}
 }
+
+// Total tables to optimize
+$aDBc_tables_to_optimize = $wpdb->get_var("SELECT count(*) FROM information_schema.tables WHERE table_schema = '" . DB_NAME . "' and Engine <> 'InnoDB' and data_free > 0");
+
 // Is MU?
 if(function_exists('is_multisite') && is_multisite()){
 	$aDBc_is_mu = __('Yes', 'advanced-database-cleaner');
@@ -58,8 +78,13 @@ if(function_exists('is_multisite') && is_multisite()){
 // Get settings
 global $aDBc_settings;
 if(isset($_POST['save_settings'])){
-	echo '<div id="aDBc_message" class="updated notice is-dismissible"><p>' . __('Settings saved successfully!', 'advanced-database-cleaner') . '</p></div>';
+	if(isset($_POST['aDBc_left_menu']) || isset($_POST['aDBc_menu_under_tools'])){
+		echo '<div id="aDBc_message" class="updated notice is-dismissible"><p>' . __('Settings saved successfully!', 'advanced-database-cleaner') . '</p></div>';
+	}else{
+		echo '<div id="aDBc_message" class="updated notice is-dismissible"><p>' . __('Settings saved successfully! The default position of the plugin menu is the left side of the admin panel', 'advanced-database-cleaner') . '</p></div>';
+	}
 }
+
 ?>
 
 <div class="aDBc-content-max-width">
@@ -104,7 +129,7 @@ if(isset($_POST['save_settings'])){
 			</li>
 			<li>
 				<div class="aDBc-overview-text-left"><?php _e('Script Max timeout', 'advanced-database-cleaner'); ?> :</div>
-				<div class="aDBc-overview-text-right"><?php echo ini_get('max_execution_time') . " ". __('seconds', 'advanced-database-cleaner'); ?></div>
+				<div class="aDBc-overview-text-right"><?php echo ADBC_ORIGINAL_TIMEOUT . " ". __('seconds', 'advanced-database-cleaner'); ?></div>
 			</li>
 			<li>
 				<div class="aDBc-overview-text-left"><?php _e('Local time', 'advanced-database-cleaner'); ?> :</div>
@@ -115,22 +140,51 @@ if(isset($_POST['save_settings'])){
 
 	<div class="aDBc-overview-box">
 		<div class="aDBc-overview-box-head"><?php _e('Settings', 'advanced-database-cleaner'); ?></div>
+
 		<form action="" method="post">
-			<ul class="aDBc-overview-box-line">
-				<li>
-					<input type="checkbox" name="aDBc_left_menu" <?php echo $aDBc_settings['left_menu'] == '1' ? "checked='checked'" : ""?>/>
+			<ul class="aDBc-overview-box-line" style="margin-left:0px">
+
+				<li style="background:#f9f9f9;margin-bottom:0px;padding:10px">
+
+					<?php 
+					if((!empty($aDBc_settings['left_menu']) && $aDBc_settings['left_menu'] == '1') || 
+						(empty($aDBc_settings['left_menu']) && empty($aDBc_settings['menu_under_tools']))){
+						$aDBc_checked = "checked='checked'";
+					}else{
+						$aDBc_checked = "";
+					}
+					?>
+
+					<input type="checkbox" name="aDBc_left_menu" <?php echo $aDBc_checked ?>/>
 					<?php _e('Show plugin left menu', 'advanced-database-cleaner'); ?>
 					<div class="aDBc-overview-setting-desc">
-						<?php _e('Displays a menu at the left bar of your WP admin', 'advanced-database-cleaner'); ?>
+						<?php _e('Displays a menu at the left side of your WP admin', 'advanced-database-cleaner'); ?>
 					</div>
 				</li>
-				<li>
-					<input type="checkbox" name="aDBc_top_main_msg" <?php echo $aDBc_settings['top_main_msg'] == '1' ? "checked='checked'" : ""?>/>
-					<?php _e('Show welcome message', 'advanced-database-cleaner'); ?>
+
+				<li style="background:#f9f9f9;margin-top:0px;padding:10px">
+					<input type="checkbox" name="aDBc_menu_under_tools" <?php echo (!empty($aDBc_settings['menu_under_tools']) && $aDBc_settings['menu_under_tools'] == '1') ? "checked='checked'" : ""?>/>
+					<?php _e('Show plugin menu under tools', 'advanced-database-cleaner'); ?>
 					<div class="aDBc-overview-setting-desc">
-						<?php _e('Reminds you to make a backup of your database', 'advanced-database-cleaner'); ?>
+						<?php _e('Displays a menu under "tools" menu', 'advanced-database-cleaner'); ?>
 					</div>
-				</li>			
+				</li>
+
+				<?php 
+				if(ADBC_PLUGIN_F_TYPE == "free"){
+				?>
+					<li>
+						<input type="checkbox" name="aDBc_hide_premium_tab" <?php echo (!empty($aDBc_settings['hide_premium_tab']) && $aDBc_settings['hide_premium_tab']) == '1' ? "checked='checked'" : ""?>/>
+						<?php _e('Hide premium tab', 'advanced-database-cleaner'); ?>
+						<div class="aDBc-overview-setting-desc">
+							<?php _e('If checked, it will hide the above premium tab', 'advanced-database-cleaner'); ?>
+						</div>
+					</li>
+					
+				<?php	
+				}
+				?>
+			
 			</ul>
 			<input name="save_settings" type="submit" class="button-primary aDBc-save-settings-button" value="<?php _e('Save settings','advanced-database-cleaner'); ?>" />
 		</form>

@@ -5,7 +5,7 @@ if(!function_exists('add_action')){
 	exit;
 }
 
-define('LOGINIZER_VERSION', '1.4.2');
+define('LOGINIZER_VERSION', '1.4.3');
 define('LOGINIZER_DIR', WP_PLUGIN_DIR.'/'.basename(dirname(LOGINIZER_FILE)));
 define('LOGINIZER_URL', plugins_url('', LOGINIZER_FILE));
 define('LOGINIZER_PRO_URL', 'https://loginizer.com/features#compare');

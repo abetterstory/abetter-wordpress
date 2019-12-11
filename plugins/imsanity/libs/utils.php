@@ -128,7 +128,7 @@ function imsanity_fatal( $message, $title = '', $die = false ) {
  * @param bool   $crop Optional. Whether to crop image or resize.
  * @param string $suffix Optional. File suffix.
  * @param string $dest_path Optional. New image file path.
- * @param int    $jpeg_quality Optional, default is 90. Image quality percentage.
+ * @param int    $jpeg_quality Optional, default is 82. Image quality level (1-100).
  * @return mixed WP_Error on failure. String with new destination path.
  */
 function imsanity_image_resize( $file, $max_w, $max_h, $crop = false, $suffix = null, $dest_path = null, $jpeg_quality = 82 ) {
@@ -137,11 +137,12 @@ function imsanity_image_resize( $file, $max_w, $max_h, $crop = false, $suffix = 
 		if ( is_wp_error( $editor ) ) {
 			return $editor;
 		}
-		$editor->set_quality( $jpeg_quality );
+		$editor->set_quality( min( 92, $jpeg_quality ) );
 
 		$ftype = imsanity_quick_mimetype( $file );
 
-		$orientation = imsanity_get_orientation( $file, $ftype );
+		// Return 1 to override auto-rotate.
+		$orientation = (int) apply_filters( 'imsanity_orientation', imsanity_get_orientation( $file, $ftype ) );
 		// Try to correct for auto-rotation if the info is available.
 		switch ( $orientation ) {
 			case 3:
@@ -162,10 +163,8 @@ function imsanity_image_resize( $file, $max_w, $max_h, $crop = false, $suffix = 
 
 		$dest_file = $editor->generate_filename( $suffix, $dest_path );
 
-		// FIX: make sure that the destination file does not exist.  this fixes
-		// an issue during bulk resize where one of the optimized media filenames may get
-		// used as the temporary file, which causes it to be deleted.
-		while ( file_exists( $dest_file ) ) {
+		// Make sure that the destination file does not exist.
+		if ( file_exists( $dest_file ) ) {
 			$dest_file = $editor->generate_filename( 'TMP', $dest_path );
 		}
 
