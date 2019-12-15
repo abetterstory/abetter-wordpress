@@ -75,13 +75,13 @@ if (!function_exists('_wp_view')) {
 
 if (!function_exists('_wp_post')) {
 
-	function _wp_page($id,$lang=NULL) {
+	function _wp_post($id=NULL,$lang=NULL) {
 		if (!_wp_loaded()) return;
 		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
-	function _wp_post($id=NULL,$lang=NULL) {
+	function _wp_page($id,$lang=NULL) {
 		if (!_wp_loaded()) return;
 		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
@@ -189,6 +189,68 @@ if (!function_exists('_wp_title')) {
 
 }
 
+if (!function_exists('_wp_name')) {
+
+	function _wp_name($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('post_name',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_author')) {
+
+	function _wp_author($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('post_author',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_status')) {
+
+	function _wp_status($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('post_status',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_type')) {
+
+	function _wp_type($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('post_type',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_parent')) {
+
+	function _wp_parent($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('post_parent',$post,$lang);
+	}
+
+}
+
+if (!function_exists('_wp_order')) {
+
+	function _wp_order($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return _wp_property('menu_order',$post,$lang);
+	}
+
+}
+
+// ---
+
 if (!function_exists('_wp_template')) {
 
 	function _wp_template($post=NULL,$lang=NULL) {
@@ -250,6 +312,15 @@ if (!function_exists('_wp_date')) {
 	function _wp_date($d='',$post=NULL) {
 		if (!_wp_loaded()) return date($d);
 		return get_the_date($d,$post);
+	}
+
+}
+
+if (!function_exists('_wp_modified')) {
+
+	function _wp_modified($d='',$post=NULL) {
+		if (!_wp_loaded()) return date($d);
+		return get_the_modified_date($d,$post);
 	}
 
 }
