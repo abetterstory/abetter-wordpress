@@ -351,3 +351,31 @@ if (!function_exists('_wp_post_types')) {
 	}
 
 }
+
+// ---
+
+if (!function_exists('_wp_categories')) {
+
+	function _wp_categories($post=NULL,$lang=NULL,$terms=[]) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		if ($get = get_the_category($post->ID)) foreach ($get AS $term) {
+			$terms[$term->term_id] = ($d = _dictionary('category_'.preg_replace('/-/','_',$term->slug).'_label',NULL,'')) ? $d : $term->name;
+		}
+		return $terms;
+	}
+
+}
+
+if (!function_exists('_wp_tags')) {
+
+	function _wp_tags($post=NULL,$lang=NULL,$terms=[]) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		if ($get = get_the_tags($post->ID)) foreach ($get AS $term) {
+			$terms[$term->term_id] = ($d = _dictionary('tag_'.preg_replace('/-/','_',$term->slug).'_label',NULL,'')) ? $d : $term->name;
+		}
+		return $terms;
+	}
+
+}
