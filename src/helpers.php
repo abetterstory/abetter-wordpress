@@ -81,7 +81,7 @@ if (!function_exists('_wp_post')) {
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
 	}
 
-	function _wp_page($id,$lang=NULL) {
+	function _wp_page($id=NULL,$lang=NULL) {
 		if (!_wp_loaded()) return;
 		if (!$id) return \ABetter\Wordpress\Post::$post ?? NULL;
 		return \ABetter\Wordpress\Post::getPage($id,$lang);
@@ -89,12 +89,38 @@ if (!function_exists('_wp_post')) {
 
 	function _wp_post_resolve($post=NULL,$lang=NULL) {
 		if (!_wp_loaded()) return;
-		if (!empty($post->ID)) return $post;
+		if (!empty($post->ID) && isset($post->l10n)) return $post;
+		if (!empty($post->ID)) return \ABetter\Wordpress\Post::getPage($post->ID,$lang);
 		if (is_numeric($post)) return \ABetter\Wordpress\Post::getPage($post,$lang);
 		return \ABetter\Wordpress\Post::$post ?? NULL;
 	}
 
 }
+
+// ---
+
+if (!function_exists('_wp_language')) {
+
+	function _wp_language($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang);
+		return \ABetter\Wordpress\Post::getLanguage($post);
+	}
+
+}
+
+if (!function_exists('_wp_translation')) {
+
+	function _wp_translation($post=NULL,$lang=NULL) {
+		if (!_wp_loaded()) return;
+		$post = _wp_post_resolve($post,$lang); // Force l10n
+		if ($lang === FALSE || empty($post->l10n->translations)) return $post; // No WPML
+		return ($lang && ($id = $post->l10n->translations[$lang] ?? NULL) && ($trans = get_post($id))) ? $trans : $post;
+	}
+
+}
+
+// ---
 
 if (!function_exists('_wp_content')) {
 
