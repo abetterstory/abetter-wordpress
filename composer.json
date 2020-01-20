@@ -11,7 +11,7 @@
     "require": {
 		"abetter/toolkit": "^1.6",
 		"intervention/image": "^2.5",
-		"vlucas/phpdotenv": "^4.1"
+		"vlucas/phpdotenv": "^3.6"
 	},
 	"autoload": {
 		"psr-4": {
