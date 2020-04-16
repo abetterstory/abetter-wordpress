@@ -31,7 +31,7 @@ With the ABetter Toolkit we give Laravel/Blade some new powerful directives help
 Via Composer:
 
 ```bash
-composer create-project laravel/laravel .
+composer create-project --prefer-dist laravel/laravel . "6.*"
 composer require abetter/wordpress
 ```
 
@@ -103,7 +103,7 @@ Route::any('browsersync/{event?}/{path}', '\ABetterToolkitController@handle')->w
 Route::any('service/{path?}.{type}', '\ABetterToolkitController@handle')->where(['path'=>'.*','type'=>'json']);
 
 // ABetter Wordpress main route
-Route::any('{path}', '\ABetterWordpressController@handle')->where('path','.*');
+Route::any('{path}', '\ABetterWordpressController@handle')->where('path','^(?!nova-api|nova-vendor|nova|api).*$');
 ```
 
 Note: Remove any other routes for root or wp paths (i.e default Welcome).

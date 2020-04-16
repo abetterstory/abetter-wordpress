@@ -1,11 +1,11 @@
 === Imsanity ===
 Contributors: nosilver4u
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MKMQKCBFFG3WW
+Donate link: https://ewww.io/donate/
 Tags: image, scale, resize, space saver, quality
 Requires at least: 5.0
-Tested up to: 5.3
+Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 2.5.0
+Stable tag: 2.6.0
 License: GPLv3
 
 Imsanity automatically resizes huge image uploads. Are contributors uploading huge photos? Tired of manually scaling? Imsanity to the rescue!
@@ -134,6 +134,10 @@ a size or value that is reasonable.
 Questions may be posted on the support forum at https://wordpress.org/support/plugin/imsanity but if you don't get an answer, please use https://ewww.io/contact-us/.
 
 == Changelog ==
+
+= 2.6.0 =
+* added: wp-cli command 'wp help imsanity resize'
+* fixed: adding an image to a post in pre-draft status uses wrong settings/dimensions
 
 = 2.5.0 =
 * added: imsanity_allowed_mimes filter to override the default list of image formats allowed

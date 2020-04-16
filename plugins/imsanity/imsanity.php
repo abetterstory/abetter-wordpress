@@ -15,7 +15,7 @@ Description: Imsanity stops insanely huge image uploads
 Author: Exactly WWW
 Text Domain: imsanity
 Domain Path: /languages
-Version: 2.5.0
+Version: 2.6.0
 Author URI: https://ewww.io/
 License: GPLv3
 */
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'IMSANITY_VERSION', '2.5.0' );
+define( 'IMSANITY_VERSION', '2.6.0' );
 define( 'IMSANITY_SCHEMA_VERSION', '1.1' );
 
 define( 'IMSANITY_DEFAULT_MAX_WIDTH', 1920 );
@@ -67,6 +67,30 @@ function imsanity_init() {
 require_once( plugin_dir_path( __FILE__ ) . 'libs/utils.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'settings.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'ajax.php' );
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once( plugin_dir_path( __FILE__ ) . 'class-imsanity-cli.php' );
+}
+
+/**
+ * Use the EWWW IO debugging functions.
+ *
+ * @param string $message A message to send to the debugger.
+ */
+function imsanity_debug( $message ) {
+	if ( function_exists( 'ewwwio_debug_message' ) ) {
+		if ( ! is_string( $message ) ) {
+			if ( function_exists( 'print_r' ) ) {
+				$message = print_r( $message, true );
+			} else {
+				$message = 'not a string, print_r disabled';
+			}
+		}
+		ewwwio_debug_message( $message );
+		if ( function_exists( 'ewww_image_optimizer_debug_log' ) ) {
+			ewww_image_optimizer_debug_log();
+		}
+	}
+}
 
 /**
  * Inspects the request and determines where the upload came from.
@@ -74,25 +98,45 @@ require_once( plugin_dir_path( __FILE__ ) . 'ajax.php' );
  * @return IMSANITY_SOURCE_POST | IMSANITY_SOURCE_LIBRARY | IMSANITY_SOURCE_OTHER
  */
 function imsanity_get_source() {
+	imsanity_debug( __FUNCTION__ );
 	$id     = array_key_exists( 'post_id', $_REQUEST ) ? (int) $_REQUEST['post_id'] : '';
 	$action = array_key_exists( 'action', $_REQUEST ) ? $_REQUEST['action'] : '';
+	imsanity_debug( "getting source for id=$id and action=$action" );
 
+	imsanity_debug( $_SERVER );
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		imsanity_debug( '_wp_http_referer:' );
+		imsanity_debug( $_REQUEST['_wp_http_referer'] );
+	}
+	if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		imsanity_debug( 'http_referer:' );
+		imsanity_debug( $_SERVER['HTTP_REFERER'] );
+	}
 	// A post_id indicates image is attached to a post.
 	if ( $id > 0 ) {
+		imsanity_debug( 'from a post (id)' );
 		return IMSANITY_SOURCE_POST;
 	}
 
 	// If the referrer is the post editor, that's a good indication the image is attached to a post.
 	if ( ! empty( $_SERVER['HTTP_REFERER'] ) && strpos( $_SERVER['HTTP_REFERER'], '/post.php' ) ) {
+		imsanity_debug( 'from a post.php' );
+		return IMSANITY_SOURCE_POST;
+	}
+	// If the referrer is the (new) post editor, that's a good indication the image is attached to a post.
+	if ( ! empty( $_SERVER['HTTP_REFERER'] ) && strpos( $_SERVER['HTTP_REFERER'], '/post-new.php' ) ) {
+		imsanity_debug( 'from a new post' );
 		return IMSANITY_SOURCE_POST;
 	}
 
 	// Post_id of 0 is 3.x otherwise use the action parameter.
 	if ( 0 === $id || 'upload-attachment' === $action ) {
+		imsanity_debug( 'from the library' );
 		return IMSANITY_SOURCE_LIBRARY;
 	}
 
 	// We don't know where this one came from but $_REQUEST['_wp_http_referer'] may contain info.
+	imsanity_debug( 'unknown source' );
 	return IMSANITY_SOURCE_OTHER;
 }
 
