@@ -203,7 +203,7 @@ jQuery(function($) {
 	});
 
 	$("#doaction").click(function(event) {
-		var $bulk_action = $('#bulk-action-selector-top').attr('value');
+		var $bulk_action = $('#bulk-action-selector-top').val();
 		if($bulk_action == 'delete' || $bulk_action == 'clean'){
 			event.preventDefault();
 			$delete_warning.dialog('open');
@@ -217,7 +217,7 @@ jQuery(function($) {
 	});
 
 	$("#doaction2").click(function(event) {
-		var $bulk_action = $('#bulk-action-selector-bottom').attr('value');
+		var $bulk_action = $('#bulk-action-selector-bottom').val();
 		if($bulk_action == 'delete' || $bulk_action == 'clean'){
 			event.preventDefault();
 			$delete_warning.dialog('open');

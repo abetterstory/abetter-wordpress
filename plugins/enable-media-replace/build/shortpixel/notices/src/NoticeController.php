@@ -19,7 +19,6 @@ class NoticeController //extends ShortPixelController
   /** For backward compat. Never call constructor directly. */
   public function __construct()
   {
-  //    $this->loadModel('notice');
       $ns = __NAMESPACE__;
       $ns = substr($ns, 0, strpos($ns, '\\')); // try to get first part of namespace
       $this->notice_option = $ns . '-notices';
@@ -38,6 +37,14 @@ class NoticeController //extends ShortPixelController
      }
 
      return self::$instance;
+  }
+
+  /** Reset all notices, before loading them, to ensure on updates / activations one starts fresh */
+  public static function resetNotices()
+  {
+    $ns = __NAMESPACE__;
+    $ns = substr($ns, 0, strpos($ns, '\\')); // try to get first part of namespace
+    $result = delete_option($ns . '-notices');
   }
 
   /** Load Notices Config File, if any
@@ -65,12 +72,18 @@ class NoticeController //extends ShortPixelController
   {
     $notices = get_option($this->notice_option, false);
     $cnotice = (is_array($notices)) ? count($notices) : 0;
-    if ($cnotice > 0)
-      Log::addDebug('Notice Control - #num notices' . $cnotice);
 
     if ($notices !== false && is_array($notices))
     {
-      self::$notices = $notices;
+      $checked = array();
+      foreach($notices as $noticeObj)
+      {
+        if (is_object($noticeObj) && $noticeObj instanceOf NoticeModel)
+        {
+          $checked[] = $noticeObj;
+        }
+      }
+      self::$notices = $checked;
       $this->has_stored = true;
     }
     else {
@@ -90,7 +103,7 @@ class NoticeController //extends ShortPixelController
         foreach(self::$notices as $nitem)
         {
           if ($nitem->message == $notice->message && $nitem->code == $notice->code) // same message.
-            return $notice; // return the notice with the same message.
+            return $nitem; // return the notice with the same message.
         }
       }
       self::$notices[] = $notice;
@@ -141,6 +154,7 @@ class NoticeController //extends ShortPixelController
   public function getNoticesForDisplay()
   {
       $newNotices = array();
+
       foreach(self::$notices as $notice)
       {
           if ($notice->isDismissed()) // dismissed never displays.
@@ -184,7 +198,7 @@ class NoticeController //extends ShortPixelController
     for($i = 0; $i < count(self::$notices); $i++)
     {
       $item = self::$notices[$i];
-      if ($item->getID() == $id)
+      if (is_object($item) && $item->getID() == $id)
       {
         Log::addDebug('Removing notice with ID ' . $id);
         unset(self::$notices[$i]);
@@ -256,7 +270,6 @@ class NoticeController //extends ShortPixelController
     $noticeController = self::getInstance();
     $notice = $noticeController->addNotice($message, NoticeModel::NOTICE_WARNING, $unique);
     return $notice;
-
   }
 
   public static function addSuccess($message, $unique = false)
@@ -267,7 +280,23 @@ class NoticeController //extends ShortPixelController
 
   }
 
-  public static function makePersistent($notice, $key, $suppress = -1)
+  public static function addDetail($notice, $detail)
+  {
+    $noticeController = self::getInstance();
+    $notice->addDetail($detail);
+
+//   $notice_id = spl_object_id($notice);
+
+    $noticeController->update();
+  }
+
+  /** Make a regular notice persistent across multiple page loads
+  * @param $notice NoticeModel The Notice to make Persistent
+  * @param $key String Identifier of the persistent notice.
+  * @param $suppress Int  When dismissed, time to stay dismissed
+  * @param $callback Function Callable function
+  */
+  public static function makePersistent($notice, $key, $suppress = -1, $callback = null)
   {
      $noticeController = self::getInstance();
      $existing = $noticeController->getNoticeByID($key);
@@ -275,17 +304,24 @@ class NoticeController //extends ShortPixelController
      // if this key already exists, don't allow the new notice to be entered into the array. Remove it since it's already created.
      if ($existing)
      {
-        for($i = 0; $i < count(self::$notices); $i++)
-        {
-          $item = self::$notices[$i];
-          if ($item->message == $notice->message && $item->getID() == null)
-            unset(self::$notices[$i]);
-          //if ($notice_item )
-        }
+       for($i = 0; $i < count(self::$notices); $i++)
+       {
+         $item = self::$notices[$i];
+
+         if ($item->message == $notice->message && $item->getID() == null)
+         {
+           if ($item->message != $existing->message) // allow the persistent message to be updated, if something else is served on this ID
+           {
+              $existing->message = $item->message;
+           }
+           unset(self::$notices[$i]);
+         }
+         //if ($notice_item )
+       }
      }
      else
      {
-       $notice->setPersistent($key, $suppress); // set this notice persistent.
+       $notice->setPersistent($key, $suppress, $callback); // set this notice persistent.
      }
 
      $noticeController->update();

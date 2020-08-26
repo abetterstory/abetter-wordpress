@@ -3,10 +3,10 @@
 * Plugin Name: Simple Custom Post Order
 * Plugin URI: https://wordpress.org/plugins-wp/simple-custom-post-order/
 * Description: Order Items (Posts, Pages, and Custom Post Types) using a Drag and Drop Sortable JavaScript.
-* Version: 2.4.9
+* Version: 2.5.0
 * Author: Colorlib
 * Author URI: https://colorlib.com/
-* Tested up to: 5.3
+* Tested up to: 5.4
 * Requires: 4.6 or higher
 * License: GPLv3 or later
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,7 +36,7 @@
 
 define('SCPORDER_URL', plugins_url('', __FILE__));
 define('SCPORDER_DIR', plugin_dir_path(__FILE__));
-define('SCPORDER_VERSION', '2.4.9');
+define('SCPORDER_VERSION', '2.5.0');
 
 $scporder = new SCPO_Engine();
 
@@ -45,6 +45,8 @@ class SCPO_Engine {
     function __construct() {
         if (!get_option('scporder_install'))
             $this->scporder_install();
+
+        $this->load_dependencies();
 
         add_action('admin_menu', array($this, 'admin_menu'));
 
@@ -75,6 +77,10 @@ class SCPO_Engine {
         add_filter('scpo_post_types_args',array($this,'scpo_filter_post_types'),10,2);
 
         add_action('wp_ajax_scpo_reset_order', array($this, 'scpo_ajax_reset_order'));
+    }
+
+    private function load_dependencies() {
+        include SCPORDER_DIR . 'class-simple-review.php';
     }
 
     public function scpo_filter_post_types($args,$options){

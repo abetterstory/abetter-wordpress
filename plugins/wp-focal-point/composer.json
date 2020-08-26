@@ -1,0 +1,23 @@
+{
+    "name": "bonnier/wp-focal-point",
+    "description": "This plugin allows setting a focal point on an image",
+    "type": "wordpress-plugin",
+    "keywords": ["wordpress", "plugin"],
+    "license": "MIT",
+    "homepage": "https://github.com/BenjaminMedia/wp-focal-point",
+    "authors": [
+        {
+            "name": "Bonnier Publications",
+            "email": "interactive@bonnier.dk",
+            "homepage": "http://bonnierpublications.com"
+        }
+    ],
+    "require-dev": {
+        "johnpbloch/wordpress": "^4.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bonnier\\WP\\FocalPoint\\": "src/"
+        }
+    }
+}

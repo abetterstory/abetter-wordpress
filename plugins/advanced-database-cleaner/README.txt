@@ -4,8 +4,8 @@ Donate Link: https://www.sigmaplugin.com/donation
 Tags: clean, clean up, cleanup, database, optimize, performance, speed, optimizing, clean-up, orphan, orphaned, tables, options
 Requires at least: 3.1.0
 Requires PHP: 5.0
-Tested up to: 5.3
-Stable tag: 3.0.0
+Tested up to: 5.5
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,13 @@ This section describes how to install the plugin. In general, there are 3 ways t
 8. Overview and settings page
 
 == Changelog ==
+
+= 3.0.1 - 26/08/2020 =
+- Fix: some calls in the JS file has been corrected
+- Fix: the warning "Deprecated: array_key_exists()" is now solved
+- Fix: an issue of 'failed to open stream: No such file or directory' is now solved
+- Tested with WordPress 5.5
+- New features very soon!
 
 = 3.0.0 - 05/12/2019 =
 * IMPORTANT NOTICE FOR PRO USERS: After you upgrade to 3.0.0 from an old version, you will notice that WordPress has deactivated the plugin due to an error: 'Plugin file does not exist'. This is because we have renamed the pro plugin folder name from "advanced-db-cleaner" to "advanced-database-cleaner-pro", causing the WordPress to not being able to find the old one and therefore deactivating the plugin. Just activate it again. It doesn’t break anything. Once you activate the plugin again it will continue working normally without any issues. You will also probably lose the pro version after this upgrade (This is due to a conflict between the free and pro versions which is now solved). If it is the case, please follow these steps to restore your pro version with all new features: (https://sigmaplugin.com/blog/restore-pro-version-after-upgrade-to-3-0-0)

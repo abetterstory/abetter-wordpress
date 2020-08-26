@@ -1,0 +1,212 @@
+# Copyright (C) 2018 ACF Component Field
+# This file is distributed under the same license as the ACF Component Field package.
+msgid ""
+msgstr ""
+"Project-Id-Version: ACF Component Field\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../src/Admin.php:44
+msgid "%s requires the plugin %s to be activated."
+msgstr ""
+
+#: ../../src/Admin.php:45, ../../src/Admin.php:73
+msgid "ACF Component Field"
+msgstr ""
+
+#: ../../src/Admin.php:46, ../../src/Admin.php:74
+msgid "Advanced Custom Fields Pro"
+msgstr ""
+
+#: ../../src/Admin.php:72
+msgid "%s v2 requires the plugin %s to be at least v5.7.0."
+msgstr ""
+
+#: ../../src/Upgrader.php:257
+msgid "Component"
+msgstr ""
+
+#: ../../src/Features/Converter.php:51
+msgid "Invalid field type, this field type cannot be converted."
+msgstr ""
+
+#: ../../src/Features/Converter.php:55
+msgid "This field does not contain any sub fields."
+msgstr ""
+
+#: ../../src/Features/Converter.php:94
+msgid "Component: %s"
+msgstr ""
+
+#: ../../src/Features/Converter.php:133, ../../src/Features/Converter.php:183
+msgid "Field Converted."
+msgstr ""
+
+#: ../../src/Features/Converter.php:134
+msgid "The converted component field can now be found at %s"
+msgstr ""
+
+#: ../../src/Features/Converter.php:135, ../../src/Features/Converter.php:185
+msgid "Close Window"
+msgstr ""
+
+#: ../../src/Features/Converter.php:156
+msgid "Unable find the selected component field gorup in this field."
+msgstr ""
+
+#: ../../src/Features/Converter.php:184
+msgid "This field has been converted to repeater field."
+msgstr ""
+
+#: ../../src/Features/Converter.php:203, ../../src/Field/AcfComponentField.php:225
+msgid "Session expired, please refresh the page and try again."
+msgstr ""
+
+#: ../../src/Features/Converter.php:216
+msgid "Unable to load selected field, please refresh the page and try again."
+msgstr ""
+
+#: ../../src/Features/Converter.php:234
+msgid "Error."
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:26
+msgid "Component Field"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:62
+msgid "Convert field"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:63
+msgid "Convert"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:64
+msgid "This field cannot be converted until its changes have been saved"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:65
+msgid "Convert Field Group"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:66
+msgid "Are you sure you want to delete the component afterwards?"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:104
+msgid "Field Group"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:105
+msgid "Select a field group to be used"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:195
+msgid "A field group is not set on this component field."
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:200
+msgid "Unable to locate the selected field group."
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:230
+msgid "Unable to find the selected field group, please refresh the page and try again."
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:292
+msgid "Repeatable"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:293
+msgid "Can this component be self repeated?"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:299
+msgid "Minimum Rows"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:311
+msgid "Maximum Rows"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:323
+msgid "Layout"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:330
+msgid "Table"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:331
+msgid "Block"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:332
+msgid "Row"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:336
+msgid "Button Label"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:340
+msgid "Add Row"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:343
+msgid "Component Appearances"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:346
+msgid "Alternative styles for component box."
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:347
+msgid "(usually used for non-repeating nesting components)"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:353
+msgid "Hide outer boundary"
+msgstr ""
+
+#: ../../src/Field/AcfComponentField.php:354
+msgid "Hide outer field label"
+msgstr ""
+
+#: ../../src/Screens/EditFieldGroup.php:185
+msgid "Component <span class=\"count\">(%s)</span>"
+msgid_plural "Components <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../src/Screens/EditFieldGroup.php:223
+msgid "Times this component has been used"
+msgstr ""
+
+#: ../../src/Screens/EditFieldGroup.php:224
+msgid "Used"
+msgstr ""
+
+#: ../../src/Screens/FieldGroup.php:62
+msgid "Used as ACF Component Field?"
+msgstr ""
+
+#: ../../src/Screens/FieldGroup.php:70
+msgid "Component Field Default Options"
+msgstr ""
+
+#: ../../src/Tools/Migration.php:26
+msgid "Acf Component Field: Migration"
+msgstr ""
+
+#: ../../src/Tools/Migration.php:38
+msgid "Acf Component Field migration complete. You are now up to date."
+msgstr ""

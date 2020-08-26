@@ -5,10 +5,11 @@ if(!function_exists('add_action')){
 	exit;
 }
 
-define('LOGINIZER_VERSION', '1.4.3');
-define('LOGINIZER_DIR', WP_PLUGIN_DIR.'/'.basename(dirname(LOGINIZER_FILE)));
+define('LOGINIZER_VERSION', '1.5.5');
+define('LOGINIZER_DIR', dirname(LOGINIZER_FILE));
 define('LOGINIZER_URL', plugins_url('', LOGINIZER_FILE));
 define('LOGINIZER_PRO_URL', 'https://loginizer.com/features#compare');
+define('LOGINIZER_PRICING_URL', 'https://loginizer.com/pricing');
 define('LOGINIZER_DOCS', 'https://loginizer.com/docs/');
 
 include_once(LOGINIZER_DIR.'/functions.php');
@@ -170,6 +171,12 @@ global $wpdb;
 	// Save the new Version
 	update_option('loginizer_version', LOGINIZER_VERSION);
 	
+	// In Sitepad Math Captcha is enabled by default
+	if(defined('SITEPAD') && get_option('loginizer_captcha') === false){
+		$option['captcha_no_google'] = 1;
+		add_option('loginizer_captcha', $option);
+	}
+	
 }
 
 // Add the action to load the plugin 
@@ -185,6 +192,11 @@ function loginizer_load_plugin(){
 	
 	// Set the array
 	$loginizer = array();
+	
+	$loginizer['prefix'] = !defined('SITEPAD') ? 'Loginizer ' : 'SitePad ';
+	$loginizer['app'] = !defined('SITEPAD') ? 'WordPress' : 'SitePad';
+	$loginizer['login_basename'] = !defined('SITEPAD') ? 'wp-login.php' : 'login.php';
+	$loginizer['wp-includes'] = !defined('SITEPAD') ? 'wp-includes' : 'site-inc';
 	
 	// The IP Method to use
 	$loginizer['ip_method'] = get_option('loginizer_ip_method');
@@ -202,8 +214,12 @@ function loginizer_load_plugin(){
 	$loginizer['notify_email'] = empty($options['notify_email']) ? 0 : $options['notify_email'];
 	
 	// Default messages
-	$loginizer['d_msg']['inv_userpass'] = 'Incorrect Username or Password';
-	$loginizer['d_msg']['ip_blacklisted'] = 'Your IP has been blacklisted';
+	$loginizer['d_msg']['inv_userpass'] = __('Incorrect Username or Password', 'loginizer');
+	$loginizer['d_msg']['ip_blacklisted'] = __('Your IP has been blacklisted', 'loginizer');
+	$loginizer['d_msg']['attempts_left'] = __('attempt(s) left', 'loginizer');
+	$loginizer['d_msg']['lockout_err'] = __('You have exceeded maximum login retries<br /> Please try after', 'loginizer');
+	$loginizer['d_msg']['minutes_err'] = __('minute(s)', 'loginizer');
+	$loginizer['d_msg']['hours_err'] = __('hour(s)', 'loginizer');
 	
 	// Message Strings
 	$loginizer['msg'] = get_option('loginizer_msg');
@@ -259,6 +275,104 @@ function loginizer_load_plugin(){
 		add_action('woocommerce_login_failed', 'loginizer_woocommerce_error_handler', 10001);
 	
 	}
+	
+	// ----------------
+	// PRO INIT
+	// ----------------
+	
+	// Email to Login
+	$options = get_option('loginizer_epl');
+	$loginizer['pl_d_sub'] = 'Login at $site_name';
+	$loginizer['pl_d_msg'] = 'Hi,
+
+A login request was submitted for your account $email at :
+$site_name - $site_url
+
+Login at $site_name by visiting this url : 
+$login_url
+
+If you have not requested for the Login URL, please ignore this email.
+
+Regards,
+$site_name';
+	$loginizer['email_pass_less'] = empty($options['email_pass_less']) ? 0 : $options['email_pass_less'];
+	$loginizer['passwordless_sub'] = empty($options['passwordless_sub']) ? $loginizer['pl_d_sub'] : $options['passwordless_sub'];
+	$loginizer['passwordless_msg'] = empty($options['passwordless_msg']) ? $loginizer['pl_d_msg'] : $options['passwordless_msg'];
+	
+	// For SitePad its always on
+	if(defined('SITEPAD')){
+		$loginizer['email_pass_less'] = 1;
+	}
+	
+	// Captcha
+	$options = get_option('loginizer_captcha');
+	$loginizer['captcha_type'] = empty($options['captcha_type']) ? '' : $options['captcha_type'];
+	$loginizer['captcha_key'] = empty($options['captcha_key']) ? '' : $options['captcha_key'];
+	$loginizer['captcha_secret'] = empty($options['captcha_secret']) ? '' : $options['captcha_secret'];
+	$loginizer['captcha_theme'] = empty($options['captcha_theme']) ? 'light' : $options['captcha_theme'];
+	$loginizer['captcha_size'] = empty($options['captcha_size']) ? 'normal' : $options['captcha_size'];
+	$loginizer['captcha_lang'] = empty($options['captcha_lang']) ? '' : $options['captcha_lang'];
+	$loginizer['captcha_user_hide'] = !isset($options['captcha_user_hide']) ? 0 : $options['captcha_user_hide'];
+	$loginizer['captcha_no_css_login'] = !isset($options['captcha_no_css_login']) ? 0 : $options['captcha_no_css_login'];
+	$loginizer['captcha_no_js'] = 1;
+	$loginizer['captcha_login'] = !isset($options['captcha_login']) ? 1 : $options['captcha_login'];
+	$loginizer['captcha_lostpass'] = !isset($options['captcha_lostpass']) ? 1 : $options['captcha_lostpass'];
+	$loginizer['captcha_resetpass'] = !isset($options['captcha_resetpass']) ? 1 : $options['captcha_resetpass'];
+	$loginizer['captcha_register'] = !isset($options['captcha_register']) ? 1 : $options['captcha_register'];
+	$loginizer['captcha_comment'] = !isset($options['captcha_comment']) ? 1 : $options['captcha_comment'];
+	$loginizer['captcha_wc_checkout'] = !isset($options['captcha_wc_checkout']) ? 1 : $options['captcha_wc_checkout'];
+	
+	$loginizer['captcha_no_google'] =  !isset($options['captcha_no_google']) ? 0 : $options['captcha_no_google'];
+	$loginizer['captcha_text'] =  empty($options['captcha_text']) ? __('Math Captcha', 'loginizer') : $options['captcha_text'];
+	$loginizer['captcha_time'] =  empty($options['captcha_time']) ? 300 : $options['captcha_time'];
+	$loginizer['captcha_words'] =  !isset($options['captcha_words']) ? 0 : $options['captcha_words'];
+	$loginizer['captcha_add'] =  !isset($options['captcha_add']) ? 1 : $options['captcha_add'];
+	$loginizer['captcha_subtract'] =  !isset($options['captcha_subtract']) ? 1 : $options['captcha_subtract'];
+	$loginizer['captcha_multiply'] =  !isset($options['captcha_multiply']) ? 0 : $options['captcha_multiply'];
+	$loginizer['captcha_divide'] =  !isset($options['captcha_divide']) ? 0 : $options['captcha_divide'];
+	
+	// 2fa/question
+	$options = get_option('loginizer_2fa');
+	$loginizer['2fa_app'] = !isset($options['2fa_app']) ? 0 : $options['2fa_app'];
+	$loginizer['2fa_email'] = !isset($options['2fa_email']) ? 0 : $options['2fa_email'];
+	$loginizer['2fa_email_force'] = !isset($options['2fa_email_force']) ? 0 : $options['2fa_email_force'];
+	$loginizer['2fa_sms'] = !isset($options['2fa_sms']) ? 0 : $options['2fa_sms'];
+	$loginizer['question'] = !isset($options['question']) ? 0 : $options['question'];
+	$loginizer['2fa_default'] = empty($options['2fa_default']) ? 'question' : $options['2fa_default'];
+	$loginizer['2fa_roles'] = empty($options['2fa_roles']) ? array() : $options['2fa_roles'];
+	
+	// Security Settings
+	$options = get_option('loginizer_security');
+	$loginizer['login_slug'] = empty($options['login_slug']) ? '' : $options['login_slug'];
+	$loginizer['rename_login_secret'] = empty($options['rename_login_secret']) ? '' : $options['rename_login_secret'];
+	$loginizer['xmlrpc_slug'] = empty($options['xmlrpc_slug']) ? '' : $options['xmlrpc_slug'];
+	$loginizer['xmlrpc_disable'] = empty($options['xmlrpc_disable']) ? '' : $options['xmlrpc_disable'];// Disable XML-RPC
+	$loginizer['pingbacks_disable'] = empty($options['pingbacks_disable']) ? '' : $options['pingbacks_disable'];// Disable Pingbacks
+	
+	// Admin Slug Settings
+	$options = get_option('loginizer_wp_admin');
+	$loginizer['admin_slug'] = empty($options['admin_slug']) ? '' : $options['admin_slug'];
+	$loginizer['restrict_wp_admin'] = empty($options['restrict_wp_admin']) ? '' : $options['restrict_wp_admin'];
+	$loginizer['wp_admin_msg'] = empty($options['wp_admin_msg']) ? '' : $options['wp_admin_msg'];
+	
+	// Checksum Settings
+	$options = get_option('loginizer_checksums');
+	$loginizer['disable_checksum'] = empty($options['disable_checksum']) ? '' : $options['disable_checksum'];
+	$loginizer['checksum_time'] = empty($options['checksum_time']) ? '' : $options['checksum_time'];
+	$loginizer['checksum_frequency'] = empty($options['checksum_frequency']) ? 7 : $options['checksum_frequency'];
+	$loginizer['no_checksum_email'] = empty($options['no_checksum_email']) ? '' : $options['no_checksum_email'];
+	$loginizer['checksums_last_run'] = get_option('loginizer_checksums_last_run');
+	
+	// Auto Blacklist Usernames
+	$loginizer['username_blacklist'] = get_option('loginizer_username_blacklist');
+	
+	$loginizer['domains_blacklist'] = get_option('loginizer_domains_blacklist');
+	
+	$loginizer['wp_admin_d_msg'] = __('LZ : Not allowed via WP-ADMIN. Please access over the new Admin URL', 'loginizer');
+	
+	// ----------------
+	// PRO INIT END
+	// ----------------
 	
 	// Is the premium features there ?
 	if(file_exists(LOGINIZER_DIR.'/premium.php')){
@@ -464,18 +578,18 @@ function loginizer_can_login(){
 		if($result['time'] >= (time() - $loginizer['lockout_time'])){
 			$banlift = ceil((($result['time'] + $loginizer['lockout_time']) - time()) / 60);
 			
-			//echo 'Current Time '.date('m/d/Y H:i:s', time()).'<br />';
-			//echo 'Last attempt '.date('m/d/Y H:i:s', $result['time']).'<br />';
-			//echo 'Unlock Time '.date('m/d/Y H:i:s', $result['time'] + $loginizer['lockout_time']).'<br />';
+			//echo 'Current Time '.date('d/M/Y H:i:s P', time()).'<br />';
+			//echo 'Last attempt '.date('d/M/Y H:i:s P', $result['time']).'<br />';
+			//echo 'Unlock Time '.date('d/M/Y H:i:s P', $result['time'] + $loginizer['lockout_time']).'<br />';
 			
-			$_time = $banlift.' minute(s)';
+			$_time = $banlift.' '.$loginizer['msg']['minutes_err'];
 			
 			if($banlift > 60){
 				$banlift = ceil($banlift / 60);
-				$_time = $banlift.' hour(s)';
+				$_time = $banlift.' '.$loginizer['msg']['hours_err'];
 			}
 			
-			$lz_error['ip_blocked'] = 'You have exceeded maximum login retries<br /> Please try after '.$_time;
+			$lz_error['ip_blocked'] = $loginizer['msg']['lockout_err'].' '.$_time;
 			
 			return false;
 		}
@@ -568,9 +682,15 @@ function loginizer_is_whitelisted(){
 
 // When the login fails, then this is called
 // We need to update the database
-function loginizer_login_failed($username){
+function loginizer_login_failed($username, $is_2fa = ''){
 	
 	global $wpdb, $loginizer, $lz_cannot_login;
+	
+	$fail_type = 'Login';
+	
+	if(!empty($is_2fa)){
+		$fail_type = '2FA';
+	}
 
 	if(empty($lz_cannot_login) && empty($loginizer['ip_is_whitelisted']) && empty($loginizer['no_loginizer_logs'])){
 		
@@ -589,14 +709,14 @@ function loginizer_login_failed($username){
 				$sitename = lz_is_multisite() ? get_site_option('site_name') : get_option('blogname');
 				$mail = array();
 				$mail['to'] = lz_is_multisite() ? get_site_option('admin_email') : get_option('admin_email');	
-				$mail['subject'] = 'Failed Login Attempts from IP '.$loginizer['current_ip'].' ('.$sitename.')';
+				$mail['subject'] = 'Failed '.$fail_type.' Attempts from IP '.$loginizer['current_ip'].' ('.$sitename.')';
 				$mail['message'] = 'Hi,
 
-'.($result['count']+1).' failed login attempts and '.$lockout.' lockout(s) from IP '.$loginizer['current_ip'].'
+'.($result['count']+1).' failed '.strtolower($fail_type).' attempts and '.$lockout.' lockout(s) from IP '.$loginizer['current_ip'].'
 
-Last Login Attempt : '.date('d/m/Y H:i:s', time()).'
+Last '.$fail_type.' Attempt : '.date('d/M/Y H:i:s P', time()).'
 Last User Attempt : '.$username.'
-IP has been blocked until : '.date('d/m/Y H:i:s', time() + $loginizer['lockout_time']).'
+IP has been blocked until : '.date('d/M/Y H:i:s P', time() + $loginizer['lockout_time']).'
 
 Regards,
 Loginizer';
@@ -672,7 +792,7 @@ function loginizer_retries_left(){
 	
 	// If we are to show the number of retries left
 	if(isset($loginizer['retries_left'])){
-		return '<b>'.$loginizer['retries_left'].'</b> attempt(s) left';
+		return '<b>'.$loginizer['retries_left'].'</b> '.$loginizer['msg']['attempts_left'];
 	}
 	
 }
@@ -710,36 +830,56 @@ function loginizer_admin_menu() {
 	
 	global $wp_version, $loginizer;
 	
-	// Add the menu page
-	add_menu_page(__('Loginizer Dashboard'), __('Loginizer Security'), 'activate_plugins', 'loginizer', 'loginizer_page_dashboard');
+	if(!defined('SITEPAD')){
 	
-	// Dashboard
-	add_submenu_page('loginizer', __('Loginizer Dashboard'), __('Dashboard'), 'activate_plugins', 'loginizer', 'loginizer_page_dashboard');
+		// Add the menu page
+		add_menu_page(__('Loginizer Dashboard', 'loginizer'), __('Loginizer Security', 'loginizer'), 'activate_plugins', 'loginizer', 'loginizer_page_dashboard');
+	
+		// Dashboard
+		add_submenu_page('loginizer', __('Loginizer Dashboard', 'loginizer'), __('Dashboard', 'loginizer'), 'activate_plugins', 'loginizer', 'loginizer_page_dashboard');
+	
+	}else{
+	
+		// Add the menu page
+		add_menu_page(__('Security', 'loginizer'), __('Security', 'loginizer'), 'activate_plugins', 'loginizer', 'loginizer_page_security', 'dashicons-shield', 85);
+	
+		// Rename Login
+		add_submenu_page('loginizer', __('Security Settings', 'loginizer'), __('Rename Login', 'loginizer'), 'activate_plugins', 'loginizer', 'loginizer_page_security');
+		
+	}
 	
 	// Brute Force
-	add_submenu_page('loginizer', __('Loginizer Brute Force Settings'), __('Brute Force'), 'activate_plugins', 'loginizer_brute_force', 'loginizer_page_brute_force');
+	add_submenu_page('loginizer', __('Brute Force Settings', 'loginizer'), __('Brute Force', 'loginizer'), 'activate_plugins', 'loginizer_brute_force', 'loginizer_page_brute_force');
 	
-	if(defined('LOGINIZER_PREMIUM')){
+	// PasswordLess
+	add_submenu_page('loginizer', __($loginizer['prefix'].'PasswordLess Settings', 'loginizer'), __('PasswordLess', 'loginizer'), 'activate_plugins', 'loginizer_passwordless', 'loginizer_page_passwordless');
 	
-		// PasswordLess
-		add_submenu_page('loginizer', __('Loginizer PasswordLess Settings'), __('PasswordLess'), 'activate_plugins', 'loginizer_passwordless', 'loginizer_page_passwordless');
-		
+	// Security Settings
+	if(!defined('SITEPAD')){
+	
 		// Two Factor Auth
-		add_submenu_page('loginizer', __('Loginizer Two Factor Authentication'), __('Two Factor Auth'), 'activate_plugins', 'loginizer_2fa', 'loginizer_page_2fa');
-		
-		// reCaptcha
-		add_submenu_page('loginizer', __('Loginizer reCAPTCHA Settings'), __('reCAPTCHA'), 'activate_plugins', 'loginizer_recaptcha', 'loginizer_page_recaptcha');
-		
-		// Security Settings
-		add_submenu_page('loginizer', __('Loginizer Security Settings'), __('Security Settings'), 'activate_plugins', 'loginizer_security', 'loginizer_page_security');
-		
-		// Security Settings
-		add_submenu_page('loginizer', __('Loginizer File Checksums'), __('File Checksums'), 'activate_plugins', 'loginizer_checksums', 'loginizer_page_checksums');
+		add_submenu_page('loginizer', __($loginizer['prefix'].' Two Factor Authentication', 'loginizer'), __('Two Factor Auth', 'loginizer'), 'activate_plugins', 'loginizer_2fa', 'loginizer_page_2fa');
 	
-	}elseif(!defined('LOGINIZER_PREMIUM') && !empty($loginizer['ins_time']) && $loginizer['ins_time'] < (time() - (30*24*3600))){
+	}
+	
+	// reCaptcha
+	add_submenu_page('loginizer', __($loginizer['prefix'].'reCAPTCHA Settings', 'loginizer'), __('reCAPTCHA', 'loginizer'), 'activate_plugins', 'loginizer_recaptcha', 'loginizer_page_recaptcha');
+	
+	// Security Settings
+	if(!defined('SITEPAD')){
+	
+		// Security Settings
+		add_submenu_page('loginizer', __($loginizer['prefix'].'Security Settings', 'loginizer'), __('Security Settings', 'loginizer'), 'activate_plugins', 'loginizer_security', 'loginizer_page_security');
+		
+		// File Checksums
+		add_submenu_page('loginizer', __('Loginizer File Checksums', 'loginizer'), __('File Checksums', 'loginizer'), 'activate_plugins', 'loginizer_checksums', 'loginizer_page_checksums');
+	
+	}
+	
+	if(!defined('LOGINIZER_PREMIUM') && !empty($loginizer['ins_time']) && $loginizer['ins_time'] < (time() - (30*24*3600))){
 		
 		// Go Pro link
-		add_submenu_page('loginizer', __('Loginizer Go Pro'), __('Go Pro'), 'activate_plugins', LOGINIZER_PRO_URL);
+		add_submenu_page('loginizer', __('Loginizer Go Pro', 'loginizer'), __('Go Pro', 'loginizer'), 'activate_plugins', LOGINIZER_PRO_URL);
 		
 	}
 	
@@ -747,17 +887,8 @@ function loginizer_admin_menu() {
 
 // The Loginizer Admin Options Page
 function loginizer_page_header($title = 'Loginizer'){
-	/*wp_enqueue_script('common');
-	wp_enqueue_script('wp-lists');
-	wp_enqueue_script('postbox');
-	wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
 	
-	echo '
-<script>
-jQuery(document).ready( function() {
-	//add_postbox_toggles("loginizer");
-});
-</script>';*/
+	global $loginizer;
 
 ?>
 <style>
@@ -778,10 +909,17 @@ jQuery(document).ready( function() {
 	
 	<table cellpadding="2" cellspacing="1" width="100%" class="fixed" border="0">
 		<tr>
-			<td valign="top"><h3>'.$title.'</h3></td>
-			<td align="right"><a target="_blank" class="button button-primary" href="https://wordpress.org/support/view/plugin-reviews/loginizer">Review Loginizer</a></td>
+			<td valign="top"><h3>'.$loginizer['prefix'].$title.'</h3></td>';
+			
+	if(!defined('SITEPAD')){
+			
+		echo '<td align="right"><a target="_blank" class="button button-primary" href="https://wordpress.org/support/view/plugin-reviews/loginizer">'.__('Review Loginizer', 'loginizer').'</a></td>
 			<td align="right" width="40"><a target="_blank" href="https://twitter.com/loginizer"><img src="'.LOGINIZER_URL.'/twitter.png" /></a></td>
-			<td align="right" width="40"><a target="_blank" href="https://www.facebook.com/Loginizer-815504798591884"><img src="'.LOGINIZER_URL.'/facebook.png" /></a></td>
+			<td align="right" width="40"><a target="_blank" href="https://www.facebook.com/Loginizer-815504798591884"><img src="'.LOGINIZER_URL.'/facebook.png" /></a></td>';
+			
+	}
+			
+		echo '
 		</tr>
 	</table>
 	<hr />
@@ -796,16 +934,29 @@ jQuery(document).ready( function() {
 // The Loginizer Theme footer
 function loginizer_page_footer(){
 	
+	if(!loginizer_is_premium()){
+		echo '<script>
+		jQuery("[loginizer-premium-only]").each(function(index) {
+			jQuery(this).find( "input, textarea, select" ).attr("disabled", true);
+		});
+		</script>';
+	}
+	
 	echo '</td>
 	<td width="200" valign="top" id="loginizer-right-bar">';
+			
+	if(!defined('SITEPAD')){
 	
-	if(!defined('LOGINIZER_PREMIUM')){
+		if(!defined('LOGINIZER_PREMIUM')){
 		
-		echo '
+			echo '
 		<div class="postbox" style="min-width:0px !important;">
-			<h2 class="hndle ui-sortable-handle">
-				<span>Premium Version</span>
-			</h2>
+			<div class="postbox-header">
+				<h2 class="hndle ui-sortable-handle">
+					<span>Premium Version</span>
+				</h2>
+			</div>
+			
 			<div class="inside">
 				<i>Upgrade to the premium version and get the following features </i>:<br>
 				<ul class="lz-right-ul">
@@ -818,17 +969,19 @@ function loginizer_page_footer(){
 					<li>Disable XML-RPC</li>
 					<li>And many more ...</li>
 				</ul>
-				<center><a class="button button-primary" href="https://loginizer.com/members/cart.php">Upgrade</a></center>
+				<center><a class="button button-primary" target="_blank" href="'.LOGINIZER_PRICING_URL.'">Upgrade</a></center>
 			</div>
 		</div>';
 		
-	}else{
+		}else{
 	
-		echo '
+			echo '
 		<div class="postbox" style="min-width:0px !important;">
+			<div class="postbox-header">
 			<h2 class="hndle ui-sortable-handle">
 				<span>Recommendations</span>
 			</h2>
+			</div>
 			<div class="inside">
 				<i>We recommed that you enable atleast one of the following security features</i>:<br>
 				<ul class="lz-right-ul">
@@ -841,12 +994,64 @@ function loginizer_page_footer(){
 				</ul>
 			</div>
 		</div>';
+		}
+		
+		echo '
+		<div class="postbox" style="min-width:0px !important;">
+			<div class="postbox-header">
+			<h2 class="hndle ui-sortable-handle">
+				<span><a target="_blank" href="https://pagelayer.com/?from=loginizer-plugin"><img src="'.LOGINIZER_URL.'/images/pagelayer_product.png" width="100%" /></a></span>
+			</h2>
+			</div>
+			<div class="inside">
+				<i>Easily manage and make professional pages and content with our Pagelayer builder </i>:<br>
+				<ul class="lz-right-ul">
+					<li>30+ Free Widgets</li>
+					<li>60+ Premium Widgets</li>
+					<li>400+ Premium Sections</li>
+					<li>Theme Builder</li>
+					<li>WooCommerce Builder</li>
+					<li>Theme Creator and Exporter</li>
+					<li>Form Builder</li>
+					<li>Popup Builder</li>
+					<li>And many more ...</li>
+				</ul>
+				<center><a class="button button-primary" target="_blank" href="https://wordpress.org/plugins/pagelayer/">Visit Pagelayer</a></center>
+			</div>
+		</div>';
+		
+		echo '
+		<div class="postbox" style="min-width:0px !important;">
+			<div class="postbox-header">
+			<h2 class="hndle ui-sortable-handle">
+				<span><a target="_blank" href="https://wpcentral.co/?from=loginizer-plugin"><img src="'.LOGINIZER_URL.'/images/wpcentral_product.png" width="100%" /></a></span>
+			</h2>
+			</div>
+			<div class="inside">
+				<i>Manage all your WordPress sites from <b>1 dashboard</b> </i>:<br>
+				<ul class="lz-right-ul">
+					<li>1-click Admin Access</li>
+					<li>Update WordPress</li>
+					<li>Update Themes</li>
+					<li>Update Plugins</li>
+					<li>Backup your WordPress Site</li>
+					<li>Plugins & Theme Management</li>
+					<li>Post Management</li>
+					<li>And many more ...</li>
+				</ul>
+				<center><a class="button button-primary" target="_blank" href="https://wpcentral.co/?from=loginizer-plugin">Visit wpCentral</a></center>
+			</div>
+		</div>';
+	
 	}
 	
 	echo '</td>
 	</tr>
-	</table>
-	<br />
+	</table>';
+	
+	if(!defined('SITEPAD')){
+	
+		echo '<br />
 	<div style="width:45%;background:#FFF;padding:15px; margin:auto">
 		<b>Let your friends know that you have secured your website :</b>
 		<form method="get" action="https://twitter.com/intent/tweet" id="tweet" onsubmit="return dotweet(this);">
@@ -865,8 +1070,11 @@ function loginizer_page_footer(){
 	</script>
 	
 	<hr />
-	<a href="http://loginizer.com" target="_blank">Loginizer</a> v'.LOGINIZER_VERSION.'. You can report any bugs <a href="http://wordpress.org/support/plugin/loginizer" target="_blank">here</a>.
-
+	<a href="http://loginizer.com" target="_blank">Loginizer</a> v'.LOGINIZER_VERSION.'. You can report any bugs <a href="http://wordpress.org/support/plugin/loginizer" target="_blank">here</a>.';
+	
+	}
+	
+	echo '
 </div>	
 </div>
 </div>
@@ -878,6 +1086,20 @@ function loginizer_page_footer(){
 function loginizer_page_dashboard(){
 	
 	global $loginizer, $lz_error, $lz_env;
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	// Dismiss the announcement
+	if(isset($_GET['dismiss_announcement'])){
+		update_option('loginizer_no_announcement', 1);
+	}
+
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
 
 	// Is there a license key ?
 	if(isset($_POST['save_lz'])){
@@ -945,7 +1167,7 @@ function loginizer_page_dashboard_T(){
 	
 	global $loginizer, $lz_error, $lz_env;
 
-	loginizer_page_header('Loginizer Dashboard');
+	loginizer_page_header('Dashboard');
 ?>
 <style>
 .welcome-panel{
@@ -966,7 +1188,13 @@ input[type="text"], textarea, select {
 }
 </style>
 	
-	<?php	
+	<?php
+	
+	$hide_announcement = get_option('loginizer_no_announcement');
+	if(empty($hide_announcement)){
+		echo '<div id="message" class="welcome-panel">'. __('<a href="https://loginizer.com/blog/loginizer-has-been-acquired-by-softaculous/" target="_blank" style="text-decoration:none;">We are excited to announce that we have joined forces with Softaculous and have been acquired by them 😊. Read full announcement here.</a>', 'loginizer'). '<a class="welcome-panel-close" style="top:3px;right:2px;" href="'.menu_page_url('loginizer', false).'&dismiss_announcement=1" aria-label="Dismiss announcement"></a></div><br />';
+	}
+	
 	echo '<script src="https://api.loginizer.com/'.(defined('LOGINIZER_PREMIUM') ? 'news_security.js' : 'news.js').'"></script><br>';
 
 	// Saved ?
@@ -982,15 +1210,12 @@ input[type="text"], textarea, select {
 	?>	
 	
 	<div class="postbox">
-	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Getting Started</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
 		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('Getting Started', 'loginizer'); ?></span>
 		</h2>
+		</div>
 		
 		<div class="inside">
 		
@@ -1003,7 +1228,9 @@ input[type="text"], textarea, select {
 					<?php 
 					if(defined('LOGINIZER_PREMIUM')){
 						echo '<br><i>In the Premium version of Loginizer you have many more features. We recommend you enable features like <b>reCAPTCHA, Two Factor Auth or Email based PasswordLess</b> login. These features will improve your websites security.</i>';
-					} 
+					}else{
+						echo '<br><i><a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none;color:red;">Upgrade to Pro</a> for more features like <b>reCAPTCHA, Two Factor Auth, Rename wp-admin and wp-login.php pages, Email based PasswordLess</b> login and more. These features will improve your website\'s security.</i>';
+					}
 					?>
 				</td>
 			</tr>
@@ -1015,15 +1242,11 @@ input[type="text"], textarea, select {
 	
 	<div class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: System Information</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('System Information', 'loginizer'); ?></span>
 		</h2>
-		
+		</div>
 		<div class="inside">
 		
 		<form action="" method="post" enctype="multipart/form-data">
@@ -1033,7 +1256,7 @@ input[type="text"], textarea, select {
 			echo '
 			<tr>				
 				<th align="left" width="25%">'.__('Loginizer Version', 'loginizer').'</th>
-				<td>'.LOGINIZER_VERSION.(defined('LOGINIZER_PREMIUM') ? ' (Security PRO Version)' : '').'</td>
+				<td>'.LOGINIZER_VERSION.(defined('LOGINIZER_PREMIUM') ? ' (<font color="green">Security PRO Version</font>)' : '').'</td>
 			</tr>';
 			
 			if(defined('LOGINIZER_PREMIUM')){
@@ -1050,7 +1273,7 @@ input[type="text"], textarea, select {
 						$expires = $loginizer['license']['expires'];
 						$expires = substr($expires, 0, 4).'/'.substr($expires, 4, 2).'/'.substr($expires, 6);
 						
-						echo '<div style="margin-top:10px;">License Active : '.(empty($loginizer['license']['active']) ? '<span style="color:red">No</span>' : 'Yes').' &nbsp; &nbsp; &nbsp; 
+						echo '<div style="margin-top:10px;">License Active : '.(empty($loginizer['license']['active']) ? '<span style="color:red">No</span>' : '<span style="color:green">Yes</span>').' &nbsp; &nbsp; &nbsp; 
 						License Expires : '.($loginizer['license']['expires'] <= date('Ymd') ? '<span style="color:red">'.$expires.'</span>' : $expires).'
 						</div>';
 					}
@@ -1071,7 +1294,7 @@ input[type="text"], textarea, select {
 			</tr>
 			<tr>				
 				<th align="left">'.__('Server\'s IP Address', 'loginizer').'</th>
-				<td>'.$_SERVER['SERVER_ADDR'].'</td>
+				<td>'.@$_SERVER['SERVER_ADDR'].'</td>
 			</tr>
 			<tr>				
 				<th align="left">'.__('Your IP Address', 'loginizer').'</th>
@@ -1127,14 +1350,11 @@ lz_ip_method_handle();
 	
 	<div id="" class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: File Permissions</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('File Permissions', 'loginizer'); ?></span>
 		</h2>
+		</div>
 		
 		<div class="inside">
 		
@@ -1207,7 +1427,7 @@ function loginizer_page_brute_force(){
 	}
 	
 	// BEGIN THEME
-	loginizer_page_header('Loginizer - Brute Force Settings');
+	loginizer_page_header('Brute Force Settings');
 	
 	// Load the blacklist and whitelist
 	$loginizer['blacklist'] = get_option('loginizer_blacklist');
@@ -1364,7 +1584,7 @@ function loginizer_page_brute_force(){
 		}
 		
 		if(count($ips) < 1){
-			$error[] = 'There are no IPs submitted';
+			$error[] = __('There are no IPs submitted', 'loginizer');
 		}
 		
 		// Should we start deleting logs
@@ -1395,7 +1615,7 @@ function loginizer_page_brute_force(){
 		$end_ip = lz_optpost('end_ip');
 		
 		if(empty($start_ip)){
-			$error[] = 'Please enter the Start IP';
+			$error[] = __('Please enter the Start IP', 'loginizer');
 		}
 		
 		// If no end IP we consider only 1 IP
@@ -1404,11 +1624,11 @@ function loginizer_page_brute_force(){
 		}
 				
 		if(!lz_valid_ip($start_ip)){
-			$error[] = 'Please provide a valid start IP';
+			$error[] = __('Please provide a valid start IP', 'loginizer');
 		}
 		
 		if(!lz_valid_ip($end_ip)){
-			$error[] = 'Please provide a valid end IP';			
+			$error[] = __('Please provide a valid end IP', 'loginizer');			
 		}
 		
 		// Regular ranges will work
@@ -1418,7 +1638,7 @@ function loginizer_page_brute_force(){
 			if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
 				// This is right
 			}else{
-				$error[] = 'The End IP cannot be smaller than the Start IP';
+				$error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer');
 			}
 			
 		}
@@ -1433,19 +1653,19 @@ function loginizer_page_brute_force(){
 				if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
 					|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
 				){
-					$error[] = 'The Start IP or End IP submitted conflicts with an existing IP range !';
+					$error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer');
 					break;
 				}
 				
 				// This is to check if there is any other range exists with the same Start IP
 				if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
-					$error[] = 'The Start IP is present in an existing range !';
+					$error[] = __('The Start IP is present in an existing range !', 'loginizer');
 					break;
 				}
 				
 				// This is to check if there is any other range exists with the same End IP
 				if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
-					$error[] = 'The End IP is present in an existing range!';
+					$error[] = __('The End IP is present in an existing range!', 'loginizer');
 					break;
 				}
 				
@@ -1482,7 +1702,7 @@ function loginizer_page_brute_force(){
 		$end_ip = lz_optpost('end_ip_w');
 		
 		if(empty($start_ip)){
-			$error[] = 'Please enter the Start IP';
+			$error[] = __('Please enter the Start IP', 'loginizer');
 		}
 		
 		// If no end IP we consider only 1 IP
@@ -1491,11 +1711,11 @@ function loginizer_page_brute_force(){
 		}
 				
 		if(!lz_valid_ip($start_ip)){
-			$error[] = 'Please provide a valid start IP';
+			$error[] = __('Please provide a valid start IP', 'loginizer');
 		}
 		
 		if(!lz_valid_ip($end_ip)){
-			$error[] = 'Please provide a valid end IP';			
+			$error[] = __('Please provide a valid end IP', 'loginizer');
 		}
 			
 		if(inet_ptoi($start_ip) > inet_ptoi($end_ip)){
@@ -1504,7 +1724,7 @@ function loginizer_page_brute_force(){
 			if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
 				// This is right
 			}else{
-				$error[] = 'The End IP cannot be smaller than the Start IP';
+				$error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer');
 			}
 			
 		}
@@ -1519,19 +1739,19 @@ function loginizer_page_brute_force(){
 				if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
 					|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
 				){
-					$error[] = 'The Start IP or End IP submitted conflicts with an existing IP range !';
+					$error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer');
 					break;
 				}
 				
 				// This is to check if there is any other range exists with the same Start IP
 				if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
-					$error[] = 'The Start IP is present in an existing range !';
+					$error[] = __('The Start IP is present in an existing range !', 'loginizer');
 					break;
 				}
 				
 				// This is to check if there is any other range exists with the same End IP
 				if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
-					$error[] = 'The End IP is present in an existing range!';
+					$error[] = __('The End IP is present in an existing range!', 'loginizer');
 					break;
 				}
 				
@@ -1566,6 +1786,10 @@ function loginizer_page_brute_force(){
 		
 		$msgs['inv_userpass'] = lz_optpost('msg_inv_userpass');
 		$msgs['ip_blacklisted'] = lz_optpost('msg_ip_blacklisted');
+		$msgs['attempts_left'] = lz_optpost('msg_attempts_left');
+		$msgs['lockout_err'] = lz_optpost('msg_lockout_err');
+		$msgs['minutes_err'] = lz_optpost('msg_minutes_err');
+		$msgs['hours_err'] = lz_optpost('msg_hours_err');
 		
 		// Update them
 		update_option('loginizer_msg', $msgs);
@@ -1607,14 +1831,11 @@ function loginizer_page_brute_force(){
 
 	<div id="" class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Failed Login Attempts Logs</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<?php echo __('<span>Failed Login Attempts Logs</span> &nbsp; (Past '.($loginizer['reset_retries']/60/60).' hours)','loginizer'); ?>
 		</h2>
+		</div>
 		
 		<script>
 		function yesdsd(){
@@ -1660,7 +1881,7 @@ function loginizer_page_brute_force(){
 				echo '
 				<tr>
 					<td colspan="4">
-						No Logs. You will see logs about failed login attempts here.
+						'.__('No Logs. You will see logs about failed login attempts here.', 'loginizer').'
 					</td>
 				</tr>';
 			}else{
@@ -1678,7 +1899,7 @@ function loginizer_page_brute_force(){
 							'.$iv['username'].'
 						</td>
 						<td>
-							'.date('d/m/Y H:i:s', $iv['time']).'
+							'.date('d/M/Y H:i:s P', $iv['time']).'
 						</td>
 						<td>
 							'.$iv['count'].'
@@ -1707,14 +1928,11 @@ function loginizer_page_brute_force(){
 	
 	<div id="" class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Brute Force Settings</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('Brute Force Settings', 'loginizer'); ?></span>
 		</h2>
+		</div>
 		
 		<div class="inside">
 		
@@ -1842,14 +2060,11 @@ function del_confirm_all(msg){
 	
 	<div id="" class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Blacklist IP</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('Blacklist IP','loginizer'); ?></span>
 		</h2>
+		</div>
 		
 		<div class="inside">
 		
@@ -1889,7 +2104,7 @@ function del_confirm_all(msg){
 					echo '
 					<tr>
 						<td colspan="4">
-							No Blacklist IPs. You will see blacklisted IP ranges here.
+							'.__('No Blacklist IPs. You will see blacklisted IP ranges here.', 'loginizer').'
 						</td>
 					</tr>';
 				}else{
@@ -1924,14 +2139,11 @@ function del_confirm_all(msg){
 	
 	<div id="" class="postbox">
 	
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Whitelist IP</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-		
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('Whitelist IP', 'loginizer'); ?></span>
 		</h2>
+		</div>
 		
 		<div class="inside">
 		
@@ -1970,7 +2182,7 @@ function del_confirm_all(msg){
 				echo '
 				<tr>
 					<td colspan="4">
-						No Whitelist IPs. You will see whitelisted IP ranges here.
+						'.__('No Whitelist IPs. You will see whitelisted IP ranges here.', 'loginizer').'
 					</td>
 				</tr>';
 			}else{
@@ -1999,15 +2211,12 @@ function del_confirm_all(msg){
 	</div>
 
 	<div id="" class="postbox">
-
-		<button class="handlediv button-link" aria-expanded="true" type="button">
-			<span class="screen-reader-text">Toggle panel: Error Messages</span>
-			<span class="toggle-indicator" aria-hidden="true"></span>
-		</button>
-
+	
+		<div class="postbox-header">
 		<h2 class="hndle ui-sortable-handle">
 			<span><?php echo __('Error Messages', 'loginizer'); ?></span>
 		</h2>
+		</div>
 
 		<div class="inside">
 
@@ -2017,15 +2226,43 @@ function del_confirm_all(msg){
 					<tr>
 						<th scope="row" valign="top"><label for="msg_inv_userpass"><?php echo __('Failed Login Attempt','loginizer'); ?></label></th>
 						<td>
-							<input type="text" size="25" value="<?php echo esc_attr($saved_msgs['inv_userpass']); ?>" name="msg_inv_userpass" id="msg_inv_userpass" />
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['inv_userpass']); ?>" name="msg_inv_userpass" id="msg_inv_userpass" />
 							<?php echo __('Default: <em>&quot;' . $loginizer['d_msg']['inv_userpass']. '&quot;</em>', 'loginizer'); ?><br />
 						</td>
 					</tr>
 					<tr>
 						<th scope="row" valign="top"><label for="msg_ip_blacklisted"><?php echo __('Blacklisted IP','loginizer'); ?></label></th>
 						<td>
-							<input type="text" size="25" value="<?php echo esc_attr($saved_msgs['ip_blacklisted']); ?>" name="msg_ip_blacklisted" id="msg_ip_blacklisted" />
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['ip_blacklisted']); ?>" name="msg_ip_blacklisted" id="msg_ip_blacklisted" />
 							<?php echo __('Default: <em>&quot;' . $loginizer['d_msg']['ip_blacklisted']. '&quot;</em>', 'loginizer'); ?><br />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="msg_attempts_left"><?php echo __('Attempts Left','loginizer'); ?></label></th>
+						<td>
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['attempts_left']); ?>" name="msg_attempts_left" id="msg_attempts_left" />
+							<?php echo __('Default: <em>&quot;' . $loginizer['d_msg']['attempts_left']. '&quot;</em>', 'loginizer'); ?><br />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="msg_lockout_err"><?php echo __('Lockout Error','loginizer'); ?></label></th>
+						<td>
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['lockout_err']); ?>" name="msg_lockout_err" id="msg_lockout_err" />
+							<?php echo __('Default: <em>&quot;' . strip_tags($loginizer['d_msg']['lockout_err']). '&quot;</em>', 'loginizer'); ?><br />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="msg_minutes_err"><?php echo __('Minutes','loginizer'); ?></label></th>
+						<td>
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['minutes_err']); ?>" name="msg_minutes_err" id="msg_minutes_err" />
+							<?php echo __('Default: <em>&quot;' . strip_tags($loginizer['d_msg']['minutes_err']). '&quot;</em>', 'loginizer'); ?><br />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="msg_hours_err"><?php echo __('Hours','loginizer'); ?></label></th>
+						<td>
+							<input type="text" size="25" value="<?php echo esc_attr(@$saved_msgs['hours_err']); ?>" name="msg_hours_err" id="msg_hours_err" />
+							<?php echo __('Default: <em>&quot;' . strip_tags($loginizer['d_msg']['hours_err']). '&quot;</em>', 'loginizer'); ?><br />
 						</td>
 					</tr>
 				</table><br />
@@ -2037,6 +2274,1921 @@ function del_confirm_all(msg){
 
 loginizer_page_footer();
 
+}
+
+//---------------------
+// Admin Menu Pro Pages
+//---------------------
+
+// Loginizer - reCaptcha Page
+function loginizer_page_recaptcha(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	if(!loginizer_is_premium() && count($_POST) > 0){
+		$lz_error['not_in_free'] = __('This feature is not available in the Free version. <a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none; color:green;"><b>Upgrade to Pro</b></a>', 'loginizer');
+		return loginizer_page_recaptcha_T();
+	}
+
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
+	
+	// Themes
+	$lz_env['theme']['light'] = 'Light';
+	$lz_env['theme']['dark'] = 'Dark';
+	
+	// Langs
+	$lz_env['lang'][''] = 'Auto Detect';
+	$lz_env['lang']['ar'] = 'Arabic';
+	$lz_env['lang']['bg'] = 'Bulgarian';
+	$lz_env['lang']['ca'] = 'Catalan';
+	$lz_env['lang']['zh-CN'] = 'Chinese (Simplified)';
+	$lz_env['lang']['zh-TW'] = 'Chinese (Traditional)';
+	$lz_env['lang']['hr'] = 'Croatian';
+	$lz_env['lang']['cs'] = 'Czech';
+	$lz_env['lang']['da'] = 'Danish';
+	$lz_env['lang']['nl'] = 'Dutch';
+	$lz_env['lang']['en-GB'] = 'English (UK)';
+	$lz_env['lang']['en'] = 'English (US)';
+	$lz_env['lang']['fil'] = 'Filipino';
+	$lz_env['lang']['fi'] = 'Finnish';
+	$lz_env['lang']['fr'] = 'French';
+	$lz_env['lang']['fr-CA'] = 'French (Canadian)';
+	$lz_env['lang']['de'] = 'German';
+	$lz_env['lang']['de-AT'] = 'German (Austria)';
+	$lz_env['lang']['de-CH'] = 'German (Switzerland)';
+	$lz_env['lang']['el'] = 'Greek';
+	$lz_env['lang']['iw'] = 'Hebrew';
+	$lz_env['lang']['hi'] = 'Hindi';
+	$lz_env['lang']['hu'] = 'Hungarain';
+	$lz_env['lang']['id'] = 'Indonesian';
+	$lz_env['lang']['it'] = 'Italian';
+	$lz_env['lang']['ja'] = 'Japanese';
+	$lz_env['lang']['ko'] = 'Korean';
+	$lz_env['lang']['lv'] = 'Latvian';
+	$lz_env['lang']['lt'] = 'Lithuanian';
+	$lz_env['lang']['no'] = 'Norwegian';
+	$lz_env['lang']['fa'] = 'Persian';
+	$lz_env['lang']['pl'] = 'Polish';
+	$lz_env['lang']['pt'] = 'Portuguese';
+	$lz_env['lang']['pt-BR'] = 'Portuguese (Brazil)';
+	$lz_env['lang']['pt-PT'] = 'Portuguese (Portugal)';
+	$lz_env['lang']['ro'] = 'Romanian';
+	$lz_env['lang']['ru'] = 'Russian';
+	$lz_env['lang']['sr'] = 'Serbian';
+	$lz_env['lang']['sk'] = 'Slovak';
+	$lz_env['lang']['sl'] = 'Slovenian';
+	$lz_env['lang']['es'] = 'Spanish';
+	$lz_env['lang']['es-419'] = 'Spanish (Latin America)';
+	$lz_env['lang']['sv'] = 'Swedish';
+	$lz_env['lang']['th'] = 'Thai';
+	$lz_env['lang']['tr'] = 'Turkish';
+	$lz_env['lang']['uk'] = 'Ukrainian';
+	$lz_env['lang']['vi'] = 'Vietnamese';
+	
+	// Sizes
+	$lz_env['size']['normal'] = 'Normal';
+	$lz_env['size']['compact'] = 'Compact';
+	
+	if(isset($_POST['save_lz'])){
+		
+		// Google Captcha
+		$option['captcha_type'] = lz_optpost('captcha_type');
+		$option['captcha_key'] = lz_optpost('captcha_key');
+		$option['captcha_secret'] = lz_optpost('captcha_secret');
+		$option['captcha_theme'] = lz_optpost('captcha_theme');
+		$option['captcha_size'] = lz_optpost('captcha_size');
+		$option['captcha_lang'] = lz_optpost('captcha_lang');
+		
+		// No Google Captcha
+		$option['captcha_text'] = lz_optpost('captcha_text');
+		$option['captcha_time'] = (int) lz_optpost('captcha_time');
+		$option['captcha_words'] = (int) lz_optpost('captcha_words');
+		$option['captcha_add'] = (int) lz_optpost('captcha_add');
+		$option['captcha_subtract'] = (int) lz_optpost('captcha_subtract');
+		$option['captcha_multiply'] = (int) lz_optpost('captcha_multiply');
+		$option['captcha_divide'] = (int) lz_optpost('captcha_divide');
+		
+		// Checkboxes
+		$option['captcha_user_hide'] = (int) lz_optpost('captcha_user_hide');
+		$option['captcha_no_css_login'] = (int) lz_optpost('captcha_no_css_login');
+		$option['captcha_login'] = (int) lz_optpost('captcha_login');
+		$option['captcha_lostpass'] = (int) lz_optpost('captcha_lostpass');
+		$option['captcha_resetpass'] = (int) lz_optpost('captcha_resetpass');
+		$option['captcha_register'] = (int) lz_optpost('captcha_register');
+		$option['captcha_comment'] = (int) lz_optpost('captcha_comment');
+		$option['captcha_wc_checkout'] = (int) lz_optpost('captcha_wc_checkout');
+		
+		// Are we to use Math Captcha ?
+		if(isset($_POST['captcha_no_google'])){
+			
+			$option['captcha_no_google'] = 1;
+			
+			// Make the checks
+			if(strlen($option['captcha_text']) < 1){
+				$lz_error['captcha_text'] = __('The Captcha key was not submitted', 'loginizer');
+			}
+			
+		}else{
+		
+			// Make the checks
+			if(strlen($option['captcha_key']) < 32 || strlen($option['captcha_key']) > 50){
+				$lz_error['captcha_key'] = __('The reCAPTCHA key is invalid', 'loginizer');
+			}
+			
+			// Is secret valid ?
+			if(strlen($option['captcha_secret']) < 32 || strlen($option['captcha_secret']) > 50){
+				$lz_error['captcha_secret'] = __('The reCAPTCHA secret is invalid', 'loginizer');
+			}
+			
+			// Is theme valid ?
+			if(empty($lz_env['theme'][$option['captcha_theme']])){
+				$lz_error['captcha_theme'] = __('The reCAPTCHA theme is invalid', 'loginizer');
+			}
+			
+			// Is size valid ?
+			if(empty($lz_env['size'][$option['captcha_size']])){
+				$lz_error['captcha_size'] = __('The reCAPTCHA size is invalid', 'loginizer');
+			}
+			
+			// Is lang valid ?
+			if(empty($lz_env['lang'][$option['captcha_lang']])){
+				$lz_error['captcha_lang'] = __('The reCAPTCHA language is invalid', 'loginizer');
+			}
+			
+		}
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_recaptcha_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_captcha', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Clear this
+	if(isset($_POST['clear_captcha_lz'])){
+		
+		// Save the options
+		update_option('loginizer_captcha', '');
+		
+		// Mark as saved
+		$GLOBALS['lz_cleared'] = true;
+		
+	}
+	
+	// Call the theme
+	loginizer_page_recaptcha_T();
+	
+}
+
+// Loginizer - reCaptcha Page Theme
+function loginizer_page_recaptcha_T(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	// Universal header
+	loginizer_page_header('reCAPTCHA Settings');
+	
+	loginizer_feature_available('reCAPTCHA');
+	
+	// Saved ?
+	if(!empty($GLOBALS['lz_saved'])){
+		echo '<div id="message" class="updated"><p>'. __('The settings were saved successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Cleared ?
+	if(!empty($GLOBALS['lz_cleared'])){
+		echo '<div id="message" class="updated"><p>'. __('reCAPTCHA has been disabled !', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Any errors ?
+	if(!empty($lz_error)){
+		lz_report_error($lz_error);echo '<br />';
+	}
+	
+	?>
+
+<style>
+input[type="text"], textarea, select {
+    width: 70%;
+}
+</style>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('reCAPTCHA Settings', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr class="lz_google_cap">
+				<td scope="row" valign="top" style="width:300px !important; padding-left:0px"><label><b><?php echo __('reCAPTCHA type', 'loginizer'); ?></b></label><br>
+				<?php echo __('Choose the type of reCAPTCHA', 'loginizer'); ?><br />
+				<?php echo __('<a href="https://g.co/recaptcha/sitetypes/" target="_blank">See Site Types for more details</a>', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="radio" value="v3" onchange="google_recaptcha_type(this)" <?php echo lz_POSTradio('captcha_type', 'v3', $loginizer['captcha_type']); ?> name="captcha_type" id="captcha_type_v3" /> <label for="captcha_type_v3"><?php echo __('reCAPTCHA v3', 'loginizer'); ?></label><br /><br />
+					<input type="radio" value="" onchange="google_recaptcha_type(this)" <?php echo lz_POSTradio('captcha_type', '', $loginizer['captcha_type']); ?> name="captcha_type" id="captcha_type_v2" /> <label for="captcha_type_v2"><?php echo __('reCAPTCHA v2 - Checkbox', 'loginizer'); ?></label><br /><br />
+					<input type="radio" value="v2_invisible" onchange="google_recaptcha_type(this)" <?php echo lz_POSTradio('captcha_type', 'v2_invisible', $loginizer['captcha_type']); ?> name="captcha_type" id="captcha_type_v2_invisible" /> <label for="captcha_type_v2_invisible"><?php echo __('reCAPTCHA v2 - Invisible', 'loginizer'); ?></label><br />
+				</td>
+			</tr>
+			<tr class="lz_google_cap">
+				<td scope="row" valign="top" style="width:300px !important; padding-left:0px"><label><b><?php echo __('Site Key', 'loginizer'); ?></b></label><br>
+				<?php echo __('Make sure you enter the correct keys as per the reCAPTCHA type selected above', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('captcha_key', $loginizer['captcha_key']); ?>" name="captcha_key" /><br />
+					<?php echo __('Get the Site Key and Secret Key from <a href="https://www.google.com/recaptcha/" target="_blank">Google</a>', 'loginizer'); ?>
+				</td>
+			</tr>
+			<tr class="lz_google_cap">
+				<th scope="row" valign="top"><label><?php echo __('Secret Key', 'loginizer'); ?></label></th>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('captcha_secret', $loginizer['captcha_secret']); ?>" name="captcha_secret" />
+				</td>
+			</tr>
+			<tr class="lz_google_cap">
+				<th scope="row" valign="top"><label><?php echo __('Theme', 'loginizer'); ?></label></th>
+				<td>
+					<select name="captcha_theme">
+						<?php
+							foreach($lz_env['theme'] as $k => $v){
+								echo '<option '.lz_POSTselect('captcha_theme', $k, ($loginizer['captcha_theme'] == $k ? true : false)).' value="'.$k.'">'.$v.'</value>';								
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr class="lz_google_cap">
+				<th scope="row" valign="top"><label><?php echo __('Language', 'loginizer'); ?></label></th>
+				<td>
+					<select name="captcha_lang">
+						<?php
+							foreach($lz_env['lang'] as $k => $v){
+								echo '<option '.lz_POSTselect('captcha_lang', $k, ($loginizer['captcha_lang'] == $k ? true : false)).' value="'.$k.'">'.$v.'</value>';								
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr class="lz_google_cap lz_google_cap_size">
+				<th scope="row" valign="top"><label><?php echo __('Size', 'loginizer'); ?></label></th>
+				<td>
+					<select name="captcha_size">
+						<?php
+							foreach($lz_env['size'] as $k => $v){
+								echo '<option '.lz_POSTselect('captcha_size', $k, ($loginizer['captcha_size'] == $k ? true : false)).' value="'.$k.'">'.$v.'</value>';								
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="padding-left:0px">
+					<label><b><?php echo __('Don\'t use Google reCAPTCHA', 'loginizer'); ?></b></label><br>
+					<?php echo __('If selected, '.$loginizer['prefix'].' will use a simple Math Captcha instead of Google reCAPTCHA', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="checkbox" onclick="no_google_recaptcha(this)" id="captcha_no_google" value="1" name="captcha_no_google" <?php echo lz_POSTchecked('captcha_no_google', (empty($loginizer['captcha_no_google']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr class="lz_math_cap">
+				<td scope="row" valign="top" style="width:300px !important; padding-left:0px">
+					<label><b><?php echo __('Captcha Text', 'loginizer'); ?></b></label><br>
+					<?php echo __('The text to be shown for the Captcha Field', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="text" size="30" value="<?php echo lz_optpost('captcha_text', @$loginizer['captcha_text']); ?>" name="captcha_text" />
+				</td>
+			</tr>
+			<tr class="lz_math_cap">
+				<td scope="row" valign="top" style="padding-left:0px">
+					<label><b><?php echo __('Captcha Time', 'loginizer'); ?></b></label><br>
+					<?php echo __('Enter the number of seconds, a user has to enter captcha value.', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="text" size="30" value="<?php echo lz_optpost('captcha_time', @$loginizer['captcha_time']); ?>" name="captcha_time" />
+				</td>
+			</tr>
+			<tr class="lz_math_cap">
+				<td scope="row" valign="top" style="padding-left:0px">
+					<label><b><?php echo __('Display Captcha in Words', 'loginizer'); ?></b></label><br>
+					<?php echo __('If selected the Captcha will be displayed in words rather than numbers', 'loginizer'); ?>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="captcha_words" <?php echo lz_POSTchecked('captcha_words', (empty($loginizer['captcha_words']) ? false : true));?> />
+				</td>
+			</tr>
+			<tr class="lz_math_cap">
+				<td scope="row" valign="top" style="vertical-align: top !important; padding-left:0px">
+					<label><b><?php echo __('Mathematical operations', 'loginizer'); ?></b></label><br>
+					<?php echo __('The Mathematical operations to use for Captcha', 'loginizer'); ?>
+				</td>
+				<td valign="top">
+					<table class="wp-list-table fixed users" cellpadding="8" cellspacing="1">
+						<?php echo '
+						<tr>
+							<td>'.__('Addition (+)', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_add" '.lz_POSTchecked('captcha_add', (empty($loginizer['captcha_add']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Subtraction (-)', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_subtract" '.lz_POSTchecked('captcha_subtract', (empty($loginizer['captcha_subtract']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Multiplication (x)', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_multiply" '.lz_POSTchecked('captcha_multiply', (empty($loginizer['captcha_multiply']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Division (รท)', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_divide" '.lz_POSTchecked('captcha_divide', (empty($loginizer['captcha_divide']) ? false : true)).' /></td>
+						</tr>';
+						?>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top"><label><?php echo __('Show Captcha On', 'loginizer'); ?></label></th>
+				<td valign="top">
+					<table class="wp-list-table fixed users" cellpadding="8" cellspacing="1">
+						<?php echo '
+						<tr>
+							<td>'.__('Login Form', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_login" '.lz_POSTchecked('captcha_login', (empty($loginizer['captcha_login']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Lost Password Form', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_lostpass" '.lz_POSTchecked('captcha_lostpass', (empty($loginizer['captcha_lostpass']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Reset Password Form', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_resetpass" '.lz_POSTchecked('captcha_resetpass', (empty($loginizer['captcha_resetpass']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Registration Form', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_register" '.lz_POSTchecked('captcha_register', (empty($loginizer['captcha_register']) ? false : true)).' /></td>
+						</tr>
+						<tr>
+							<td>'.__('Comment Form', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_comment" '.lz_POSTchecked('captcha_comment', (empty($loginizer['captcha_comment']) ? false : true)).' /></td>
+						</tr>';
+						
+						if(!defined('SITEPAD')){
+						
+						echo '<tr>
+							<td>'.__('WooCommerce Checkout', 'loginizer').'</td>
+							<td><input type="checkbox" value="1" name="captcha_wc_checkout" '.lz_POSTchecked('captcha_wc_checkout', (empty($loginizer['captcha_wc_checkout']) ? false : true)).' /></td>
+						</tr>';
+						
+						}
+						
+						?>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top"><label><?php echo __('Hide CAPTCHA for logged in Users', 'loginizer'); ?></label></th>
+				<td>
+					<input type="checkbox" value="1" name="captcha_user_hide" <?php echo lz_POSTchecked('captcha_user_hide', (empty($loginizer['captcha_user_hide']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr class="lz_google_cap">
+				<th scope="row" valign="top"><label><?php echo __('Disable CSS inserted on Login Page', 'loginizer'); ?></label></th>
+				<td>
+					<input type="checkbox" value="1" name="captcha_no_css_login" <?php echo lz_POSTchecked('captcha_no_css_login', (empty($loginizer['captcha_no_css_login']) ? false : true)); ?> />
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings','loginizer'); ?>" type="submit" />
+		<input style="float:right" name="clear_captcha_lz" class="button action" value="<?php echo __('Disable reCAPTCHA','loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+	<br />
+
+<script type="text/javascript">
+
+function no_google_recaptcha(obj){
+	
+	if(obj.checked){
+		jQuery(".lz_google_cap").hide();
+		jQuery(".lz_math_cap").show();
+	}else{
+		jQuery(".lz_google_cap").show();
+		jQuery(".lz_math_cap").hide();
+	}
+	
+	var cur_captcha_type = jQuery("input:radio[name='captcha_type']:checked").val();
+	
+	if(cur_captcha_type == 'v3' || cur_captcha_type == 'v2_invisible'){
+		jQuery(".lz_google_cap_size").hide();
+	}else{
+		jQuery(".lz_google_cap_size").show();
+	}
+	
+}
+
+no_google_recaptcha(jQuery("#captcha_no_google")[0]);
+
+function google_recaptcha_type(obj){
+	if(obj.value == 'v3' || obj.value == 'v2_invisible'){
+		jQuery(".lz_google_cap_size").hide();
+	}else{
+		jQuery(".lz_google_cap_size").show();
+	}
+}
+
+
+</script>
+	
+	<?php
+	loginizer_page_footer();
+	
+}
+
+
+// Loginizer - Two Factor Auth Page
+function loginizer_page_2fa(){
+	
+	global $loginizer, $lz_error, $lz_env, $lz_roles;
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	if(!loginizer_is_premium() && count($_POST) > 0){
+		$lz_error['not_in_free'] = __('This feature is not available in the Free version. <a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none; color:green;"><b>Upgrade to Pro</b></a>', 'loginizer');
+		return loginizer_page_2fa_T();
+	}
+
+	$lz_roles = get_editable_roles();
+	
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
+	
+	// Settings submitted
+	if(isset($_POST['save_lz'])){
+		
+		// In the future there can be more settings
+		$option['2fa_app'] = (int) lz_optpost('2fa_app');
+		$option['2fa_email'] = (int) lz_optpost('2fa_email');
+		$option['question'] = (int) lz_optpost('question');
+		$option['2fa_email_force'] = (int) lz_optpost('2fa_email_force');
+		
+		// Any roles to apply to ?
+		foreach($lz_roles as $k => $v){
+			
+			if(lz_optpost('2fa_roles_'.$k)){
+				$option['2fa_roles'][$k] = 1;
+			}
+			
+		}
+		
+		// If its all, then blank it
+		if(lz_optpost('2fa_roles_all') || empty($option['2fa_roles'])){
+			$option['2fa_roles'] = '';
+		}
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_2fa_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_2fa', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Reset a users 2FA
+	if(isset($_POST['reset_user_lz'])){
+		
+		$_username = lz_optpost('lz_user_2fa_disable');
+		
+		// Try to get the user
+		$user_search = get_user_by('login', $_username);
+		
+		// If not found then search by email
+		if(empty($user_search)){
+			$user_search = get_user_by('email', $_username);
+		}
+		
+		// If not found then give error
+		if(empty($user_search)){
+			$lz_error['2fa_user_not'] = __('There is no such user with the email or username you submitted', 'loginizer');
+			return loginizer_page_2fa_T();
+		}
+		
+		// Get the user prefences
+		$user_pref = get_user_meta($user_search->ID, 'loginizer_user_settings');
+		
+		// Blank it
+		$user_pref['pref'] = 'none';
+		
+		// Save it
+		update_user_meta($user_search->ID, 'loginizer_user_settings', $user_pref);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = __('The user\'s 2FA settings have been reset', 'loginizer');
+		
+	}
+	
+	// Call theme
+	loginizer_page_2fa_T();
+	
+}
+
+
+// Loginizer - Two Factor Auth Page
+function loginizer_page_2fa_T(){
+	
+	global $loginizer, $lz_error, $lz_env, $lz_roles;
+	
+	// Universal header
+	loginizer_page_header('Two Factor Authentication');
+	
+	loginizer_feature_available('Two-Factor Authentication');
+	
+	// Saved ?
+	if(!empty($GLOBALS['lz_saved'])){
+		echo '<div id="message" class="updated"><p>'. __(is_string($GLOBALS['lz_saved']) ? $GLOBALS['lz_saved'] : 'The settings were saved successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Any errors ?
+	if(!empty($lz_error)){
+		lz_report_error($lz_error);echo '<br />';
+	}
+
+	?>
+
+<style>
+input[type="text"], textarea, select {
+    width: 70%;
+}
+
+.form-table label{
+	font-weight:bold;
+}
+
+.exp{
+	font-size:12px;
+}
+</style>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Two Factor Authentication Settings', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i><?php echo __('Please choose from the following Two Factor Authentication methods. Each user can choose any one method from the ones enabled by you. You can enable all or anyone that you would like.', 'loginizer'); ?></i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:70% !important">
+					<label><?php echo __('OTP via App', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('After entering the correct login credentials, the user will be asked for the OTP. The OTP will be obtained from the users mobile app e.g. <b>Google Authenticator, Authy, etc.</b>', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="2fa_app" <?php echo lz_POSTchecked('2fa_app', (empty($loginizer['2fa_app']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('OTP via Email', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('After entering the correct login credentials, the user will be asked for the OTP. The OTP will be emailed to the user.', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="2fa_email" <?php echo lz_POSTchecked('2fa_email', (empty($loginizer['2fa_email']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('User Defined Question & Answer', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('In this method the user will be asked to set a secret personal question and answer. After entering the correct login credentials, the user will be asked to answer the question set by them, thus increasing the security', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="question" <?php echo lz_POSTchecked('question', (empty($loginizer['question']) ? false : true)); ?> />
+				</td>
+			</tr>
+		</table><br />
+		
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" style="width:70% !important">
+					<label><?php echo __('Force OTP via Email', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If the user does not have any 2FA method selected, this will enforce the OTP via Email for the users.', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="2fa_email_force" <?php echo lz_POSTchecked('2fa_email_force', (empty($loginizer['2fa_email_force']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:70% !important">
+					<label><?php echo __('Apply 2FA to Roles', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Select the Roles to which 2FA should be applied.', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" onchange="lz_roles_handle()" name="2fa_roles_all" id="2fa_roles_all" <?php echo lz_POSTchecked('2fa_roles_all', (empty($loginizer['2fa_roles']) ? true : false)); ?> /> All<br />
+					<?php
+					
+					foreach($lz_roles as $k => $v){
+						echo '<span class="lz_roles"><input type="checkbox" value="1" name="2fa_roles_'.$k.'" '.lz_POSTchecked('2fa_roles_'.$k, (empty($loginizer['2fa_roles'][$k]) ? false : true)).' /> '.$v['name'].'<br /></span>';
+					}
+					
+					?>
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+
+<script type="text/javascript">
+
+function lz_roles_handle(){
+	
+	var obj = jQuery("#2fa_roles_all")[0];
+	
+	if(obj.checked){
+		jQuery(".lz_roles").hide();
+	}else{
+		jQuery(".lz_roles").show();
+	}
+	
+}
+
+lz_roles_handle();
+
+</script>
+	
+	<!--Bypass a single user-->
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Disable Two Factor Authentication for a User', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i><?php echo __('Here you can disable the Two Factor Authentication settings of a user. In the event a user has forgotten his secret answer or lost his Device App, he will not be able to login. You can reset such a users settings from here.', 'loginizer'); ?></i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('Username / Email', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('The username or email of the user whose 2FA you would like to disable', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('lz_user_2fa_disable', ''); ?>" name="lz_user_2fa_disable" />
+				</td>
+			</tr>
+		</table><br />
+		
+		<center><input name="reset_user_lz" class="button button-primary action" value="<?php echo __('Reset 2FA for User', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+	
+	<br />
+
+	<?php
+	loginizer_page_footer();
+	
+}
+
+// Loginizer - PasswordLess Page
+function loginizer_page_passwordless(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	if(!loginizer_is_premium() && count($_POST) > 0){
+		$lz_error['not_in_free'] = __('This feature is not available in the Free version. <a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none; color:green;"><b>Upgrade to Pro</b></a>', 'loginizer');
+		return loginizer_page_passwordless_T();
+	}
+
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
+	
+	if(isset($_POST['save_lz'])){
+		
+		// In the future there can be more settings
+		$option['email_pass_less'] = (int) lz_optpost('email_pass_less');
+		$option['passwordless_sub'] = lz_optpost('lz_passwordless_sub');
+		$option['passwordless_msg'] = lz_optpost('lz_passwordless_msg');
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_passwordless_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_epl', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Call theme
+	loginizer_page_passwordless_T();
+}
+
+// Loginizer - PasswordLess Page Theme
+function loginizer_page_passwordless_T(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	$lz_options = get_option('loginizer_epl');
+	
+	// Universal header
+	loginizer_page_header('PasswordLess Settings');
+	
+	loginizer_feature_available('PasswordLess Login');
+	
+	// Saved ?
+	if(!empty($GLOBALS['lz_saved'])){
+		echo '<div id="message" class="updated"><p>'. __('The settings were saved successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Any errors ?
+	if(!empty($lz_error)){
+		lz_report_error($lz_error);echo '<br />';
+	}
+
+	?>
+
+<style>
+input[type="text"], textarea, select {
+    width: 90%;
+}
+
+.form-table label{
+	font-weight:bold;
+}
+
+.form-table td{
+	vertical-align:top;
+}
+
+.exp{
+	font-size:12px;
+}
+</style>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('PasswordLess Settings', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<th scope="row" valign="top" style="width:350px !important"><label><?php echo __('Enable PasswordLess Login', 'loginizer'); ?></label></th>
+				<td>
+					<input type="checkbox" value="1" name="email_pass_less" <?php echo lz_POSTchecked('email_pass_less', (empty($loginizer['email_pass_less']) ? false : true)); echo (defined('SITEPAD') ? 'disabled="disabled"' : '') ?> />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" valign="top">
+					<?php echo __('If enabled, the login screen will just ask for the username <b>OR</b> email address of the user. If such a user exists, an email with a <b>One Time Login </b> link will be sent to the email address of the user. The link will be valid for 10 minutes only.', 'loginizer'); ?><br><br>
+					<?php echo __('If a wrong username/email is given, the brute force checker will prevent any brute force attempt !', 'loginizer'); ?>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('Email Subject', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the default subject', 'loginizer'); ?></span>
+					<br />Default : <?php echo @$loginizer['pl_d_sub']; ?>
+				</td>
+				<td valign="top">
+					<input type="text" size="40" value="<?php echo lz_optpost('lz_passwordless_sub', @$lz_options['passwordless_sub']); ?>" name="lz_passwordless_sub" />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('Email Body', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the default message', 'loginizer'); ?></span>
+					<br />Default : <pre style="font-size:10px"><?php echo @$loginizer['pl_d_msg']; ?></pre>
+				</td>
+				<td valign="top">
+					<textarea rows="10" name="lz_passwordless_msg"><?php echo lz_optpost('lz_passwordless_msg', @$lz_options['passwordless_msg']); ?></textarea>
+					<br />
+					Variables :
+					<br />$email  - Users Email
+					<br />$site_name - The Site Name
+					<br />$site_url - The Site URL
+					<br />$login_url - The Login URL
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+	<br />
+
+	<?php
+	loginizer_page_footer();
+	
+}
+
+// Loginizer - Security Settings Page
+function loginizer_page_security(){
+	
+	global $loginizer, $lz_error, $lz_env, $wpdb;
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	if(!loginizer_is_premium() && count($_POST) > 0){
+		$lz_error['not_in_free'] = __('This feature is not available in the Free version. <a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none; color:green;"><b>Upgrade to Pro</b></a>', 'loginizer');
+		return loginizer_page_security_T();
+	}
+
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
+	
+	if(isset($_POST['save_lz'])){
+		
+		$option['login_slug'] = lz_optpost('login_slug');
+		$option['rename_login_secret'] = (int) lz_optpost('rename_login_secret');
+		$option['xmlrpc_slug'] = lz_optpost('xmlrpc_slug');
+		$option['xmlrpc_disable'] = (int) lz_optpost('xmlrpc_disable');
+		$option['pingbacks_disable'] = (int) lz_optpost('pingbacks_disable');
+		
+		// Login Slug Valid ?
+		if(!empty($option['login_slug'])){
+			if(strlen($option['login_slug']) <= 4 || strlen($option['login_slug']) > 50){
+				$lz_error['login_slug'] = __('The Login slug length must be greater than <b>4</b> chars and upto <b>50</b> chars long', 'loginizer');
+			}
+		}
+		
+		// XML-RPC Slug Valid ?
+		if(!empty($option['xmlrpc_slug'])){
+			if(strlen($option['xmlrpc_slug']) <= 4 || strlen($option['xmlrpc_slug']) > 50){
+				$lz_error['xmlrpc_slug'] = __('The XML-RPC slug length must be greater than <b>4</b> chars and upto <b>50</b> chars long', 'loginizer');
+			}
+		}
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_security_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_security', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Reset the username
+	if(isset($_POST['save_lz_admin'])){
+		
+		// Get the new username
+		$current_username = lz_optpost('current_username');
+		$new_username = lz_optpost('new_username');
+		
+		if(empty($current_username)){
+			$lz_error['current_username_empty'] = __('Current username is required', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		if(empty($new_username)){
+			$lz_error['new_username_empty'] = __('New username is required', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Is the starting of the username having 'admin' ?
+		if(@strtolower(substr($new_username, 0, 5)) == 'admin'){
+			$lz_error['user_exists'] = __('The username begins with <b>admin</b>. Please change it !', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Lets check if there is such a user
+		$found = get_user_by('login', $new_username);
+		
+		// Found one !
+		if(!empty($found->ID)){
+			$lz_error['user_exists'] = __('The new username is already assigned to another user', 'loginizer');
+			return loginizer_page_security_T();
+		}
+	
+		$old_user = get_user_by('login', $current_username);
+		
+		if(empty($old_user->ID)){
+			$lz_error['current_username_invalid'] = __('No user found with the current username provided', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		if(empty($old_user->caps['administrator'])){
+			$lz_error['user_not_admin'] = __('The user is not an administrator. Only administrator user\'s username can be changed.', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Update the username
+		$wpdb->query("UPDATE `".$wpdb->prefix."users`
+					SET user_login = '$new_username'
+					WHERE `ID` = '".$old_user->ID."'");
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Change the wp-admin slug
+	if(isset($_POST['save_lz_wp_admin'])){
+		
+		// Get the new username
+		$option['admin_slug'] = lz_optpost('admin_slug');
+		$option['restrict_wp_admin'] = (int) lz_optpost('restrict_wp_admin');
+		$option['wp_admin_msg'] = @stripslashes($_POST['wp_admin_msg']);
+		$lz_wp_admin_docs = (int) lz_optpost('lz_wp_admin_docs');
+		
+		// Did you agree to this ?
+		if(!empty($option['admin_slug']) && empty($lz_wp_admin_docs)){
+			$lz_error['lz_wp_admin_docs'] = __('You have not confirmed that you have read the guide and configured .htaccess. Please read the guide, configure .htaccess and then save these settings and check this checkbox', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Length
+		if(!empty($option['admin_slug']) && (strlen($option['admin_slug']) <= 4 || strlen($option['admin_slug']) > 50)){
+			$lz_error['admin_slug'] = __('The new Admin slug length must be greater than <b>4</b> chars and upto <b>50</b> chars long', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Only regular characters
+		if(preg_match('/[^\w\d\-_]/is', $option['admin_slug'])){
+			$lz_error['admin_slug_chars'] = __('Special characters are not allowed', 'loginizer');
+			return loginizer_page_security_T();
+		}
+		
+		// Update the option
+		update_option('loginizer_wp_admin', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	
+	// Save blacklisted usernames
+	if(isset($_POST['save_lz_bl_users'])){
+		
+		$usernames = isset($_POST['lz_bl_users']) && is_array($_POST['lz_bl_users']) ? $_POST['lz_bl_users'] : array();
+		
+		// Process the usernames i.e. remove blanks
+		foreach($usernames as $k => $v){
+			$v = trim($v);
+			
+			// Unset blank values
+			if(empty($v)){
+				unset($usernames[$k]);
+			}
+			
+			// Disallow these special characters to avoid XSS or any other security vulnerability
+			if(preg_match('/[\<\>\"\']/', $v)){
+				unset($usernames[$k]);
+			}
+		}
+		
+		// Update the blacklist
+		update_option('loginizer_username_blacklist', array_values($usernames));
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	
+	// Save blacklisted domains
+	if(isset($_POST['save_lz_bl_domains'])){
+		
+		$domains = isset($_POST['lz_bl_domains']) && is_array($_POST['lz_bl_domains']) ? $_POST['lz_bl_domains'] : array();
+		
+		// Process the domains i.e. remove blanks
+		foreach($domains as $k => $v){
+			$v = trim($v);
+			
+			// Unset blank values
+			if(empty($v)){
+				unset($domains[$k]);
+			}
+			
+			// Disallow these special characters to avoid XSS or any other security vulnerability
+			if(preg_match('/[\<\>\"\']/', $v)){
+				unset($domains[$k]);
+			}
+		}
+		
+		// Update the blacklist
+		update_option('loginizer_domains_blacklist', array_values($domains));
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Call theme
+	loginizer_page_security_T();
+	
+}
+
+// Loginizer - Security Settings Page Theme
+function loginizer_page_security_T(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	// Universal header
+	loginizer_page_header('Security Settings');
+	
+	loginizer_feature_available('Security Settings');
+	
+	// Saved ?
+	if(!empty($GLOBALS['lz_saved'])){
+		echo '<div id="message" class="updated"><p>'. __('The settings were saved successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Any errors ?
+	if(!empty($lz_error)){
+		lz_report_error($lz_error);echo '<br />';
+	}
+	
+	$current_admin = get_user_by('id', 1);
+
+	?>
+
+<style>
+input[type="text"], textarea, select {
+    width: 70%;
+}
+
+.form-table label{
+	font-weight:bold;
+}
+
+.exp{
+	font-size:12px;
+}
+</style>
+
+<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Rename Login Page', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i>You can rename your Login page from <b><?php echo $loginizer['login_basename']; ?></b> to anything of your choice e.g. mylogin. This would make it very difficult for automated attack bots to know where to login !</i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label><?php echo __('New Login Slug', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the original login URL', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_POSTval('login_slug', $loginizer['login_slug']); ?>" name="login_slug" />
+				</td>
+			</tr>
+	
+<?php
+
+if(!defined('SITEPAD')){
+
+?>
+			<tr>
+				<td scope="row" valign="top" style="width:200px !important">
+					<label><?php echo __('Access Secretly Only', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If set, then all Login URL\'s will still point to '.$loginizer['login_basename'].' and users will have to access the New Login Slug by typing it in the browser.', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="rename_login_secret" <?php echo lz_POSTchecked('rename_login_secret', (empty($loginizer['rename_login_secret']) ? false : true)); ?> />
+				</td>
+			</tr>
+	
+<?php
+
+}
+
+?>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>
+	<br />
+	
+	<?php
+	
+	if(!defined('SITEPAD')){
+
+	?>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('XML-RPC Settings', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i><?php echo __('WordPress\'s XML-RPC feature allows external services to access and modify content on the site. Services like the Jetpack plugin, the WordPress mobile app, pingbacks, etc make use of the XML-RPC feature. If this site does not use a service that requires XML-RPC, please <b>disable</b> the XML-RPC feature as it prevents attackers from using the feature to attack the site. If your service can use a custom XML-RPC URL, you can also <b>rename</b> the XML-RPC page to a <b>custom slug</b>.', 'loginizer'); ?></i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label><?php echo __('Disable XML-RPC', 'loginizer'); ?></label>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="xmlrpc_disable" <?php echo lz_POSTchecked('xmlrpc_disable', (empty($loginizer['xmlrpc_disable']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label><?php echo __('Disable Pingbacks', 'loginizer'); ?></label>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="pingbacks_disable" <?php echo lz_POSTchecked('pingbacks_disable', (empty($loginizer['pingbacks_disable']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('New XML-RPC Slug', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the original XML-RPC URL', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('xmlrpc_slug', $loginizer['xmlrpc_slug']); ?>" name="xmlrpc_slug" />
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>
+	<br />
+	
+	<?php
+	
+	}
+
+	?>
+	
+</form>
+	
+<?php
+
+if(!defined('SITEPAD')){
+
+?>
+
+<script type="text/javascript">
+
+
+function dirname(path) {
+  return path.replace(/\\/g, '/').replace(/\/[^/]*\/?$/, '');
+}
+
+function lz_test_wp_admin(){
+	
+	var data = new Object();
+	data["action"] = "loginizer_wp_admin";
+	data["nonce"]	= "<?php echo wp_create_nonce('loginizer_admin_ajax');?>";
+	
+	var new_ajaxurl = dirname(dirname(ajaxurl))+'/'+jQuery('#lz_admin_slug').val()+'/admin-ajax.php';
+	
+	// AJAX and on success function
+	jQuery.post(new_ajaxurl, data, function(response){
+		
+		if(response['result'] == 1){
+			alert("<?php echo __('Everything seems to be good. You can proceed to save the settings !', 'loginizer'); ?>");
+		}		
+	
+	// Throw an error for failures
+	}).fail(function() {
+		alert("<?php echo __('There was an error connecting to WordPress with the new Admin Slug. Did you configure everything properly ?', 'loginizer'); ?>");
+	});
+	//jQuery.ajax('<input type="text" size="30" value="" name="lz_bl_users[]" class="lz_bl_users" />');
+	return false;
+};
+
+</script>
+
+<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Rename wp-admin access', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<?php 
+				if(preg_match('/(apache|litespeed|lsws)/is', $_SERVER["SERVER_SOFTWARE"])){
+					// Supported. Do nothing
+				}else{
+					echo '<tr>
+					<td scope="row" valign="top" colspan="2">
+						<div style="color:#a94442; background-color:#f2dede; border-color:#ebccd1; padding:15px; border:1px solid transparent; border-radius:4px;">'.__('Rename wp-admin access feature is supported only on Apache and Litespeed', 'loginizer').'</div>
+					</td>
+					</tr>';
+				}
+			?>
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i>You can rename your WordPress Admin access URL <b>wp-admin</b> to anything of your choice e.g. my-admin. This will require you to change .htaccess, so please follow <a href="<?php echo LOGINIZER_DOCS;?>Renaming_the_WP-Admin_Area" target="_blank">our guide</a> on how to do so !</i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label><?php echo __('New wp-admin Slug', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the original wp-admin URL', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('admin_slug', $loginizer['admin_slug']); ?>" name="admin_slug" id="lz_admin_slug" />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:200px !important">
+					<label><?php echo __('Disable wp-admin access', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If set, then only the new admin slug will work and access to the Old Admin Slug i.e. wp-admin will be disabled. If anyone accesses wp-admin, a warning will be shown.<br><label>NOTE: Please use this option cautiously !</label>', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" id="lz_restrict_wp_admin" onchange="lz_wp_admin_msg_toggle()" value="1" name="restrict_wp_admin" <?php echo lz_POSTchecked('restrict_wp_admin', (empty($loginizer['restrict_wp_admin']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr id="lz_wp_admin_msg_row" style="display:none">
+				<td scope="row" valign="top">
+					<label><?php echo __('WP-Admin Error Message', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Error message to show if someone accesses wp-admin', 'loginizer'); ?></span> Default : <?php echo $loginizer['wp_admin_d_msg']; ?>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_htmlizer(!empty($_POST['wp_admin_msg']) ? stripslashes($_POST['wp_admin_msg']) : @$loginizer['wp_admin_msg']); ?>" name="wp_admin_msg" id="lz_wp_admin_msg" />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:200px !important">
+					<label><?php echo __('I have setup .htaccess', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('You need to confirm that you have configured .htaccess as per <a href="'.LOGINIZER_DOCS.'Renaming_the_WP-Admin_Area" target="_blank">our guide</a> so that we can safely enable this feature', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="checkbox" value="1" name="lz_wp_admin_docs" />
+					<input type="button" onclick="lz_test_wp_admin()" class="button" style="background: #5cb85c; color:white; border:#5cb85c" value="<?php echo __('Test New WP-Admin Slug', 'loginizer'); ?>" />
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz_wp_admin" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>
+	<br />
+</form>
+
+<script type="text/javascript">
+
+function lz_wp_admin_msg_toggle(){
+	var ele = jQuery('#lz_restrict_wp_admin')[0];
+	if(ele.checked){
+		jQuery('#lz_wp_admin_msg_row').show();
+	}else{
+		jQuery('#lz_wp_admin_msg_row').hide();
+	}
+};
+
+lz_wp_admin_msg_toggle();
+
+</script>
+	
+
+<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Change Admin Username', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i><?php echo __('You can change the Admin Username from here to anything of your choice e.g. iamtheboss. This would make it very difficult for automated attack bots to know what is the admin username !', 'loginizer'); ?></i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label for="current_username"><?php echo __('Current Username', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('The current username you want to change', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('current_username', (!empty($current_admin->user_login) ? $current_admin->user_login : '')); ?>" name="current_username" id="current_username" />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important">
+					<label for="new_username"><?php echo __('New Username', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('The new username you want to set', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<input type="text" size="50" value="<?php echo lz_optpost('new_username', ''); ?>" name="new_username" id="new_username" />
+				</td>
+			</tr>
+		</table><br />
+		<i><?php echo __('Note: Username can be changed only for administrator users.'); ?></i>
+		<center><input name="save_lz_admin" class="button button-primary action" value="<?php echo __('Set the Username', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript">
+function add_lz_bl_users(){
+	jQuery("#lz_bl_users").append('<input type="text" size="30" value="" name="lz_bl_users[]" class="lz_bl_users" />');
+	return false;
+};
+</script>
+
+<style>
+.lz_bl_users, .lz_bl_domains{
+	margin-bottom:20px;
+}
+</style>
+
+<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Username Auto Blacklist', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i><?php echo __('Attackers generally use common usernames like <b>admin, administrator, or variations of your domain name / business name</b>. You can specify such username here and Loginizer will auto-blacklist the IP Address(s) of clients who try to use such username(s).', 'loginizer'); ?></i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important; vertical-align:top !important;">
+					<label><?php echo __('Username(s)', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('You can use - <b>*</b> (Star)- as a wild card as well. Blank fields will be ignored', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<div id="lz_bl_users">
+					<?php
+					
+					$usernames = isset($_POST['lz_bl_users']) && is_array($_POST['lz_bl_users']) ? $_POST['lz_bl_users'] : $loginizer['username_blacklist'];
+					
+					if(empty($usernames)){
+						$usernames[] = '';
+					}
+					
+					foreach($usernames as $_user){
+						echo '<input type="text" size="30" value="'.$_user.'" name="lz_bl_users[]" class="lz_bl_users" />';
+					}
+					
+					?>
+					</div>
+					<br />
+					<input class="button" type="button" value="<?php echo __('Add New Username', 'loginizer'); ?>" onclick="return add_lz_bl_users();" style="float:right" />
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz_bl_users" class="button button-primary action" value="<?php echo __('Save Username(s)', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript">
+function add_lz_bl_domains(){
+	jQuery("#lz_bl_domains").append('<input type="text" size="30" value="" name="lz_bl_domains[]" class="lz_bl_domains" />');
+	return false;
+};
+</script>
+
+
+<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('New Registration Domain Blacklist', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" colspan="2">
+					<i>If you would like to ban new registrations from a particular domain, you can use this utility to do so.</i>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:40% !important; vertical-align:top !important;">
+					<label><?php echo __('Domain(s)', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('You can use - <b>*</b> (Star)- as a wild card as well. Blank fields will be ignored', 'loginizer'); ?></span>
+				</td>
+				<td>
+					<div id="lz_bl_domains">
+					<?php
+					
+					$domains = isset($_POST['lz_bl_domains']) && is_array($_POST['lz_bl_domains']) ? $_POST['lz_bl_domains'] : $loginizer['domains_blacklist'];
+					
+					if(empty($domains)){
+						$domains[] = '';
+					}
+					
+					foreach($domains as $_domain){
+						echo '<input type="text" size="30" value="'.$_domain.'" name="lz_bl_domains[]" class="lz_bl_domains" />';
+					}
+					
+					?>
+					</div>
+					<br />
+					<input class="button" type="button" value="<?php echo __('Add New Domain', 'loginizer'); ?>" onclick="return add_lz_bl_domains();" style="float:right" />
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz_bl_domains" class="button button-primary action" value="<?php echo __('Save Domains(s)', 'loginizer'); ?>" type="submit" /></center>
+	
+		</div>
+	</div>	
+</form>
+
+<?php
+
+}
+	
+	loginizer_page_footer();
+	
+}
+
+// Loginizer - Checksum load data
+function loginizer_page_checksums_L(&$files, &$_ignores){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	// Load any mismatched files and ignores
+	$files = get_option('loginizer_checksums_diff');
+	$_ignores = get_option('loginizer_checksums_ignore');
+	$_ignores = is_array($_ignores) ? $_ignores : array(); // SHOULD ALWAYS BE PURE
+	$ignores = array();
+	
+	foreach($_ignores as $ik => $iv){
+		$ignores[$iv] = array();
+		if(!empty($files[$iv])){
+			$ignores[$iv] = $files[$iv];
+		}
+	}
+	
+	$lz_env['files'] = $files;
+	$lz_env['ignores'] = $ignores;
+
+}
+	
+// Loginizer - PasswordLess Page
+function loginizer_page_checksums(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	if(!loginizer_is_premium() && count($_POST) > 0){
+		$lz_error['not_in_free'] = __('This feature is not available in the Free version. <a href="'.LOGINIZER_PRICING_URL.'" target="_blank" style="text-decoration:none; color:green;"><b>Upgrade to Pro</b></a>', 'loginizer');
+		return loginizer_page_checksums_T();
+	}
+
+	/* Make sure post was from this page */
+	if(count($_POST) > 0){
+		check_admin_referer('loginizer-options');
+	}
+	
+	// Are we to run it ?
+	if(isset($_REQUEST['lz_run_checksum'])){
+		loginizer_checksums();
+	}
+	
+	loginizer_page_checksums_L($files, $_ignores);
+	
+	$lz_env['csum_freq'][1] = __('Once a Day', 'loginizer');
+	$lz_env['csum_freq'][7] = __('Once a Week', 'loginizer');
+	$lz_env['csum_freq'][30] = __('Once a Month', 'loginizer');
+	
+	if(isset($_POST['save_lz'])){
+		
+		// In the future there can be more settings
+		$option['disable_checksum'] = (int) lz_optpost('disable_checksum');
+		$option['no_checksum_email'] = (int) lz_optpost('no_checksum_email');
+		$option['checksum_frequency'] = (int) lz_optpost('checksum_frequency');
+		$option['checksum_time'] = lz_optpost('checksum_time');
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_checksums_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_checksums', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Add or remove from ignore list
+	if(isset($_POST['save_lz_csum_ig'])){
+		
+		if(@is_array($_POST['checksum_del_ignore'])){
+			
+			foreach($_POST['checksum_del_ignore'] as $k => $v){
+				$key = array_search($v, $_ignores);
+				if($key !== false){
+					unset($_ignores[$key]);
+				}
+			}
+			
+			// Save it
+			update_option('loginizer_checksums_ignore', $_ignores);
+			
+		}
+		
+		if(@is_array($_POST['checksum_add_ignore'])){
+			
+			foreach($_POST['checksum_add_ignore'] as $k => $v){
+				if(!empty($files[$v])){
+					$_ignores[] = $v;
+				}
+			}
+			
+			// Save it
+			update_option('loginizer_checksums_ignore', $_ignores);
+			
+		}
+		
+		// Reload
+		loginizer_page_checksums_L($files, $_ignores);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Call theme
+	loginizer_page_checksums_T();
+}
+
+// Loginizer - PasswordLess Page Theme
+function loginizer_page_checksums_T(){
+	
+	global $loginizer, $lz_error, $lz_env;
+	
+	// Universal header
+	loginizer_page_header('File Checksum Settings');
+	
+	loginizer_feature_available('File Checksum');
+	
+	wp_enqueue_script('jquery-clockpicker', LOGINIZER_URL.'/jquery-clockpicker.min.js', array('jquery'), '0.0.7');
+	wp_enqueue_style('jquery-clockpicker', LOGINIZER_URL.'/jquery-clockpicker.min.css', array(), '0.0.7');
+	
+	// Saved ?
+	if(!empty($GLOBALS['lz_saved'])){
+		echo '<div id="message" class="updated"><p>'. __('The settings were saved successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Did we just run the checksums
+	if(isset($_REQUEST['lz_run_checksum'])){
+		echo '<div id="message" class="updated"><p>'. __('The Checksum process was executed successfully', 'loginizer'). '</p></div><br />';
+	}
+	
+	// Any errors ?
+	if(!empty($lz_error)){
+		lz_report_error($lz_error);echo '<br />';
+	}
+
+	?>
+
+<style>
+input[type="text"], textarea, select {
+    width: 70%;
+}
+
+.form-table label{
+	font-weight:bold;
+}
+
+.exp{
+	font-size:12px;
+}
+</style>
+
+<script>
+function lz_apply_status(ele, the_class){
+	
+	var status = ele.checked;
+	jQuery(the_class).each(function(){
+		this.checked = status;
+	});
+	
+}
+</script>
+
+	<div id="" class="postbox">
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Checksum Settings', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td scope="row" valign="top" style="width:400px !important">
+					<label><?php echo __('Disable Checksum of WP Core', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If disabled, Loginizer will not check your sites core files against the WordPress checksum list.', 'loginizer'); ?></span>
+				</td>
+				<td valign="top">
+					<input type="checkbox" value="1" name="disable_checksum" <?php echo lz_POSTchecked('disable_checksum', (empty($loginizer['disable_checksum']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:400px !important">
+					<label><?php echo __('Disable Email of Checksum Results', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If checked, Loginizer will not email you the checksum results.', 'loginizer'); ?></span>
+				</td>
+				<td valign="top">
+					<input type="checkbox" value="1" name="no_checksum_email" <?php echo lz_POSTchecked('no_checksum_email', (empty($loginizer['no_checksum_email']) ? false : true)); ?> />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:400px !important">
+					<label><?php echo __('Checksum Frequency', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If Checksum is enabled, at what frequency should the checksums be performed.', 'loginizer'); ?></span>
+				</td>
+				<td valign="top">					
+					<select name="checksum_frequency">
+						<?php
+							foreach($lz_env['csum_freq'] as $k => $v){
+								echo '<option '.lz_POSTselect('checksum_frequency', $k, ($loginizer['checksum_frequency'] == $k ? true : false)).' value="'.$k.'">'.$v.'</value>';								
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr id="lz_checksum_time">
+				<td scope="row" valign="top" style="width:400px !important">
+					<label><?php echo __('Time of Day', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('If Checksum is enabled, what time of day should Loginizer do the check. Note : The check will be done on or after this time has elapsed as per the accesses being made.', 'loginizer'); ?></span>
+				</td>
+				<td valign="top">
+					<div class="input-group clockpicker" data-autoclose="true">
+						<input type="text" name="checksum_time" class="form-control" value="<?php echo (empty($loginizer['checksum_time']) ? '00:00' : $loginizer['checksum_time']);?>">
+						<span class="input-group-addon">
+							<span class="glyphicon glyphicon-time"></span>
+						</span>
+					</div>
+					<script type="text/javascript">
+					jQuery(document).ready(function(){
+						(function($) {
+							$('.clockpicker').clockpicker({donetext: 'Done'});
+						})(jQuery);
+					});
+					</script>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<?php echo __('If disabled, Loginizer will not check your sites core files against the WordPress checksum list.', 'loginizer'); ?>
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /><input name="lz_run_checksum" style="float:right; background: #5cb85c; color:white; border:#5cb85c" class="button button-secondary" value="<?php echo __('Do a Checksum Now', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+	
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Mismatching Files', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="wp-list-table fixed striped users" border="0" width="100%" cellpadding="10" align="center">
+			<?php
+			
+			$files = $lz_env['files'];
+			
+			// Avoid undefined notice for $files
+			if(!empty($files)){
+				foreach($files as $k => $v){
+					if(!empty($lz_env['ignores'][$k])){
+						unset($files[$k]);
+					}
+				}
+			}
+			
+			echo '
+			<tr>
+				<th style="background:#EFEFEF;">'.__('Relative Path', 'loginizer').'</th>
+				<th style="width:240px; background:#EFEFEF;">'.__('Found', 'loginizer').'</th>
+				<th style="width:240px; background:#EFEFEF;">'.__('Should be', 'loginizer').'</th>
+				<th style="width:10px; background:#EFEFEF;"><input type="checkbox" onchange="lz_apply_status(this, \'.csum_add_ig\');" /></th>
+			</tr>';
+			
+			if(is_array($files) && count($files) > 0){
+				
+				foreach($files as $k => $v){
+					
+					echo '
+				<tr>
+					<td>'.$k.'</td>
+					<td>'.$v['cur_md5'].'</td>
+					<td>'.$v['md5'].'</td>
+					<td><input type="checkbox" name="checksum_add_ignore[]" class="csum_add_ig" value="'.$k.'" /></td>
+				</tr>';
+					
+				}
+				
+			}else{
+				
+				echo '
+				<tr>
+					<td colspan="4" align="center">'.__('This is great ! No file with any wrong checksum has been found.').'</td>
+				</tr>';
+				
+			}
+			
+			?>
+		</table><br />
+		<center><input name="save_lz_csum_ig" class="button button-primary action" value="<?php echo __('Add Selected to Ignore List', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+		</div>
+		
+	</div>
+	<br />
+	
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Ignore List', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="wp-list-table fixed striped users" border="0" width="100%" cellpadding="10" align="center">
+			<?php
+
+			$ignores = $lz_env['ignores'];
+			
+			echo '
+			<tr>
+				<th style="background:#EFEFEF;">'.__('Relative Path', 'loginizer').'</th>
+				<th style="width:240px; background:#EFEFEF;">'.__('Found', 'loginizer').'</th>
+				<th style="width:240px; background:#EFEFEF;">'.__('Should be', 'loginizer').'</th>
+				<th style="width:10px; background:#EFEFEF;"><input type="checkbox" onchange="lz_apply_status(this, \'.csum_del_ig\');" /></th>
+			</tr>';
+	
+			// Load any mismatched files
+			$files = $ignores;
+			
+			if(is_array($files) && count($files) > 0){
+				
+				foreach($files as $k => $v){
+					
+					echo '
+				<tr>
+					<td>'.$k.'</td>
+					<td>'.$v['cur_md5'].'</td>
+					<td>'.$v['md5'].'</td>
+					<td><input type="checkbox" name="checksum_del_ignore[]" class="csum_del_ig" value="'.$k.'" /></td>
+				</tr>';
+					
+				}
+				
+			}else{
+				
+				echo '
+				<tr>
+					<td colspan="4" align="center">'.__('No files have been added to the ignore list').'</td>
+				</tr>';
+				
+			}
+			
+			?>
+		</table><br />
+		<center><input name="save_lz_csum_ig" class="button button-primary action" value="<?php echo __('Remove Selected from Ignore List', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+		</div>
+		
+	</div>
+	<br />
+
+	<?php
+	loginizer_page_footer();
+	
 }
 
 

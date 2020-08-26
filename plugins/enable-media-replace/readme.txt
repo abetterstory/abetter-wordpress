@@ -3,9 +3,9 @@ Contributors: ShortPixel
 Donate link: https://www.paypal.me/resizeImage
 Tags: replace, attachment, media, files, replace image, replace jpg, change media, replace media, image, file
 Requires at least: 4.9.7
-Tested up to: 5.3.2
+Tested up to: 5.5
 Requires PHP: 5.6
-Stable tag: 3.3.11
+Stable tag: 3.4.2
 
 Easily replace any attached image/file by simply uploading a new file in the Media Library edit view - a real time saver!
 
@@ -46,6 +46,38 @@ If you want more control over the format used to display the time, you can use t
 * [Regenerate Thumbnails Advanced](https://wordpress.org/plugins/regenerate-thumbnails-advanced/) - Fast, free and simple to use plugin to regenerate the thumbnails for your site after changing a theme (for example). Supported & maintained by [ShortPixel](https://ShortPixel.com)
 
 == Changelog ==
+
+
+= 3.4.2 =
+
+Release date: August 17th 2020
+* New - Also display files size in the replacement windows;
+* Fix - Replacing image with pdf file would cause noticesi;
+* Fix - Compensation for faulty WordPress installation that return empty error string on wp_upload_dir and falsely return relative paths and urls on WP core functions;
+* Fix - When choosing 'replace file and update names' and then uploading a file with identical name as source, it would postfix the duplicate name. This is no longer the case;
+* Fix - Wording clarification for the situation when the filename is changed, which will lead to broken links from external sites;
+* Fix - Added hard paths to require_once satements in order to prevent WP-CLI errrors;
+* Fix - If source image doesn't exist or in error state, replacement would be prevented by Javascript issue.
+
+= 3.4.1 =
+
+Release date: June 18th 2020
+* Fix - PHP Error when settings permissions failed.
+
+= 3.4.0 =
+
+Release date: June 9th 2020
+* New - In edit media screen EMR notes user who replaced file if this was not uploader;
+* New - Added Drag and Drop area for files;
+* New - When replacing with new file name, now also possible to update upload path;
+* Fix - Various minor CSS tweaks and fixes;
+* Update of Underlying libraries
+
+= 3.3.12 =
+
+Release date: 27th April 2020
+* Fixed - When trying to upload over-limit file would show too many error messages;
+* Language – 2 new strings added, 0 updated, 0 fuzzied, and 0 obsoleted.
 
 = 3.3.11 =
 

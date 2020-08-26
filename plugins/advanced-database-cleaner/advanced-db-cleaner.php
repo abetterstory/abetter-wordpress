@@ -5,7 +5,7 @@ if (!is_main_site()) return;
 Plugin Name: Advanced Database Cleaner
 Plugin URI: https://sigmaplugin.com/downloads/wordpress-advanced-database-cleaner
 Description: Clean database by deleting unused data such as 'old revisions', 'old drafts', 'orphan options', etc. Optimize database and more.
-Version: 3.0.0
+Version: 3.0.1
 Author: Younes JFR.
 Author URI: https://www.sigmaplugin.com
 Contributors: symptote
@@ -30,7 +30,7 @@ class ADBC_Advanced_DB_Cleaner {
 
 		// Define common constants that should be modified in each version
 		if(!defined("ADBC_PLUGIN_F_TYPE")) 		define("ADBC_PLUGIN_F_TYPE", "free");
-		if(!defined("ADBC_PLUGIN_VERSION")) 	define("ADBC_PLUGIN_VERSION", "3.0.0");
+		if(!defined("ADBC_PLUGIN_VERSION")) 	define("ADBC_PLUGIN_VERSION", "3.0.1");
 
 		// Prevent conflicts between free and pro, load text-domain and check if should update settings after upgrade
 		add_action('plugins_loaded', array($this, 'plugins_loaded'));
@@ -317,14 +317,14 @@ class ADBC_Advanced_DB_Cleaner {
 		delete_option('aDBc_tasks_status');
 
 		// These options are temp and should not exist after finishing the search of oprhans. We make sure to clean them just in case
-		$array_items = array('options','tables','tasks');
-		foreach($array_items as $item){
-			delete_option('aDBc_temp_last_iteration_' . $item);
-			delete_option('aDBc_temp_still_searching_' . $item);
-			delete_option('aDBc_temp_last_item_line_' . $item);
-			delete_option('aDBc_temp_last_file_line_' . $item);
-			delete_option('aDBc_last_search_ok_') . $item;
-		}
+		//$array_items = array('options','tables','tasks');
+		//foreach($array_items as $item){
+			//delete_option('aDBc_temp_last_iteration_' 	. $item);
+			//delete_option('aDBc_temp_still_searching_' 	. $item);
+			//delete_option('aDBc_temp_last_item_line_' 	. $item);
+			//delete_option('aDBc_temp_last_file_line_' 	. $item);
+			//delete_option('aDBc_last_search_ok_' 		. $item);
+		//}
 
 		// if we are in pro version, clean these ones
 		if(ADBC_PLUGIN_F_TYPE == "pro"){

@@ -248,9 +248,9 @@ function aDBc_optimize_scheduled_tables($schedule_name){
 				$table_name = "";
 				// This test to prevent issues in MySQL 8 where tables are not shown
 				// MySQL 5 uses $table->table_name while MySQL 8 uses $table->TABLE_NAME
-				if(array_key_exists("table_name", $table)){
+				if(property_exists($table, "table_name")){
 					$table_name = $table->table_name;
-				}else if(array_key_exists("TABLE_NAME", $table)){
+				}else if(property_exists($table, "TABLE_NAME")){
 					$table_name = $table->TABLE_NAME;
 				}
 
@@ -267,9 +267,9 @@ function aDBc_optimize_scheduled_tables($schedule_name){
 				$table_name = "";
 				// This test to prevent issues in MySQL 8 where tables are not shown
 				// MySQL 5 uses $table->table_name while MySQL 8 uses $table->TABLE_NAME
-				if(array_key_exists("table_name", $table)){
+				if(property_exists($table, "table_name")){
 					$table_name = $table->table_name;
-				}else if(array_key_exists("TABLE_NAME", $table)){
+				}else if(property_exists($table, "TABLE_NAME")){
 					$table_name = $table->TABLE_NAME;
 				}
 
@@ -523,36 +523,30 @@ function aDBc_prepare_items_to_display(
 	switch($items_type){
 		case 'tasks' :
 			$aDBc_all_items = aDBc_get_all_scheduled_tasks();
-			//$aDBc_saved_items = get_option("aDBc_tasks_status");
-			$aDBc_saved_items_file = @fopen(ADBC_UPLOAD_DIR_PATH_TO_ADBC . "/tasks.txt", "r");
 			$aDBc_items_categories_info = array(
-					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),			'color' => '#4E515B',  	'count' => 0),
+					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),				'color' => '#4E515B',  	'count' => 0),
 					'u'		=> array('name' => __('Uncategorized', 'advanced-database-cleaner'),	'color' => 'grey', 		'count' => 0),
 					'o'		=> array('name' => __('Orphans','advanced-database-cleaner'),			'color' => '#E97F31', 	'count' => 0),
 					'p'		=> array('name' => __('Plugins tasks', 'advanced-database-cleaner'),	'color' => '#00BAFF', 	'count' => 0),
-					't'		=> array('name' => __('Themes tasks', 'advanced-database-cleaner'),	'color' => '#45C966', 	'count' => 0),
-					'w'		=> array('name' => __('WP tasks', 'advanced-database-cleaner'),		'color' => '#D091BE', 	'count' => 0)
+					't'		=> array('name' => __('Themes tasks', 'advanced-database-cleaner'),		'color' => '#45C966', 	'count' => 0),
+					'w'		=> array('name' => __('WP tasks', 'advanced-database-cleaner'),			'color' => '#D091BE', 	'count' => 0)
 					);
 			break;
 		case 'options' :
 			$aDBc_all_items = aDBc_get_all_options();
-			//$aDBc_saved_items = get_option("aDBc_options_status");
-			$aDBc_saved_items_file = @fopen(ADBC_UPLOAD_DIR_PATH_TO_ADBC . "/options.txt", "r");
 			$aDBc_items_categories_info = array(
-					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),			'color' => '#4E515B',  	'count' => 0),
+					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),				'color' => '#4E515B',  	'count' => 0),
 					'u'		=> array('name' => __('Uncategorized', 'advanced-database-cleaner'),	'color' => 'grey', 		'count' => 0),
 					'o'		=> array('name' => __('Orphans','advanced-database-cleaner'),			'color' => '#E97F31', 	'count' => 0),
-					'p'		=> array('name' => __('Plugins options', 'advanced-database-cleaner'),'color' => '#00BAFF', 	'count' => 0),
+					'p'		=> array('name' => __('Plugins options', 'advanced-database-cleaner'),	'color' => '#00BAFF', 	'count' => 0),
 					't'		=> array('name' => __('Themes options', 'advanced-database-cleaner'),	'color' => '#45C966', 	'count' => 0),
 					'w'		=> array('name' => __('WP options', 'advanced-database-cleaner'),		'color' => '#D091BE', 	'count' => 0)
 					);
 			break;
 		case 'tables' :
 			$aDBc_all_items = aDBc_get_all_tables();
-			//$aDBc_saved_items = get_option("aDBc_tables_status");
-			$aDBc_saved_items_file = @fopen(ADBC_UPLOAD_DIR_PATH_TO_ADBC . "/tables.txt", "r");
 			$aDBc_items_categories_info = array(
-					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),			'color' => '#4E515B',  	'count' => 0),
+					'all' 	=> array('name' => __('All', 'advanced-database-cleaner'),				'color' => '#4E515B',  	'count' => 0),
 					'u'		=> array('name' => __('Uncategorized', 'advanced-database-cleaner'),	'color' => 'grey', 		'count' => 0),
 					'o'		=> array('name' => __('Orphans','advanced-database-cleaner'),			'color' => '#E97F31', 	'count' => 0),
 					'p'		=> array('name' => __('Plugins tables', 'advanced-database-cleaner'),	'color' => '#00BAFF', 	'count' => 0),
@@ -561,6 +555,12 @@ function aDBc_prepare_items_to_display(
 					);
 			break;
 	}
+
+	$aDBc_saved_items_file = "";
+	// xxx change this later, no need for this test in the free verion. Moreover, ADBC_UPLOAD_DIR_PATH_TO_ADBC is not defined here
+	/*if(file_exists(ADBC_UPLOAD_DIR_PATH_TO_ADBC . "/" . $items_type . ".txt")){
+		$aDBc_saved_items_file 				= fopen(ADBC_UPLOAD_DIR_PATH_TO_ADBC . "/" . $items_type . ".txt", "r");
+	}*/
 
 	// Affect type and belongs_to to items. 
 	if ($aDBc_saved_items_file) {
@@ -842,9 +842,9 @@ function aDBc_get_all_tables() {
 		$table_name = "";
 		// This test to prevent issues in MySQL 8 where tables are not shown
 		// MySQL 5 uses $aDBc_table->table_name while MySQL 8 uses $aDBc_table->TABLE_NAME
-		if(array_key_exists("table_name", $aDBc_table)){
+		if(property_exists($aDBc_table, "table_name")){
 			$table_name = $aDBc_table->table_name;
-		}else if(array_key_exists("TABLE_NAME", $aDBc_table)){
+		}else if(property_exists($aDBc_table, "TABLE_NAME")){
 			$table_name = $aDBc_table->TABLE_NAME;
 		}
 

@@ -237,6 +237,11 @@ namespace EnableMediaReplace\ShortPixelLogger;
      $log = self::getInstance();
      $log->addLog($message, $level, $args);
    }
+   // Alias, since it goes wrong so often. 
+   public static function addWarning($message, $args = array())
+   {
+      self::addWarn($message, $args);
+   }
    public static function addInfo($message, $args = array())
    {
      $level = DebugItem::LEVEL_INFO;
@@ -248,6 +253,12 @@ namespace EnableMediaReplace\ShortPixelLogger;
      $level = DebugItem::LEVEL_DEBUG;
      $log = self::getInstance();
      $log->addLog($message, $level, $args);
+   }
+
+   /** These should be removed every release. They are temporary only for d'bugging the current release */
+   public static function addTemp($message, $args = array())
+   {
+     self::addDebug($message, $args);
    }
 
    public static function logLevel($level)

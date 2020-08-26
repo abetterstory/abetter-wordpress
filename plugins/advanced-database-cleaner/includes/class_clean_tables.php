@@ -95,9 +95,9 @@ class ADBC_Tables_List extends WP_List_Table {
 			$table_name = "";
 			// This test to prevent issues in MySQL 8 where tables are not shown
 			// MySQL 5 uses $table->table_name while MySQL 8 uses $table->TABLE_NAME
-			if(array_key_exists("table_name", $table)){
+			if(property_exists($table, "table_name")){
 				$table_name = $table->table_name;
-			}else if(array_key_exists("TABLE_NAME", $table)){
+			}else if(property_exists($table, "TABLE_NAME")){
 				$table_name = $table->TABLE_NAME;
 			}
 
@@ -113,9 +113,9 @@ class ADBC_Tables_List extends WP_List_Table {
 			$table_name = "";
 			// This test to prevent issues in MySQL 8 where tables are not shown
 			// MySQL 5 uses $table->table_name while MySQL 8 uses $table->TABLE_NAME
-			if(array_key_exists("table_name", $table)){
+			if(property_exists($table, "table_name")){
 				$table_name = $table->table_name;
-			}else if(array_key_exists("TABLE_NAME", $table)){
+			}else if(property_exists($table, "TABLE_NAME")){
 				$table_name = $table->TABLE_NAME;
 			}
 
