@@ -40,25 +40,25 @@ class Menu {
 	public static function get($id,$props=NULL) {
 		if (isset(self::$menu[$id])) return self::$menu[$id];
 		self::build($id,$props);
-		return self::$menu[$id];
+		return self::$menu[$id] ?? NULL;
 	}
 
 	public static function getItems($id) {
 		if (isset(self::$menu[$id]->items)) return self::$menu[$id]->items;
 		self::build($id);
-		return self::$menu[$id]->items;
+		return self::$menu[$id]->items ?? [];
 	}
 
 	public static function getBreadcrumbs($id) {
 		if (isset(self::$menu[$id]->breadcrumbs)) return self::$menu[$id]->breadcrumbs;
 		self::build($id);
-		return self::$menu[$id]->breadcrumbs;
+		return self::$menu[$id]->breadcrumbs ?? [];
 	}
 
 	public static function getLabel($id) {
 		if (isset(self::$menu[$id]->label)) return self::$menu[$id]->label;
 		self::build($id);
-		return self::$menu[$id]->label;
+		return self::$menu[$id]->label ?? "";
 	}
 
 	// ---
