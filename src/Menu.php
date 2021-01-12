@@ -138,7 +138,7 @@ class Menu {
 		$item->order = (int) $term->menu_order;
 		$item->target = (string) $term->target;
 		$item->parent = (int) $term->menu_item_parent;
-		$item->style = (string) implode($term->classes," ");
+		$item->style = (string) implode(" ",$term->classes);
 		$item->current = (string) _is_current($item->url,'current');
 		$item->front = Post::isFront($item->page);
 		$item->l10n = Post::getL10n($item->page);
