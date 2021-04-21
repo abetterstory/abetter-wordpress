@@ -1,4 +1,4 @@
- lang="{{ _wp_locale() }}"
+ lang="{{ str_replace('_','-',_wp_locale()) }}"
  dir="ltr"
  l10n=""
  env="{{ env('APP_ENV') }}"
