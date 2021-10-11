@@ -26,6 +26,15 @@ add_action('admin_bar_menu', function($wp_admin_bar){
 	));
 },9999);
 
+// Admin styles
+add_action('admin_enqueue_scripts', function(){ ?>
+    <style type="text/css">
+        .wp-list-table .column-primary {
+			width: auto !important;
+		}
+    </style>
+<?php });
+
 // Add developer role
 add_action('after_setup_theme',function(){
 	$admin_role = get_role('administrator');
