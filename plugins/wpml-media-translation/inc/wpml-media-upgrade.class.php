@@ -9,13 +9,13 @@ class WPML_Media_Upgrade {
 	static function run() {
 		global $wpdb;
 
-		//Workaround, as for some reasons, get_option() doesn't work only in this case
+		// Workaround, as for some reasons, get_option() doesn't work only in this case
 		$wpml_media_settings_prepared = $wpdb->prepare( "select option_value from {$wpdb->prefix}options where option_name = %s", '_wpml_media' );
 		$wpml_media_settings          = $wpdb->get_col( $wpml_media_settings_prepared );
 
 		$needs_version_update = true;
 
-		//Do not run upgrades if this is a new install (i.e.: plugin has no settings)
+		// Do not run upgrades if this is a new install (i.e.: plugin has no settings)
 		if ( $wpml_media_settings || get_option( '_wpml_media_starting_help' ) ) {
 			$current_version = WPML_Media::get_setting( 'version', null );
 
@@ -64,20 +64,20 @@ class WPML_Media_Upgrade {
 		global $wpdb;
 		global $sitepress;
 
-		//Check if the old options are set and in case move them to the new plugin settings, then delete the old ones
+		// Check if the old options are set and in case move them to the new plugin settings, then delete the old ones
 		$old_starting_help = get_option( '_wpml_media_starting_help' );
 		if ( $old_starting_help ) {
 			WPML_Media::update_setting( 'starting_help', $old_starting_help );
 			delete_option( '_wpml_media_starting_help' );
 		}
 
-		//Create translated media
+		// Create translated media
 
 		$target_language         = $sitepress->get_default_language();
 		$attachment_ids_prepared = $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", 'attachment' );
 		$attachment_ids          = $wpdb->get_col( $attachment_ids_prepared );
 
-		//Let's first set the language of all images in default languages
+		// Let's first set the language of all images in default languages
 		foreach ( $attachment_ids as $attachment_id ) {
 			$wpml_media_lang         = get_post_meta( $attachment_id, 'wpml_media_lang', true );
 			$wpml_media_duplicate_of = get_post_meta( $attachment_id, 'wpml_media_duplicate_of', true );
@@ -85,7 +85,7 @@ class WPML_Media_Upgrade {
 			if ( ! $wpml_media_duplicate_of && ( ! $wpml_media_lang || $wpml_media_lang == $target_language ) ) {
 				$trid = $sitepress->get_element_trid( $attachment_id, 'post_attachment' );
 				if ( $trid ) {
-					//Since trid exists, get the language from there
+					// Since trid exists, get the language from there
 					$target_language = $sitepress->get_language_for_element( $attachment_id, 'post_attachment' );
 				}
 
@@ -93,7 +93,7 @@ class WPML_Media_Upgrade {
 			}
 		}
 
-		//Then all the translations
+		// Then all the translations
 		foreach ( $attachment_ids as $attachment_id ) {
 			$wpml_media_lang         = get_post_meta( $attachment_id, 'wpml_media_lang', true );
 			$wpml_media_duplicate_of = get_post_meta( $attachment_id, 'wpml_media_duplicate_of', true );
@@ -103,10 +103,10 @@ class WPML_Media_Upgrade {
 				$trid            = $sitepress->get_element_trid( $wpml_media_duplicate_of, 'post_attachment' );
 				$source_language = false;
 				if ( $trid ) {
-					//Get the source language of the attachment, just in case is from a language different than the default
+					// Get the source language of the attachment, just in case is from a language different than the default
 					$source_language = $sitepress->get_language_for_element( $wpml_media_duplicate_of, 'post_attachment' );
 
-					//Fix bug on 1.6, where duplicated images are set to the default language
+					// Fix bug on 1.6, where duplicated images are set to the default language
 					if ( $wpml_media_lang == $source_language ) {
 						$wpml_media_lang = false;
 						$attachment      = get_post( $attachment_id );
@@ -119,7 +119,7 @@ class WPML_Media_Upgrade {
 						}
 
 						if ( ! $wpml_media_lang ) {
-							//Trash orphan image
+							// Trash orphan image
 							wp_delete_attachment( $attachment_id );
 						}
 					}
@@ -131,9 +131,8 @@ class WPML_Media_Upgrade {
 			}
 		}
 
-
-		//Remove old media translation meta
-		//Remove both meta just in case
+		// Remove old media translation meta
+		// Remove both meta just in case
 		$attachment_ids = $wpdb->get_col( $attachment_ids_prepared );
 		foreach ( $attachment_ids as $attachment_id ) {
 			delete_post_meta( $attachment_id, 'wpml_media_duplicate_of' );

@@ -1,6 +1,12 @@
 <?php
 
 use WPML\TM\ATE\JobRecords;
+use function WPML\FP\pipe;
+use function WPML\FP\partialRight;
+use WPML\FP\Obj;
+use WPML\FP\Logic;
+use WPML\FP\Fns;
+use function \WPML\FP\invoke;
 
 /**
  * @author OnTheGo Systems
@@ -50,7 +56,7 @@ class WPML_TM_ATE_Jobs {
 	}
 
 	/**
-	 * @param int $wpml_job_id
+	 * @param int   $wpml_job_id
 	 * @param array $ate_job_data
 	 */
 	public function store( $wpml_job_id, $ate_job_data ) {
@@ -104,6 +110,7 @@ class WPML_TM_ATE_Jobs {
 		}
 
 		kses_remove_filters();
+		$job_data    = $this->filterJobData( $job_data );
 		$wpml_job_id = $job_data['job_id'];
 
 		try {
@@ -118,6 +125,52 @@ class WPML_TM_ATE_Jobs {
 		kses_init();
 
 		return $is_saved ? $wpml_job_id : false;
+	}
+
+	private function filterJobData( $jobData ) {
+		/**
+		 * It lets modify $job_data, which is especially usefull when we want to alter `data` of field.
+		 *
+		 * @param  array  $jobData {
+		 *    @type int $job_id
+		 *    @type array fields {
+		 *       @type string $data Translated content
+		 *       @type int $finished
+		 *       @type int $tid
+		 *       @type string $field_type
+		 *       @type string $format
+		 *    }
+		 *    @type int $complete
+		 * }
+		 * @param  callable $getJobTargetLanguage The callback which expects $jobId as parameter
+		 *
+		 * @since 2.10.0
+		 */
+		$filteredJobData = apply_filters(
+			'wpml_tm_ate_job_data_from_xliff',
+			$jobData,
+			$this->getJobTargetLanguage()
+		);
+
+		if ( array_key_exists( 'job_id', $filteredJobData ) && array_key_exists( 'fields', $filteredJobData ) ) {
+			$jobData = $filteredJobData;
+		}
+
+		return $jobData;
+	}
+
+	/**
+	 * getJobTargetLanguage :: void → ( object → string|null )
+	 *
+	 * @return callback
+	 */
+	private function getJobTargetLanguage() {
+		// $getJobEntityById :: int -> \WPML_TM_Job_Entity|false
+		$getJobEntityById = partialRight( [ wpml_tm_get_jobs_repository(), 'get_job' ], \WPML_TM_Job_Entity::POST_TYPE );
+		// $getTargetLangIfEntityExists :: \WPML_TM_Job_Entity|false -> string|null
+		$getTargetLangIfEntityExists = Logic::ifElse( Fns::identity(), invoke( 'get_target_language' ), Fns::always( null ) );
+
+		return pipe( Obj::prop( 'rid' ), $getJobEntityById, $getTargetLangIfEntityExists );
 	}
 
 	/**

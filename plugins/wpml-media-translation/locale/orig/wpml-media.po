@@ -83,13 +83,6 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-# $wpml_media_basket_notice_data = array(
-# 'button_label' => __( 'Continue', 'wpml_media' ),
-# );
-
-msgid "Continue"
-msgstr ""
-
 # /* translators: WPML plugin name */
 # $wpml_plugin_name = __( 'WPML', 'wpml-media' );
 # /* translators: WPML Media Translation saddon/section name */
@@ -331,20 +324,6 @@ msgstr ""
 msgid "All dates"
 msgstr ""
 
-# 'all_dates'                => __( 'All dates', 'wpml-media' ),
-# 'in'                       => __( 'in', 'wpml_media' ),
-# 'to'                       => __( 'to', 'wpml_media' ),
-
-msgid "in"
-msgstr ""
-
-# 'in'                       => __( 'in', 'wpml_media' ),
-# 'to'                       => __( 'to', 'wpml_media' ),
-# 'filter_by_status'         => __( 'Filter by translation status', 'wpml-media' ),
-
-msgid "to"
-msgstr ""
-
 # 'to'                       => __( 'to', 'wpml_media' ),
 # 'filter_by_status'         => __( 'Filter by translation status', 'wpml-media' ),
 # 'status_all'               => __( 'All translation statuses', 'wpml-media' ),
@@ -567,13 +546,6 @@ msgstr ""
 # );
 
 msgid "Needs translation"
-msgstr ""
-
-# 'id'    => $month->year . zeroise( $month->month, 2 ),
-# 'label' => sprintf( __( '%1$s %2$d' ), $this->wp_locale->get_month( $month->month ), $month->year )
-# );
-
-msgid "%1$s %2$d"
 msgstr ""
 
 # 'strings'     => array(
@@ -835,60 +807,4 @@ msgstr ""
 # 'https://wpml.org/' ); ?></p></div>
 
 msgid "WPML Media is enabled but not effective. It requires <a href=\"%s\">WPML</a> in order to work."
-msgstr ""
-
-# $this->admin_notice = '<div class="error wpml-admin-notice">';
-# $this->admin_notice .= '<h3>' . __( 'WPML Update is Incomplete', 'sitepress' ) . '</h3>';
-# $this->admin_notice .= '<p>' . implode( '</p><p>', $notice_paragraphs ) . '</p>';
-
-msgid "WPML Update is Incomplete"
-msgstr ""
-
-# if ( count( $this->valid_plugins ) === 1 ) {
-# $paragraph = __( 'You are running updated %s, but the following component is not updated:', 'sitepress' );
-# $paragraph = sprintf( $paragraph, '<strong>' . $this->valid_plugins[0] . '</strong>' );
-
-msgid "You are running updated %s, but the following component is not updated:"
-msgstr ""
-
-# } else {
-# $paragraph           = __( 'You are running updated %s and %s, but the following components are not updated:', 'sitepress' );
-# $first_valid_plugins = implode( ', ', array_slice( $this->valid_plugins, 0, - 1 ) );
-
-msgid "You are running updated %s and %s, but the following components are not updated:"
-msgstr ""
-
-# } else {
-# $paragraph = __( 'The following components are not updated:', 'sitepress' );
-# }
-
-msgid "The following components are not updated:"
-msgstr ""
-
-# private function get_invalid_plugins_report_footer() {
-# $wpml_org_url = '<a href="https://wpml.org/account/" title="WPML.org account">' . __( 'WPML.org account', 'sitepress' ) . '</a>';
-# 
-
-msgid "WPML.org account"
-msgstr ""
-
-# 
-# $notice_paragraph = __( 'Your site will not work as it should in this configuration', 'sitepress' );
-# $notice_paragraph .= ' ';
-
-msgid "Your site will not work as it should in this configuration"
-msgstr ""
-
-# $notice_paragraph .= ' ';
-# $notice_paragraph .= __( 'Please update all components which you are using.', 'sitepress' );
-# $notice_paragraph .= ' ';
-
-msgid "Please update all components which you are using."
-msgstr ""
-
-# $notice_paragraph .= ' ';
-# $notice_paragraph .= sprintf( __( 'For WPML components you can receive updates from your %s or automatically, after you register WPML.', 'sitepress' ), $wpml_org_url );
-# 
-
-msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
 msgstr ""

@@ -6,13 +6,13 @@ class WPML_Themes_Plugin_Localization_UI_Hooks_Factory implements IWPML_Backend_
 	public function create() {
 		global $sitepress;
 
-		$hooks = null;
+		$hooks          = null;
 		$current_screen = get_current_screen();
 
 		if ( isset( $current_screen->id ) && WPML_PLUGIN_FOLDER . '/menu/theme-localization' === $current_screen->id ) {
 			$localization_ui = new WPML_Theme_Plugin_Localization_UI();
-			$options_ui = new WPML_Theme_Plugin_Localization_Options_UI( $sitepress );
-			$hooks = new WPML_Theme_Plugin_Localization_UI_Hooks( $localization_ui, $options_ui );
+			$options_ui      = new WPML_Theme_Plugin_Localization_Options_UI( $sitepress );
+			$hooks           = new WPML_Theme_Plugin_Localization_UI_Hooks( $localization_ui, $options_ui );
 		}
 
 		return $hooks;

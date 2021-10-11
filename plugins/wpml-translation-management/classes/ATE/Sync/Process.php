@@ -140,9 +140,11 @@ class Process {
 	 * @param \stdClass[] $items
 	 */
 	private function pushToDownloadQueue( array $items ) {
-		$jobs = wpml_collect( $items )->map( function( $item ) {
-			return Job::fromAteResponse( $item );
-		} );
+		$jobs = wpml_collect( $items )->map(
+			function( $item ) {
+				return Job::fromAteResponse( $item );
+			}
+		);
 
 		$this->downloadQueue->push( $jobs );
 	}

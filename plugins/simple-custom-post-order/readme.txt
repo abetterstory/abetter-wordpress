@@ -3,8 +3,8 @@ Contributors: silkalns
 Tags: custom post order, post order, js post order, page order, posts order, category order, sort posts, sort pages, sort custom posts
 Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.4
-Stable tag: 2.5.0
+Tested up to: 5.8
+Stable tag: 2.5.6
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,72 +12,10 @@ Order posts(posts, any custom post types) using a Drag and Drop Sortable JavaScr
 
 == Description ==
 
-Simple Custom Post Order is a powerful and practical plugin that does both post and page sorting, as well as taxonomy sorting, like categories, tags, and links. On top of that, it fully supports all custom post types that you have on your website or blog (portfolio, gallery, staff, testimonials, etc.).
-
-With a convenient and straightforward drag and drop sortable JavaScript, you can create the exact order of posts and pages that match your heart’s content.
-
-You can do all the sorting and order straight from your WordPress administration. Worth noting, Simple Custom Post Order plugin does not require you to perform any configuration in advance. Just plug and play.
-
-When you disable the plugin, all sortings will fall back to the default one used by WordPress. It doesn’t permanently change ordering, so you need to keep the plugin installed if you want to achieve the custom posts and pages classification that you are after.
-
-Other than that, you are pretty much good to go out of the box. Reordering default posts, custom post types, pages, or taxonomy becomes a piece of cake with Simple Custom Post Order.
-
-It has never been easier to arrange and sort custom post types, pages, posts, gallery items, portfolio items, categories, tags, and any other post, content, or taxonomy type.
-
-Simple Custom Post Order features:
-
-- Arrange posts
-- Arrange pages
-- Arrange taxonomies such as categories or tags
-- Arrange custom post types such as portfolio
-- Arrange custom post taxonomies (categories or tags)
-
-**LOCALIZATION**
-
-Simple Custom Post Order is available in 10+ languages, like French, Spanish, Greek, Catalan and Albanian, to name a few.
-
-Would you like to make a contribution by translating the plugin to your language? Feel free to access: https://translate.wordpress.org/projects/wp-plugins/simple-custom-post-order/
-
-
-**SETUP AND USE**
-
-First and foremost, Simple Custom Post Order is for everyone, regardless of your skills and experience with WordPress plugins. Beginners and professionals, you are welcome.
-
-1. Install the plugin by accessing the Plugins section in your WordPress administrator (located in the left sidebar menu). You can also directly download it here and then upload the plugin folder to your /wp-content/plugins/ directory.
-
-2. Activate the Simple Custom Post Order plugin with a single click.
-
-3. Once the activation completes, SCPOrder’s settings page will appear under the Settings tab in the left sidebar.
-
-4. While the plugin does not require any configuration, you can still manually check post types and taxonomies sorting. At the top of each, you can also tick to select all.
-
-5. Thanks to the easy-to-use reordering with the drag and drop technique, you can change the positioning of default and custom post types, pages, projects, and more swiftly.
-
-Feel free to write a review and do not forget to rate the Simple Custom Post Order. We value honest opinions, as this helps us make this plugin even better.
-
-For any additional support and assistance, you can always reach out to the [support forum section](https://wordpress.org/support/plugin/simple-custom-post-order/).
-
+Order posts(posts, any custom post types) using a Drag and Drop Sortable JavaScript. Configuration is unnecessary. You can do directly on default WordPress administration.
+Excluding custom query which uses order or orderby parameters, in get_posts or query_posts and so on.
 
 This plugins is now supported and maintained by <a href="https://colorlib.com/wp/" target="_blank">Colorlib</a>.
-
-== Frequently Asked Questions ==
-
-= Is Simple Custom Post Order free? =
-Yes, Simple Custom Post Order is and always will be free of charge. Even though it does not come with a fee, SCPO appears very premium-like.
-= Can I use this plugin with no PHP knowledge? =
-Even if you have no experience whatsoever, you will still experience smooth usage. The plugin is for everyone, whether you are using a WordPress plugin for the first time or an experienced web developer. Simple Custom Post Order will never ask you for coding knowledge.
-= Which posts/pages do this plugin support? = 
-You can sort all posts and pages, including custom post types, like portfolio, gallery, staff, projects, etc.
-= Can I sort custom post types? = 
-Yes, this plugin allows us to sort all posts types including custom post types of any kind. Make sure to enable the Simple Custom Post Order for a particular custom post type via plugin settings.
-= Which taxonomies does this plugin support? = 
-You can sort all taxonomies hassle-free. These include categories, tags, links, member groups, etc.
-= What happens when I disable this plugin? = 
-When and if you disabled the plugin, all the sorting goes back to the default one that WordPress uses. The plugin does not change sorting permanently. Meaning, you need to keep the plugin running to benefit from its features.
-= I would like to use a custom feature which this plugin does not support by default. =
-If you have any suggestions to improve this plugin and make it even better, we warmly welcome any idea you may have. Keep in mind, if we consider your recommendation, it does take time to implement it to the Simple Custom Post Order plugin. That said, it might not be available with the next update.
-= Can I report a bug? = 
-You can always start a new topic in the [support forum](https://wordpress.org/support/plugin/simple-custom-post-order/) of this plugin or open a ticket on [GitHub](https://github.com/colorlibhq/simple-custom-post-order/issues).
 
 == Installation ==
 
@@ -97,6 +35,26 @@ An answer to that question.
 3. Settings
 
 == Changelog ==
+= Version 2.5.6 - 27.05.2021 =
+Changed : Revert to 2.5.4
+
+= Version 2.5.5 - 11.05.2021 =
+Changed : Code Cleaning
+Changed : Allow custom orderby in Block Preview ( https://github.com/ColorlibHQ/simple-custom-post-order/issues/98 )
+
+= Version 2.5.4 - 05.03.2021 =
+Changed: Improved Performance ( https://github.com/ColorlibHQ/simple-custom-post-order/issues/105 )
+
+= Version 2.5.3 =
+* Modified deprecated jQuery functions.
+
+= Version 2.5.2 =
+* Modified deprecated JQuery function to improve compatibility with Wordpress 5.5
+* Fixed an issue where posts would be in reverse order after resetting the order
+
+= Version 2.5.1 =
+* Improve fix for post list table width when sorting is enabled ( thanks to gedeminas )
+* Fix for admin ajax overriding queries ( thanks to igritsay )
 
 = Version 2.5.0 =
 * Fixed post list table width when sorting is enabled

@@ -15,7 +15,8 @@
 				title: alert_reset_options_title,
 				buttons: button_names,
 				modal: true,
-				width: 350
+				width: 350,
+				closeText: ''
 			});
 		});
 		
@@ -98,6 +99,8 @@ function disable_gutenberg_toggle_more($) {
 	var row5  = table.find('tr:nth-child(5)');
 	var row6  = table.find('tr:nth-child(6)');
 	var row7  = table.find('tr:nth-child(7)');
+	var row8  = table.find('tr:nth-child(8)');
+	var row9  = table.find('tr:nth-child(9)');
 	
 	$(row2).hide();
 	$(row3).hide();
@@ -105,6 +108,8 @@ function disable_gutenberg_toggle_more($) {
 	$(row5).hide();
 	$(row6).hide();
 	$(row7).hide();
+	$(row8).hide();
+	$(row9).hide();
 	
 	$('.g7g-toggle').click(function(e) {
 		e.preventDefault();
@@ -114,6 +119,8 @@ function disable_gutenberg_toggle_more($) {
 		$(row5).slideToggle();
 		$(row6).slideToggle();
 		$(row7).slideToggle();
+		$(row8).slideToggle();
+		$(row9).slideToggle();
 		return false;
 	});
 	

@@ -15,7 +15,7 @@ class WPML_WPSEO_Redirection_Old {
 		if ( is_array( $redirections ) ) {
 
 			// Use same logic as WPSEO_Redirect_Util::strip_base_url_path_from_url
-			$url = trim( $_SERVER['REQUEST_URI'], '/' );
+			$url           = trim( $_SERVER['REQUEST_URI'], '/' );
 			$base_url_path = ltrim( wp_parse_url( home_url(), PHP_URL_PATH ), '/' );
 			if ( stripos( trailingslashit( $url ), trailingslashit( $base_url_path ) ) == 0 ) {
 				$url = substr( $url, strlen( $base_url_path ) );

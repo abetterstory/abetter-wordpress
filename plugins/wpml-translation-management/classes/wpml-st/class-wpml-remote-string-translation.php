@@ -2,73 +2,6 @@
 
 class WPML_Remote_String_Translation {
 
-	/**
-	 * @param WPML_TM_Translation_Batch $batch
-     * @param string $type
-	 */
-	public static function send_strings_jobs(WPML_TM_Translation_Batch $batch, $type ) {
-	    $elements = $batch->get_elements_by_type($type);
-		if ( empty( $elements ) ) {
-			return;
-		}
-
-		/** @var $iclTranslationManagement TranslationManagement */
-		global $iclTranslationManagement, $wpdb, $wpml_translation_job_factory;
-		$translators = $batch->get_translators();
-		$strings_local = array();
-
-        // for every string in cart
-        // collect strings for local translation
-        // collect string for remote translation
-        $strings_remote = array();
-
-        foreach ( $elements as $element ) {
-            foreach ( $element->get_target_langs() as $language_code => $action) {
-                if ( is_numeric( $translators[ $language_code ] ) ) {
-                    $strings_local[ $language_code ][] = $element->get_element_id();
-                } else {
-                    $strings_remote[ $language_code ][] = $element->get_element_id();
-                }
-            }
-        }
-
-        if ( $strings_remote ) {
-            foreach ( $strings_remote as $target => $string_ids ) {
-                $basket    = new WPML_Translation_Basket( $wpdb );
-                $st_tp_job = new WPML_TP_String_Job( $wpdb, $basket, $wpml_translation_job_factory );
-                $result = $st_tp_job->send_strings_to_translation_service( $string_ids,
-                    $target,
-                    $translators[ $target ] );
-                if ( isset( $result['errors'] ) && count( $result['errors'] ) ) {
-                    foreach ( $result['errors'] as $error ) {
-                        $error_message = array(
-                            'type' => 'error',
-                            'text' => $error,
-                        );
-                        $iclTranslationManagement->add_message( $error_message );
-                    }
-                }
-                if ( ! $result ) {
-                    foreach ( $string_ids as $string_id ) {
-                        $default_string_language = $basket->get_source_language();
-
-                        $string  = icl_get_string_by_id( $string_id, $default_string_language );
-                        $message = array(
-                            'type' => 'error',
-                            'text' => sprintf( __( 'String "%s" has not been sent.', 'wpml-translation-management' ), $string ),
-                        );
-                        $iclTranslationManagement->add_message( $message );
-                    }
-                    break;
-                }
-            }
-        }
-
-        foreach ( $strings_local as $target => $string_ids ) {
-            self::translation_send_strings_local( $string_ids, $target, $translators[ $target ], $batch->get_basket_name() );
-        }
-	}
-
 	public static function get_string_status_labels() {
 		return array(
 			ICL_TM_COMPLETE                => __( 'Translation complete', 'wpml-translation-management' ),
@@ -79,7 +12,7 @@ class WPML_Remote_String_Translation {
 			ICL_TM_WAITING_FOR_TRANSLATOR  => __( 'Waiting for translator / In progress',
 				'wpml-translation-management' ),
 			ICL_TM_IN_BASKET               => __( 'Strings in the basket', 'wpml-translation-management' ),
-            ICL_TM_TRANSLATION_READY_TO_DOWNLOAD => __('Translation ready to download', 'wpml-translation-management'),
+			ICL_TM_TRANSLATION_READY_TO_DOWNLOAD => __('Translation ready to download', 'wpml-translation-management'),
 		);
 	}
 
@@ -144,13 +77,23 @@ class WPML_Remote_String_Translation {
 			       style="width:100%">
 				<thead>
 				<tr>
-					<th><?php _e( 'Translation options', 'wpml-translation-management' ) ?></th>
+					<th><h3><?php _e( 'Translate selected strings', 'wpml-translation-management' ) ?></h3></th>
 				</tr>
 				</thead>
 				<tbody>
 				<tr>
 					<td>
-						<ul id="icl_tm_languages">
+						<table class="st-translate-strings-table">
+							<tbody>
+							<tr>
+								<td>
+									<input type="checkbox" id="icl_st_translate_to_all" checked />
+								</td>
+								<td><h4><?php _e( 'All languages', 'wpml-translation-management'); ?></h4></td>
+								<td></td>
+							</tr>
+							</tbody>
+							<tbody id="icl_tm_languages">
 							<?php
 							foreach ( $strings_target_languages as $lang ) {
 								if ( $lang['code'] == $lang_filter ) {
@@ -160,49 +103,56 @@ class WPML_Remote_String_Translation {
 								$checked            = checked( true, $is_active_language, false );
 								$label_class = $is_active_language ? 'active' : 'non-active'
 								?>
-								<li>
-									<input type="checkbox"
-									       id="translate_to[<?php echo $lang['code'] ?>]"
-									       name="translate_to[<?php echo $lang['code'] ?>]"
-									       value="1"
-									       id="icl_st_translate_to_<?php echo $lang['code'] ?>" <?php echo $checked; ?>
-									       data-language="<?php echo $lang['code'] ?>"
-									/>
-									<label
-										for="translate_to[<?php echo $lang['code'] ?>]"
-										class="<?php echo $label_class; ?>">
-										<?php printf( __( 'Translate to %s', 'wpml-translation-management' ),
-											$lang['display_name'] ) ?>
-									</label>
-									<?php
-									if ( isset( $target_status[ $lang['code'] ] ) && $target_status[ $lang['code'] ] ) {
-										?>
-										<span style="display: none;"
-										      id="icl_st_max_rate_<?php echo $lang['code'] ?>"><?php echo $target_rate[ $lang['code'] ] ?></span>
-										<span style="display: none;"
-										      id="icl_st_estimate_<?php echo $lang['code'] ?>_wrap"
-										      class="icl_st_estimate_wrap">
-		                                    &nbsp;(<?php printf( __( 'Estimated cost: %s USD',
-												'wpml-translation-management' ),
-												'<span id="icl_st_estimate_' . $lang['code'] . '">0</span>' ) ?>
-											)</span>
+								<tr>
+									<td>
+										<input type="checkbox"
+										       id="translate_to[<?php echo $lang['code'] ?>]"
+										       name="translate_to[<?php echo $lang['code'] ?>]"
+										       value="1"
+										       id="icl_st_translate_to_<?php echo $lang['code'] ?>" <?php echo $checked; ?>
+										       data-language="<?php echo $lang['code'] ?>"
+										/>
+									</td>
+									<td>
+										<img width="18" height="12" src="<?php echo esc_url( $sitepress->get_flag_url( $lang['code'] ) ); ?>" alt="<?php echo esc_url( sprintf( __( 'Flag for %s', 'wpml-translation-management' ), $lang['code'] ) ); ?>"/>
+										<label
+											for="translate_to[<?php echo $lang['code'] ?>]"
+											class="<?php echo $label_class; ?>">
+											<strong><?php echo $lang['display_name']; ?></strong>
+										</label>
+									</td>
+									<td>
 										<?php
-									}
-									?>
-								</li>
-								<?php
-							}
-							?>
-						</ul>
+										if ( isset( $target_status[ $lang['code'] ] ) && $target_status[ $lang['code'] ] ) {
+											?>
+											<span style="display: none;"
+											      id="icl_st_max_rate_<?php echo $lang['code'] ?>"><?php echo $target_rate[ $lang['code'] ] ?></span>
+											<span style="display: none;"
+											      id="icl_st_estimate_<?php echo $lang['code'] ?>_wrap"
+											      class="icl_st_estimate_wrap">
+		                                    &nbsp;(<?php
+												printf(
+													__( 'Estimated cost: %s USD', 'wpml-translation-management' ),
+													'<span id="icl_st_estimate_' . $lang['code'] . '">0</span>'
+												);
+												?>)
+											</span>
+											<?php
+										}
+										?>
+									</td>
+								</tr>
+							<?php }?>
+							</tbody>
+						</table>
 						<?php echo wpml_nonce_field('icl-string-translation') ?>
-						<input id="icl_send_strings" class="button-primary"
-						       type="submit"
-						       value="<?php _e( 'Add to translation basket', 'wpml-translation-management' ); ?>"
-						       disabled="disabled"
-						       data-lang-not-active-message="<?php _e( 'One of the selected strings is in a language that is not activate. It can not be added to the translation basket.', 'wpml-translation-management' ); ?>"
-						       data-more-than-one-lang-message="<?php _e( 'Strings in different languages are selected. They can not be added to the translation basket.', 'wpml-translation-management' ); ?>"
-						       data-translation-basket-lang-message="<?php _e( 'You cannot add strings in this language to the basket since it already contains posts or strings of another source language! Either submit the current basket or delete the posts of differing language in the current basket', 'wpml-translation-management' ); ?>"
-						/>
+						<button id="icl_send_strings" class="button-primary button-lg"
+						        type="submit"
+						        disabled="disabled"
+						        data-lang-not-active-message="<?php _e( 'One of the selected strings is in a language that is not activate. It can not be added to the translation basket.', 'wpml-translation-management' ); ?>"
+						        data-more-than-one-lang-message="<?php _e( 'Strings in different languages are selected. They can not be added to the translation basket.', 'wpml-translation-management' ); ?>"
+						        data-translation-basket-lang-message="<?php _e( 'You cannot add strings in this language to the basket since it already contains posts or strings of another source language! Either submit the current basket or delete the posts of differing language in the current basket', 'wpml-translation-management' ); ?>"
+						><span class="otgs-ico-basket"></span> <?php _e( 'Add to translation basket', 'wpml-translation-management' ); ?></button>
 
 						<div class="update-nag js-translation-message"
 						     style="display:none"></div>

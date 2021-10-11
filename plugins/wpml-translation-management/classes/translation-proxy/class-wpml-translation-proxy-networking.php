@@ -70,10 +70,12 @@ class WPML_Translation_Proxy_Networking {
 				$response = json_decode( $api_response );
 				if ( $has_api_response ) {
 					if ( ! $response || ! isset( $response->status->code ) || $response->status->code !== 0 ) {
-						$exception_message = $this->get_exception_message( $url,
-						                                                   $method,
-						                                                   $params,
-						                                                   $response );
+						$exception_message = $this->get_exception_message(
+							$url,
+							$method,
+							$params,
+							$response
+						);
 						if ( isset( $response->status->message ) ) {
 							$exception_message = '';
 							if ( isset( $response->status->code ) ) {
@@ -123,12 +125,16 @@ class WPML_Translation_Proxy_Networking {
 		$context  = $this->filter_request_params( $params, $method );
 		$response = $this->http->request( $url, $context );
 		if ( ( $has_return_value && (bool) $response === false )
-		     || is_wp_error( $response )
-		     || ( isset( $response['response']['code'] ) && $response['response']['code'] > 400 ) ) {
-			throw new WPMLTranslationProxyApiException( $this->get_exception_message( $url,
-			                                                                          $method,
-			                                                                          $context,
-			                                                                          $response ) );
+			 || is_wp_error( $response )
+			 || ( isset( $response['response']['code'] ) && $response['response']['code'] > 400 ) ) {
+			throw new WPMLTranslationProxyApiException(
+				$this->get_exception_message(
+					$url,
+					$method,
+					$context,
+					$response
+				)
+			);
 		}
 
 		return $response;
@@ -140,26 +146,26 @@ class WPML_Translation_Proxy_Networking {
 		$sanitized_response = WPML_TranslationProxy_Com_Log::sanitize_data( $response );
 
 		return 'Cannot communicate with the remote service |'
-		       . ' url: '
-		       . '`'
-		       . $sanitized_url
-		       . '`'
-		       . ' method: '
-		       . '`'
-		       . $method
-		       . '`'
-		       . ' param: '
-		       . '`'
-		       . wp_json_encode( $sanitized_context )
-		       . '`'
-		       . ' response: '
-		       . '`'
-		       . wp_json_encode( $sanitized_response )
-		       . '`';
+			   . ' url: '
+			   . '`'
+			   . $sanitized_url
+			   . '`'
+			   . ' method: '
+			   . '`'
+			   . $method
+			   . '`'
+			   . ' param: '
+			   . '`'
+			   . wp_json_encode( $sanitized_context )
+			   . '`'
+			   . ' response: '
+			   . '`'
+			   . wp_json_encode( $sanitized_response )
+			   . '`';
 	}
 
 	/**
-	 * @param array $params request parameters
+	 * @param array  $params request parameters
 	 * @param string $method HTTP request method
 	 *
 	 * @return array
@@ -167,12 +173,14 @@ class WPML_Translation_Proxy_Networking {
 	private function filter_request_params( $params, $method ) {
 		$request_filter = new WPML_TP_HTTP_Request_Filter();
 
-		return $request_filter->build_request_context( array(
-			'method'    => $method,
-			'body'      => $params,
-			'sslverify' => true,
-			'timeout'   => 60
+		return $request_filter->build_request_context(
+			array(
+				'method'    => $method,
+				'body'      => $params,
+				'sslverify' => true,
+				'timeout'   => 60,
 
-		) );
+			)
+		);
 	}
 }

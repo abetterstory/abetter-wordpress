@@ -39,7 +39,7 @@ class WPML_TM_TS_Instructions_Notice {
 	 */
 	public function exists() {
 		return ( WPML_TM_Page::is_dashboard() || wpml_is_ajax() ) &&
-		       (bool) $this->admin_notices->get_notice( self::NOTICE_ID, self::NOTICE_GROUP_ID );
+			   (bool) $this->admin_notices->get_notice( self::NOTICE_ID, self::NOTICE_GROUP_ID );
 	}
 
 	/**
@@ -66,8 +66,10 @@ class WPML_TM_TS_Instructions_Notice {
 					$service->name
 				),
 				'description'                   => sprintf(
-					__( "Congratulations for choosing %s to translate your site's content. To avoid high costs and wasted time, please watch our short video.",
-						'wpml-translation-management' ),
+					__(
+						"Congratulations for choosing %s to translate your site's content. To avoid high costs and wasted time, please watch our short video.",
+						'wpml-translation-management'
+					),
 					$service->name
 				),
 				'need_help'                     => __( 'Need help? See ', 'wpml-translation-management' ),
@@ -81,7 +83,7 @@ class WPML_TM_TS_Instructions_Notice {
 			),
 			'image_url'  => WPML_TM_URL . '/res/img/ts-instruction-video.png',
 			'help_link'  => 'https://wpml.org/documentation/translating-your-contents/professional-translation-via-wpml/doing-test-translation/?utm_source=wpmlplugin&utm_campaign=translation-services&utm_medium=translation-dashboard-message&utm_term=doing-test-translation',
-			'video_link' => 'https://wpml.org/documentation/translating-your-contents/professional-translation-via-wpml/doing-test-translation/?utm_source=wpmlplugin&utm_medium=translation-dashboard-message-video&utm_campaign=translation-services&utm_term=doing-test-translation'
+			'video_link' => 'https://wpml.org/documentation/translating-your-contents/professional-translation-via-wpml/doing-test-translation/?utm_source=wpmlplugin&utm_medium=translation-dashboard-message-video&utm_campaign=translation-services&utm_term=doing-test-translation',
 		);
 	}
 }

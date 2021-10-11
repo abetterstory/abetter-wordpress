@@ -31,9 +31,9 @@ class WPML_TM_Unsent_Jobs_Notice_Hooks {
 	 */
 	public function __construct( WPML_TM_Unsent_Jobs_Notice $wpml_tm_notice_email_notice, WPML_WP_API $wp_api, $dismissed_option_key ) {
 		$this->wpml_tm_notice_email_notice = $wpml_tm_notice_email_notice;
-		$this->wpml_admin_notices = wpml_get_admin_notices();
-		$this->wp_api = $wp_api;
-		$this->dismissed_option_key = $dismissed_option_key;
+		$this->wpml_admin_notices          = wpml_get_admin_notices();
+		$this->wp_api                      = $wp_api;
+		$this->dismissed_option_key        = $dismissed_option_key;
 	}
 
 	public function add_hooks() {
@@ -45,8 +45,8 @@ class WPML_TM_Unsent_Jobs_Notice_Hooks {
 	/**
 	 * @param array $args
 	 */
-	public function email_for_job( $args ){
-		$job_set = array_key_exists( 'job', $args ) && $args['job'];
+	public function email_for_job( $args ) {
+		$job_set   = array_key_exists( 'job', $args ) && $args['job'];
 		$event_set = array_key_exists( 'event', $args ) && $args['event'];
 		if ( $job_set && $event_set ) {
 			if ( 'unsent' === $args['event'] ) {
@@ -57,7 +57,7 @@ class WPML_TM_Unsent_Jobs_Notice_Hooks {
 		}
 	}
 
-	public function add_notice(){
+	public function add_notice() {
 		$this->wpml_tm_notice_email_notice->add_notice( $this->wpml_admin_notices, $this->get_dismissed_option_key() );
 	}
 

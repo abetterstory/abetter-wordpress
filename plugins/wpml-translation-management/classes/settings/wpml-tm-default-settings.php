@@ -19,7 +19,7 @@ class WPML_TM_Default_Settings implements IWPML_Action {
 
 		if ( ! $this->has_notification( WPML_TM_Emails_Settings::COMPLETED_JOB_FREQUENCY ) ) {
 			if ( $this->has_notification( 'completed' ) ) {
-				$this->update_notification( WPML_TM_Emails_Settings::COMPLETED_JOB_FREQUENCY, $this->get_notification( 'completed') );
+				$this->update_notification( WPML_TM_Emails_Settings::COMPLETED_JOB_FREQUENCY, $this->get_notification( 'completed' ) );
 			} else {
 				$this->update_notification( WPML_TM_Emails_Settings::COMPLETED_JOB_FREQUENCY, WPML_TM_Emails_Settings::NOTIFY_WEEKLY );
 			}
@@ -27,7 +27,7 @@ class WPML_TM_Default_Settings implements IWPML_Action {
 
 		$this->maybe_update_notification( 'completed', WPML_TM_Emails_Settings::NOTIFY_IMMEDIATELY );
 		$this->maybe_update_notification( 'resigned', WPML_TM_Emails_Settings::NOTIFY_IMMEDIATELY );
-		$this->maybe_update_notification( 'overdue', WPML_TM_Emails_Settings::NOTIFY_DAILY );
+		$this->maybe_update_notification( 'overdue', WPML_TM_Emails_Settings::NOTIFY_IMMEDIATELY );
 		$this->maybe_update_notification( 'overdue_offset', 7 );
 		$this->maybe_update_notification( 'dashboard', true );
 		$this->maybe_update_notification( 'purge-old', 7 );

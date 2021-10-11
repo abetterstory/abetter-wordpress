@@ -1,11 +1,18 @@
 <?php
 
+use \ACFML\Group_Scanner;
+use \ACFML\MigrateBlockPreferences;
+use \ACFML\Repeater\Shuffle\Strategy;
+use \ACFML\FieldState;
+use \ACFML\Tools\Export;
+use \ACFML\Tools\Import;
+use \ACFML\Tools\Local;
+
 /**
  * @author OnTheGo Systems
  */
 class WPML_ACF_Dependencies_Factory {
 	private $options_page;
-	private $requirements;
 	private $editor_hooks;
 	private $display_translated;
 	private $worker;
@@ -18,22 +25,51 @@ class WPML_ACF_Dependencies_Factory {
 	private $annotations;
 	private $xliff;
 	private $blocks;
+	private $migrateBlockPreferences;
+	private $groupScanner;
+	/** @var WPML_ACF_Migrate_Option_Page_Strings|void */
+	private $migrateOptionsPageStrings;
+	/**
+	 * @var \ACFML\FieldReferenceAdjuster|void
+	 */
+	private $field_adjuster;
+	/**
+	 * @var WPML_ACF_Repeater_Shuffle|void
+	 */
+	private $repeater_shuffle;
 	private $field_groups;
+	
+	/**
+	 * @var FieldState|void
+	 */
+	private $field_state;
+	
+	/**
+	 * @var Export|void
+	 */
+	private $tools_export;
+	
+	/**
+	 * @var Import|void
+	 */
+	private $tools_import;
+	
+	/**
+	 * @var Local|void
+	 */
+	private $tools_local;
 
+	/**
+	 * WPML_ACF_Options_Page factory.
+	 *
+	 * @return WPML_ACF_Options_Page
+	 */
 	public function create_options_page() {
 		if ( ! $this->options_page ) {
-			$this->options_page = new WPML_ACF_Options_Page();
+			$this->options_page = new WPML_ACF_Options_Page( $this->get_sitepress(), $this->create_worker() );
 		}
 
 		return $this->options_page;
-	}
-
-	public function create_requirements() {
-		if ( ! $this->requirements ) {
-			$this->requirements = new WPML_ACF_Requirements();
-		}
-
-		return $this->requirements;
 	}
 
 	public function create_editor_hooks() {
@@ -67,18 +103,35 @@ class WPML_ACF_Dependencies_Factory {
 
 		return $this->duplicated_post;
 	}
-
-	public function create_custom_fields_sync() {
+	
+	/**
+	 * @param Strategy $strategy
+	 *
+	 * @return WPML_ACF_Custom_Fields_Sync
+	 */
+	public function create_custom_fields_sync( Strategy $strategy ) {
 		if ( ! $this->custom_fields_sync ) {
-			$this->custom_fields_sync = new WPML_ACF_Custom_Fields_Sync();
+			$this->custom_fields_sync = new WPML_ACF_Custom_Fields_Sync( $this->create_field_state( $strategy ) );
 		}
 
 		return $this->custom_fields_sync;
 	}
+	
+	/**
+	 * @param Strategy $strategy
+	 *
+	 * @return FieldState
+	 */
+	public function create_field_state( Strategy $strategy ) {
+		if ( ! $this->field_state ) {
+			$this->field_state = new FieldState( $strategy );
+		}
+		return $this->field_state;
+	}
 
 	public function create_location_rules() {
 		if ( ! $this->location_rules ) {
-			$this->location_rules = new WPML_ACF_Location_Rules();
+			$this->location_rules = new WPML_ACF_Location_Rules( $this->get_sitepress() );
 		}
 
 		return $this->location_rules;
@@ -108,9 +161,14 @@ class WPML_ACF_Dependencies_Factory {
 		return $this->pro;
 	}
 
+	/**
+	 * Returns WPML_ACF_Field_Annotations object.
+	 *
+	 * @return WPML_ACF_Field_Annotations
+	 */
 	public function create_field_annotations() {
 		if ( ! $this->annotations ) {
-			$this->annotations = new WPML_ACF_Field_Annotations( $this->create_options_page() );
+			$this->annotations = new WPML_ACF_Field_Annotations( $this->create_options_page(), $this->create_field_settings() );
 		}
 
 		return $this->annotations;
@@ -124,12 +182,30 @@ class WPML_ACF_Dependencies_Factory {
 		return $this->xliff;
 	}
 
+	/**
+	 * Return WPML_ACF_Blocks instance.
+	 *
+	 * @return WPML_ACF_Blocks
+	 */
 	public function create_blocks() {
 		if ( ! $this->blocks ) {
-			$this->blocks = new WPML_ACF_Blocks();
+			$this->blocks = new WPML_ACF_Blocks( $this->get_wpml_post_translations() );
 		}
 
 		return $this->blocks;
+	}
+
+	/**
+	 * @param Strategy $strategy
+	 *
+	 * @return WPML_ACF_Repeater_Shuffle
+	 */
+	public function create_repeater_shuffle( Strategy $strategy ) {
+		if ( ! $this->repeater_shuffle ) {
+			$this->repeater_shuffle = new WPML_ACF_Repeater_Shuffle( $strategy, $this->create_field_state( $strategy ) );
+		}
+
+		return $this->repeater_shuffle;
 	}
 
 	public function create_field_groups() {
@@ -138,6 +214,65 @@ class WPML_ACF_Dependencies_Factory {
 		}
 
 		return $this->field_groups;
+	}
+
+	/**
+	 * WPML_ACF_Migrate_Option_Page_Strings factory.
+	 *
+	 * @return WPML_ACF_Migrate_Option_Page_Strings
+	 */
+	public function createMigrateOptionsPageStrings() {
+		if ( ! $this->migrateOptionsPageStrings ) {
+			$this->migrateOptionsPageStrings = new WPML_ACF_Migrate_Option_Page_Strings( $this->get_wpdb() );
+		}
+		return $this->migrateOptionsPageStrings;
+	}
+
+	/*
+	 * @return \ACFML\FieldReferenceAdjuster
+	 */
+	public function create_field_adjuster() {
+		if ( ! $this->field_adjuster ) {
+			$this->field_adjuster = new ACFML\FieldReferenceAdjuster( $this->get_sitepress() );
+		}
+		return $this->field_adjuster;
+	}
+
+	public function createMigrateBlockPreferences() {
+		if ( ! $this->migrateBlockPreferences ) {
+			$this->migrateBlockPreferences = new MigrateBlockPreferences( $this->create_field_settings() );
+		}
+		return $this->migrateBlockPreferences;
+	}
+	
+	/**
+	 * @return Export
+	 */
+	public function create_tools_export() {
+		if ( ! $this->tools_export ) {
+			$this->tools_export = new Export();
+		}
+		return $this->tools_export;
+	}
+	
+	/**
+	 * @return Import
+	 */
+	public function create_tools_import() {
+		if ( ! $this->tools_import ) {
+			$this->tools_import = new Import();
+		}
+		return $this->tools_import;
+	}
+	
+	/**
+	 * @return Local
+	 */
+	public function create_tools_local() {
+		if ( ! $this->tools_local ) {
+			$this->tools_local = new Local( $this->create_field_settings() );
+		}
+		return $this->tools_local;
 	}
 
 	private function get_sitepress() {
@@ -156,5 +291,13 @@ class WPML_ACF_Dependencies_Factory {
 		global $wpdb;
 
 		return $wpdb;
+	}
+
+	/**
+	 * @return WPML_Post_Translation
+	 */
+	private function get_wpml_post_translations() {
+		global $wpml_post_translations;
+		return $wpml_post_translations;
 	}
 }

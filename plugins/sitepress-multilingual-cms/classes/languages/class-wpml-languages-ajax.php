@@ -50,7 +50,7 @@ class WPML_Languages_AJAX {
 				$html_response    = '';
 
 				foreach ( (array) $active_languages as $lang ) {
-					$is_default    = ( $this->default_language === $lang['code'] );
+					$is_default     = ( $this->default_language === $lang['code'] );
 					$html_response .= '<li ';
 					if ( $is_default ) {
 						$html_response .= 'class="default_language"';
@@ -63,7 +63,7 @@ class WPML_Languages_AJAX {
 					if ( $is_default ) {
 						$html_response .= ' (' . __( 'default', 'sitepress' ) . ')';
 					}
-					$html_response                .= '</label></li>';
+					$html_response               .= '</label></li>';
 					$response['enabledLanguages'] = $html_response;
 				}
 

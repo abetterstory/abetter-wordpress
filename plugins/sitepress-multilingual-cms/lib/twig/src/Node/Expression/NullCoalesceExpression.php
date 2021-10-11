@@ -20,7 +20,11 @@ class NullCoalesceExpression extends \WPML\Core\Twig\Node\Expression\Conditional
 {
     public function __construct(\WPML\Core\Twig_NodeInterface $left, \WPML\Core\Twig_NodeInterface $right, $lineno)
     {
-        $test = new \WPML\Core\Twig\Node\Expression\Binary\AndBinary(new \WPML\Core\Twig\Node\Expression\Test\DefinedTest(clone $left, 'defined', new \WPML\Core\Twig\Node\Node(), $left->getTemplateLine()), new \WPML\Core\Twig\Node\Expression\Unary\NotUnary(new \WPML\Core\Twig\Node\Expression\Test\NullTest($left, 'null', new \WPML\Core\Twig\Node\Node(), $left->getTemplateLine()), $left->getTemplateLine()), $left->getTemplateLine());
+        $test = new \WPML\Core\Twig\Node\Expression\Test\DefinedTest(clone $left, 'defined', new \WPML\Core\Twig\Node\Node(), $left->getTemplateLine());
+        // for "block()", we don't need the null test as the return value is always a string
+        if (!$left instanceof \WPML\Core\Twig\Node\Expression\BlockReferenceExpression) {
+            $test = new \WPML\Core\Twig\Node\Expression\Binary\AndBinary($test, new \WPML\Core\Twig\Node\Expression\Unary\NotUnary(new \WPML\Core\Twig\Node\Expression\Test\NullTest($left, 'null', new \WPML\Core\Twig\Node\Node(), $left->getTemplateLine()), $left->getTemplateLine()), $left->getTemplateLine());
+        }
         parent::__construct($test, $left, $right, $lineno);
     }
     public function compile(\WPML\Core\Twig\Compiler $compiler)

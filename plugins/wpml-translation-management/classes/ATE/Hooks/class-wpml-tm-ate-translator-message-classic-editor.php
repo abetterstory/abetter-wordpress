@@ -2,7 +2,7 @@
 
 class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 
-	const ACTION = 'wpml_ate_translator_classic_editor';
+	const ACTION      = 'wpml_ate_translator_classic_editor';
 	const USER_OPTION = 'wpml_ate_translator_classic_editor_minimized';
 
 	/** @var WPML_Translation_Manager_Records */
@@ -30,10 +30,10 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 	}
 
 	public function classic_editor_message() {
-	    $main_message       = esc_html__( "This site can use WPML's Advanced Translation Editor, but you did not receive permission to use it. You are still translating with WPML's classic translation editor. Please ask your site's Translation Manager to enable the Advanced Translation Editor for you.", 'wpml-translation-management' );
+		$main_message       = esc_html__( "This site can use WPML's Advanced Translation Editor, but you did not receive permission to use it. You are still translating with WPML's classic translation editor. Please ask your site's Translation Manager to enable the Advanced Translation Editor for you.", 'wpml-translation-management' );
 		$learn_more         = esc_html__( "Learn more about WPML's Advanced Translation Editor", 'wpml-translation-management' );
-		$short_message      = esc_html__( "Advanced Translation Editor is disabled.", 'wpml-translation-management' );
-		$more               = esc_html__( "More", 'wpml-translation-management' );
+		$short_message      = esc_html__( 'Advanced Translation Editor is disabled.', 'wpml-translation-management' );
+		$more               = esc_html__( 'More', 'wpml-translation-management' );
 		$request_activation = esc_html__( 'Request activation from', 'wpml-translation-management' );
 
 		$show_minimized = (bool) $this->user_factory->create_current()->get_option( self::USER_OPTION );
@@ -43,7 +43,10 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 			class="notice notice-info otgs-notice js-classic-editor-notice"
 			data-nonce="<?php echo wp_create_nonce( self::ACTION ); ?>"
 			data-action="<?php echo self::ACTION; ?>"
-			<?php if ( $show_minimized ) { ?> style="display: none" <?php } ?>
+			<?php
+			if ( $show_minimized ) {
+				?>
+				 style="display: none" <?php } ?>
 		>
 			<p><?php echo $main_message; ?></p>
 			<p><a href="#" class="wpml-external-link" target="_blank"><?php echo $learn_more; ?></a></p>
@@ -59,7 +62,10 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 
 		<div
 			class="notice notice-info otgs-notice js-classic-editor-notice-minimized"
-			<?php if ( ! $show_minimized ) { ?> style="display: none" <?php } ?>
+			<?php
+			if ( ! $show_minimized ) {
+				?>
+				 style="display: none" <?php } ?>
 		>
 			<p><?php echo $short_message; ?> <a class="js-maximize"><?php echo $more; ?></a></p>
 		</div>
@@ -71,7 +77,8 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 		?>
 
 		<select class="js-translation-managers">
-			<?php foreach ( $translation_managers as $translation_manager ) {
+			<?php
+			foreach ( $translation_managers as $translation_manager ) {
 				$display_name = $translation_manager->user_login . ' (' . $translation_manager->user_email . ')';
 				?>
 				<option

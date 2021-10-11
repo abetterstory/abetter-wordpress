@@ -2,25 +2,13 @@
 
 class WPML_TM_Log implements WPML_TP_API_Log_Interface {
 	const LOG_WP_OPTION = '_wpml_tp_api_Logger';
-	const LOG_MAX_SIZE  = 500;
-
-	/** @var WPML_WP_API  */
-	private $wpml_wp_api;
-
-	/**
-	 * WPML_TM_Log constructor.
-	 *
-	 * @param WPML_WP_API $wpml_wp_api
-	 */
-	public function __construct( WPML_WP_API $wpml_wp_api = null ) {
-		if ( null === $wpml_wp_api ) {
-			$wpml_wp_api = new WPML_WP_API();
-		}
-		$this->wpml_wp_api = $wpml_wp_api;
-	}
+	const LOG_MAX_SIZE = 500;
 
 	public function log( $action, $data = array() ) {
-		$log_base_data = array( 'timestamp' => false, 'action' => false );
+		$log_base_data = array(
+			'timestamp' => false,
+			'action'    => false,
+		);
 
 		$log_item = array_merge( $log_base_data, $data );
 
@@ -28,10 +16,6 @@ class WPML_TM_Log implements WPML_TP_API_Log_Interface {
 		$log_item['action']    = $action;
 
 		$log = $this->get_log_data();
-
-		if ( ! is_array( $log ) ) {
-			$log = array();
-		}
 
 		$log = array_slice( $log, - ( self::LOG_MAX_SIZE - 1 ) );
 
@@ -41,14 +25,16 @@ class WPML_TM_Log implements WPML_TP_API_Log_Interface {
 	}
 
 	private function update_log( $log ) {
-		return $this->wpml_wp_api->update_option( self::LOG_WP_OPTION, $log );
+		return update_option( self::LOG_WP_OPTION, $log, false );
 	}
 
 	public function flush_log() {
-		return $this->wpml_wp_api->update_option( self::LOG_WP_OPTION, array() );
+		return update_option( self::LOG_WP_OPTION, [], false );
 	}
 
 	public function get_log_data() {
-		return $this->wpml_wp_api->get_option( self::LOG_WP_OPTION, array() );
+		$log = get_option( self::LOG_WP_OPTION, [] );
+
+		return is_array( $log ) ? $log : [];
 	}
 }

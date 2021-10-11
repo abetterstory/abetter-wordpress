@@ -21,13 +21,13 @@ class WPML_TM_Options_Ajax {
 		} else {
 			$settings = $this->sitepress->get_settings();
 
-			if( array_key_exists('document_status', $_POST ) ) {
-				$settings['translated_document_status']      = filter_var( $_POST['document_status'], FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
+			if ( array_key_exists( 'document_status', $_POST ) ) {
+				$settings['translated_document_status'] = filter_var( $_POST['document_status'], FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
 			}
-			if( array_key_exists( 'page_url', $_POST ) ) {
-				$settings['translated_document_page_url']    = filter_var( $_POST['page_url'], FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
+			if ( array_key_exists( 'page_url', $_POST ) ) {
+				$settings['translated_document_page_url'] = filter_var( $_POST['page_url'], FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
 			}
-			if( $settings ) {
+			if ( $settings ) {
 				$this->sitepress->save_settings( $settings );
 			}
 
@@ -41,7 +41,7 @@ class WPML_TM_Options_Ajax {
 			$valid_request = false;
 		}
 		if ( $valid_request ) {
-			$nonce = $_POST['nonce'];
+			$nonce          = $_POST['nonce'];
 			$nonce_is_valid = wp_verify_nonce( $nonce, self::NONCE_TRANSLATED_DOCUMENT );
 			if ( ! $nonce_is_valid ) {
 				$valid_request = false;

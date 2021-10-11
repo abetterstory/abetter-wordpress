@@ -35,7 +35,7 @@ var WPMLTranslationServicesDialog = function () {
 		flushWebsiteDetailsCacheLink = jQuery('.js-flush-website-details-cache');
 
 
-        jQuery('#wpml-tp-services').delegate('.js-activate-service-id', 'click', function (event) {
+        jQuery('#wpml-tp-services').on('click', '.js-activate-service-id', function (event) {
 			self.preventEventDefault(event);
 
             var button = jQuery(this);
@@ -186,7 +186,7 @@ var WPMLTranslationServicesDialog = function () {
 
 	self.enableButton = function (button) {
 		if (button) {
-			button.removeAttr( 'disabled' );
+			button.prop( 'disabled', false );
 			button.next().fadeOut();
 		}
 	}
@@ -353,21 +353,21 @@ var WPMLTranslationServicesDialog = function () {
 	};
 };
 
-jQuery(document).ready(function () {
-	"use strict";
+jQuery(function () {
+    "use strict";
 
-	var wpmlTranslationServicesDialog = new WPMLTranslationServicesDialog();
-	var current_url = location.href;
-	var search_section = jQuery( '.ts-admin-section-search' );
+    var wpmlTranslationServicesDialog = new WPMLTranslationServicesDialog();
+    var current_url = WPML_core.sanitize( location.href );
+    var search_section = jQuery('.ts-admin-section-search');
 
-	wpmlTranslationServicesDialog.init();
+    wpmlTranslationServicesDialog.init();
 
-	search_section.find('.search' ).click(function(){
-		var param = {
+    search_section.find('.search').click(function () {
+        var param = {
 			s: search_section.find('.search-string' ).val()
 		};
 
-		window.location.href = current_url + '&' + jQuery.param( param );
+		window.location.href = WPML_core.sanitize( current_url + '&' + jQuery.param( param ) );
 	});
 
 	search_section.find( '.search-string' ).keypress(function (e) {
@@ -383,7 +383,7 @@ jQuery(document).ready(function () {
 				paged: jQuery( this ).val()
 			};
 
-			window.location.href = current_url + '&' + jQuery.param( param );
+			window.location.href = WPML_core.sanitize( current_url + '&' + jQuery.param( param ) );
 		}
 	});
 });

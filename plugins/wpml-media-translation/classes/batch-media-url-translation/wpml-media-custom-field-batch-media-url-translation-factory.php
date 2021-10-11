@@ -17,7 +17,10 @@ class WPML_Media_Custom_Field_Batch_Url_Translation_Factory implements IWPML_Bac
 			$custom_field_images_translation_factory = new WPML_Media_Custom_Field_Images_Translation_Factory();
 
 			return new WPML_Media_Custom_Field_Batch_Url_Translation(
-				$custom_field_images_translation_factory->create(), $wpdb, $translatable_custom_fields );
+				$custom_field_images_translation_factory->create(),
+				$wpdb,
+				$translatable_custom_fields
+			);
 
 		}
 

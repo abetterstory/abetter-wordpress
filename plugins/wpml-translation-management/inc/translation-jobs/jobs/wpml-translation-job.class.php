@@ -76,15 +76,24 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 
 		$translator_has_job_language_pairs = $this->blog_translators->is_translator(
 			$user->ID,
-			array(
+			$this->filter_is_translator_args( [
 				'lang_from' => $this->get_source_language_code(),
 				'lang_to'   => $this->get_language_code(),
-			)
+			] )
 		);
 
 		$user_can_translate = ( $user_can_take_this_job && $translator_has_job_language_pairs )
-		                      || user_can( $user, 'manage_options' );
+							  || user_can( $user, 'manage_options' );
 		return apply_filters( 'wpml_user_can_translate', $user_can_translate, $user );
+	}
+
+	/**
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	protected function filter_is_translator_args( array $args ) {
+		return $args;
 	}
 
 	/**

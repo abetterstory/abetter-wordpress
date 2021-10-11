@@ -20,15 +20,19 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		WPML_Language_Collection $active_languages,
 		$default_language
 	) {
-		parent::__construct( array_merge( array(
-				WPML_TM_PATH . '/templates/translators',
-				WPML_TM_PATH . '/templates/menus/translation-managers',
-			), $this->get_template_paths() )
+		parent::__construct(
+			array_merge(
+				array(
+					WPML_TM_PATH . '/templates/translators',
+					WPML_TM_PATH . '/templates/menus/translation-managers',
+				),
+				$this->get_template_paths()
+			)
 		);
 
-		$this->user_records                  = $user_records;
-		$this->active_languages              = $active_languages;
-		$this->default_language              = $default_language;
+		$this->user_records     = $user_records;
+		$this->active_languages = $active_languages;
+		$this->default_language = $default_language;
 
 		$this->source_languages = apply_filters( 'wpml_tm_allowed_source_languages', clone $this->active_languages );
 	}
@@ -78,7 +82,7 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 	}
 
 	private function add_roles() {
-		$this->model['wp_roles'] = WPML_WP_Roles::get_subscriber_roles();
+		$this->model['wp_roles'] = WPML_WP_Roles::get_roles_up_to_user_level( wp_get_current_user() );
 	}
 
 	public function add_add_translator_dialog() {
@@ -129,7 +133,7 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		global $wpdb;
 		$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
 
-		$this->model['users']                        = array();
+		$this->model['users'] = array();
 
 		$users = $this->user_records->get_users_with_capability();
 		foreach ( $users as $user ) {

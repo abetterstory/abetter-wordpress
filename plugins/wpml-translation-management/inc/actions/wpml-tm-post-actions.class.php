@@ -32,12 +32,10 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 
 		// set trid and lang code if front-end translation creating
 		$trid = apply_filters( 'wpml_tm_save_post_trid_value', isset( $trid ) ? $trid : '', $post_id );
-		$lang = apply_filters( 'wpml_tm_save_post_lang_value', isset( $lang ) ? $lang : '', $post_id );
+		$lang = apply_filters( 'wpml_tm_save_post_lang_value', '', $post_id );
 
 		$trid = $this->maybe_retrive_trid_again( $trid, $post );
 		$needs_second_update = array_key_exists( 'needs_second_update', $_POST ) ? (bool) $_POST['needs_second_update'] : false;
-
-
 
 		// is this the original document?
 		$is_original = empty( $trid )
@@ -83,9 +81,13 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 						$job_id_sql      = "SELECT MAX(job_id) FROM {$wpdb->prefix}icl_translate_job WHERE rid=%d GROUP BY rid";
 						$job_id_prepared = $wpdb->prepare( $job_id_sql, $rid );
 						$job_id          = $wpdb->get_var( $job_id_prepared );
-						$job_id          = $job_id ? $job_id : $this->action_helper->add_translation_job( $rid,
-						                                                                                  $user_id,
-						                                                                                  $translation_package );
+						if ( ! $job_id ) {
+							$job_id = $this->action_helper->add_translation_job(
+								$rid,
+								$user_id,
+								$translation_package
+							);
+						}
 					}
 
 					wpml_tm_load_old_jobs_editor()->set( $job_id, WPML_TM_Editors::WP );

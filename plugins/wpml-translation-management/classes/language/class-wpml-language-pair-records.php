@@ -5,7 +5,6 @@
  *
  * Language pairs are stored as user meta as an array of the form
  * array( $from_lang => array( $to_lang_1 => '1', $to_lang_2 => '1' )
- *
  */
 class WPML_Language_Pair_Records {
 
@@ -15,12 +14,12 @@ class WPML_Language_Pair_Records {
 	private $language_records;
 
 	public function __construct( wpdb $wpdb, WPML_Language_Records $language_records ) {
-		$this->meta_key = $wpdb->prefix . 'language_pairs';
+		$this->meta_key         = $wpdb->prefix . 'language_pairs';
 		$this->language_records = $language_records;
 	}
 
 	/**
-	 * @param int $user_id
+	 * @param int   $user_id
 	 * @param array $language_pairs
 	 *
 	 * Language pairs are an array of the form
@@ -82,7 +81,7 @@ class WPML_Language_Pair_Records {
 					}
 				}
 			} else {
-				unset ( $language_pairs[ $from ] );
+				unset( $language_pairs[ $from ] );
 			}
 		}
 		return $language_pairs;

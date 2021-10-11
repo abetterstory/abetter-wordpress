@@ -38,9 +38,13 @@ class WPML_TM_Jobs_Needs_Update_Param {
 	 * @return bool
 	 */
 	public static function is_valid( $value ) {
-		return in_array( (string) $value, [
-			self::INCLUDE_NEEDS_UPDATE,
-			self::EXCLUDE_NEEDS_UPDATE
-		], true );
+		return in_array(
+			(string) $value,
+			[
+				self::INCLUDE_NEEDS_UPDATE,
+				self::EXCLUDE_NEEDS_UPDATE,
+			],
+			true
+		);
 	}
 }

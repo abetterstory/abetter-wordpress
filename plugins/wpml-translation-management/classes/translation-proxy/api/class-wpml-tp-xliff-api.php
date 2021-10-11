@@ -15,7 +15,7 @@ class WPML_TP_XLIFF_API extends WPML_TP_API {
 	}
 
 	/**
-	 * @param int $tp_job_id
+	 * @param int  $tp_job_id
 	 * @param bool $parse
 	 *
 	 * @return WPML_TP_Translation_Collection|string
@@ -23,10 +23,12 @@ class WPML_TP_XLIFF_API extends WPML_TP_API {
 	 */
 	public function get_remote_translations( $tp_job_id, $parse = true ) {
 		$request = new WPML_TP_API_Request( '/jobs/{job_id}/xliff.json' );
-		$request->set_params( array(
-			'job_id'    => $tp_job_id,
-			'accesskey' => $this->project->get_access_key(),
-		) );
+		$request->set_params(
+			array(
+				'job_id'    => $tp_job_id,
+				'accesskey' => $this->project->get_access_key(),
+			)
+		);
 
 		$result = $this->client->send_request( $request );
 		if ( ! $result || empty( $result ) || false === strpos( $result, 'xliff' ) ) {

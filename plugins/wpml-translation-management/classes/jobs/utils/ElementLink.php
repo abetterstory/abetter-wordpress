@@ -59,18 +59,20 @@ class ElementLink {
 		$elementType = preg_replace( '/^' . $job->element_type_prefix . '_/', '', $job->original_post_type );
 
 		if ( $this->isExternalType( $job->element_type_prefix ) ) {
-			$url          = apply_filters( 'wpml_external_item_url', '', $elementId );
+			$url        = apply_filters( 'wpml_external_item_url', '', $elementId );
 			$tmPostLink = '<a href="' . $url . '">' . $viewText . '</a>';
 		} else {
 			$tmPostLink = $this->postLinkFactory->view_link_anchor( $elementId, $viewText, '_blank' );
 		}
 
-		$tmPostLink = apply_filters( 'wpml_document_view_item_link',
-		                               $tmPostLink,
-		                               $viewText,
-		                               $job,
-		                               $job->element_type_prefix,
-		                               $elementType );
+		$tmPostLink = apply_filters(
+			'wpml_document_view_item_link',
+			$tmPostLink,
+			$viewText,
+			$job,
+			$job->element_type_prefix,
+			$elementType
+		);
 
 		return $tmPostLink;
 	}

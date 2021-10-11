@@ -2,7 +2,7 @@
 
 class WPML_TP_Batch_Sync_API extends WPML_TP_API {
 
-	const INIT_SYNC = '/batches/sync.json';
+	const INIT_SYNC    = '/batches/sync.json';
 	const CHECK_STATUS = '/batches/sync/status.json';
 
 	/**
@@ -13,10 +13,12 @@ class WPML_TP_Batch_Sync_API extends WPML_TP_API {
 	 */
 	public function init_synchronization( array $batch_ids ) {
 		$request = new WPML_TP_API_Request( self::INIT_SYNC );
-		$request->set_params( array(
-			'batch_id'  => $batch_ids,
-			'accesskey' => $this->project->get_access_key(),
-		) );
+		$request->set_params(
+			array(
+				'batch_id'  => $batch_ids,
+				'accesskey' => $this->project->get_access_key(),
+			)
+		);
 
 		return $this->handle_response( $request );
 	}
@@ -45,5 +47,5 @@ class WPML_TP_Batch_Sync_API extends WPML_TP_API {
 		}
 
 		return array_map( 'intval', $result->queued_batches );
-}
+	}
 }

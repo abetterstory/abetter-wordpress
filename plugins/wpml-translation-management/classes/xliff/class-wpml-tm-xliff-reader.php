@@ -7,7 +7,7 @@ abstract class WPML_TM_Xliff_Reader extends WPML_TM_Xliff_Shared {
 	 *
 	 * @return array
 	 */
-	public abstract function get_data( $content );
+	abstract public function get_data( $content );
 
 	/**
 	 * Parse a XML containing the XLIFF
@@ -24,9 +24,11 @@ abstract class WPML_TM_Xliff_Reader extends WPML_TM_Xliff_Shared {
 		}
 
 		return $xml ? $xml
-			: new WP_Error( 'not_xml_file',
+			: new WP_Error(
+				'not_xml_file',
 				sprintf(
 					__( 'The xliff file could not be read.', 'wpml-translation-management' )
-				) );
+				)
+			);
 	}
 }

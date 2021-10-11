@@ -28,7 +28,7 @@ class WPML_Media_Image_Translate {
 	}
 
 	/**
-	 * @param int $attachment_id
+	 * @param int    $attachment_id
 	 * @param string $language
 	 * @param string $size
 	 *
@@ -70,7 +70,6 @@ class WPML_Media_Image_Translate {
 			} catch ( Exception $e ) {
 				$img_src = false;
 			}
-
 		} else {
 			$img_src = false;
 		}
@@ -91,7 +90,7 @@ class WPML_Media_Image_Translate {
 
 	/**
 	 * @param string $url
-	 * @param int $attachment_id
+	 * @param int    $attachment_id
 	 *
 	 * @return string
 	 */

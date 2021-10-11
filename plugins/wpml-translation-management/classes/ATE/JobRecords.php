@@ -9,8 +9,8 @@ use WPML_TM_Editors;
 
 class JobRecords {
 
-	const FIELD_ATE_JOB_ID  = 'ate_job_id';
-	const FIELD_IS_EDITING  = 'is_editing';
+	const FIELD_ATE_JOB_ID = 'ate_job_id';
+	const FIELD_IS_EDITING = 'is_editing';
 
 	/** @var \wpdb $wpdb */
 	private $wpdb;
@@ -36,9 +36,11 @@ class JobRecords {
 
 		$this->warmCache( [], [ $ateJobId ] );
 
-		$job = $this->jobs->first( function( JobRecord $job ) use ( $ateJobId ) {
-			return $job->ateJobId === $ateJobId;
-		} );
+		$job = $this->jobs->first(
+			function( JobRecord $job ) use ( $ateJobId ) {
+				return $job->ateJobId === $ateJobId;
+			}
+		);
 
 		if ( $job ) {
 			/** @var JobRecord $job */
@@ -103,11 +105,11 @@ class JobRecords {
 		$where = [];
 
 		if ( $wpmlJobIds ) {
-			$where[] = "job_id IN(" . wpml_prepare_in( $wpmlJobIds, '%d' ) . ")";
+			$where[] = 'job_id IN(' . wpml_prepare_in( $wpmlJobIds, '%d' ) . ')';
 		}
 
 		if ( $ateJobIds ) {
-			$where[] = "editor_job_id IN(" . wpml_prepare_in( $ateJobIds, '%d' ) . ")";
+			$where[] = 'editor_job_id IN(' . wpml_prepare_in( $ateJobIds, '%d' ) . ')';
 		}
 
 		if ( ! $where ) {
@@ -116,11 +118,13 @@ class JobRecords {
 
 		$whereHasJobIds = implode( ' OR ', $where );
 
-		$rows = $this->wpdb->get_results( "
+		$rows = $this->wpdb->get_results(
+			"
 			SELECT job_id, editor_job_id
 			FROM {$this->wpdb->prefix}icl_translate_job
 			WHERE editor = '" . WPML_TM_Editors::ATE . "' AND ({$whereHasJobIds})
-		" );
+		"
+		);
 
 		foreach ( $rows as $row ) {
 			$job = new JobRecord( $row );

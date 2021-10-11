@@ -5,14 +5,14 @@ class WPML_TP_HTTP_Request_Filter {
 	/**
 	 * @return array filtered response
 	 */
-	public function build_request_context(array $request) {
+	public function build_request_context( array $request ) {
 		if ( ! $this->contains_resource( $request ) ) {
 			$request['headers'] = 'Content-type: application/json';
 			$request['body']    = wp_json_encode( $request['body'] );
 		} else {
 			list( $headers, $body ) = $this->_prepare_multipart_request( $request['body'] );
-			$request['headers'] = $headers;
-			$request['body']    = $body;
+			$request['headers']     = $headers;
+			$request['body']        = $body;
 		}
 
 		if ( $request['method'] === 'GET' ) {
@@ -61,12 +61,15 @@ class WPML_TP_HTTP_Request_Filter {
 			$context[] = $key;
 
 			if ( is_array( $value ) ) {
-				$content .= self::_add_multipart_contents( $boundary, $value,
-					$context );
+				$content .= self::_add_multipart_contents(
+					$boundary,
+					$value,
+					$context
+				);
 			} else {
 				$pieces = array_slice( $context, 1 );
 				if ( $pieces ) {
-					$name = "{$context[0]}[" . implode( "][", $pieces ) . "]";
+					$name = "{$context[0]}[" . implode( '][', $pieces ) . ']';
 				} else {
 					$name = "{$context[0]}";
 				}
@@ -87,9 +90,15 @@ class WPML_TP_HTTP_Request_Filter {
 
 	private function get_file_name( $params, $default = 'file' ) {
 
-		$title = isset( $params['title'] ) ? sanitize_title_with_dashes( strtolower( filter_var( $params['title'],
-			FILTER_SANITIZE_STRING,
-			FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ) ) )
+		$title = isset( $params['title'] ) ? sanitize_title_with_dashes(
+			strtolower(
+				filter_var(
+					$params['title'],
+					FILTER_SANITIZE_STRING,
+					FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+				)
+			)
+		)
 			: '';
 		if ( str_replace( array( '-', '_' ), '', $title ) == '' ) {
 			$title = $default;
@@ -97,12 +106,17 @@ class WPML_TP_HTTP_Request_Filter {
 		$source_language = isset( $params['source_language'] ) ? $params['source_language'] : '';
 		$target_language = isset( $params['target_language'] ) ? $params['target_language'] : '';
 
-		$filename = implode( '-', array_filter( array(
-			$title,
-			$source_language,
-			$target_language
-		) ) );
+		$filename = implode(
+			'-',
+			array_filter(
+				array(
+					$title,
+					$source_language,
+					$target_language,
+				)
+			)
+		);
 
-		return $filename . ".xliff.gz";
+		return $filename . '.xliff.gz';
 	}
 }

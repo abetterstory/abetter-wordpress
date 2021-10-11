@@ -13,9 +13,7 @@ class WPML_Media_Factory implements IWPML_Frontend_Action_Loader, IWPML_Backend_
 		$template_service_loader  = new WPML_Twig_Template_Loader(
 			array( $wpml_wp_api->constant( 'WPML_MEDIA_PATH' ) . '/templates/menus/' )
 		);
-		$wpml_media_menus_factory = new WPML_Media_Menus_Factory(
-			$template_service_loader->get_template(), $sitepress, $wpdb, new WPML_Admin_Pagination()
-		);
+		$wpml_media_menus_factory = new WPML_Media_Menus_Factory();
 
 		return new WPML_Media( $sitepress, $wpdb, $wpml_media_menus_factory );
 	}

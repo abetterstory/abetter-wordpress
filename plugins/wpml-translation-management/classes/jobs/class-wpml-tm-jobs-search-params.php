@@ -173,11 +173,12 @@ class WPML_TM_Jobs_Search_Params {
 	 * @return self
 	 */
 	public function set_job_types( $job_types ) {
-		$correct_types = array(
+		$correct_types = [
 			WPML_TM_Job_Entity::POST_TYPE,
 			WPML_TM_Job_Entity::PACKAGE_TYPE,
-			WPML_TM_Job_Entity::STRING_TYPE
-		);
+			WPML_TM_Job_Entity::STRING_TYPE,
+			WPML_TM_Job_Entity::STRING_BATCH,
+		];
 
 		if ( ! is_array( $job_types ) ) {
 			$job_types = array( $job_types );

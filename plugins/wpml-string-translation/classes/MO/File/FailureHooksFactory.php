@@ -3,6 +3,7 @@
 namespace WPML\ST\MO\File;
 
 
+use SitePress;
 use WPML\ST\MO\Generate\Process\ProcessFactory;
 use function WPML\Container\make;
 use WPML\ST\MO\Scan\UI\Factory as UiFactory;
@@ -10,10 +11,13 @@ use WPML\ST\MO\Scan\UI\Factory as UiFactory;
 class FailureHooksFactory implements \IWPML_Backend_Action_Loader {
 	/**
 	 * @return FailureHooks|null
-	 * @throws \Auryn\InjectionException
+	 * @throws \WPML\Auryn\InjectionException
 	 */
 	public function create() {
-		if ( $this->hasRanPreGenerateViaUi() ) {
+		/** @var SitePress $sitepress */
+		global $sitepress;
+
+		if ( $sitepress->is_setup_complete() && $this->hasRanPreGenerateViaUi() ) {
 			$inBackground = true;
 
 			return make( FailureHooks::class, [
@@ -27,7 +31,7 @@ class FailureHooksFactory implements \IWPML_Backend_Action_Loader {
 
 	/**
 	 * @return bool
-	 * @throws \Auryn\InjectionException
+	 * @throws \WPML\Auryn\InjectionException
 	 */
 	private function hasRanPreGenerateViaUi() {
 		$uiPreGenerateStatus = ProcessFactory::createStatus( false );

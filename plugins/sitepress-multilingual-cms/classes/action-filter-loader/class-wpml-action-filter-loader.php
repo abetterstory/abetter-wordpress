@@ -61,9 +61,9 @@ class WPML_Action_Filter_Loader {
 	 * Load factory
 	 *
 	 * @param string $loader Action loader.
+	 * @param bool   $use_dic
 	 */
 	private function load_factory_or_action( $loader, $use_dic ) {
-		/** @var IWPML_Action_Loader_Factory|IWPML_AJAX_Action $action_or_factory */
 		if ( $use_dic ) {
 			$action_or_factory = WPML\Container\make( $loader );
 		} else {
@@ -144,11 +144,15 @@ class WPML_Action_Filter_Loader {
 		$load_handlers = $factory->create();
 
 		if ( $load_handlers ) {
-			if ( ! is_array( $load_handlers ) ) {
+			if ( ! is_array( $load_handlers ) || is_callable( $load_handlers ) ) {
 				$load_handlers = array( $load_handlers );
 			}
 			foreach ( $load_handlers as $load_handler ) {
-				$load_handler->add_hooks();
+				if ( is_callable( $load_handler ) ) {
+					$load_handler();
+				} else {
+					$load_handler->add_hooks();
+				}
 			}
 		}
 	}

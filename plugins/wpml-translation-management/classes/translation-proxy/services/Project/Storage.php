@@ -32,9 +32,11 @@ class Storage {
 		$index = \TranslationProxy_Project::generate_service_index( $service );
 		$this->sitepress->set_setting(
 			'icl_translation_projects',
-			$this->getProjects()->put( $index, $project )->map( function ( Project $project ) {
-				return $project->toArray();
-			} )->toArray(),
+			$this->getProjects()->put( $index, $project )->map(
+				function ( Project $project ) {
+					return $project->toArray();
+				}
+			)->toArray(),
 			true
 		);
 	}
@@ -48,8 +50,10 @@ class Storage {
 			$projects = [];
 		}
 
-		return \wpml_collect( $projects )->map( function ( array $rawProject ) {
-			return Project::fromArray( $rawProject );
-		} );
+		return \wpml_collect( $projects )->map(
+			function ( array $rawProject ) {
+				return Project::fromArray( $rawProject );
+			}
+		);
 	}
 }

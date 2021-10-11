@@ -44,7 +44,7 @@ var WPML_TM = WPML_TM || {};
 		},
 		resign: function () {
 			if (window.confirm(tmEditorStrings.resign_translation)) {
-				window.location.href = tmEditorStrings.resign_url;
+				window.location.href = WPML_core.sanitize( tmEditorStrings.resign_url );
 			}
 		},
 		cancel: function () {
@@ -66,7 +66,7 @@ var WPML_TM = WPML_TM || {};
 			} else {
 				url += '&' + param_string;
 			}
-			window.location = url;
+			window.location = WPML_core.sanitize( url );
 		},
 		render: function () {
 			var self = this;
@@ -153,4 +153,3 @@ var WPML_TM = WPML_TM || {};
 		}
 	});
 }());
-	

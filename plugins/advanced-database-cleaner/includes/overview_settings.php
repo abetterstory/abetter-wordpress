@@ -170,21 +170,14 @@ if(isset($_POST['save_settings'])){
 					</div>
 				</li>
 
-				<?php 
-				if(ADBC_PLUGIN_F_TYPE == "free"){
-				?>
-					<li>
-						<input type="checkbox" name="aDBc_hide_premium_tab" <?php echo (!empty($aDBc_settings['hide_premium_tab']) && $aDBc_settings['hide_premium_tab']) == '1' ? "checked='checked'" : ""?>/>
-						<?php _e('Hide premium tab', 'advanced-database-cleaner'); ?>
-						<div class="aDBc-overview-setting-desc">
-							<?php _e('If checked, it will hide the above premium tab', 'advanced-database-cleaner'); ?>
-						</div>
-					</li>
-					
-				<?php	
-				}
-				?>
-			
+				<li>
+					<input type="checkbox" name="aDBc_hide_premium_tab" <?php echo (!empty($aDBc_settings['hide_premium_tab']) && $aDBc_settings['hide_premium_tab']) == '1' ? "checked='checked'" : ""?>/>
+					<?php _e('Hide premium tab', 'advanced-database-cleaner'); ?>
+					<div class="aDBc-overview-setting-desc">
+						<?php _e('If checked, it will hide the above premium tab', 'advanced-database-cleaner'); ?>
+					</div>
+				</li>
+
 			</ul>
 			<input name="save_settings" type="submit" class="button-primary aDBc-save-settings-button" value="<?php _e('Save settings','advanced-database-cleaner'); ?>" />
 		</form>

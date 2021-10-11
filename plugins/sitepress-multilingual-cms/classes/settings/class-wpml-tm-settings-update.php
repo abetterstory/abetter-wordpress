@@ -21,11 +21,11 @@ class WPML_TM_Settings_Update extends WPML_SP_User {
 	 */
 	public function __construct( $index_singular, $index_plural, &$tm_instance, &$sitepress, &$settings_helper ) {
 		parent::__construct( $sitepress );
-		$this->tm_instance     = &$tm_instance;
-		$this->index_singular  = $index_singular;
-		$this->index_plural    = $index_plural;
-		$this->index_ro        = $index_plural . '_readonly_config';
-		$this->index_sync      = $index_plural . '_sync_option';
+		$this->tm_instance    = &$tm_instance;
+		$this->index_singular = $index_singular;
+		$this->index_plural   = $index_plural;
+		$this->index_ro       = $index_plural . '_readonly_config';
+		$this->index_sync     = $index_plural . '_sync_option';
 		if ( 'custom-type' == $index_singular ) {
 			$this->index_unlocked = 'custom_posts_unlocked_option';
 		} else {
@@ -75,8 +75,8 @@ class WPML_TM_Settings_Update extends WPML_SP_User {
 				}
 			}
 
-		$this->sitepress->set_setting( $this->index_sync, $sync_option );
-		$this->settings_helper->maybe_add_filter( $section_plural );
+			$this->sitepress->set_setting( $this->index_sync, $sync_option );
+			$this->settings_helper->maybe_add_filter( $section_plural );
 		}
 	}
 
@@ -87,10 +87,13 @@ class WPML_TM_Settings_Update extends WPML_SP_User {
 	 * @return bool
 	 */
 	private function is_making_type_translatable( $new_sync, $old_sync ) {
-		return in_array( $new_sync, array(
+		return in_array(
+			$new_sync,
+			array(
 				WPML_CONTENT_TYPE_TRANSLATE,
-				WPML_CONTENT_TYPE_DISPLAY_AS_IF_TRANSLATED
-			) ) && WPML_CONTENT_TYPE_DONT_TRANSLATE === $old_sync;
+				WPML_CONTENT_TYPE_DISPLAY_AS_IF_TRANSLATED,
+			)
+		) && WPML_CONTENT_TYPE_DONT_TRANSLATE === $old_sync;
 	}
 
 	private function update_tm_settings( array $config ) {

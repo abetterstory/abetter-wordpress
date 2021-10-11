@@ -38,20 +38,22 @@ class WPML_TM_REST_ATE_Public extends WPML_TM_ATE_Required_Rest_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( self::ENDPOINT_JOBS_RECEIVE . '(?P<wpmlJobId>\d+)',
-		                        array(
-			                        'methods'             => 'GET',
-			                        'callback'            => array( $this, 'receive_ate_job' ),
-			                        'args'                => array(
-				                        'wpmlJobId' => array(
-					                        'required'          => true,
-					                        'type'              => 'int',
-					                        'validate_callback' => array( 'WPML_REST_Arguments_Validation', 'integer' ),
-					                        'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'integer' ),
-				                        ),
-			                        ),
-			                        'permission_callback' => '__return_true',
-		                        ) );
+		parent::register_route(
+			self::ENDPOINT_JOBS_RECEIVE . '(?P<wpmlJobId>\d+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'receive_ate_job' ),
+				'args'                => array(
+					'wpmlJobId' => array(
+						'required'          => true,
+						'type'              => 'int',
+						'validate_callback' => array( 'WPML_REST_Arguments_Validation', 'integer' ),
+						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'integer' ),
+					),
+				),
+				'permission_callback' => '__return_true',
+			)
+		);
 	}
 
 	public function get_allowed_capabilities( WP_REST_Request $request ) {

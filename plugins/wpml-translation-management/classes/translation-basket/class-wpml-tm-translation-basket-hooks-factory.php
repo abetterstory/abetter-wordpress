@@ -13,7 +13,8 @@ class WPML_TM_Translation_Basket_Hooks_Factory implements IWPML_Backend_Action_L
 
 			$hooks['validation'] = new WPML_TM_Translation_Basket_Validation_Notice(
 				$template_service,
-				new WPML_Translation_Basket_Validation( $basket,
+				new WPML_Translation_Basket_Validation(
+					$basket,
 					new WPML_Encoding_Validation(),
 					new WPML_Element_Translation_Package()
 				),

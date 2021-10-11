@@ -34,10 +34,10 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 	/**
 	 * WPML_Media_Translations_UI constructor.
 	 *
-	 * @param SitePress $sitepress
-	 * @param wpdb $wpdb
-	 * @param WP_Locale $wp_locale
-	 * @param WPML_Query_Filter $wpml_query_filter
+	 * @param SitePress             $sitepress
+	 * @param wpdb                  $wpdb
+	 * @param WP_Locale             $wp_locale
+	 * @param WPML_Query_Filter     $wpml_query_filter
 	 * @param WPML_Admin_Pagination $pagination
 	 */
 	public function __construct(
@@ -65,7 +65,7 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 		$languages = $this->get_languages();
 
 		$model = array(
-			'strings'         => array(
+			'strings'                 => array(
 				'heading'                  => __( 'Media Translation', 'wpml-media' ),
 				'filter_by_date'           => __( 'Filter by date', 'wpml-media' ),
 				'all_dates'                => __( 'All dates', 'wpml-media' ),
@@ -99,29 +99,29 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 				'revert_to_original'       => __( 'Revert to original', 'wpml-media' ),
 				'restore_original_media'   => __( 'Restore original media file', 'wpml-media' ),
 				'statuses'                 => self::get_translation_status_labels(),
-				'texts_change_notice'      => __( 'Any changes you make to the text here will not affect any previous publications of this media on your website. This edited version will only appear if you select it from the library to be embedded.', 'wpml-media' )
+				'texts_change_notice'      => __( 'Any changes you make to the text here will not affect any previous publications of this media on your website. This edited version will only appear if you select it from the library to be embedded.', 'wpml-media' ),
 			),
-			'months'          => $this->get_months(),
-			'selected_month'  => isset( $this->query_args['m'] ) ? (int) $this->query_args['m'] : 0,
-			'selected_status' => isset( $this->query_args['status'] ) ? $this->query_args['status'] : '',
-			'from_language'   => isset( $this->query_args['slang'] ) ? $this->query_args['slang'] : '',
-			'to_language'     => isset( $this->query_args['tlang'] ) ? $this->query_args['tlang'] : '',
-			'statuses'        => array(
+			'months'                  => $this->get_months(),
+			'selected_month'          => isset( $this->query_args['m'] ) ? (int) $this->query_args['m'] : 0,
+			'selected_status'         => isset( $this->query_args['status'] ) ? $this->query_args['status'] : '',
+			'from_language'           => isset( $this->query_args['slang'] ) ? $this->query_args['slang'] : '',
+			'to_language'             => isset( $this->query_args['tlang'] ) ? $this->query_args['tlang'] : '',
+			'statuses'                => array(
 				'not_translated'    => WPML_Media_Translation_Status::NOT_TRANSLATED,
 				'in_progress'       => WPML_Media_Translation_Status::IN_PROGRESS,
 				'translated'        => WPML_Media_Translation_Status::TRANSLATED,
-				'needs_translation' => WPML_Media_Translation_Status::NEEDS_MEDIA_TRANSLATION
+				'needs_translation' => WPML_Media_Translation_Status::NEEDS_MEDIA_TRANSLATION,
 			),
-			'search'          => isset( $this->query_args['s'] ) ? $this->query_args['s'] : '',
-			'languages'       => $languages,
-			'attachments'     => $this->get_attachments( $languages ),
-			'nonce'           => wp_nonce_field( 'media-translation', 'wpnonce', false, false ),
-			'pagination'      => $this->get_pagination(),
-			'target_language' => $this->should_filter_by_target_language() ? $this->query_args['tlang'] : '',
+			'search'                  => isset( $this->query_args['s'] ) ? $this->query_args['s'] : '',
+			'languages'               => $languages,
+			'attachments'             => $this->get_attachments( $languages ),
+			'nonce'                   => wp_nonce_field( 'media-translation', 'wpnonce', false, false ),
+			'pagination'              => $this->get_pagination(),
+			'target_language'         => $this->should_filter_by_target_language() ? $this->query_args['tlang'] : '',
 
-			'batch_translation' => $this->get_batch_translation(),
+			'batch_translation'       => $this->get_batch_translation(),
 
-			'show_text_change_notice' => ! get_user_meta( get_current_user_id(), WPML_Media_Editor_Notices::TEXT_EDIT_NOTICE_DISMISSED, true )
+			'show_text_change_notice' => ! get_user_meta( get_current_user_id(), WPML_Media_Editor_Notices::TEXT_EDIT_NOTICE_DISMISSED, true ),
 		);
 
 		return $model;
@@ -129,17 +129,17 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 
 	public static function get_translation_status_labels() {
 		return array(
-			WPML_Media_Translation_Status::NOT_TRANSLATED          => __( 'Not translated', 'wpml-media' ),
-			WPML_Media_Translation_Status::IN_PROGRESS             => __( 'In progress', 'wpml-media' ),
-			WPML_Media_Translation_Status::TRANSLATED              => __( 'Translated', 'wpml-media' ),
-			WPML_Media_Translation_Status::NEEDS_MEDIA_TRANSLATION => __( 'Needs translation', 'wpml-media' )
+			WPML_Media_Translation_Status::NOT_TRANSLATED => __( 'Not translated', 'wpml-media' ),
+			WPML_Media_Translation_Status::IN_PROGRESS    => __( 'In progress', 'wpml-media' ),
+			WPML_Media_Translation_Status::TRANSLATED     => __( 'Translated', 'wpml-media' ),
+			WPML_Media_Translation_Status::NEEDS_MEDIA_TRANSLATION => __( 'Needs translation', 'wpml-media' ),
 		);
 	}
 
 	private function set_query_args() {
 		$arg_keys = array( 'm', 'status', 'slang', 'tlang', 's', 'paged' );
 		foreach ( $arg_keys as $key ) {
-			if ( isset ( $_GET[ $key ] ) ) {
+			if ( isset( $_GET[ $key ] ) ) {
 				$this->query_args[ $key ] = sanitize_text_field( $_GET[ $key ] );
 			}
 		}
@@ -151,17 +151,19 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 	private function get_months() {
 		$months = array();
 
-		$month_results = $this->wpdb->get_results( "
+		$month_results = $this->wpdb->get_results(
+			"
 			SELECT DISTINCT YEAR( post_date ) AS year, MONTH( post_date ) AS month
 			FROM {$this->wpdb->posts}
 			WHERE post_type = 'attachment'
 			ORDER BY post_date DESC
-		" );
+		"
+		);
 
 		foreach ( $month_results as $month ) {
 			$months[] = array(
 				'id'    => $month->year . zeroise( $month->month, 2 ),
-				'label' => sprintf( __( '%1$s %2$d' ), $this->wp_locale->get_month( $month->month ), $month->year )
+				'label' => sprintf( __( '%1$s %2$d' ), $this->wp_locale->get_month( $month->month ), $month->year ),
 			);
 		}
 
@@ -178,7 +180,7 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 		foreach ( $active_languages as $language ) {
 			$languages[ $language['code'] ] = array(
 				'name' => $language['display_name'],
-				'flag' => $this->sitepress->get_flag_url( $language['code'] )
+				'flag' => $this->sitepress->get_flag_url( $language['code'] ),
 			);
 		}
 
@@ -201,14 +203,14 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 			'post_type'      => 'attachment',
 			'orderby'        => 'ID',
 			'order'          => 'DESC',
-			'posts_per_page' => $this->get_items_per_page()
+			'posts_per_page' => $this->get_items_per_page(),
 		);
 		$args = array_merge( $args, $this->query_args );
 
 		if ( $this->should_filter_by_status() ) {
 			$args['meta_query'] = array(
 				'key'   => '_media_translation_status',
-				'value' => $this->query_args['status']
+				'value' => $this->query_args['status'],
 			);
 		}
 
@@ -242,15 +244,14 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 						'alt'                 => get_post_meta( $translation->get_id(), '_wp_attachment_image_alt', true ),
 						'thumb'               => $this->get_attachment_thumb( $translation->get_id(), $is_image ),
 						'media_is_translated' => $media_file_translated && $media_file_translated !== $media_file_original,
-						'status'              => $this->get_translation_status( $attachment_id, $translation )
+						'status'              => $this->get_translation_status( $attachment_id, $translation ),
 					);
 
 				} else {
 					$translations[ $code ] = array(
-						'status' => WPML_Media_Translation_Status::NOT_TRANSLATED
+						'status' => WPML_Media_Translation_Status::NOT_TRANSLATED,
 					);
 				}
-
 			}
 
 			$attachments[] = array(
@@ -307,10 +308,13 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 	public function set_total_items_in_pagination( $query ) {
 
 		$query_count = preg_replace(
-			"/^SELECT /", "SELECT SQL_CALC_FOUND_ROWS ", $query );
+			'/^SELECT /',
+			'SELECT SQL_CALC_FOUND_ROWS ',
+			$query
+		);
 		$this->wpdb->get_results( $query_count );
 
-		$this->pagination->set_total_items( $this->wpdb->get_var( "SELECT FOUND_ROWS()" ) );
+		$this->pagination->set_total_items( $this->wpdb->get_var( 'SELECT FOUND_ROWS()' ) );
 
 		return $query;
 	}
@@ -324,28 +328,28 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 		$model = array(
 			'strings'     => array(
 				'list_navigation' => __( 'Navigation', 'wpml-media' ),
-				'of'              => __( 'of', 'wpml-media' )
+				'of'              => __( 'of', 'wpml-media' ),
 			),
 			'pagination'  => array(
-				'get_first_page_url' => $this->pagination->get_first_page_url(),
-				'first_page'         => __( 'First page', 'wpml-media' ),
+				'get_first_page_url'    => $this->pagination->get_first_page_url(),
+				'first_page'            => __( 'First page', 'wpml-media' ),
 
 				'get_previous_page_url' => $this->pagination->get_previous_page_url(),
 				'previous_page'         => __( 'Previous page', 'wpml-media' ),
 
-				'get_current_page' => $this->pagination->get_current_page(),
-				'get_total_pages'  => $this->pagination->get_total_pages(),
+				'get_current_page'      => $this->pagination->get_current_page(),
+				'get_total_pages'       => $this->pagination->get_total_pages(),
 
-				'get_next_page_url' => $this->pagination->get_next_page_url(),
-				'next_page'         => __( 'Next page', 'wpml-media' ),
+				'get_next_page_url'     => $this->pagination->get_next_page_url(),
+				'next_page'             => __( 'Next page', 'wpml-media' ),
 
-				'get_last_page_url' => $this->pagination->get_last_page_url(),
-				'last_page'         => __( 'Last page', 'wpml-media' )
+				'get_last_page_url'     => $this->pagination->get_last_page_url(),
+				'last_page'             => __( 'Last page', 'wpml-media' ),
 			),
 			'total_items' => sprintf(
 				_n( '%s item', '%s items', $this->pagination->get_total_items() ),
 				$this->pagination->get_total_items()
-			)
+			),
 		);
 
 		return $model;
@@ -360,8 +364,8 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 				'without_usage'       => __( 'The media that you uploaded will be used in future post translations. The same media might be used in already existing posts. Do you want to scan and replace it now?', 'wpml-media' ),
 				'scan_for_this_media' => __( 'Scan for content that has specifically this media (faster)', 'wpml-media' ),
 				'scan_for_all_media'  => __( 'Scan for content that has any of the media files that I translated (takes more time)', 'wpml-media' ),
-				'button_label'        => _x( 'Scan & Replace', 'Button label (verb)', 'wpml-media' )
-			)
+				'button_label'        => _x( 'Scan & Replace', 'Button label (verb)', 'wpml-media' ),
+			),
 		);
 
 		return $model;
@@ -392,10 +396,13 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 
 		if ( $this->should_filter_by_status() ) {
 			if ( $this->should_filter_by_target_language() ) {
-				$join .= $this->wpdb->prepare( " LEFT JOIN {$this->wpdb->postmeta} post_meta 
+				$join .= $this->wpdb->prepare(
+					" LEFT JOIN {$this->wpdb->postmeta} post_meta 
 					   ON icl_translations_source.element_id = post_meta.post_id  
 					    AND post_meta.meta_key = %s				              
-				        ", WPML_Media_Translation_Status::STATUS_PREFIX . $this->query_args['tlang'] );
+				        ",
+					WPML_Media_Translation_Status::STATUS_PREFIX . $this->query_args['tlang']
+				);
 			} else {
 				$active_language = $this->sitepress->get_active_languages();
 				$default_lanuage = $this->sitepress->get_default_language();
@@ -404,9 +411,12 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 					if ( $language['code'] !== $default_lanuage ) {
 						$sanitized_code = str_replace( '-', '_', $language['code'] );
 
-						$join .= $this->wpdb->prepare( " LEFT JOIN {$this->wpdb->postmeta} post_meta_{$sanitized_code} 
+						$join .= $this->wpdb->prepare(
+							" LEFT JOIN {$this->wpdb->postmeta} post_meta_{$sanitized_code} 
 					   ON {$this->wpdb->posts}.ID = post_meta_{$sanitized_code}.post_id  
-					    AND post_meta_{$sanitized_code}.meta_key=%s", WPML_Media_Translation_Status::STATUS_PREFIX . $language['code'] );
+					    AND post_meta_{$sanitized_code}.meta_key=%s",
+							WPML_Media_Translation_Status::STATUS_PREFIX . $language['code']
+						);
 					}
 				}
 			}
@@ -426,7 +436,7 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 		$where .= " AND icl_translations_source.element_type='post_attachment' 
 					AND icl_translations_source.source_language_code IS NULL ";
 
-		if ( ! empty ( $this->query_args['slang'] ) && $this->query_args['slang'] !== 'all' ) {
+		if ( ! empty( $this->query_args['slang'] ) && $this->query_args['slang'] !== 'all' ) {
 			$where .= $this->wpdb->prepare( ' AND icl_translations_source.language_code = %s ', $this->query_args['slang'] );
 		}
 
@@ -455,8 +465,10 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 					foreach ( $active_language as $language ) {
 						$sanitized_code = str_replace( '-', '_', $language['code'] );
 						if ( $language['code'] !== $default_language ) {
-							$where .= $this->wpdb->prepare( "AND post_meta_{$sanitized_code}.meta_value = %s",
-								WPML_Media_Translation_Status::TRANSLATED );
+							$where .= $this->wpdb->prepare(
+								"AND post_meta_{$sanitized_code}.meta_value = %s",
+								WPML_Media_Translation_Status::TRANSLATED
+							);
 						}
 					}
 				} elseif ( $this->query_args['status'] === WPML_Media_Translation_Status::NOT_TRANSLATED ) {
@@ -464,10 +476,12 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 					foreach ( $active_language as $language ) {
 						$sanitized_code = str_replace( '-', '_', $language['code'] );
 						if ( $language['code'] !== $default_language ) {
-							$where .= $this->wpdb->prepare( " 
+							$where .= $this->wpdb->prepare(
+								" 
 								OR post_meta_{$sanitized_code}.meta_value = %s								
 								OR post_meta_{$sanitized_code}.meta_value IS NULL",
-								$this->query_args['status'] );
+								$this->query_args['status']
+							);
 						}
 					}
 					$where .= ') ';
@@ -476,9 +490,11 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 					foreach ( $active_language as $language ) {
 						$sanitized_code = str_replace( '-', '_', $language['code'] );
 						if ( $language['code'] !== $default_language ) {
-							$where .= $this->wpdb->prepare( " 
+							$where .= $this->wpdb->prepare(
+								" 
 								OR post_meta_{$sanitized_code}.meta_value = %s",
-								$this->query_args['status'] );
+								$this->query_args['status']
+							);
 						}
 					}
 					$where .= ') ';
@@ -490,17 +506,17 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 	}
 
 	private function should_filter_by_status() {
-		return isset ( $this->query_args['status'] ) && $this->query_args['status'] !== '';
+		return isset( $this->query_args['status'] ) && $this->query_args['status'] !== '';
 	}
 
 	private function should_filter_by_target_language() {
-		return isset ( $this->query_args['tlang'] ) && $this->query_args['tlang'] !== '';
+		return isset( $this->query_args['tlang'] ) && $this->query_args['tlang'] !== '';
 	}
 
 	protected function init_template_base_dir() {
 		$this->template_paths = array(
 			WPML_MEDIA_PATH . '/templates/menus/',
-			WPML_PLUGIN_PATH . '/templates/pagination/'
+			WPML_PLUGIN_PATH . '/templates/pagination/',
 		);
 	}
 

@@ -1,9 +1,12 @@
 <?php
 
+use WPML\FP\Lst;
+
 class WPML_TM_Job_Entity {
 
 	const POST_TYPE    = 'post';
 	const STRING_TYPE  = 'string';
+	const STRING_BATCH = 'st-batch_strings';
 	const PACKAGE_TYPE = 'package';
 
 	/** @var int */
@@ -54,6 +57,9 @@ class WPML_TM_Job_Entity {
 	/** @var bool  */
 	private $has_completed_translation = false;
 
+	/** @var string */
+	private $title;
+
 	/**
 	 * @param int                $id
 	 * @param string             $type
@@ -64,7 +70,7 @@ class WPML_TM_Job_Entity {
 	public function __construct( $id, $type, $tp_id, WPML_TM_Jobs_Batch $batch, $status ) {
 		$this->id = (int) $id;
 
-		if ( ! in_array( $type, array( self::POST_TYPE, self::STRING_TYPE, self::PACKAGE_TYPE ), true ) ) {
+		if ( ! self::is_type_valid( $type ) ) {
 			throw new InvalidArgumentException( 'Invalid type value: ' . $type );
 		}
 		$this->type = $type;
@@ -115,15 +121,19 @@ class WPML_TM_Job_Entity {
 	 */
 	public function set_status( $status ) {
 		$status = (int) $status;
-		if ( ! in_array( $status, array(
-			ICL_TM_NOT_TRANSLATED,
-			ICL_TM_WAITING_FOR_TRANSLATOR,
-			ICL_TM_IN_PROGRESS,
-			ICL_TM_TRANSLATION_READY_TO_DOWNLOAD,
-			ICL_TM_DUPLICATE,
-			ICL_TM_COMPLETE,
-			ICL_TM_NEEDS_UPDATE,
-		), true ) ) {
+		if ( ! in_array(
+			$status,
+			array(
+				ICL_TM_NOT_TRANSLATED,
+				ICL_TM_WAITING_FOR_TRANSLATOR,
+				ICL_TM_IN_PROGRESS,
+				ICL_TM_TRANSLATION_READY_TO_DOWNLOAD,
+				ICL_TM_DUPLICATE,
+				ICL_TM_COMPLETE,
+				ICL_TM_NEEDS_UPDATE,
+			),
+			true
+		) ) {
 			$status = ICL_TM_NOT_TRANSLATED;
 		}
 
@@ -308,5 +318,28 @@ class WPML_TM_Job_Entity {
 	 */
 	public function set_has_completed_translation( $has_completed_translation ) {
 		$this->has_completed_translation = (bool) $has_completed_translation;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_title() {
+		return $this->title;
+	}
+
+	/**
+	 * @param  string $title
+	 */
+	public function set_title( $title ) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @param string $type
+	 *
+	 * @return bool
+	 */
+	public static function is_type_valid( $type ) {
+		return Lst::includes( $type, [ self::POST_TYPE, self::STRING_TYPE, self::PACKAGE_TYPE, self::STRING_BATCH ] );
 	}
 }

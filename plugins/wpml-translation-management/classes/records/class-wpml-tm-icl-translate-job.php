@@ -2,7 +2,7 @@
 
 class WPML_TM_ICL_Translate_Job {
 
-	private $table = 'icl_translate_job';
+	private $table  = 'icl_translate_job';
 	private $job_id = 0;
 	/** @var WPML_TM_Records $tm_records */
 	private $tm_records;
@@ -15,7 +15,7 @@ class WPML_TM_ICL_Translate_Job {
 	public function __construct( $tm_records, $job_id ) {
 		$this->tm_records = $tm_records;
 
-		$job_id           = (int) $job_id;
+		$job_id = (int) $job_id;
 		if ( $job_id > 0 ) {
 			$this->job_id = $job_id;
 		} else {
@@ -29,7 +29,7 @@ class WPML_TM_ICL_Translate_Job {
 	public function translator_id() {
 
 		return $this->tm_records->icl_translation_status_by_rid( $this->rid() )
-		                        ->translator_id();
+								->translator_id();
 	}
 
 	/**
@@ -38,7 +38,7 @@ class WPML_TM_ICL_Translate_Job {
 	public function service() {
 
 		return $this->tm_records->icl_translation_status_by_rid( $this->rid() )
-		                        ->service();
+								->service();
 	}
 
 	/**
@@ -49,7 +49,10 @@ class WPML_TM_ICL_Translate_Job {
 	public function update( $args ) {
 		$wpdb = $this->tm_records->wpdb();
 		$wpdb->update(
-			$wpdb->prefix . $this->table, $args, array( 'job_id' => $this->job_id ) );
+			$wpdb->prefix . $this->table,
+			$args,
+			array( 'job_id' => $this->job_id )
+		);
 
 		return $this;
 	}
@@ -66,7 +69,9 @@ class WPML_TM_ICL_Translate_Job {
 				"SELECT MAX(job_id)
 				 FROM {$wpdb->prefix}{$this->table}
 				 WHERE rid = %d",
-				$this->rid() ) );
+				$this->rid()
+			)
+		);
 	}
 
 	public function rid() {

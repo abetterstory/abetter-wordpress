@@ -1,6 +1,18 @@
 <?php
 
+use WPML\LIB\WP\Cache;
+use \WPML\Collect\Support\Traits\Macroable;
+use WPML\FP\Str;
+use function \WPML\FP\System\sanitizeString;
+use function \WPML\FP\pipe;
+use function \WPML\FP\curryN;
+
+/**
+ * @method static int get_batch_id_from_name( string $basket_name )
+ */
 class WPML_Translation_Basket {
+
+	use Macroable;
 
 	/** @var wpdb $wpdb */
 	private $wpdb;
@@ -45,7 +57,7 @@ class WPML_Translation_Basket {
 	 */
 	function get_basket_batch( $basket_name ) {
 
-		return new WPML_Translation_Batch( $this->wpdb, $this->get_batch_id_from_name( $basket_name ) );
+		return new WPML_Translation_Batch( $this->wpdb, self::get_batch_id_from_name( $basket_name ) );
 	}
 
 	/**
@@ -98,18 +110,23 @@ class WPML_Translation_Basket {
 	 */
 	function check_basket_name( $basket_name, $basket_name_max_length ) {
 
-		$result              = array( 'modified' => false, 'valid' => true, 'message' => '', 'new_value' => '' );
-		$old_value           = $basket_name;
-		$basket_name         = strip_tags( $basket_name );
+		$result      = array(
+			'modified'  => false,
+			'valid'     => true,
+			'message'   => '',
+			'new_value' => '',
+		);
+		$old_value   = $basket_name;
+		$basket_name = strip_tags( $basket_name );
 
 		if ( mb_strlen( $basket_name ) > $basket_name_max_length ) {
-			$result['valid']   = true;
-			$result['message'] = sprintf(
+			$result['valid']     = true;
+			$result['message']   = sprintf(
 				__( 'The length of the batch name exceeds the maximum length of %s', 'wpml-translation-management' ),
 				$basket_name_max_length
 			);
 			$result['new_value'] = $this->get_unique_basket_name( $basket_name, $basket_name_max_length );
-		} elseif ( $this->get_batch_id_from_name( $basket_name ) ) {
+		} elseif ( self::get_batch_id_from_name( $basket_name ) ) {
 			$result['valid']     = true;
 			$result['new_value'] = $this->get_unique_basket_name( $basket_name, $basket_name_max_length );
 			$result['message']   = __(
@@ -141,19 +158,19 @@ class WPML_Translation_Basket {
 	function get_unique_basket_name( $name, $max_length ) {
 		$basket_name_array = explode( '|', $name );
 		$name              = count( $basket_name_array ) === 1
-		                     || ( ! is_numeric( $basket_name_array[ count( $basket_name_array ) - 1 ] )
-		                          && $basket_name_array[ count( $basket_name_array ) - 1 ] !== $this->get_source_language() )
-		                     || ( is_numeric( $basket_name_array[ count( $basket_name_array ) - 1 ] )
-		                          && $basket_name_array[ count( $basket_name_array ) - 2 ] !== $this->get_source_language() )
+							 || ( ! is_numeric( $basket_name_array[ count( $basket_name_array ) - 1 ] )
+								  && $basket_name_array[ count( $basket_name_array ) - 1 ] !== $this->get_source_language() )
+							 || ( is_numeric( $basket_name_array[ count( $basket_name_array ) - 1 ] )
+								  && $basket_name_array[ count( $basket_name_array ) - 2 ] !== $this->get_source_language() )
 			? $name . '|' . $this->get_source_language() : $name;
 
 		$name = mb_strlen( $name ) > $max_length
 			? $this->sanitize_basket_name( $name, $max_length ) : $name;
 
-		if ( $this->get_batch_id_from_name( $name ) ) {
+		if ( self::get_batch_id_from_name( $name ) ) {
 			$suffix = 2;
 			$name   = $this->sanitize_basket_name( $name, $max_length - mb_strlen( (string) $suffix ) - 1 );
-			while ( $this->get_batch_id_from_name( $name . '|' . $suffix ) ) {
+			while ( self::get_batch_id_from_name( $name . '|' . $suffix ) ) {
 				$suffix ++;
 				$name = $this->sanitize_basket_name( $name, $max_length - mb_strlen( (string) $suffix ) - 1 );
 			}
@@ -172,15 +189,6 @@ class WPML_Translation_Basket {
 	}
 
 	/**
-	 * @param int[]    $string_ids
-	 * @param string   $source_language
-	 * @param string[] $target_languages
-	 */
-	public function add_strings_to_basket( $string_ids, $source_language, $target_languages ) {
-		TranslationProxy_Basket::add_strings_to_basket( $string_ids, $source_language, $target_languages );
-	}
-
-	/**
 	 * @param int $package_id
 	 */
 	public function remove_package( $package_id ) {
@@ -188,7 +196,7 @@ class WPML_Translation_Basket {
 	}
 
 	/**
-	 * @param int $id
+	 * @param int    $id
 	 * @param string $kind
 	 */
 	public function remove_item( $id, $kind ) {
@@ -205,7 +213,7 @@ class WPML_Translation_Basket {
 	}
 
 	private function sanitize_basket_name( $basket_name, $max_length ) {
-		//input basket name is separated by pipes so we explode it
+		// input basket name is separated by pipes so we explode it
 		$to_trim = mb_strlen( $basket_name ) - $max_length;
 		if ( $to_trim <= 0 ) {
 			return $basket_name;
@@ -218,15 +226,15 @@ class WPML_Translation_Basket {
 			return mb_substr( $basket_name, $max_length - 1 );
 		}
 
-		//first we trim the middle part holding the "WPML"
+		// first we trim the middle part holding the "WPML"
 		if ( $wpml_flag ) {
 			list( $basket_name_array, $to_trim ) = $this->shorten_basket_name( $basket_name_array, 1, $to_trim );
 		}
-		//then trim the site name first, if that's not enough move the array index and also trim the language
+		// then trim the site name first, if that's not enough move the array index and also trim the language
 		for ( $i = 0; $i <= 1; $i ++ ) {
 			if ( $to_trim > 0 ) {
 				list( $basket_name_array, $to_trim ) = $this->shorten_basket_name( $basket_name_array, 0, $to_trim );
-				$basket_name_array = array_filter( $basket_name_array );
+				$basket_name_array                   = array_filter( $basket_name_array );
 			} else {
 				break;
 			}
@@ -242,22 +250,34 @@ class WPML_Translation_Basket {
 			$name_array           = array_filter( $name_array );
 			$to_trim              = 0;
 		} else {
-			$to_trim = $to_trim - mb_strlen( $name_array [ $index ] ) - 1; //subtract one here since we lose a downstroke
+			$to_trim = $to_trim - mb_strlen( $name_array [ $index ] ) - 1; // subtract one here since we lose a downstroke
 			unset( $name_array [ $index ] );
 		}
 
 		return array( $name_array, $to_trim );
 	}
 
-	/**
-	 * Returns the batch id for a given basket or batch name
-	 *
-	 * @param string $basket_name
-	 *
-	 * @return int|bool
-	 */
-	private function get_batch_id_from_name( $basket_name ) {
-
-		return TranslationProxy::get_batch_id_from_name( $basket_name );
-	}
 }
+
+/**
+ * Returns the batch id for a given basket or batch name
+ *
+ * @param string $basket_name
+ *
+ * @return int|bool
+ */
+WPML_Translation_Basket::macro(
+	'get_batch_id_from_name',
+	curryN(
+		1,
+		Cache::memorize(
+			'get_batch_id_from_name',
+			pipe(
+				Str::replace( '"', '\\"' ),
+				sanitizeString(),
+				TranslationProxy_Batch::getBatchId()
+			)
+		)
+	)
+);
+

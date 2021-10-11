@@ -58,8 +58,8 @@ class FilesystemCache implements \WPML\Core\Twig\Cache\CacheInterface
             @\chmod($key, 0666 & ~\umask());
             if (self::FORCE_BYTECODE_INVALIDATION == ($this->options & self::FORCE_BYTECODE_INVALIDATION)) {
                 // Compile cached file into bytecode cache
-                if (\function_exists('opcache_invalidate')) {
-                    \opcache_invalidate($key, \true);
+                if (\function_exists('opcache_invalidate') && \filter_var(\ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN)) {
+                    @\opcache_invalidate($key, \true);
                 } elseif (\function_exists('apc_compile_file')) {
                     \apc_compile_file($key);
                 }

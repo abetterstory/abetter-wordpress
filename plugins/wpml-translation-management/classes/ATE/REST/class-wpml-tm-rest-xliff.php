@@ -11,11 +11,13 @@ class WPML_TM_REST_XLIFF extends WPML_TM_ATE_Required_Rest_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( '/xliff/fetch/(?P<jobId>\d+)',
-		                        array(
-			                        'methods'  => 'GET',
-			                        'callback' => array( $this, 'fetch_xliff' ),
-		                        ) );
+		parent::register_route(
+			'/xliff/fetch/(?P<jobId>\d+)',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'fetch_xliff' ),
+			)
+		);
 	}
 
 	/**

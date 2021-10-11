@@ -32,8 +32,10 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 
 	public function init() {
 		if ( $this->is_setup_complete() ) {
-			add_action( 'save_post', array( $this, 'save_post_actions' ), 100, 2 );
-			add_action( 'shutdown', array( $this, 'shutdown_action' ), PHP_INT_MAX );
+			add_action( 'save_post', [ $this, 'save_post_actions' ], 100, 2 );
+			add_action( 'shutdown', [ $this, 'shutdown_action' ], PHP_INT_MAX );
+			add_action( 'edit_attachment', [ $this, 'attachment_actions' ], 100 );
+			add_action( 'add_attachment', [ $this, 'attachment_actions' ], 100 );
 		}
 	}
 
@@ -75,6 +77,26 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @return void
 	 */
 	public abstract function save_post_actions( $pidd, $post );
+
+	/** @param int $post_id */
+	public function attachment_actions( $post_id ) {
+		/**
+		 * This filter hooks determines whether we should apply the
+		 * "save_post" actions on an attachment.
+		 *
+		 * @since 4.4.0
+		 *
+		 * @param bool True if we should apply save post actions on the attachment, false otherwise (default false).
+		 * @param int  $post_id The attachment post ID.
+		 */
+		if ( apply_filters( 'wpml_apply_save_attachment_actions', false, $post_id ) ) {
+			$post = get_post( $post_id );
+
+			if ( $post ) {
+				$this->save_post_actions( $post_id, $post );
+			}
+		}
+	}
 
 	public function shutdown_action() {
 		if ( self::$defer_term_counting ) {
@@ -244,8 +266,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 			return false;
 		}
 		$is_auto_draft              = isset( $post->post_status ) && $post->post_status === 'auto-draft';
-		$is_editing_different_post  = array_key_exists( 'post_ID', $_POST ) && (int) $_POST['post_ID']
-		                              && $post->ID != $_POST['post_ID'];
+		$is_editing_different_post  = $this->is_editing_different_post( $post->ID );
 		$is_saving_a_revision       = array_key_exists( 'post_type', $_POST ) && 'revision' === $_POST['post_type'];
 		$is_untrashing              = array_key_exists( 'action', $_GET ) && 'untrash' === $_GET['action'];
 		$is_auto_save               = array_key_exists( 'autosave', $_POST );
@@ -265,6 +286,15 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		              || $is_scheduled_to_be_trashed
 		              || $is_add_meta_action
 		              || $is_untrashing );
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 * @return bool
+	 */
+	protected function is_editing_different_post( $post_id ) {
+		return array_key_exists( 'post_ID', $_POST ) && (int) $_POST['post_ID'] && $post_id != $_POST['post_ID'];
 	}
 
 	protected function get_element_join() {
@@ -390,13 +420,23 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return $post_vars;
 	}
 
-	/**
-	 * @param bool $defer
-	 */
 	protected function defer_term_counting() {
 		if ( ! self::$defer_term_counting ) {
 			self::$defer_term_counting = true;
 			wp_defer_term_counting( true );
 		}
+	}
+
+	/**
+	 * @return self|WPML_Frontend_Post_Actions|WPML_Admin_Post_Actions
+	 */
+	public static function getGlobalInstance() {
+		global $wpml_post_translations, $sitepress;
+
+		if ( ! isset( $wpml_post_translations ) ) {
+			wpml_load_post_translation( is_admin(), $sitepress->get_settings() );
+		}
+
+		return $wpml_post_translations;
 	}
 }

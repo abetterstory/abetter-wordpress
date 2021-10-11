@@ -59,8 +59,9 @@ class WPML_Media_Populate_Media_Strings_Translations implements IWPML_Action {
 						}
 
 						if ( $translated_value ) {
-							$prev_translation[ $field ] = new WPML_TM_Translated_Field( $field,
-								'', $this->translation_package->encode_field_data( $translated_value, 'base64' ), true );
+							$prev_translation[ $field ] = wpml_tm_create_translated_field(
+								'', $this->translation_package->encode_field_data( $translated_value ), true
+							);
 						}
 					}
 

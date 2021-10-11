@@ -2,22 +2,18 @@
 /*global jQuery, ajaxurl, icl_ajx_url, icl_ajxloaderimg, tm_basket_data */
 
 (function ($) {
-	"use strict";
+    "use strict";
 
-	jQuery(document).ready(
-		function () {
+    jQuery(
+        function () {
 
-			//Basket
+            //Basket
 
-			/* enable button 'Remove from basket' in Translation management > Translate jobs */
-			var translation_jobs_basket_form = jQuery('#translation-jobs-basket-form');
-			var handle_basket_form_cb = function(cb_location){
-				if (jQuery('#translation-jobs-basket-form').find(cb_location + ':checked').length > 0) {
-					jQuery('#icl-tm-basket-delete-but').removeAttr('disabled');
-				} else {
-					jQuery('#icl-tm-basket-delete-but').attr('disabled', 'disabled');
-				}
-			};
+            /* enable button 'Remove from basket' in Translation management > Translate jobs */
+            var translation_jobs_basket_form = jQuery('#translation-jobs-basket-form');
+            var handle_basket_form_cb = function (cb_location) {
+                jQuery('#icl-tm-basket-delete-but').prop('disabled', jQuery('#translation-jobs-basket-form').find(cb_location + ':checked').length);
+            };
 
 			var cb_locations = ['td', 'tfoot th', 'thead th'];
 			jQuery.each(cb_locations,function(cb_location){
@@ -44,7 +40,7 @@
 					return false;
 				}
 			);
-			
+
 			function Translation_Jobs() {
 				var form = jQuery('#translation-jobs-translators-form');
 				var form_send_button = form.find('.button-primary');
@@ -62,17 +58,17 @@
 				var batch_deadline = form.find( '#basket-deadline' );
 
 				var init = function () {
-					form.bind('submit', submit_form);
-					
+					form.on('submit', submit_form);
+
 					// prevent sending basket by pressing Enter
-					form.bind("keypress", function(e) {
-						if (e.keyCode == 13) {               
+					form.on("keypress", function(e) {
+						if (e.keyCode == 13) {
 							e.preventDefault();
 							return false;
 						}
 					});
 
-					basket_name_element.bind('blur', basket_name_blur);
+					basket_name_element.on('blur', basket_name_blur);
 
 					message_box = jQuery('<div class="message_box"><div class="wpml-tm-basket-message-icon"></div></div>');
 					message_box_content = jQuery('<div class="wpml-tm-basket-message-content"></div>');
@@ -174,13 +170,13 @@
 							success:  function (result) {
                                 result = result.data;
 								/** @namespace result.new_value */
+								form_send_button.prop('disabled', !result.valid)
 								if (result.valid) {
 									if (result.modified) {
 										set_basket_name(result.new_value);
 									}
-									form_send_button.removeAttr('disabled').show();
+									form_send_button.show();
 								} else {
-									form_send_button.attr('disabled', 'disabled');
 									alert(result.message);
 									set_basket_name(result.new_value);
                                     check_basket_name();
@@ -190,7 +186,7 @@
 							},
 							error:    function (jqXHR, textStatus) {
 								show_errors(jqXHR, textStatus);
-								form_send_button.attr('disabled', 'disabled');
+								form_send_button.prop('disabled', true);
 								check_result = false;
 							}
 						}
@@ -245,12 +241,12 @@
 
 					return translators;
 				};
-				
+
 				var get_extra_fields = function () {
 					var items  =  jQuery('#basket_extra_fields_list').find(':input').get();
 					var string = '';
 					var items_total = jQuery(items).length;
-					
+
 					if (items_total > 0) {
 						jQuery(items).each(function (index, elm) {
 							string += elm.name +":"+ jQuery(elm).val();
@@ -259,7 +255,7 @@
 							}
 						});
 					}
-					
+
 					return encodeURIComponent(string);
 				};
 
@@ -325,43 +321,55 @@
                             },
 							success:  function (result) {
                                 result = result.data;
-								/** @namespace result.basket */
-								var basket = result.basket;
-								/** @namespace result.allowed_item_types */
-								var allowed_item_types = result.allowed_item_types;
 
 								update_message(result.message, false, 'sending', false);
 
 								batch_basket_items = [];
+								var batch_basket_string_items = [];
 
 								//Loop through basket item group
-								jQuery.each(
-									basket, function (item_type, basket_group) {
-										if (jQuery.inArray(item_type, allowed_item_types) >= 0) {
-											jQuery.each(
-												basket_group, function (post_id) {
-													var batch_basket_item = {};
-													batch_basket_item.type = item_type;
-													batch_basket_item.post_id = post_id;
-													batch_basket_items.push(batch_basket_item);
-												}
-											);
-										}
-									}
-								);
-                                progress_bar_object.overall_count = batch_basket_items.length;
+								jQuery.each(result.basket, prepare_basket_items(result.allowed_item_types, batch_basket_string_items));
+
+                                progress_bar_object.overall_count = batch_basket_items.length + batch_basket_string_items.length;
+								batch_number = 0;
+
                                 update_basket_badge_count(progress_bar_object.getRemainingCount());
-								batch_send_basket_to_tp(basket_name, translators);
+
+                                if (batch_basket_string_items.length > 0) {
+	                                batch_send_strings(basket_name, translators, batch_basket_string_items);
+                                } else {
+	                                batch_send_basket_to_tp(basket_name, translators);
+                                }
 							},
 							error:    function (jqXHR, textStatus) {
 								show_errors(jqXHR, textStatus);
-                                batch_send_basket_to_tp_rollback();
+                                show_rollback_message();
 							}
 						}
 					);
 
 					//Prevent submitting the form (backward compatibility)
 					return false;
+				};
+
+				var prepare_basket_items = function (allowed_item_types, batch_basket_string_items) {
+					return function (item_type, basket_group) {
+						if (jQuery.inArray(item_type, allowed_item_types) >= 0) {
+							jQuery.each(
+								basket_group, function (post_id) {
+									var batch_basket_item = {};
+									batch_basket_item.type = item_type;
+									batch_basket_item.post_id = post_id;
+
+									if (item_type === 'string') {
+										batch_basket_string_items.push(batch_basket_item);
+									} else {
+										batch_basket_items.push(batch_basket_item);
+									}
+								}
+							);
+						}
+					};
 				};
 
                 var progressbar_finish_text = '100%';
@@ -380,20 +388,35 @@
 					}
 				};
 
+				var batch_send_strings = function (basket_name, translators, strings) {
+					if (strings.length === 0) {
+						return;
+					}
+
+					batch_number++;
+					var batch_number_label = jQuery('<p><strong>' + tm_basket_data.strings['batch'] + ' #' + batch_number + '</strong></p>');
+					update_message(batch_number_label, true, 'sending', true);
+
+					batch_size = strings.length;
+
+					var success_callback = build_success_callback(function() {
+						batch_send_basket_to_tp(basket_name, translators);
+					});
+
+					send_basket_item_request(basket_name, translators, strings, success_callback);
+				};
+
 				var batch_send_basket_to_tp = function (basket_name, translators, skip_items) {
 
 					if (typeof skip_items === 'undefined') {
 						skip_items = 0;
-						batch_number = 0;
 						// We consider 2s per doc and per lang, and we don't want to exceed 20s per request
 						var langs = Object.keys(translators);
 						batch_size = Math.ceil(20 / langs.length); // 1 to 20
 						batch_size = Math.min(5, batch_size); // 1 to 5
 					}
-					
+
 					batch_number++;
-					
-					var extra_fields = get_extra_fields();
 
 					var batch_length = batch_basket_items.length;
 					if ((batch_length - skip_items) <= 0) {
@@ -410,50 +433,70 @@
 
 					var batch_data = batch_basket_items.slice(skip_items, skip_items + batch_size);
 
-					var error = false;
-                    var action = 'send_basket_item';
-                    var nonce  = get_nonce(action);
+					var success_callback = build_success_callback(function () {
+						setTimeout(
+							function () {
+								batch_send_basket_to_tp(basket_name, translators, (skip_items + batch_size));
+							}, 1000
+						)
+					});
 
-                    jQuery.ajax(
-                        {
-                            type: "POST",
-                            url: ajaxurl,
-                            dataType: 'json',
-                            data: {
-                                action: action,
-                                _icl_nonce: nonce,
-                                basket_name: basket_name,
-                                batch: batch_data,
-                                translators: translators,
-                                extra_fields: extra_fields,
-                                deadline_date: batch_deadline.val()
-                            },
-                            success: function (result) {
-                                var success = result.success;
-                                var data = result.data;
-                                /** @namespace result.is_error */
-                                if (success) {
-                                    progress_bar_object.change(batch_size);
-                                    //Let's give some rest to the server
-                                    setTimeout(
-                                        function () {
-                                            batch_send_basket_to_tp(basket_name, translators, (skip_items + batch_size));
-                                        }, 1000
-                                    );
-                                } else {
-                                    update_message(data.message, true, 'error', true);
-                                    show_additional_messages(data);
-                                    progress_bar_object.stop();
-                                    end_process(false);
-                                }
-                            },
-                            error: function (jqXHR, textStatus) {
-                                show_errors(jqXHR, textStatus);
-                                batch_send_basket_to_tp_rollback();
-                            }
-                        }
-                    );
+					send_basket_item_request(basket_name, translators, batch_data, success_callback);
                 };
+
+				var build_success_callback = function(nextStepCallback) {
+					return function (result) {
+						var success = result.success;
+						var data = result.data;
+
+						if (success) {
+							progress_bar_object.change(batch_size);
+							//Let's give some rest to the server
+							nextStepCallback();
+						} else {
+							handle_ajax_error(data);
+						}
+					};
+				};
+
+				var handle_ajax_error = function (data) {
+					update_message(data.message, true, 'error', true);
+					show_additional_messages(data);
+					progress_bar_object.stop();
+					end_process(false);
+				};
+
+				var send_basket_item_request = function(basket_name, translators, batch_data, success_callback) {
+					var action = 'send_basket_item';
+
+					var data = {
+						action: action,
+						_icl_nonce: get_nonce(action),
+						basket_name: basket_name,
+						batch: batch_data,
+						translators: translators,
+						extra_fields: get_extra_fields(),
+						deadline_date: batch_deadline.val()
+					};
+
+					jQuery.ajax(
+						{
+							type: "POST",
+							url: ajaxurl,
+							dataType: 'json',
+							data: data,
+							success: success_callback,
+							error: function (jqXHR, textStatus) {
+								if (jqXHR.status >= 500) {
+									request_rollback_for_batch(basket_name);
+								}
+
+								show_errors(jqXHR, textStatus);
+								show_rollback_message();
+							}
+						}
+					);
+				}
 
 				var show_additional_messages = function (result) {
 					/** @namespace result.additional_messages */
@@ -534,23 +577,39 @@
 
 								} else {
                                     handle_response(result);
-                                    batch_send_basket_to_tp_rollback();
+                                    show_rollback_message();
 								}
                             },
 							error:    function (jqXHR, textStatus) {
 								show_errors(jqXHR, textStatus);
-                                batch_send_basket_to_tp_rollback();
+                                show_rollback_message();
                             }
 						}
 					);
 				};
 
-                var batch_send_basket_to_tp_rollback = function () {
+                var show_rollback_message = function () {
                     update_message(tm_basket_data.strings['rollbacks'], false, 'error', false);
                     update_message(tm_basket_data.strings['rolled'], false, 'error', true);
                     progress_bar_object.complete(progressbar_finish_text, progressbar_callback);
                 };
 
+                var request_rollback_for_batch = function(basket_name) {
+                	var action = 'rollback_basket';
+
+					jQuery.ajax(
+						{
+							type: "POST",
+							url: ajaxurl,
+							dataType: 'json',
+							data: {
+								action: action,
+								_icl_nonce: get_nonce(action),
+								basket_name: basket_name
+							}
+						}
+					);
+				};
 
 				var batch_send_basket_to_tp_completed = function (response) {
 					progress_bar_object.complete(progressbar_finish_text, progressbar_callback);
@@ -574,9 +633,10 @@
 					if (commit) {
 						batch_send_basket_to_tp_commit();
 					} else {
-                        form_delete_button.removeAttr('disabled');
-                        form_send_button.removeAttr('disabled').show();
-                        batch_send_basket_to_tp_rollback();
+                        form_delete_button.prop('disabled', false);
+                        form_send_button.prop('disabled', false);
+                        form_send_button.show();
+                        show_rollback_message();
 					}
 				};
 

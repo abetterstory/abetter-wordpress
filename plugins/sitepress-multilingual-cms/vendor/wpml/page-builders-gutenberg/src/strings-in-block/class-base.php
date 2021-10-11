@@ -4,6 +4,8 @@ namespace WPML\PB\Gutenberg\StringsInBlock;
 
 abstract class Base implements StringsInBlock {
 
+	const LONG_STRING_LENGTH = 80;
+
 	/** @var array */
 	private $block_types;
 
@@ -42,6 +44,21 @@ abstract class Base implements StringsInBlock {
 		return null;
 	}
 
+
+	/**
+	 * @param  \WP_Block_Parser_Block  $block
+	 *
+	 * @return string
+	 */
+	protected function get_block_label( \WP_Block_Parser_Block $block ) {
+		$label = $this->get_block_config( $block, 'label' );
+		if ( ! is_string( $label ) ) {
+			$label = $block->blockName;
+		}
+
+		return $label;
+	}
+
 	/**
 	 * @param \WP_Block_Parser_Block $block
 	 * @param string                 $type
@@ -78,7 +95,7 @@ abstract class Base implements StringsInBlock {
 	public static function get_string_type( $string ) {
 		$type = 'LINE';
 
-		if ( strpos( $string, "\n" ) !== false ) {
+		if ( strpos( $string, "\n" ) !== false || mb_strlen( $string ) > self::LONG_STRING_LENGTH ) {
 			$type = 'AREA';
 		}
 

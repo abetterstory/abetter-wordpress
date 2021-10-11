@@ -2,16 +2,16 @@
 
 class WPML_ST_Translations_File_Entry {
 
-	const NOT_IMPORTED = 'not_imported';
-	const IMPORTED = 'imported';
+	const NOT_IMPORTED    = 'not_imported';
+	const IMPORTED        = 'imported';
 	const PARTLY_IMPORTED = 'partly_imported';
-	const FINISHED = 'finished';
-	const SKIPPED = 'skipped';
+	const FINISHED        = 'finished';
+	const SKIPPED         = 'skipped';
 
 	const PATTERN_SEARCH_LANG_MO   = '#[-]?([a-z]+[_A-Z]*)\.mo$#i';
 	const PATTERN_SEARCH_LANG_JSON = '#([a-z]+[_A-Z]*)-[-a-z0-9]+\.json$#i';
 
-	/** @var  string */
+	/** @var string */
 	private $path;
 
 	/** @var string */
@@ -35,9 +35,7 @@ class WPML_ST_Translations_File_Entry {
 	/**
 	 * @param string $path
 	 * @param string $domain
-	 * @param int $status
-	 *
-	 * @throws InvalidArgumentException
+	 * @param string $status
 	 */
 	public function __construct( $path, $domain, $status = self::NOT_IMPORTED ) {
 		if ( ! is_string( $path ) ) {
@@ -47,7 +45,7 @@ class WPML_ST_Translations_File_Entry {
 			throw new InvalidArgumentException( 'MO File domain must be string type' );
 		}
 
-		$this->path = $this->convert_to_relative_path( $path );
+		$this->path   = $this->convert_to_relative_path( $path );
 		$this->domain = $domain;
 
 		$this->validate_status( $status );
@@ -76,7 +74,7 @@ class WPML_ST_Translations_File_Entry {
 
 	public function get_full_path() {
 		$wp_content_dir = $this->fix_dir_separator( WP_CONTENT_DIR );
-		$parts = explode( DIRECTORY_SEPARATOR, $wp_content_dir );
+		$parts          = explode( DIRECTORY_SEPARATOR, $wp_content_dir );
 
 		return str_replace( end( $parts ), $wp_content_dir, $this->path );
 	}
@@ -104,8 +102,6 @@ class WPML_ST_Translations_File_Entry {
 
 	/**
 	 * @param int $status
-	 *
-	 * @return WPML_ST_Translations_File_Entry
 	 */
 	public function set_status( $status ) {
 		$this->validate_status( $status );
@@ -121,8 +117,6 @@ class WPML_ST_Translations_File_Entry {
 
 	/**
 	 * @param int $imported_strings_count
-	 *
-	 * @return WPML_ST_Translations_File_Entry
 	 */
 	public function set_imported_strings_count( $imported_strings_count ) {
 		$this->imported_strings_count = (int) $imported_strings_count;
@@ -137,16 +131,17 @@ class WPML_ST_Translations_File_Entry {
 
 	/**
 	 * @param int $last_modified
-	 *
-	 * @return WPML_ST_Translations_File_Entry
 	 */
 	public function set_last_modified( $last_modified ) {
 		$this->last_modified = (int) $last_modified;
 	}
 
 	public function __get( $name ) {
-		if ( in_array( $name, array( 'path', 'path_md5', 'domain', 'status', 'imported_strings_count', 'last_modified' ), true ) ) {
+		if ( in_array( $name, array( 'path', 'domain', 'status', 'imported_strings_count', 'last_modified' ), true ) ) {
 			return $this->$name;
+		}
+		if ( $name === 'path_md5' ) {
+			return $this->get_path_hash();
 		}
 
 		return null;
@@ -157,13 +152,11 @@ class WPML_ST_Translations_File_Entry {
 	 * '/wp-content/languages/admin-pl_PL.mo' => 'pl'
 	 * '/wp-content/plugins/sitepress/sitepress-hr.mo' => 'hr'
 	 *
-	 * @param string|$mo_path
 	 * @throws RuntimeException
 	 * @return null|string
 	 */
 	public function get_file_locale() {
-		$file_locale = new WPML_ST_Translations_File_Locale( $this->get_path(), $this->get_domain() );
-		return $file_locale->get();
+		return \WPML\Container\make( WPML_ST_Translations_File_Locale::class )->get( $this->get_path(), $this->get_domain() );
 	}
 
 	/**
@@ -195,7 +188,7 @@ class WPML_ST_Translations_File_Entry {
 	}
 
 	/**
-	 * @param $status
+	 * @param string $status
 	 */
 	private function validate_status( $status ) {
 		$allowed_statuses = array( self::NOT_IMPORTED, self::IMPORTED, self::PARTLY_IMPORTED, self::FINISHED, self::SKIPPED );

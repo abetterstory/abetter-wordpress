@@ -43,7 +43,7 @@ class WPML_TM_ICL20_Migration_Support {
 			}
 
 			$redirect_to = remove_query_arg( array( $nonce_arg, $action_arg ) );
-			wp_safe_redirect( $redirect_to );
+			wp_safe_redirect( $redirect_to, 302, 'WPML' );
 		}
 	}
 

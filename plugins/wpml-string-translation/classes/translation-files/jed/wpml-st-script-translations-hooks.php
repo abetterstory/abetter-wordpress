@@ -2,6 +2,8 @@
 
 class WPML_ST_Script_Translations_Hooks implements IWPML_Action {
 
+	const PRIORITY_OVERRIDE_JED_FILE = 10;
+
 	/** @var WPML_ST_Translations_File_Dictionary $dictionary */
 	private $dictionary;
 
@@ -22,7 +24,7 @@ class WPML_ST_Script_Translations_Hooks implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		add_filter( 'load_script_translation_file', array( $this, 'override_jed_file' ), 10, 3 );
+		add_filter( 'load_script_translation_file', array( $this, 'override_jed_file' ), self::PRIORITY_OVERRIDE_JED_FILE, 3 );
 	}
 
 	/**
@@ -68,7 +70,6 @@ class WPML_ST_Script_Translations_Hooks implements IWPML_Action {
 	 * @return string
 	 */
 	private function get_file_locale( $filepath, $domain ) {
-		$file_locale = new WPML_ST_Translations_File_Locale( $filepath, $domain );
-		return $file_locale->get();
+		return \WPML\Container\make( \WPML_ST_Translations_File_Locale::class )->get( $filepath, $domain );
 	}
 }

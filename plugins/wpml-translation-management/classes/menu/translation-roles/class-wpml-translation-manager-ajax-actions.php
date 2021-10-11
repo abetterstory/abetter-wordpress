@@ -71,7 +71,7 @@ class WPML_Translation_Manager_Ajax extends WPML_Translation_Roles_Ajax {
 
 		add_filter( 'wp_mail_from_name', array( $this, 'wp_mail_from_name_filter' ), 10, 1 );
 		wp_mail( $to, $subject, $message, $headers );
-		remove_filter( 'wp_mail_from_name', array( $this, 'wp_mail_from_name_filter' ), 10, 1 );
+		remove_filter( 'wp_mail_from_name', array( $this, 'wp_mail_from_name_filter' ), 10 );
 
 		return true;
 	}

@@ -22,12 +22,15 @@ abstract class WPML_Ajax_Update_Link_Targets_In_Content extends WPML_WPDB_User i
 
 			$last_processed = $this->translate_link_targets->fix( $this->post_data['last_processed'], $this->post_data['number_to_process'] );
 
-			return new WPML_Ajax_Response( true, array(
-				'last_processed' => (int)$last_processed,
-				'number_left'    => $last_processed ? $this->translate_link_targets->get_number_to_be_fixed( $last_processed + 1 ) : 0,
-				'links_fixed'    => $this->translate_link_targets->get_number_of_links_that_were_fixed()
+			return new WPML_Ajax_Response(
+				true,
+				array(
+					'last_processed' => (int) $last_processed,
+					'number_left'    => $last_processed ? $this->translate_link_targets->get_number_to_be_fixed( $last_processed + 1 ) : 0,
+					'links_fixed'    => $this->translate_link_targets->get_number_of_links_that_were_fixed(),
 
-			) );
+				)
+			);
 		} else {
 			return new WPML_Ajax_Response( false, 'wrong nonce' );
 		}

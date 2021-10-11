@@ -20,13 +20,12 @@ class WPML_Translation_Editor_Languages extends WPML_SP_User {
 			'source'      => $this->job->source_language_code,
 			'target'      => $this->job->language_code,
 			'source_lang' => $source_lang['display_name'],
-			'target_lang' => $target_lang['display_name']
+			'target_lang' => $target_lang['display_name'],
 		);
 		$data['img'] = array(
 			'source_url' => $this->sitepress->get_flag_url( $this->job->source_language_code ),
-			'target_url' => $this->sitepress->get_flag_url( $this->job->language_code )
+			'target_url' => $this->sitepress->get_flag_url( $this->job->language_code ),
 		);
-
 
 		return $data;
 	}

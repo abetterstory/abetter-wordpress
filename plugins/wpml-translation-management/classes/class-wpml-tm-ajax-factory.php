@@ -17,15 +17,15 @@ abstract class WPML_TM_AJAX_Factory_Obsolete {
 		$this->add_ajax_actions();
 	}
 
-	protected final function add_ajax_action( $handle, $callback ) {
+	protected function add_ajax_action( $handle, $callback ) {
 		$this->ajax_actions[ $handle ] = $callback;
 	}
 
-	private final function add_ajax_actions() {
+	private function add_ajax_actions() {
 		if ( ! $this->wpml_wp_api->is_cron_job() ) {
 			foreach ( $this->ajax_actions as $handle => $callback ) {
 
-				if($this->wpml_wp_api->is_ajax()) {
+				if ( $this->wpml_wp_api->is_ajax() ) {
 					if ( stripos( $handle, 'wp_ajax_' ) !== 0 ) {
 						$handle = 'wp_ajax_' . $handle;
 					}
@@ -38,5 +38,5 @@ abstract class WPML_TM_AJAX_Factory_Obsolete {
 		}
 	}
 
-	public abstract function enqueue_resources( $hook_suffix );
+	abstract public function enqueue_resources( $hook_suffix );
 }

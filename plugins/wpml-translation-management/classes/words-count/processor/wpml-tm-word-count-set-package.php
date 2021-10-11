@@ -23,7 +23,7 @@ class WPML_TM_Word_Count_Set_Package {
 
 	/** @param int $package_id */
 	public function process( $package_id ) {
-		$package = $this->package_factory->create( $package_id );
+		$package     = $this->package_factory->create( $package_id );
 		$word_counts = new WPML_TM_Count();
 
 		foreach ( $this->active_langs as $lang ) {

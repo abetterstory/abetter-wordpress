@@ -9,7 +9,7 @@ class WPML_TM_Field_Type_Encoding {
 
 	/**
 	 * @param string $custom_field_name
-	 * @param array $attributes
+	 * @param array  $attributes
 	 *
 	 * @return array
 	 */

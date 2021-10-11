@@ -94,6 +94,7 @@ class WPML_ST_Upgrade {
 		$this->maybe_run( 'WPML_ST_Upgrade_DB_Strings_Add_Translation_Priority_Field' );
 		$this->maybe_run( 'WPML_ST_Upgrade_DB_String_Packages_Word_Count' );
 		$this->maybe_run( '\WPML\ST\Upgrade\Command\RegenerateMoFilesWithStringNames' );
+		$this->maybe_run( \WPML\ST\Upgrade\Command\MigrateMultilingualWidgets::class );
 	}
 
 	/**

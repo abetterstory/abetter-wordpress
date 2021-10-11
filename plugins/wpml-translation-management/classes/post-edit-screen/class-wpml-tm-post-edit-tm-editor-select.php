@@ -148,17 +148,3 @@ class WPML_TM_Post_Edit_TM_Editor_Select implements IWPML_Action {
 	}
 
 }
-
-class WPML_TM_Post_Edit_TM_Editor_Select_Factory implements IWPML_Backend_Action_Loader, IWPML_AJAX_Action_Loader {
-
-	public function create() {
-		global $sitepress;
-
-		if ( $sitepress->is_post_edit_screen() || wpml_is_ajax() ) {
-			return new WPML_TM_Post_Edit_TM_Editor_Select( $sitepress );
-		} else {
-			return null;
-		}
-	}
-
-}

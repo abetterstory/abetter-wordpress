@@ -34,13 +34,13 @@ abstract class WPML_TM_Translatable_Element {
 		$this->init( $id );
 	}
 
-	protected abstract function init( $id );
+	abstract protected function init( $id );
 
-	public abstract function get_type_name( $label = null );
+	abstract public function get_type_name( $label = null );
 
-	protected abstract function get_type();
+	abstract protected function get_type();
 
-	protected abstract function get_total_words();
+	abstract protected function get_total_words();
 
 	/** @return int */
 	public function get_words_count() {

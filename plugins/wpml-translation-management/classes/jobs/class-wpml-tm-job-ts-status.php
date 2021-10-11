@@ -33,11 +33,11 @@ class WPML_TM_Job_TS_Status {
 	}
 
 	public function __toString() {
-		if( $this->status ) {
+		if ( $this->status ) {
 			return wp_json_encode(
 				array(
 					'status' => $this->status,
-					'links'  => $this->links
+					'links'  => $this->links,
 				)
 			);
 		}

@@ -28,8 +28,8 @@ class Download extends Base {
 				'args'  => [
 					'methods'  => 'POST',
 					'callback' => [ $this, 'download' ],
-				]
-			]
+				],
+			],
 		];
 	}
 
@@ -42,7 +42,7 @@ class Download extends Base {
 		return [
 			'manage_options',
 			'manage_translations',
-			'translate'
+			'translate',
 		];
 	}
 
@@ -58,15 +58,17 @@ class Download extends Base {
 	private function getJobs( Collection $processedJobs ) {
 		$jobIds    = $processedJobs->pluck( 'wpmlJobId' );
 		$viewLinks = $jobIds->map( [ wpml_tm_load_job_factory(), 'get_translation_job' ] )
-		                    ->map( [ ElementLinkFactory::create(), 'getTranslation' ] );
+							->map( [ ElementLinkFactory::create(), 'getTranslation' ] );
 
 		return $jobIds->zip( $viewLinks )
-		              ->map( function ( $pair ) {
-			              return [
-				              'jobId'    => (int) $pair[0],
-				              'viewLink' => $pair[1]
-			              ];
-		              } )
-		              ->toArray();
+					->map(
+						function ( $pair ) {
+							return [
+								'jobId'    => (int) $pair[0],
+								'viewLink' => $pair[1],
+							];
+						}
+					)
+					  ->toArray();
 	}
 }

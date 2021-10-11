@@ -1,6 +1,11 @@
 <?php
 
+use WPML\PB\Elementor\DataConvert;
+
 class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings {
+
+	const META_KEY_DATA = '_elementor_data';
+	const META_KEY_MODE = '_elementor_edit_mode';
 
 	/**
 	 * @var WPML_Elementor_DB
@@ -48,7 +53,7 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	}
 
 	public function save_post_body_as_plain_text( $type, $post_id, $original_post, $string_translations, $lang ) {
-		if ( get_post_meta( $post_id, $this->get_meta_field() ) ) {
+		if ( $this->is_handling_post( $post_id ) ) {
 			$this->elementor_db->save_plain_text( $post_id );
 		}
 	}
@@ -57,7 +62,7 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	 * @return string
 	 */
 	public function get_meta_field() {
-		return '_elementor_data';
+		return self::META_KEY_DATA;
 	}
 
 	/**
@@ -73,7 +78,7 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	public function get_fields_to_copy() {
 		return array(
 			'_elementor_version',
-			'_elementor_edit_mode',
+			self::META_KEY_MODE,
 			'_elementor_css',
 			'_elementor_template_type',
 			'_elementor_template_widget_type',
@@ -86,12 +91,7 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	 * @return array
 	 */
 	public function convert_data_to_array( $data ) {
-		$converted_data = $data;
-		if ( is_array( $data ) ) {
-			$converted_data = $data[0];
-		}
-
-		return json_decode( $converted_data, true );
+		return DataConvert::unserialize( $data );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	 * @return string
 	 */
 	public function prepare_data_for_saving( array $data ) {
-		return wp_slash( wp_json_encode( $data ) );
+		return DataConvert::serialize( $data );
 	}
 
 	/**
@@ -126,5 +126,24 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	public function add_data_custom_field_to_md5( array $custom_fields_values, $post_id ) {
 		$custom_fields_values[] = get_post_meta( $post_id, $this->get_meta_field(), true );
 		return $custom_fields_values;
+	}
+
+	/**
+	 * @param int $postId
+	 *
+	 * @return bool
+	 */
+	public function is_handling_post( $postId ) {
+		return (bool) get_post_meta( $postId, $this->get_meta_field(), true )
+			&& self::is_edited_with_elementor( $postId );
+	}
+
+	/**
+	 * @param int $postId
+	 *
+	 * @return bool
+	 */
+	public static function is_edited_with_elementor( $postId ) {
+		return 'builder' === get_post_meta( $postId, self::META_KEY_MODE, true );
 	}
 }

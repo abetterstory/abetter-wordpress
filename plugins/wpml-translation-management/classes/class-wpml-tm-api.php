@@ -7,6 +7,10 @@ class WPML_TM_API {
 
 	/** @var WPML_TM_Blog_Translators $blog_translators */
 	private $blog_translators;
+	/**
+	 * @var mixed[]
+	 */
+	private $translation_statuses;
 
 	/**
 	 * WPML_TM_API constructor.
@@ -20,39 +24,39 @@ class WPML_TM_API {
 
 		$this->translation_statuses = array(
 			ICL_TM_NOT_TRANSLATED         => array(
-				'label'         => __( 'Not translated', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-not-translated',
+				'label'     => __( 'Not translated', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-not-translated',
 			),
 			ICL_TM_WAITING_FOR_TRANSLATOR => array(
 				'label'         => __( 'Waiting for translator', 'wpml-translation-management' ),
 				'css-class'     => 'icon otgs-ico-waiting',
-				'default_color' => '#0000'
+				'default_color' => '#0000',
 			),
 			ICL_TM_IN_BASKET              => array(
-				'label'         => __( 'In basket', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-basket',
+				'label'     => __( 'In basket', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-basket',
 			),
 			ICL_TM_IN_PROGRESS            => array(
-				'label'         => __( 'In progress', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-in-progress',
+				'label'     => __( 'In progress', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-in-progress',
 			),
 			ICL_TM_DUPLICATE              => array(
-				'label'         => __( 'Duplicate', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-duplicate',
+				'label'     => __( 'Duplicate', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-duplicate',
 			),
 			ICL_TM_COMPLETE               => array(
-				'label'         => __( 'Complete', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-translated',
+				'label'     => __( 'Complete', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-translated',
 			),
 			ICL_TM_NEEDS_UPDATE           => array(
-				'label'         => ' - ' . __( 'needs update', 'wpml-translation-management' ),
-				'css-class'     => 'icon otgs-ico-needs-update',
+				'label'     => ' - ' . __( 'needs update', 'wpml-translation-management' ),
+				'css-class' => 'icon otgs-ico-needs-update',
 			),
 		);
 	}
 
 	public function get_translation_status_label( $value ) {
-		return isset( $this->translation_statuses[ $value ] ) ? $this->translation_statuses[ $value ][ 'label' ] : null;
+		return isset( $this->translation_statuses[ $value ] ) ? $this->translation_statuses[ $value ]['label'] : null;
 	}
 
 	public function init_hooks() {
@@ -103,7 +107,7 @@ class WPML_TM_API {
 		$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
 		$language_pair_records->store( $user_id, $language_pairs );
 	}
-	
+
 	public function translator_languages_pairs_filter( $default, $user ) {
 		$result  = $default;
 		$user_id = $this->get_user_id( $user );

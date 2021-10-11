@@ -11,7 +11,7 @@ class WPML_Translation_Job_Helper {
 	}
 
 	protected function get_tm_setting( $indexes ) {
-		$core_tm     = $this->get_core_translation_management();
+		$core_tm = $this->get_core_translation_management();
 		if ( empty( $core_tm->settings ) ) {
 			$core_tm->init();
 		}
@@ -31,7 +31,7 @@ class WPML_Translation_Job_Helper {
 	/**
 	 * @return TranslationManagement
 	 */
-	private function get_core_translation_management() {
+	public static function get_core_translation_management() {
 		/** TranslationManagement $iclTranslationManagement */
 		global $iclTranslationManagement;
 

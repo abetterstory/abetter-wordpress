@@ -15,7 +15,7 @@ class StandardBlock extends DOMHandle {
 		$children  = $element->childNodes;
 
 		foreach ( $children as $child ) {
-			$innerHTML .= $element->ownerDocument->saveXML( $child );
+			$innerHTML .= $this->getAsHTML5( $child );
 		}
 
 		return $innerHTML;

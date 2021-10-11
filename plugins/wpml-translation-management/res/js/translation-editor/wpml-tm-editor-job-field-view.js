@@ -49,11 +49,17 @@ var WPML_TM = WPML_TM || {};
 				}
 			}
 		},
+		escapeHTML: function (string) {
+			return string.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		},
 		render: function (field, labels) {
 			var self = this;
 			self.field = field;
 			if (typeof self.field.title === 'undefined' || '' === self.field.title) {
 				self.$el.removeClass('wpml-form-row').addClass('wpml-form-row-nolabel');
+			}
+			if (field.field_style !== WPML_TM.FIELD_STYLE_SINGLE_LINE) {
+				self.field.field_data = self.escapeHTML(self.field.field_data);
 			}
 			self.$el.html(WPML_TM[self.getTemplate()]({
 				field: self.field,

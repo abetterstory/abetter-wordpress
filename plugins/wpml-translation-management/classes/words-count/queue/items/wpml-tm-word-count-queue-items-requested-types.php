@@ -95,14 +95,14 @@ class WPML_TM_Word_Count_Queue_Items_Requested_Types implements IWPML_TM_Word_Co
 	private function add_standalone_packages_to_queue() {
 		if ( ! empty( $this->requested_types['package_kinds'] ) ) {
 			$this->items['package'] = $this->records->get_package_ids_from_kind_slugs( $this->requested_types['package_kinds'] );
-			$this->items['string'] = $this->records->get_strings_ids_from_package_ids( $this->items['package'] );
+			$this->items['string']  = $this->records->get_strings_ids_from_package_ids( $this->items['package'] );
 		}
 	}
 
 	private function add_post_packages_to_queue() {
 		if ( ! empty( $this->requested_types['post_types'] ) ) {
 			$this->items['package'] = $this->records->get_package_ids_from_post_types( $this->requested_types['post_types'] );
-			$this->items['string'] = $this->records->get_strings_ids_from_package_ids( $this->items['package'] );
+			$this->items['string']  = $this->records->get_strings_ids_from_package_ids( $this->items['package'] );
 		}
 	}
 
@@ -142,8 +142,8 @@ class WPML_TM_Word_Count_Queue_Items_Requested_Types implements IWPML_TM_Word_Co
 	/** @return bool */
 	private function has_items() {
 		return ! empty( $this->items['string'] )
-		       || ! empty( $this->items['package'] )
-		       || ! empty( $this->items['post'] );
+			   || ! empty( $this->items['package'] )
+			   || ! empty( $this->items['post'] );
 	}
 
 	/** @return bool */

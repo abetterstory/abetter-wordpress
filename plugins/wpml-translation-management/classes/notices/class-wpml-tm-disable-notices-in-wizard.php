@@ -9,7 +9,7 @@ class WPML_TM_Disable_Notices_In_Wizard {
 	private $wpml_translation_management;
 
 	public function __construct( WPML_WP_API $wp_api, WPML_Translation_Management $wpml_translation_management ) {
-		$this->wp_api = $wp_api;
+		$this->wp_api                      = $wp_api;
 		$this->wpml_translation_management = $wpml_translation_management;
 	}
 

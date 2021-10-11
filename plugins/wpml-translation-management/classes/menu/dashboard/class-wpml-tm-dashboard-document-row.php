@@ -196,7 +196,7 @@ class WPML_TM_Dashboard_Document_Row {
 
 					if ( isset( $jobs[ $code ] ) ) {
 						$job           = $jobs[ $code ];
-						$status        = $job['status'];
+						$status        = $job['status'] ?: $this->get_status_in_lang( $code );
 						$job_entity_id = $job['entity_id'];
 						$job_id        = $job['job_id'];
 					} else {

@@ -61,7 +61,7 @@ class WPML_TF_XML_RPC_Feedback_Update {
 		);
 
 		$collection_filter = new WPML_TF_Feedback_Collection_Filter( $filter_args );
-		$collection = $this->feedback_storage->get_collection( $collection_filter );
+		$collection        = $this->feedback_storage->get_collection( $collection_filter );
 
 		if ( $collection->count() ) {
 			$feedback = $collection->current();

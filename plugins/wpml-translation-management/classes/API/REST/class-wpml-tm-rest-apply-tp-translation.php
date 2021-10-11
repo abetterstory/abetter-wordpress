@@ -7,7 +7,7 @@ class WPML_TM_REST_Apply_TP_Translation extends WPML_REST_Base {
 	public function __construct( WPML_TP_Apply_Translations $apply_translations ) {
 		parent::__construct( 'wpml/tm/v1' );
 
-		$this->apply_translations     = $apply_translations;
+		$this->apply_translations = $apply_translations;
 	}
 
 	public function add_hooks() {
@@ -15,7 +15,8 @@ class WPML_TM_REST_Apply_TP_Translation extends WPML_REST_Base {
 	}
 
 	public function register_routes() {
-		parent::register_route( '/tp/apply-translations',
+		parent::register_route(
+			'/tp/apply-translations',
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
 				'callback' => array( $this, 'apply_translations' ),
@@ -50,11 +51,11 @@ class WPML_TM_REST_Apply_TP_Translation extends WPML_REST_Base {
 	}
 
 	public function map_jobs_to_array( WPML_TM_Job_Entity $job ) {
-		return array(
+		return [
 			'id'     => $job->get_id(),
 			'type'   => $job->get_type(),
 			'status' => $job->get_status(),
-		);
+		];
 	}
 
 	/**
@@ -63,14 +64,6 @@ class WPML_TM_REST_Apply_TP_Translation extends WPML_REST_Base {
 	 * @return bool
 	 */
 	private function validate_job( array $job ) {
-		return isset( $job['id'] ) && isset( $job['type'] ) && $this->validate_job_type( $job['type'] );
-	}
-
-	private function validate_job_type( $value ) {
-		return in_array( $value, array(
-			WPML_TM_Job_Entity::POST_TYPE,
-			WPML_TM_Job_Entity::STRING_TYPE,
-			WPML_TM_Job_Entity::PACKAGE_TYPE
-		) );
+		return isset( $job['id'], $job['type'] ) && \WPML_TM_Job_Entity::is_type_valid( $job['type'] );
 	}
 }

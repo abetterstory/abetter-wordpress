@@ -1,14 +1,14 @@
-jQuery(document).ready(function () {
+jQuery(function () {
 
-	var ajax_success_action = function( response, response_text ) {
-		if( response.success ) {
-			response_text.text( icl_ajx_saved );
-		} else {
-			response_text.text( icl_ajx_error );
-			response_text.show();
-		}
-		setTimeout(function () {
-			response_text.fadeOut('slow');
+    var ajax_success_action = function (response, response_text) {
+        if (response.success) {
+            response_text.text(icl_ajx_saved);
+        } else {
+            response_text.text(icl_ajx_error);
+            response_text.show();
+        }
+        setTimeout(function () {
+            response_text.fadeOut('slow');
 		}, 2500);
 	};
 
@@ -58,41 +58,4 @@ jQuery(document).ready(function () {
 			}
 		});
 	});
-
-	jQuery("#wpml-tm-general-settings input[name='wpml-disabling']").on("change", function () {
-		var checkbox = jQuery(this);
-		checkbox.prop("disabled", "disabled");
-
-		var is_disabled = checkbox.is(":checked");
-		var nonce = checkbox.data("nonce");
-
-		var spinner = checkbox.next(".spinner");
-        spinner.css("visibility", "visible");
-
-        var message_box = jQuery("<span></span>").addClass("js-wpml-tm-messages wpml-tm-messages");
-        message_box.insertAfter(spinner);
-
-        jQuery.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'wpml_end_user_get_info',
-                _wpnonce: nonce,
-                value: is_disabled ? 1 : 0
-            },
-            error: function (response) {
-                message_box.addClass("error");
-                ajax_success_action({"success" : 0}, message_box);
-
-            },
-			success: function(reponse) {
-                message_box.addClass("updated");
-                ajax_success_action({"success" : 1}, message_box);
-			},
-            complete: function() {
-                checkbox.prop("disabled", "");
-                spinner.css("visibility", "hidden");
-            }
-        });
-    })
 });

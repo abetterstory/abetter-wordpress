@@ -1,5 +1,7 @@
 <?php
 
+use WPML\PB\Shortcode\StringCleanUp;
+
 /**
  * Class WPML_PB_Register_Shortcodes
  */
@@ -13,7 +15,9 @@ class WPML_PB_Register_Shortcodes {
 	/** @var WPML_PB_Reuse_Translations_By_Strategy|null $reuse_translations */
 	private $reuse_translations;
 
-	private $existing_package_strings;
+	/** @var StringCleanUp */
+	private $existingStrings;
+
 	/** @var  int $location_index */
 	private $location_index;
 
@@ -35,18 +39,32 @@ class WPML_PB_Register_Shortcodes {
 		$this->reuse_translations     = $reuse_translations;
 	}
 
-	public function register_shortcode_strings( $post_id, $content ) {
+	/**
+	 * @param string|int    $post_id
+	 * @param string        $content
+	 * @param StringCleanUp $externalStringCleanUp
+	 *
+	 * @return bool
+	 */
+	public function register_shortcode_strings(
+		$post_id,
+		$content,
+		StringCleanUp $externalStringCleanUp = null
+	) {
+
+		$any_registered = false;
 
 		$this->location_index = 1;
 
 		$content = apply_filters( 'wpml_pb_shortcode_content_for_translation', $content, $post_id );
+		$content = WPML_PB_Shortcode_Content_Wrapper::maybeWrap( $content, $this->shortcode_strategy->get_shortcodes() );
 
-		$shortcode_parser               = $this->shortcode_strategy->get_shortcode_parser();
-		$shortcodes                     = $shortcode_parser->get_shortcodes( $content );
-		$this->existing_package_strings = $this->shortcode_strategy->get_package_strings( $this->shortcode_strategy->get_package_key( $post_id ) );
+		$shortcode_parser      = $this->shortcode_strategy->get_shortcode_parser();
+		$shortcodes            = $shortcode_parser->get_shortcodes( $content );
+		$this->existingStrings = $externalStringCleanUp ?: new StringCleanUp( $post_id, $this->shortcode_strategy );
 
 		if ( $this->reuse_translations ) {
-			$this->reuse_translations->set_original_strings( $this->existing_package_strings );
+			$this->reuse_translations->set_original_strings( $this->existingStrings->get() );
 		}
 
 		foreach ( $shortcodes as $shortcode ) {
@@ -57,7 +75,7 @@ class WPML_PB_Register_Shortcodes {
 				$encoding_condition = $this->shortcode_strategy->get_shortcode_tag_encoding_condition( $shortcode['tag'] );
 				$type               = $this->shortcode_strategy->get_shortcode_tag_type( $shortcode['tag'] );
 				$shortcode_content  = $this->encoding->decode( $shortcode_content, $encoding, $encoding_condition );
-				$this->register_string( $post_id, $shortcode_content, $shortcode, 'content', $type );
+				$any_registered     = $this->register_string( $post_id, $shortcode_content, $shortcode, 'content', $type ) || $any_registered;
 			}
 
 			$attributes              = (array) shortcode_parse_atts( $shortcode['attributes'] );
@@ -69,19 +87,22 @@ class WPML_PB_Register_Shortcodes {
 						$type       = $this->shortcode_strategy->get_shortcode_attribute_type( $shortcode['tag'], $attr );
 						$attr_value = $this->encoding->decode( $attr_value, $encoding );
 
-						$this->register_string( $post_id, $attr_value, $shortcode, $attr, $type );
+						$any_registered = $this->register_string( $post_id, $attr_value, $shortcode, $attr, $type ) || $any_registered;
 					}
 				}
 			}
 		}
 
 		if ( $this->reuse_translations ) {
-			$this->reuse_translations->find_and_reuse( $post_id, $this->existing_package_strings );
+			$this->reuse_translations->find_and_reuse( $post_id, $this->existingStrings->get() );
 		}
 
-		$this->clean_up_package_leftovers();
+		if( ! $externalStringCleanUp ) {
+			$this->existingStrings->cleanUp();
+			$this->mark_post_as_migrate_location_done( $post_id );
+		}
 
-		$this->mark_post_as_migrate_location_done( $post_id );
+		return $any_registered;
 	}
 
 	/**
@@ -120,6 +141,11 @@ class WPML_PB_Register_Shortcodes {
 	}
 
 	function get_updated_shortcode_string_title( $string_id, $shortcode, $attribute ) {
+		$title = $this->shortcode_strategy->get_shortcode_attribute_label( $shortcode['tag'], $attribute );
+		if ( $title ) {
+			return $title;
+		}
+
 		$current_title = $this->get_shortcode_string_title( $string_id );
 
 		$current_title_parts = explode( ':', $current_title );
@@ -142,6 +168,8 @@ class WPML_PB_Register_Shortcodes {
 	}
 
 	public function register_string( $post_id, $content, $shortcode, $attribute, $editor_type ) {
+		$string_id = 0;
+
 		if ( is_array( $content ) ) {
 			foreach ( $content as $key => $data ) {
 				if ( $data['translate'] ) {
@@ -149,7 +177,9 @@ class WPML_PB_Register_Shortcodes {
 				}
 			}
 		} else {
-			$this->remove_from_clean_up_list( $content );
+			if ( $this->existingStrings ) {
+				$this->existingStrings->remove( $content );
+			}
 			try {
 				$string_id    = $this->handle_strings->get_string_id_from_package( $post_id, $content );
 				$string_title = $this->get_updated_shortcode_string_title( $string_id, $shortcode, $attribute );
@@ -158,24 +188,11 @@ class WPML_PB_Register_Shortcodes {
 					$this->location_index ++;
 				}
 			} catch ( Exception $exception ) {
-
+				$string_id = 0;
 			}
 		}
-	}
 
-	private function remove_from_clean_up_list( $value ) {
-		$hash_value = md5( $value );
-		if ( isset( $this->existing_package_strings[ $hash_value ] ) ) {
-			unset( $this->existing_package_strings[ $hash_value ] );
-		}
-	}
-
-	private function clean_up_package_leftovers() {
-		if ( ! empty( $this->existing_package_strings ) ) {
-			foreach ( $this->existing_package_strings as $string_data ) {
-				$this->shortcode_strategy->remove_string( $string_data );
-			}
-		}
+		return $string_id !== 0;
 	}
 
 	/**

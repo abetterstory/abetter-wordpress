@@ -3,13 +3,6 @@
 class WPML_Cornerstone_Tabs extends WPML_Cornerstone_Module_With_Items {
 
 	/**
-	 * @return string
-	 */
-	public function get_items_field() {
-		return '_modules';
-	}
-
-	/**
 	 * @return array
 	 */
 	public function get_fields() {

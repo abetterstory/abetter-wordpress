@@ -23,12 +23,11 @@ class Queue {
 		}
 
 		$prepare = function( Job $job ) {
-			return $this->wpdb->prepare( "(%d,%s)", $job->ateJobId, $job->url );
+			return $this->wpdb->prepare( '(%d,%s)', $job->ateJobId, $job->url );
 		};
 
 		$columns = '(editor_job_id, download_url)';
 		$values  = $jobs->map( $prepare )->implode( ',' );
-
 
 		$this->wpdb->query(
 			"INSERT IGNORE INTO {$this->getTableName()} {$columns} VALUES {$values}"
@@ -53,7 +52,7 @@ class Queue {
 	public function getFirst() {
 		$job = null;
 
-		$this->wpdb->query( "START TRANSACTION" );
+		$this->wpdb->query( 'START TRANSACTION' );
 
 		$row = $this->getFirstUnlockedRow();
 
@@ -62,7 +61,7 @@ class Queue {
 			$this->lockJob( $job );
 		}
 
-		$this->wpdb->query( "COMMIT" );
+		$this->wpdb->query( 'COMMIT' );
 
 		return $job;
 	}

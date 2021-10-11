@@ -36,9 +36,9 @@ class WPML_TM_Jobs_Deadline_Estimate_AJAX_Action implements IWPML_Action {
 				list( $translator_id, $service ) = $this->parse_translator_data( $translator_data );
 
 				$translator_args = array(
-					'translator_id'  => $translator_id,
-					'service'        => $service,
-				    'to'             => $lang_to,
+					'translator_id' => $translator_id,
+					'service'       => $service,
+					'to'            => $lang_to,
 				);
 
 				$deadline_per_lang[ $lang_to ] = $this->deadline_estimate->get( $this->translation_basket, $translator_args );

@@ -20,9 +20,15 @@ class WPML_TM_Translation_Batch_Factory {
 	 */
 	public function create( array $batch_data ) {
 		$translators = isset( $batch_data['translators'] ) ? $batch_data['translators'] : array();
-		$elements      = $this->get_elements( $batch_data, array_keys( $translators ) );
-		$basket_name   = isset( $batch_data['basket_name'] ) ? filter_var( $batch_data['basket_name'],
-			FILTER_SANITIZE_STRING ) : '';
+		$basket_name = isset( $batch_data['basket_name'] ) ? filter_var(
+			$batch_data['basket_name'],
+			FILTER_SANITIZE_STRING
+		) : '';
+		$elements    = apply_filters(
+			'wpml_tm_batch_factory_elements',
+			$this->get_elements( $batch_data, array_keys( $translators ) ),
+			$basket_name
+		);
 
 		$deadline_date = null;
 		if ( isset( $batch_data['deadline_date'] ) && $this->validate_deadline( $batch_data['deadline_date'] ) ) {
@@ -94,19 +100,13 @@ class WPML_TM_Translation_Batch_Factory {
 	 *
 	 * @param string $date
 	 *
-	 * @return null|string
+	 * @return bool
 	 */
 	private function validate_deadline( $date ) {
 		$date_parts = explode( '-', $date );
 
-		if ( ! is_array( $date_parts ) || count( $date_parts ) !== 3 ) {
-			return false;
-		}
-
-		if ( ! checkdate( $date_parts[1], $date_parts[2], $date_parts[0] )) {
-			return false;
-		}
-
-		return true;
+		return is_array( $date_parts ) &&
+			   count( $date_parts ) === 3 &&
+			   checkdate( $date_parts[1], $date_parts[2], $date_parts[0] );
 	}
 }

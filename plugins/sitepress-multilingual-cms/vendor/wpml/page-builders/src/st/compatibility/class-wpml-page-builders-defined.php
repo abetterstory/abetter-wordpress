@@ -72,7 +72,7 @@ class WPML_Page_Builders_Defined {
 				'factory' => 'WPML_Gutenberg_Integration_Factory',
 			),
 			'cornerstone'    => array(
-				'function' => 'cornerstone_plugin_init',
+				'constant' => 'CS_VERSION',
 				'factory'  => 'WPML_Cornerstone_Integration_Factory',
 			),
 		);

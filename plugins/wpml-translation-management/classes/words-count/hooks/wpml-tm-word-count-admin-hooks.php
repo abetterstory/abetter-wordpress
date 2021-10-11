@@ -39,9 +39,9 @@ class WPML_TM_Word_Count_Admin_Hooks implements IWPML_Action {
 	public function display_dialog_open_link() {
 		echo '<a href="#" class="js-word-count-dialog-open"
 				 data-nonce="' . wp_create_nonce( WPML_TM_Word_Count_Hooks_Factory::NONCE_ACTION ) . '"
-				 data-dialog-title="' . esc_html( 'Word count estimation', 'wpml-translation-management' ) . '"
-				 data-cancel="' . esc_html( 'Cancel', 'wpml-translation-management' ) . '"
-				 data-loading-text="' . esc_html( 'Initializing...', 'wpml-translation-management' ) . '">'
-		     . esc_html__( 'Word count for the entire site', 'wpml-translation-management' ) . '</a>';
+				 data-dialog-title="' . esc_attr__( 'Word count estimation', 'wpml-translation-management' ) . '"
+				 data-cancel="' . esc_attr__( 'Cancel', 'wpml-translation-management' ) . '"
+				 data-loading-text="' . esc_attr__( 'Initializing...', 'wpml-translation-management' ) . '">'
+			 . esc_html__( 'Word count for the entire site', 'wpml-translation-management' ) . '</a>';
 	}
 }

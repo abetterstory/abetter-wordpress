@@ -90,7 +90,7 @@ class WPML_Abstract_Job_Collection {
 		$join   = "LEFT JOIN {$this->wpdb->prefix}posts {$posts_alias}
                   ON {$icl_translations_original_alias}.element_id = {$posts_alias}.ID
                      AND {$icl_translations_original_alias}.element_type = CONCAT('post_', {$posts_alias}.post_type)";
-		$select = "IF({$posts_alias}.post_type IS NOT NULL, 'post', 'package') as element_type_prefix";
+		$select = "SUBSTRING_INDEX({$icl_translations_original_alias}.element_type, '_', 1 ) as element_type_prefix";
 
 		return array( $select, $join );
 	}
@@ -228,7 +228,7 @@ class WPML_Abstract_Job_Collection {
 		if ( $this->sitepress ) {
 			$post_types = array_keys( $this->sitepress->get_translatable_documents() );
 			if ( $post_types ) {
-				$where .= ' AND (p.post_type IS NULL || p.post_type IN (' . wpml_prepare_in( $post_types, '%s' ) . ' )) ';
+				$where .= ' AND (p.post_type IS NULL OR p.post_type IN (' . wpml_prepare_in( $post_types, '%s' ) . ' )) ';
 			}
 		}
 
@@ -282,7 +282,8 @@ class WPML_Abstract_Job_Collection {
 		if ( $overdue ) {
 			$today_date = date( 'Y-m-d' );
 
-			$where .= $this->wpdb->prepare( " AND j.deadline_date IS NOT NULL AND j.completed_date IS NULL AND j.deadline_date < %s AND j.deadline_date <> '0000-00-00 00:00:00'", $today_date );
+			$statusCond = wpml_prepare_in( [ ICL_TM_WAITING_FOR_TRANSLATOR, ICL_TM_IN_PROGRESS ], '%d' );
+			$where     .= $this->wpdb->prepare( " AND j.deadline_date IS NOT NULL AND s.status IN ({$statusCond}) AND j.deadline_date < %s AND j.deadline_date <> '0000-00-00 00:00:00'", $today_date );
 		}
 
 		return $where;

@@ -10,10 +10,15 @@ class WPML_TM_Serialized_Custom_Field_Package_Handler {
 	}
 
 	public function add_hooks() {
-		add_filter( 'wpml_translation_job_post_meta_value_translated', array(
-			$this,
-			'translate_only_whitelisted_attributes',
-		), 10, 2 );
+		add_filter(
+			'wpml_translation_job_post_meta_value_translated',
+			array(
+				$this,
+				'translate_only_whitelisted_attributes',
+			),
+			10,
+			2
+		);
 	}
 
 	/**

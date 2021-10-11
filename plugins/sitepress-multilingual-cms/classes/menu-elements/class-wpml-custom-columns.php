@@ -27,25 +27,18 @@ class WPML_Custom_Columns implements IWPML_Action {
 	 */
 	public function add_posts_management_column( $columns ) {
 		$new_columns = $columns;
-		$active_languages = $this->get_filtered_active_languages();
-		if ( count( $active_languages ) <= 1 || 'trash' === get_query_var( 'post_status' ) ) {
+
+		if ( 'trash' === get_query_var( 'post_status' ) ) {
 			return $columns;
 		}
 
-		$current_language = $this->sitepress->get_current_language();
-		unset( $active_languages[ $current_language ] );
+		$flags_column = $this->get_flags_column();
 
-		if ( count( $active_languages ) > 0 ) {
-			$flags_column = '<span class="screen-reader-text">' . esc_html__( 'Languages', 'sitepress' ) . '</span>';
-			foreach ( $active_languages as $language_data ) {
-				$flags_column .= '<img src="' . esc_url( $this->sitepress->get_flag_url( $language_data['code'] ) ). '" width="18" height="12" alt="' . esc_attr( $language_data['display_name'] ) . '" title="' . esc_attr( $language_data['display_name'] ) . '" style="margin:2px" />';
-			}
-
-			$new_columns = array();
+		if ( $flags_column ) {
+			$new_columns = [];
 			foreach ( $columns as $column_key => $column_content ) {
 				$new_columns[ $column_key ] = $column_content;
-				if ( ( 'title' === $column_key || 'name' === $column_key )
-				     && ! isset( $new_columns[ self::COLUMN_KEY ] ) ) {
+				if ( ( 'title' === $column_key || 'name' === $column_key ) && ! isset( $new_columns[ self::COLUMN_KEY ] ) ) {
 					$new_columns[ self::COLUMN_KEY ] = $flags_column;
 				}
 			}
@@ -54,13 +47,42 @@ class WPML_Custom_Columns implements IWPML_Action {
 		return $new_columns;
 	}
 
+	public function get_flags_column() {
+		$active_languages = $this->get_filtered_active_languages();
+		if ( count( $active_languages ) <= 1 ) {
+			return '';
+		}
+
+		$current_language = $this->sitepress->get_current_language();
+		unset( $active_languages[ $current_language ] );
+
+		if ( ! count( $active_languages ) ) {
+			return '';
+		}
+
+		$flags_column = '<span class="screen-reader-text">' . esc_html__( 'Languages', 'sitepress' ) . '</span>';
+		foreach ( $active_languages as $language_data ) {
+			$flags_column .=
+				'<img src="' . esc_url( $this->sitepress->get_flag_url( $language_data['code'] ) ) .
+				'" width="18" height="12" alt="' . esc_attr( $language_data['display_name'] ) . '" title="' .
+				esc_attr( $language_data['display_name'] ) . '" style="margin:2px" />';
+		}
+
+		return $flags_column;
+	}
+
 	/**
 	 * Add posts management column.
 	 *
-	 * @param $column_name
+	 * @param string   $column_name
+	 * @param int|null $post_id
 	 */
-	public function add_content_for_posts_management_column( $column_name ) {
+	public function add_content_for_posts_management_column( $column_name, $post_id = null ) {
 		global $post;
+
+		if ( ! $post_id ) {
+			$post_id = $post->ID;
+		}
 
 		if ( self::COLUMN_KEY !== $column_name ) {
 			return;
@@ -72,7 +94,7 @@ class WPML_Custom_Columns implements IWPML_Action {
 		}
 		unset( $active_languages[ $this->sitepress->get_current_language() ] );
 		foreach ( $active_languages as $language_data ) {
-			$icon_html = $this->post_status_display->get_status_html( $post->ID, $language_data['code'] );
+			$icon_html = $this->post_status_display->get_status_html( $post_id, $language_data['code'] );
 			echo $icon_html;
 		}
 	}
@@ -85,7 +107,7 @@ class WPML_Custom_Columns implements IWPML_Action {
 	 * @return bool
 	 */
 	public function show_management_column_content( $post_type ) {
-		$user = get_current_user_id();
+		$user           = get_current_user_id();
 		$hidden_columns = get_user_meta( $user, 'manageedit-' . $post_type . 'columnshidden', true );
 		if ( '' === $hidden_columns ) {
 			$is_visible = (bool) apply_filters( 'wpml_hide_management_column', true, $post_type );
@@ -109,10 +131,14 @@ class WPML_Custom_Columns implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		add_action( 'admin_init', array(
-			$this,
-			'add_custom_columns_hooks'
-		), self::CUSTOM_COLUMNS_PRIORITY ); // accommodate Types init@999
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'add_custom_columns_hooks',
+			),
+			self::CUSTOM_COLUMNS_PRIORITY
+		); // accommodate Types init@999
 	}
 
 	/**
@@ -125,23 +151,32 @@ class WPML_Custom_Columns implements IWPML_Action {
 			&& array_key_exists( $post_type, $this->sitepress->get_translatable_documents() )
 		) {
 
-			add_filter( 'manage_' . $post_type . '_posts_columns', array(
-				$this,
-				'add_posts_management_column'
-			) );
+			add_filter(
+				'manage_' . $post_type . '_posts_columns',
+				array(
+					$this,
+					'add_posts_management_column',
+				)
+			);
 
 			$show_management_column_content = $this->show_management_column_content( $post_type );
 			if ( $show_management_column_content ) {
 				if ( is_post_type_hierarchical( $post_type ) ) {
-					add_action( 'manage_pages_custom_column', array(
-						$this,
-						'add_content_for_posts_management_column'
-					) );
+					add_action(
+						'manage_pages_custom_column',
+						array(
+							$this,
+							'add_content_for_posts_management_column',
+						)
+					);
 				}
-				add_action( 'manage_posts_custom_column', array(
-					$this,
-					'add_content_for_posts_management_column'
-				) );
+				add_action(
+					'manage_posts_custom_column',
+					array(
+						$this,
+						'add_content_for_posts_management_column',
+					)
+				);
 			}
 		}
 	}
@@ -154,15 +189,15 @@ class WPML_Custom_Columns implements IWPML_Action {
 	private function has_custom_columns() {
 		global $pagenow;
 		if ( 'edit.php' === $pagenow
-		     || 'edit-pages.php' === $pagenow
-		     || (
-			     'admin-ajax.php' === $pagenow
-			     && (
-				     (array_key_exists( 'action', $_POST ) && 'inline-save' === filter_var( $_POST['action'] ))
-				     || (array_key_exists( 'action', $_GET ) && 'fetch-list' === filter_var( $_GET['action'] )
-				     )
-			     )
-		     )
+			 || 'edit-pages.php' === $pagenow
+			 || (
+				 'admin-ajax.php' === $pagenow
+				 && (
+					 ( array_key_exists( 'action', $_POST ) && 'inline-save' === filter_var( $_POST['action'] ) )
+					 || ( array_key_exists( 'action', $_GET ) && 'fetch-list' === filter_var( $_GET['action'] )
+					 )
+				 )
+			 )
 		) {
 			return true;
 		}

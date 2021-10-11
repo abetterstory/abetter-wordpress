@@ -1,10 +1,10 @@
 === Loginizer ===
 Contributors: loginizer, pagelayer, softaculous
-Tags: access, admin, Loginizer, login, logs, ban ip, failed login, ip, whitelist ip, blacklist ip, failed attempts, lockouts, hack, authentication, login, security, rename login url, rename login, rename wp-admin, secure wp-admin, rename admin url, secure admin
+Tags: security, access, admin, Loginizer, login, logs, ban ip, failed login, ip, whitelist ip, blacklist ip, failed attempts, lockouts, hack, authentication, login, security, rename login url, rename login, rename wp-admin, secure wp-admin, rename admin url, secure admin, brute force protection
 Requires at least: 3.0
-Tested up to: 5.5
+Tested up to: 5.8
 Requires PHP: 5.5
-Stable tag: 1.5.5
+Stable tag: 1.6.7
 License: LGPLv2.1
 License URI: http://www.gnu.org/licenses/lgpl-2.1.html
 
@@ -17,6 +17,15 @@ Loginizer is a WordPress plugin which helps you fight against bruteforce attack 
 Loginizer is actively used by more than 1000000+ WordPress websites.
 
 You can find our official documentation at <a href="https://loginizer.com/docs">https://loginizer.com/docs</a>. We are also active in our community support forums on <a href="https://wordpress.org/support/plugin/loginizer">wordpress.org</a> if you are one of our free users. Our Premium Support Ticket System is at <a href="https://loginizer.deskuss.com">https://loginizer.deskuss.com</a>
+
+Free Features :
+
+* Brute force protection. IPs trying to brute force your website will be blocked for 15 minutes after 3 failed login attempts. After multiple lockouts the IP is blocked for 24 hours. This is the default configuration and can be changed from Loginizer -> Brute force page in WordPress admin panel.
+* Failed login attempts logs.
+* Blacklist IPs
+* Whitelist IPs
+* Custom error messages on failed login.
+* Permission check for important files and folders.
 
 = Get Support and Pro Features =
 
@@ -67,6 +76,62 @@ That's it. You're done!
 3. Loginizer Brute Force Settings page
 
 == Changelog ==
+
+= 1.6.7 =
+* [Feature] Added Bulk Export/Import Blacklist and Whitelist IPs via CSV.
+* [Improvement] Added option to Blacklist selected IPs from Failed Login Attempts Logs.
+* [Improvement] Added external link in Brute Force logs for IP information of the IPs attempting brute force.
+* [Improvement] [Pro] Added Loginizer 2FA status column on Users list page to show 2FA preferences selected by users.
+* [Improvement] [Pro] Added Show/Hide button for OTP field on 2FA login page.
+* [Bug Fix] [Pro] Two Factor Authentication lead to 502 Bad Gateway error on WP Engine instances. This is resolved now.
+
+= 1.6.6 =
+* [Improvement] For new installs, the loginizer_logs table will now use the server default MySQL Engine.
+* [Improvement] For the login attempts blocked by Loginizer, some other Activity Logs plugin still reported such blocked attempt as a failed login attempt. 
+* [Bug Fix] In rare cases when the username received in failed login attempt was blank, Loginizer failed to save such requests in the failed login logs table. This is fixed now. 
+
+= 1.6.5 =
+* [Bug Fix] After Interim Login due to session timeout, the popup for login was not closed. This is fixed now.
+* [Bug Fix] reCAPTCHA was not working on registration page with BuddyPress plugin. This is fixed now. 
+
+= 1.6.4 =
+This version includes a security fix and we recommend all users to upgrade to 1.6.4 or higher immediately.
+
+* [Security Fix] : A properly crafted username used to login could lead to SQL injection. This has been fixed by using the prepare function in PHP which prepares the SQL query for safe execution.
+
+* [Security Fix] : If the IP HTTP header was modified to have a null byte it could lead to stored XSS. This has been fixed by properly sanitizing the IP HTTP header before using the same. 
+
+= 1.6.3 =
+* [Fix] Fixed a PHP Notice that was caused by a change released yesterday. 
+
+= 1.6.2 =
+* [Feature] Added option to send Password Less Login email as HTML.
+* [Fix] When reCAPTCHA was disabled on Woocommerce checkout page, Loginizer reported captcha error if a user tried to register on checkout page. This is fixed now. 
+* [Fix] The email sent to admin for brute force login attempts will now contain the site url as well.
+* [Fix] Fixed PHP Notice on Two Factor Authentication page.
+
+= 1.6.1 =
+* [Fix] The captcha on Registration form when using WooCommerce was not being rendered if the "WooCommerce Checkout" captcha setting was disabled in Loginizer. This is fixed now and this captcha can be disabled with "Registration Form" captcha setting in Loginizer. 
+* [Fix] Minor checkbox pre filling UI fix on Two Factor Authentication page.
+
+= 1.6.0 =
+* [Feature] Admin can white list an IP or an IP range for Two Factor Authentication.
+* [Fix] If the plugins or themes which are included in the default WordPress package were not updated, the Checksum reported that the files for such plugins and themes did not matched. This is fixed now. 
+
+= 1.5.9 =
+* [Task] Admins can now customize email template for 2FA OTP via email.
+* [Task] Admins can now customize the 2FA messages on login screen.
+* [Fix] Changed the OTP via App field on login page to password type.
+
+= 1.5.8 =
+* [Task] Permission for / folder was suggested as 0755 and 0750 permission which is secure was reported as insecure. This is fixed now. 
+* [Fix] Prevent PHP Deprecated Warning on plugin upgrade page on servers running PHP 7.3+
+
+= 1.5.7 =
+* [Fix] Prevent PHP Notice on 1st failed login attempt from an IP.
+
+= 1.5.6 =
+* [Task] Admins can now subscribe to our newsletter if they decide to opt in.
 
 = 1.5.5 =
 * [Bug Fix] Remember me during login was not working with 2FA features. This is fixed. 

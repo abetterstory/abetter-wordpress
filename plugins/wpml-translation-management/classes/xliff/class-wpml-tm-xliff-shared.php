@@ -86,11 +86,12 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	}
 
 	protected function generate_job_data( SimpleXMLElement $xliff, $job ) {
-		$data = array(
+		$data = [
 			'job_id'   => $job->job_id,
-			'fields'   => array(),
+			'rid'      => $job->rid,
+			'fields'   => [],
 			'complete' => 1,
-		);
+		];
 
 		foreach ( $xliff->file->body->children() as $node ) {
 			$attr   = $node->attributes();

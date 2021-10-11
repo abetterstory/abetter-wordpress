@@ -38,8 +38,8 @@ class WPML_TM_Array_Search {
 	public function get_results() {
 		$results = array();
 
-		foreach( $this->where as $key => $clause ) {
-			$operator = isset ( $clause['operator'] ) ? strtoupper( $clause['operator'] ) : 'LIKE';
+		foreach ( $this->where as $key => $clause ) {
+			$operator = isset( $clause['operator'] ) ? strtoupper( $clause['operator'] ) : 'LIKE';
 
 			foreach ( $this->data as $data ) {
 
@@ -51,7 +51,7 @@ class WPML_TM_Array_Search {
 
 				if ( is_object( $data ) ) {
 					$field_value = $data->{$clause['field']};
-				} else if ( is_array( $data ) ) {
+				} elseif ( is_array( $data ) ) {
 					$field_value = $data[ $clause['field'] ];
 				}
 
@@ -64,7 +64,7 @@ class WPML_TM_Array_Search {
 						break;
 					case '=':
 						if ( strlen( $field_value ) === strlen( $clause['value'] ) &&
-						     0 === strpos( strtolower( $field_value ), strtolower( $clause['value'] ) ) ) {
+							 0 === strpos( strtolower( $field_value ), strtolower( $clause['value'] ) ) ) {
 							$results[] = $data;
 						}
 				}

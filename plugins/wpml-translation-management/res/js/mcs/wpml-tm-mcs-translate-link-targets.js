@@ -9,17 +9,17 @@ WPML_TM.translateLinkTargets = function () {
 	var self = this;
 
 	var init = function () {
-		jQuery(document).ready(function () {
-			self.button = jQuery('#wpml-scan-link-targets');
-			self.postCount = self.button.data('post-count');
-			self.stringCount = self.button.data('string-count');
-			self.button.on('click', function () {
-				self.button.prop('disabled', true);
-				self.button.parent().find('.spinner').css('visibility', 'visible');
-				self.numberFixed = 0;
-				showCompletePercent( self.postCount, 'post' );
-				wpmlScanLinkTargets(0, 10, true);
-			});
+        jQuery(function () {
+            self.button = jQuery('#wpml-scan-link-targets');
+            self.postCount = self.button.data('post-count');
+            self.stringCount = self.button.data('string-count');
+            self.button.on('click', function () {
+                self.button.prop('disabled', true);
+                self.button.parent().find('.spinner').css('visibility', 'visible');
+                self.numberFixed = 0;
+                showCompletePercent(self.postCount, 'post');
+                wpmlScanLinkTargets(0, 10, true);
+            });
 		});
 	};
 

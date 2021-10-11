@@ -1,10 +1,12 @@
 <?php
 
+use \WPML\TM\Jobs\Query\Query;
+
 class WPML_TM_Jobs_Repository {
 	/** @var wpdb */
 	private $wpdb;
 
-	/** @var WPML_TM_Jobs_Query */
+	/** @var Query */
 	private $query_builder;
 
 	/** @var WPML_TM_Job_Elements_Repository */
@@ -12,12 +14,12 @@ class WPML_TM_Jobs_Repository {
 
 	/**
 	 * @param wpdb                            $wpdb
-	 * @param WPML_TM_Jobs_Query              $query_builder
+	 * @param Query              $query_builder
 	 * @param WPML_TM_Job_Elements_Repository $elements_repository
 	 */
 	public function __construct(
 		wpdb $wpdb,
-		WPML_TM_Jobs_Query $query_builder,
+		Query $query_builder,
 		WPML_TM_Job_Elements_Repository $elements_repository
 	) {
 		$this->wpdb                = $wpdb;
@@ -72,7 +74,7 @@ class WPML_TM_Jobs_Repository {
 	 * @return WPML_TM_Job_Entity
 	 */
 	private function build_job_entity( stdClass $raw_data ) {
-		$types = array( WPML_TM_Job_Entity::POST_TYPE, WPML_TM_Job_Entity::PACKAGE_TYPE );
+		$types = [ WPML_TM_Job_Entity::POST_TYPE, WPML_TM_Job_Entity::PACKAGE_TYPE, WPML_TM_Job_Entity::STRING_BATCH ];
 		$batch = new WPML_TM_Jobs_Batch( $raw_data->local_batch_id, $raw_data->batch_name, $raw_data->tp_batch_id );
 
 		if ( in_array( $raw_data->type, $types, true ) ) {
@@ -109,6 +111,7 @@ class WPML_TM_Jobs_Repository {
 		$job->set_ts_status( $raw_data->ts_status );
 		$job->set_needs_update( $raw_data->needs_update );
 		$job->set_has_completed_translation( $raw_data->has_completed_translation );
+		$job->set_title( $raw_data->title );
 
 		return $job;
 	}

@@ -1,4 +1,7 @@
 <?php
+
+use WPML\FP\Str;
+
 /**
  * WPML_Attachment_Action class file.
  *
@@ -11,7 +14,7 @@
 class WPML_Attachment_Action implements IWPML_Action {
 
 	/**
-	 * Sitepress instance.
+	 * SitePress instance.
 	 *
 	 * @var SitePress
 	 */
@@ -27,7 +30,7 @@ class WPML_Attachment_Action implements IWPML_Action {
 	/**
 	 * WPML_Attachment_Action constructor.
 	 *
-	 * @param SitePress $sitepress Sitepress instance.
+	 * @param SitePress $sitepress SitePress instance.
 	 * @param wpdb      $wpdb      wpdb instance.
 	 */
 	public function __construct( SitePress $sitepress, wpdb $wpdb ) {
@@ -166,25 +169,31 @@ class WPML_Attachment_Action implements IWPML_Action {
 	 * @return string|null
 	 */
 	public function delete_file_filter( $file ) {
-		static $saved_request = array();
 		if ( $file ) {
-			$file_name = $this->get_file_name_without_size_from_full_name( $file );
-			if ( array_key_exists( $file_name, $saved_request ) ) {
-				$attachment = $saved_request[ $file_name ];
-			} else {
-				$sql                 = "SELECT pm.meta_id, pm.post_id FROM {$this->wpdb->postmeta} AS pm 
-						WHERE pm.meta_value LIKE %s AND pm.meta_key='_wp_attached_file'";
-				$attachment_prepared = $this->wpdb->prepare( $sql, array( '%' . $file_name ) );
-				$attachment          = $this->wpdb->get_row( $attachment_prepared );
+			$file_name           = $this->get_file_name( $file );
+			$sql                 = "SELECT pm.meta_id, pm.post_id FROM {$this->wpdb->postmeta} AS pm 
+						WHERE pm.meta_value = %s AND pm.meta_key='_wp_attached_file'";
+			$attachment_prepared = $this->wpdb->prepare( $sql, [ $file_name ] );
+			$attachment          = $this->wpdb->get_row( $attachment_prepared );
 
-				$saved_request [ $file_name ] = $attachment;
-			}
 			if ( ! empty( $attachment ) ) {
 				$file = null;
 			}
 		}
 
 		return $file;
+	}
+
+	private function get_file_name( $file ) {
+		$file_name  = $this->get_file_name_without_size_from_full_name( $file );
+		$upload_dir = wp_upload_dir();
+		$path_parts = explode( "/", Str::replace( $upload_dir['basedir'], '', $file ) );
+
+		if ( $path_parts ) {
+			$path_parts[ count( $path_parts ) - 1 ] = $file_name;
+		}
+
+		return ltrim( implode( '/', $path_parts ), '/' );
 	}
 
 	/**

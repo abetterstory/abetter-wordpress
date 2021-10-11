@@ -24,7 +24,7 @@ class WPML_TM_Loader {
 		global $ICL_Pro_Translation;
 
 		if ( ! isset( $ICL_Pro_Translation )
-		     && ( $wpml_wp_api->is_admin() || defined( 'XMLRPC_REQUEST' ) )
+			 && ( $wpml_wp_api->is_admin() || defined( 'XMLRPC_REQUEST' ) )
 		) {
 			$job_factory         = wpml_tm_load_job_factory();
 			$ICL_Pro_Translation = new WPML_Pro_Translation( $job_factory );

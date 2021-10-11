@@ -48,7 +48,7 @@ class WPML_TM_Translation_Batch_Element {
 
 		$possible_actions = array(
 			TranslationManagement::TRANSLATE_ELEMENT_ACTION,
-			TranslationManagement::DUPLICATE_ELEMENT_ACTION
+			TranslationManagement::DUPLICATE_ELEMENT_ACTION,
 		);
 		foreach ( $target_languages as $lang => $action ) {
 			if ( ! is_string( $lang ) || ! in_array( $action, $possible_actions, true ) ) {

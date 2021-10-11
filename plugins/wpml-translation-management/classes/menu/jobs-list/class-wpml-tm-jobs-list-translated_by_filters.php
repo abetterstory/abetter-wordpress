@@ -24,7 +24,7 @@ class WPML_TM_Jobs_List_Translated_By_Filters {
 			array(
 				'value' => 'any',
 				'label' => __( 'Anyone', 'wpml-translation-management' ),
-			)
+			),
 		);
 
 		$services = $this->services->get();

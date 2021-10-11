@@ -2,7 +2,6 @@
 
 namespace WPML\TM\TranslationProxy\Services;
 
-
 use WPML\TM\TranslationProxy\Services\Project\Manager;
 
 class Authorization {
@@ -43,7 +42,7 @@ class Authorization {
 	 * @throws \WPML_TP_API_Exception
 	 */
 	public function updateCredentials( \stdClass $credentials ) {
-		$service                     = $this->getCurrentService();
+		$service = $this->getCurrentService();
 
 		$this->projectManager->updateCredentials( $service, $credentials );
 

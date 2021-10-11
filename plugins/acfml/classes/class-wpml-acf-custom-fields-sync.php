@@ -1,41 +1,74 @@
 <?php
 
+use ACFML\FieldState;
+
 class WPML_ACF_Custom_Fields_Sync {
 
 	const TR_JOB_FIELD_PATTERN = '/field-(\S+)-[0-9]/';
-
-	public function register_hooks() {
-		// make copy once synchornisation working (acfml-45)
-		add_filter( 'wpml_custom_field_values', array($this, 'remove_cf_value_for_copy_once'), 10, 2);
-		add_filter( 'wpml_tm_job_field_is_translatable', array( $this, 'adjust_is_translatable_for_field_in_translation_job' ), 10, 2 );
-
+	
+	/**
+	 * @var FieldState
+	 */
+	private $field_state;
+	
+	public function __construct( FieldState $field_state ) {
+		$this->field_state = $field_state;
 	}
 
-	public function remove_cf_value_for_copy_once( $value, $context_data ) {
-		/*
-		 * when user starts translating post, acfml automatically creates custom fields with empty values
-		 * WPML before running "copy once" checks if field doesn't exist - it is conflicting
-		 * purpose of this code:
-		 * if it is first copy-once synchronisation of acf field, remove value
-		 */
+	/**
+	 * Registers hooks related to custom fields synchronisation.
+	 */
+	public function register_hooks() {
+		add_filter( 'wpml_tm_job_field_is_translatable', array( $this, 'adjust_is_translatable_for_field_in_translation_job' ), 10, 2 );
+		// make copy once synchronisation working (acfml-155).
+		add_filter( 'acf/update_value', array( $this, 'clean_empty_values_for_copy_once_field' ), 10, 3 );
+	}
 
-		// check if this is copy once synchronisation
-		if ( WPML_COPY_ONCE_CUSTOM_FIELD == $context_data['custom_fields_translation'] ) {
-			// check if custom field is acf field
-			$field = get_field_object($context_data['meta_key'], $context_data['post_id']);
-			if ( false != $field ) {
-				// check if value is array with empty strings
-				if ( is_array($value) ) {
-					$last_array = end( $value );
-					if ( is_array( $last_array ) && end($value) === "" ) {
-						$value = array();
-					}
-
-				}
-			}
+	/**
+	 * Change empty custom field value into null when field is set to "Copy once".
+	 *
+	 * On the very beginning of the post creation process, ACF saves values into postmeta
+	 * even though fields are empty. This makes "copy once" option not working:
+	 * translated posts always has some value in this field and copying doesn't start.
+	 * However, if this value is strictly equal to null, ACF deletes postmeta
+	 * instead of saving empty value. Copy once sees there is no value and is copying
+	 * value from original post.
+	 *
+	 * @see \acf_update_value()
+	 *
+	 * @param mixed      $value          Filtered custom field value.
+	 * @param int|string $post_id        ID of the post or option page.
+	 * @param array      $field          ACF field data.
+	 *
+	 * @return mixed|null Filtered value.
+	 */
+	public function clean_empty_values_for_copy_once_field( $value, $post_id, $field ) {
+		if ( '' === $value
+			&& ! $this->value_has_been_emptied( $field )
+			&& isset( $field['wpml_cf_preferences'] )
+			&& WPML_COPY_ONCE_CUSTOM_FIELD === $field['wpml_cf_preferences']
+			&& ! $this->isFieldType( $field, 'group' )
+		) {
+			$value = null;
 		}
-
 		return $value;
+	}
+	
+	private function value_has_been_emptied( $field ) {
+		$state_before = $this->field_state->getStateBefore();
+		return ! empty( $state_before[ $field['name'] ] );
+	}
+
+	/**
+	 * Check if field is of given type.
+	 *
+	 * @param array  $field The ACF field.
+	 * @param string $type  Field type.
+	 *
+	 * @return bool
+	 */
+	private function isFieldType( $field, $type ) {
+		return isset( $field['type'] ) && $type === $field['type'];
 	}
 
 	/**

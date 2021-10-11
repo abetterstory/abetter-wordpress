@@ -50,7 +50,7 @@ class SingleSiteProcess implements Process {
 
 	public function runAll() {
 		call_user_func( $this->migrateAdminTexts );
-		$this->domainsAndLanguagesRepository->get()->each( function ( $row ) {
+		$this->getDomainsAndLanguages()->each( function ( $row ) {
 			$this->manager->add( $row->domain, $row->locale );
 		} );
 
@@ -65,7 +65,7 @@ class SingleSiteProcess implements Process {
 			call_user_func( $this->migrateAdminTexts );
 		}
 
-		$domains   = $this->domainsAndLanguagesRepository->get();
+		$domains   = $this->getDomainsAndLanguages();;
 		$remaining = $this->pager->iterate( $domains, function ( $row ) {
 			$this->manager->add( $row->domain, $row->locale );
 
@@ -84,12 +84,19 @@ class SingleSiteProcess implements Process {
 			return 0;
 		}
 
-		$domains = $this->domainsAndLanguagesRepository->get();
+		$domains = $this->getDomainsAndLanguages();
+
 		if ( $domains->count() === 0 ) {
 			$this->status->markComplete();
 		}
 
 		return $domains->count();
+	}
+
+	private function getDomainsAndLanguages() {
+		return DomainsAndLanguagesRepository::hasTranslationFilesTable()
+			? $this->domainsAndLanguagesRepository->get()
+			: wpml_collect();
 	}
 
 	/**

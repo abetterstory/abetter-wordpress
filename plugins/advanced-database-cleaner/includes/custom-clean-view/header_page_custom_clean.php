@@ -14,20 +14,11 @@
 
 	<div style="clear:both;margin-bottom:25px;width:100%;background:#f9f9f9" class="aDBc-float-right">
 
-		<?php 
-		if(ADBC_PLUGIN_F_TYPE == "free"){
-			$aDBc_form_style = "pointer-events:none;opacity:0.5";
-			
-		}else{
-			$aDBc_form_style = "";
-		}
-		?>
-
 		<div style="float:left;padding:8px;height:30px">
 
 			<span class="aDBc_premium_tooltip">
 
-				<form style="float:left;<?php echo $aDBc_form_style ?>" method="get">
+				<form style="float:left;pointer-events:none;opacity:0.5" method="get">
 
 					<?php 
 					// Generate current parameters in URL
@@ -54,9 +45,7 @@
 
 				</form>
 
-				<?php if(ADBC_PLUGIN_F_TYPE == "free"){ ?>
-					<span style="width:150px" class="aDBc_premium_tooltiptext"><?php _e('Available in Pro version!','advanced-database-cleaner') ?></span>
-				<?php } ?>
+				<span style="width:150px" class="aDBc_premium_tooltiptext"><?php _e('Available in Pro version!','advanced-database-cleaner') ?></span>
 
 			</span>
 		</div>

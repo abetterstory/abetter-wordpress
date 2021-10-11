@@ -31,29 +31,32 @@ class WPML_TM_MCS_Pagination_Ajax {
 				'hide_system_fields' => ! isset( $_POST['show_system_fields'] ) || ! filter_var( $_POST['show_system_fields'], FILTER_VALIDATE_BOOLEAN ),
 			);
 
+			$menu_item = null;
+
 			if ( 'cf' === $_POST['type'] ) {
 				$menu_item = $this->menu_factory->create_post();
 			} elseif ( 'tcf' === $_POST['type'] ) {
 				$menu_item = $this->menu_factory->create_term();
 			}
 
-			$result = array();
-			ob_start();
-			$menu_item->init_data( $args );
-			$menu_item->render_body();
-			$result['body'] = ob_get_clean();
+			if ( $menu_item ) {
+				$result = array();
+				ob_start();
+				$menu_item->init_data( $args );
+				$menu_item->render_body();
+				$result['body'] = ob_get_clean();
 
-			ob_start();
-			$menu_item->render_pagination( $args['items_per_page'], $args['page'] );
-			$result['pagination'] = ob_get_clean();
+				ob_start();
+				$menu_item->render_pagination( $args['items_per_page'], $args['page'] );
+				$result['pagination'] = ob_get_clean();
 
-			wp_send_json_success( $result );
-		} else {
-			wp_send_json_error(
-				array(
-					'message' => __( 'Invalid Request.', 'wpml-translation-management' ),
-				)
-			);
+				wp_send_json_success( $result );
+			}
 		}
+		wp_send_json_error(
+			array(
+				'message' => __( 'Invalid Request.', 'wpml-translation-management' ),
+			)
+		);
 	}
 }

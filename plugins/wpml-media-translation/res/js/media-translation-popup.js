@@ -1,22 +1,22 @@
 /* globals wpml_media_popup */
 
-jQuery(document).ready(function ($) {
-	var dialogBox           = $('#wpml-media-dialog');
-	var dialogForm          = $('#wpml-media-dialog-form');
-	var mediaFileUploadForm = $('#wpml-media-file-upload-form');
+jQuery(function ($) {
+    var dialogBox = $('#wpml-media-dialog');
+    var dialogForm = $('#wpml-media-dialog-form');
+    var mediaFileUploadForm = $('#wpml-media-file-upload-form');
 
-	dialogBox.dialog({
-		resizable:     false,
-		draggable:     false,
-		height:        'auto',
-		width:         800,
-		autoOpen:      false,
+    dialogBox.dialog({
+                         resizable: false,
+                         draggable: false,
+                         height   : 'auto',
+                         width    : 800,
+                         autoOpen : false,
 		modal:         true,
 		closeOnEscape: false,
 		dialogClass:   'otgs-ui-dialog wpml-media-dialog wpml-dialog-translate',
 		title:         wpml_media_popup.title,
 		create:        function () {
-			$('#jquery-ui-style-css').attr('disabled', 'disabled');
+			$('#jquery-ui-style-css').prop('disabled', true);
 		},
 		open:          function (event, ui) {
 			$('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 			}
 		},
 		close:         function () {
-			$('#jquery-ui-style-css').removeAttr('disabled');
+			$('#jquery-ui-style-css').prop('disabled', false);
 			if (WPML_Media_Batch_Url_Translation.hasDialog) {
 				WPML_Media_Batch_Url_Translation.showDialog();
 			}

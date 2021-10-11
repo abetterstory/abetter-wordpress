@@ -1,14 +1,18 @@
 <?php
 
 class WPML_TM_Promotions {
+	/**
+	 * @var \WPML_WP_API
+	 */
+	private $wpml_wp_api;
 
 	/**
 	 * WPML_TM_Promotions constructor.
 	 *
-	 * @param WPML_WP_API $wpml_wp_api
+	 * @param \WPML_WP_API $wpml_wp_api
 	 */
-	public function __construct( &$wpml_wp_api ) {
-		$this->wpml_wp_api = &$wpml_wp_api;
+	public function __construct( $wpml_wp_api ) {
+		$this->wpml_wp_api = $wpml_wp_api;
 		$this->promote_wcml_message();
 	}
 

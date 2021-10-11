@@ -1,21 +1,29 @@
 <?php
 
+use WPML\FP\Relation;
+use \WPML\LIB\WP\Post;
+
 class WPML_TP_Sync_Update_Job {
 
 	private $strategies = array(
 		WPML_TM_Job_Entity::POST_TYPE    => 'update_post_job',
 		WPML_TM_Job_Entity::STRING_TYPE  => 'update_string_job',
 		WPML_TM_Job_Entity::PACKAGE_TYPE => 'update_post_job',
+		WPML_TM_Job_Entity::STRING_BATCH => 'update_post_job',
 	);
 
 	/** @var wpdb */
 	private $wpdb;
 
+	/** @var SitePress */
+	private $sitepress;
+
 	/**
 	 * @param wpdb $wpdb
 	 */
-	public function __construct( wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( wpdb $wpdb, SitePress $sitepress ) {
+		$this->wpdb      = $wpdb;
+		$this->sitepress = $sitepress;
 	}
 
 	/**
@@ -47,7 +55,8 @@ class WPML_TP_Sync_Update_Job {
 					'tp_revision' => $job->get_revision(),
 					'ts_status'   => $this->get_ts_status_in_ts_format( $job ),
 				),
-				array( 'rid' => $job->get_tp_id() ) );
+				array( 'rid' => $job->get_tp_id() )
+			);
 		}
 
 		$data = array(
@@ -74,6 +83,17 @@ class WPML_TP_Sync_Update_Job {
 	 * @return WPML_TM_Job_Entity
 	 */
 	private function update_post_job( WPML_TM_Job_Entity $job ) {
+		$job_id = $job->get_id();
+
+		if ( $job->get_status() === ICL_TM_NOT_TRANSLATED ) {
+			$prev_status = $this->get_job_prev_status( $job_id );
+			if ( $prev_status && Relation::propEq( 'needs_update', '1', $prev_status ) ) {
+				$this->wpdb->update( $this->wpdb->prefix . 'icl_translation_status', $prev_status, [ 'rid' => $job_id ] );
+				$job->set_needs_update( true );
+				return $job;
+			}
+		}
+
 		$this->wpdb->update(
 			$this->wpdb->prefix . 'icl_translation_status',
 			array(
@@ -81,10 +101,35 @@ class WPML_TP_Sync_Update_Job {
 				'tp_revision' => $job->get_revision(),
 				'ts_status'   => $this->get_ts_status_in_ts_format( $job ),
 			),
-			array( 'rid' => $job->get_id() )
+			array( 'rid' => $job_id )
 		);
 
+		if (
+			ICL_TM_NOT_TRANSLATED === $job->get_status()
+			&& ( $post_type = Post::getType( $job->get_original_element_id() ) )
+		) {
+			$this->sitepress->delete_orphan_element(
+				$job->get_original_element_id(),
+				'post_' . $post_type,
+				$job->get_target_language()
+			);
+		}
+
 		return $job;
+	}
+
+	private function get_job_prev_status( $job_id ) {
+		$previous_state = $this->wpdb->get_var(
+			$this->wpdb->prepare(
+				"SELECT _prevstate
+					FROM {$this->wpdb->prefix}icl_translation_status
+					WHERE rid=%d
+					LIMIT 1",
+				$job_id
+			)
+		);
+
+		return unserialize( $previous_state );
 	}
 
 	/**

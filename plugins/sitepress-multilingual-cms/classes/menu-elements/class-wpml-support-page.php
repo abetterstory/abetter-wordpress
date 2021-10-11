@@ -1,6 +1,10 @@
 <?php
 
 class WPML_Support_Page {
+	/**
+	 * @var \WPML_WP_API
+	 */
+	private $wpml_wp_api;
 
 	/**
 	 * WPML_Support_Page constructor.
@@ -63,7 +67,7 @@ class WPML_Support_Page {
 	}
 
 	/**
-	 * @param $message
+	 * @param string $message
 	 */
 	private function render_message( $message ) {
 		if ( $message ) {

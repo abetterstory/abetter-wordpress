@@ -36,7 +36,7 @@ class WPML_TF_Translation_Queue_Hooks implements IWPML_Action {
 			foreach ( $feedback_collection as $feedback ) {
 				/** @var WPML_TF_Feedback $feedback */
 				if ( $feedback->get_job_id() === (int) $translation_job->get_id()
-				     && 'fixed' !== $feedback->get_status()
+					 && 'fixed' !== $feedback->get_status()
 				) {
 					$allowed_translators[] = $current_user_id;
 					break;

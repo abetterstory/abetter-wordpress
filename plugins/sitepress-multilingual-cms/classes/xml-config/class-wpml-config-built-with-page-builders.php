@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Config_Built_With_Page_Builders extends WPML_WP_Option implements IWPML_Action, IWPML_Backend_Action_Loader, IWPML_AJAX_Action_Loader  {
+class WPML_Config_Built_With_Page_Builders extends WPML_WP_Option implements IWPML_Action, IWPML_Backend_Action_Loader, IWPML_AJAX_Action_Loader {
 
 	const CONFIG_KEY = 'built-with-page-builder';
 

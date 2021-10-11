@@ -5,7 +5,7 @@
  */
 class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Translation implements IWPML_Action {
 
-	const BATCH_SIZE = 500;
+	const BATCH_SIZE  = 500;
 	const AJAX_ACTION = 'wpml_media_translate_media_url_in_strings';
 
 	/**
@@ -16,7 +16,7 @@ class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Trans
 	/**
 	 * WPML_Media_String_Batch_Url_Translation constructor.
 	 *
-	 * @param wpdb $wpdb
+	 * @param wpdb                   $wpdb
 	 * @param WPML_ST_String_Factory $string_factory
 	 */
 	public function __construct(
@@ -32,7 +32,7 @@ class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Trans
 	 *
 	 * @return int
 	 */
-	protected function get_batch_size( $batch_size_factor = self::BATCH_SIZE_FACTOR_ALL_MEDIA ){
+	protected function get_batch_size( $batch_size_factor = self::BATCH_SIZE_FACTOR_ALL_MEDIA ) {
 		return $batch_size_factor * self::BATCH_SIZE;
 	}
 
@@ -64,7 +64,7 @@ class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Trans
 	protected function get_ajax_error_message() {
 		return array(
 			'key'   => 'wpml_media_batch_urls_update_error_strings',
-			'value' => esc_js( __( 'Translating media urls in string translations failed: Please try again (%s)', 'wpml-media' ) )
+			'value' => esc_js( __( 'Translating media urls in string translations failed: Please try again (%s)', 'wpml-media' ) ),
 		);
 	}
 
@@ -75,7 +75,8 @@ class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Trans
 	 */
 	protected function process_batch( $offset ) {
 
-		$original_strings = $this->wpdb->get_col( "
+		$original_strings = $this->wpdb->get_col(
+			"
 			SELECT SQL_CALC_FOUND_ROWS id, language 
 			FROM {$this->wpdb->prefix}icl_strings 
 			ORDER BY id ASC 
@@ -103,13 +104,14 @@ class WPML_Media_String_Batch_Url_Translation extends WPML_Media_Batch_Url_Trans
 		if ( ! $media_url ) {
 			return 0;
 		}
-		preg_match( "/(.+)\.([a-z]+)$/", $media_url, $match );
+		preg_match( '/(.+)\.([a-z]+)$/', $media_url, $match );
 		$media_url_no_extension = wpml_like_escape( $match[1] );
 		$extension              = wpml_like_escape( $match[2] );
 
 		$batch_size = $this->get_batch_size( parent::BATCH_SIZE_FACTOR_SPECIFIC_MEDIA );
 
-		$original_strings = $this->wpdb->get_col( "
+		$original_strings = $this->wpdb->get_col(
+			"
 			SELECT SQL_CALC_FOUND_ROWS id, language 
 			FROM {$this->wpdb->prefix}icl_strings
 			WHERE (

@@ -3,6 +3,7 @@
 namespace WPML\TM\ATE\Download;
 
 use Exception;
+use WPML\TM\ATE\ReturnedJobsQueue;
 use WPML_TM_ATE_API;
 use WPML_TM_ATE_Jobs;
 
@@ -20,7 +21,7 @@ class Consumer {
 	}
 
 	/**
-	 * @param Job $job
+	 * @param  Job $job
 	 *
 	 * @return Job|false
 	 * @throws Exception
@@ -32,6 +33,8 @@ class Consumer {
 		if ( $wpmlJobId ) {
 			$processedJob            = clone $job;
 			$processedJob->wpmlJobId = $wpmlJobId;
+
+			ReturnedJobsQueue::remove( $wpmlJobId );
 
 			return $processedJob;
 		}

@@ -254,7 +254,7 @@ function aDBc_optimize_scheduled_tables($schedule_name){
 					$table_name = $table->TABLE_NAME;
 				}
 
-				$wpdb->query("OPTIMIZE TABLE " . $table_name);			
+				$wpdb->query("OPTIMIZE TABLE " . $table_name);
 			}
 		}
 
@@ -603,11 +603,7 @@ function aDBc_prepare_items_to_display(
 	}
 
 	// Filter results according to users choices and args
-	if(ADBC_PLUGIN_F_TYPE == "pro"){
-		aDBc_filter_results_in_all_items_array($aDBc_all_items, $aDBc_tables_name_to_optimize, $aDBc_tables_name_to_repair);
-	}else{
-		aDBc_filter_results_in_all_items_array_free($aDBc_all_items, $aDBc_tables_name_to_optimize, $aDBc_tables_name_to_repair);
-	}
+	aDBc_filter_results_in_all_items_array_free($aDBc_all_items, $aDBc_tables_name_to_optimize, $aDBc_tables_name_to_repair);
 
 	// Put 'u' type to all uncategorized items and count all items
 	foreach($aDBc_all_items as $item_name => $item_info){
@@ -647,13 +643,8 @@ function aDBc_prepare_items_to_display(
 
 		switch($item_info['type']){
 			case 'u' :
-				if(ADBC_PLUGIN_F_TYPE == "free"){
-					$belongs_to_without_html = __('Available in Pro version!', 'advanced-database-cleaner');
-					$belongs_to = '<span style="color:#999">' . $belongs_to_without_html . '</span>';
-				}else{
-					$belongs_to_without_html = __('Uncategorised!', 'advanced-database-cleaner');
-					$belongs_to = '<span style="color:#999">' . $belongs_to_without_html . '</span>' . $aDBc_not_categorized_toolip;
-				}
+				$belongs_to_without_html = __('Available in Pro version!', 'advanced-database-cleaner');
+				$belongs_to = '<span style="color:#999">' . $belongs_to_without_html . '</span>';
 				break;
 			case 'o' :
 				$belongs_to_without_html = __('Orphan!', 'advanced-database-cleaner');

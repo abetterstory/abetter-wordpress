@@ -14,9 +14,9 @@ class WPML_ST_Taxonomy_Labels_Translation_Factory implements IWPML_Backend_Actio
 			$records_factory  = new WPML_Slug_Translation_Records_Factory();
 			$taxonomy_strings = new WPML_ST_Taxonomy_Strings(
 				$records_factory->create( WPML_Slug_Translation_Factory::TAX ),
-				wpml_st_load_string_factory()
+				WPML\Container\make( WPML_ST_String_Factory::class )
 			);
-			$hooks[] = new WPML_ST_Taxonomy_Labels_Translation(
+			$hooks[]          = new WPML_ST_Taxonomy_Labels_Translation(
 				$taxonomy_strings,
 				new WPML_ST_Tax_Slug_Translation_Settings(),
 				new WPML_Super_Globals_Validation(),
@@ -42,7 +42,7 @@ class WPML_ST_Taxonomy_Labels_Translation_Factory implements IWPML_Backend_Actio
 		);
 
 		return isset( $_POST['action'] )
-		       && in_array( $_POST['action'], $allowed_actions , true );
+			   && in_array( $_POST['action'], $allowed_actions, true );
 	}
 
 	private function is_wcml_active() {

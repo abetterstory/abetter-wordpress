@@ -47,27 +47,30 @@ class WPML_PB_Config_Import_Shortcode {
 						if ( ! empty( $attribute['value'] ) ) {
 							$attribute_encoding = isset( $attribute['attr']['encoding'] ) ? $attribute['attr']['encoding'] : '';
 							$attribute_type     = isset( $attribute['attr']['type'] ) ? $attribute['attr']['type'] : '';
-							$attributes[]       = array(
+							$attribute_label    = isset( $attribute['attr']['label'] ) ? $attribute['attr']['label'] : '';
+							$attributes[]       = [
 								'value'    => $attribute['value'],
 								'encoding' => $attribute_encoding,
 								'type'     => $attribute_type,
-							);
+								'label'    => $attribute_label,
+							];
 						}
 					}
 				}
 
 				if ( ! ( $ignore_content && empty( $attributes ) ) ) {
-					$shortcode_data[] = array(
-						'tag'        => array(
+					$shortcode_data[] = [
+						'tag'        => [
 							'value'              => $data['tag']['value'],
 							'encoding'           => isset( $data['tag']['attr']['encoding'] ) ? $data['tag']['attr']['encoding'] : '',
 							'encoding-condition' => isset( $data['tag']['attr']['encoding-condition'] ) ? $data['tag']['attr']['encoding-condition'] : '',
 							'type'               => isset( $data['tag']['attr']['type'] ) ? $data['tag']['attr']['type'] : '',
 							'raw-html'           => isset( $data['tag']['attr']['raw-html'] ) ? $data['tag']['attr']['raw-html'] : '',
 							'ignore-content'     => $ignore_content,
-						),
+							'label'              => isset( $data['tag']['attr']['label'] ) ? $data['tag']['attr']['label'] : '',
+						],
 						'attributes' => $attributes,
-					);
+					];
 				}
 			}
 		}

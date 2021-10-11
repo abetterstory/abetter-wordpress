@@ -71,7 +71,8 @@ class WPML_TM_ICL20_Migrate_Local {
 	private function update_table( $table ) {
 		$wpdb = $this->sitepress->get_wpdb();
 
-		$update = $wpdb->update( $wpdb->prefix . $table,
+		$update = $wpdb->update(
+			$wpdb->prefix . $table,
 			array(
 				'translator_id'       => 0,
 				'translation_service' => $this->status->get_ICL_20_TS_ID(),
@@ -80,7 +81,8 @@ class WPML_TM_ICL20_Migrate_Local {
 				'translation_service' => $this->status->get_ICL_LEGACY_TS_ID(),
 			),
 			array( '%d', '%d' ),
-			array( '%d' ) );
+			array( '%d' )
+		);
 
 		if ( false === $update ) {
 			$this->progress->log_failed_attempt( __METHOD__ . ' - ' . $wpdb->last_error );
@@ -91,7 +93,7 @@ class WPML_TM_ICL20_Migrate_Local {
 
 	public function migrate_project() {
 		$old_index = $this->progress->get_project_to_migrate();
-		//icl_translation_projects
+		// icl_translation_projects
 		$migrated = false;
 
 		if ( $old_index ) {
@@ -151,10 +153,12 @@ class WPML_TM_ICL20_Migrate_Local {
 			$this->progress->set_project_to_migrate( $old_index );
 
 			$icl20_service_id = $this->status->get_ICL_20_TS_ID();
-			$this->tp_services->select_service( $icl20_service_id,
+			$this->tp_services->select_service(
+				$icl20_service_id,
 				array(
 					'api_token' => $new_token,
-				) );
+				)
+			);
 			$active_service = $this->tp_services->get_current_service();
 			$migrated       = $active_service->id === $icl20_service_id;
 		}

@@ -19,7 +19,7 @@ function WpmlTpPollingPickupPopulateAction(jQuery, TranslationProxyPolling) {
                 return;
             }
             icl_tm_pickup_wrap_button.val('...Fetching translation job data ...');
-            icl_tm_pickup_wrap_button.attr('disabled', 'disabled');
+            icl_tm_pickup_wrap_button.prop('disabled', true);
             jQuery.ajax(
                 {
                     type: "POST",
@@ -36,7 +36,7 @@ function WpmlTpPollingPickupPopulateAction(jQuery, TranslationProxyPolling) {
                         /** @namespace response.data.last_pickup_text */
 											if (response.success) {
 												if (!response.data.wait_text) {
-													icl_tm_pickup_wrap_button.removeAttr('disabled');
+													icl_tm_pickup_wrap_button.prop('disabled', false);
 													icl_tm_pickup_wrap_button.val(response.data.button_text);
 													pickup_nof_jobs.html(response.data.jobs_in_progress_text);
 													pickup_last_pickup.text(response.data.last_pickup_text);

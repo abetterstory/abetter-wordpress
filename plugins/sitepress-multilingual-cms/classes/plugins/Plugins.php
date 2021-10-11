@@ -6,7 +6,9 @@ class Plugins {
 	public static function loadCoreFirst() {
 		$plugins = get_option( 'active_plugins' );
 
-		$isSitePress = function( $value ) { return $value === WPML_PLUGIN_BASENAME; };
+		$isSitePress = function( $value ) {
+			return $value === WPML_PLUGIN_BASENAME;
+		};
 
 		$newOrder = wpml_collect( $plugins )
 			->prioritize( $isSitePress )

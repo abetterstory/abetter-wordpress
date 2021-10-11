@@ -2,11 +2,10 @@
 
 namespace WPML\TM\Troubleshooting\SynchronizeSourceIdOfATEJobs;
 
-
 use WPML\TM\Upgrade\Commands\SynchronizeSourceIdOfATEJobs\Command;
 use WPML\Upgrade\CommandsStatus;
 
-class TriggerSynchronization implements \IWPML_Backend_Action, \IWPML_DIC_Action  {
+class TriggerSynchronization implements \IWPML_Backend_Action, \IWPML_DIC_Action {
 
 	const ACTION_ID = 'wpml-tm-ate-source-id-migration';
 
@@ -30,29 +29,36 @@ class TriggerSynchronization implements \IWPML_Backend_Action, \IWPML_DIC_Action
 	public function displayButton() {
 		?>
 
-        <p>
-            <input id="wpml_tm_ate_source_id_migration_btn"
-                   type="button"
-                   class="button-secondary"
-                   value="<?php esc_attr_e( 'Synchronize local job ids with ATE jobs', 'wpml-translation-manager' ) ?>"
-                   data-action="<?php echo self::ACTION_ID ?>"
-                   data-nonce="<?php echo wp_create_nonce( self::ACTION_ID ) ?>"
-            />
-            <br/>
+		<p>
+			<input id="wpml_tm_ate_source_id_migration_btn"
+				   type="button"
+				   class="button-secondary"
+				   value="<?php esc_attr_e( 'Synchronize local job ids with ATE jobs', 'wpml-translation-manager' ); ?>"
+				   data-action="<?php echo self::ACTION_ID; ?>"
+				   data-nonce="<?php echo wp_create_nonce( self::ACTION_ID ); ?>"
+			/>
+			<br/>
 
-            <small style="margin-left:10px;"><?php esc_attr_e( 'Synchronize local job ids with their ATE counterparts. You will have to refresh a few times any admin page to accomplish the process.',
-					'wpml-translation-manager' ) ?></small>
-        </p>
+			<small style="margin-left:10px;">
+			<?php
+			esc_attr_e(
+				'Synchronize local job ids with their ATE counterparts. You will have to refresh a few times any admin page to accomplish the process.',
+				'wpml-translation-manager'
+			)
+			?>
+					</small>
+		</p>
 		<?php
 	}
 
 	public function enqueueScripts( $hook ) {
 		if ( WPML_PLUGIN_FOLDER . '/menu/troubleshooting.php' === $hook ) {
 			wp_enqueue_script(
-				self::ACTION_ID, WPML_TM_URL . '/res/js/ate-jobs-migration.js',
+				self::ACTION_ID,
+				WPML_TM_URL . '/res/js/ate-jobs-migration.js',
 				[ 'jquery' ],
 				WPML_TM_VERSION
-            );
+			);
 		}
 	}
 

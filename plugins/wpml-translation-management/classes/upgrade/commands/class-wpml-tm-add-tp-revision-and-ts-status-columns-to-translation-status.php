@@ -14,7 +14,7 @@ class WPML_TM_Add_TP_Revision_And_TS_Status_Columns_To_Translation_Status extend
 		$table   = 'icl_translation_status';
 		$columns = array(
 			'tp_revision' => 'INT NOT NULL DEFAULT 1',
-			'ts_status'   => 'TEXT NULL DEFAULT NULL'
+			'ts_status'   => 'TEXT NULL DEFAULT NULL',
 		);
 
 		if ( $this->upgrade_schema->does_table_exist( $table ) ) {

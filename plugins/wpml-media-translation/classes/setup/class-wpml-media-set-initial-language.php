@@ -15,11 +15,11 @@ class WPML_Media_Set_Initial_Language implements IWPML_Action {
 	/**
 	 * WPML_Media_Set_Initial_Language constructor.
 	 *
-	 * @param wpdb $wpdb
+	 * @param wpdb   $wpdb
 	 * @param string $language
 	 */
 	public function __construct( wpdb $wpdb, $language ) {
-		$this->wpdb      = $wpdb;
+		$this->wpdb     = $wpdb;
 		$this->language = $language;
 	}
 
@@ -33,17 +33,20 @@ class WPML_Media_Set_Initial_Language implements IWPML_Action {
 
 		$message = __( 'Setting language to media: done!', 'wpml-media' );
 
-		wp_send_json_success( array(
-			'message' => $message
-		) );
+		wp_send_json_success(
+			array(
+				'message' => $message,
+			)
+		);
 
 	}
 
-	public function update_db(){
+	public function update_db() {
 		$maxtrid = $this->wpdb->get_var( "SELECT MAX(trid) FROM {$this->wpdb->prefix}icl_translations" );
 
 		$this->wpdb->query(
-			$this->wpdb->prepare( "
+			$this->wpdb->prepare(
+				"
             INSERT INTO {$this->wpdb->prefix}icl_translations
                 (element_type, element_id, trid, language_code, source_language_code)
             SELECT 'post_attachment', ID, %d + ID,  %s, NULL 
@@ -51,7 +54,8 @@ class WPML_Media_Set_Initial_Language implements IWPML_Action {
                 LEFT JOIN {$this->wpdb->prefix}icl_translations t
                 ON p.ID = t.element_id AND t.element_type = 'post_attachment' 
                 WHERE post_type = 'attachment' AND t.translation_id IS NULL",
-				$maxtrid, $this->language
+				$maxtrid,
+				$this->language
 			)
 		);
 	}

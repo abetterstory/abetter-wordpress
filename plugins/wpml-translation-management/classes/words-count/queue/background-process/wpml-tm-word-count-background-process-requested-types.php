@@ -10,7 +10,7 @@ class WPML_TM_Word_Count_Background_Process_Requested_Types extends WPML_TM_Word
 
 	/**
 	 * @param WPML_TM_Word_Count_Queue_Items_Requested_Types $queue_items
-	 * @param IWPML_TM_Word_Count_Set[]       $setters
+	 * @param IWPML_TM_Word_Count_Set[]                      $setters
 	 */
 	public function __construct(
 		WPML_TM_Word_Count_Queue_Items_Requested_Types $queue_items,
@@ -22,10 +22,13 @@ class WPML_TM_Word_Count_Background_Process_Requested_Types extends WPML_TM_Word
 		parent::__construct( $queue_items, $setters );
 		$this->records = $records;
 
-		add_filter( 'wpml_tm_word_count_background_process_requested_types_memory_exceeded', array(
-			$this,
-			'memory_exceeded_filter',
-		) );
+		add_filter(
+			'wpml_tm_word_count_background_process_requested_types_memory_exceeded',
+			array(
+				$this,
+				'memory_exceeded_filter',
+			)
+		);
 	}
 
 	public function init( $requested_types ) {

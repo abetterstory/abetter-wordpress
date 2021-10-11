@@ -22,9 +22,6 @@ class ADBC_Clean_Relationship extends WP_List_Table {
 		$this->aDBc_plural_title = __('Orphaned Relationships', 'advanced-database-cleaner');
 
 		// Prepare additional sql args if any: per page, LIMIT, OFFSET, etc.
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-			$this->aDBc_search_sql_arg 				= aDBc_get_search_sql_arg("term_taxonomy_id", "term_order");
-		}
 		$this->aDBc_order_by_sql_arg 			= aDBc_get_order_by_sql_arg("object_id");
 		$this->aDBc_limit_offset_sql_arg 		= aDBc_get_limit_offset_sql_args();
 
@@ -168,7 +165,7 @@ class ADBC_Clean_Relationship extends WP_List_Table {
 
 	/** WP: Column cb for check box */
 	function column_cb($item) {
-		return sprintf('<input type="checkbox" name="aDBc_relationships_to_clean[]" value="%s" />', $item['site_id']."|".$item['object_id']);
+		return sprintf('<input type="checkbox" name="aDBc_elements_to_process[]" value="%s" />', $item['site_id']."|".$item['object_id']);
 	}
 
 	/** WP: Get bulk actions */
@@ -192,20 +189,34 @@ class ADBC_Clean_Relationship extends WP_List_Table {
             $action = 'bulk-' . $this->_args['plural'];
             if (!wp_verify_nonce( $nonce, $action))
                 wp_die('Security check failed!');
-        }
+        }else{
+			// If $_POST['_wpnonce'] is not set, return
+			return;
+		}
+
+		// Check role
+		if(!current_user_can('administrator'))
+			wp_die('Security check failed!');
+
         $action = $this->current_action();
+
         if($action == 'clean'){
 			// If the user wants to clean the elements he/she selected
-			if(isset($_POST['aDBc_relationships_to_clean'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				if(function_exists('is_multisite') && is_multisite()){
 					// Prepare relationships to delete
 					$relationships_to_delete = array();
-					foreach($_POST['aDBc_relationships_to_clean'] as $relationship){
-						$relationship_info = explode("|", $relationship);
-						if(empty($relationships_to_delete[$relationship_info[0]])){
-							$relationships_to_delete[$relationship_info[0]] = array();
+					foreach($_POST['aDBc_elements_to_process'] as $relationship){
+						$relationship_info 	= explode("|", $relationship);
+						$sanitized_site_id 	= sanitize_html_class($relationship_info[0]);
+						$sanitized_item_id 	= sanitize_html_class($relationship_info[1]);
+						// For security, we only proceed if both parts are clean and are numbers
+						if(is_numeric($sanitized_site_id) && is_numeric($sanitized_item_id)){
+							if(empty($relationships_to_delete[$sanitized_site_id])){
+								$relationships_to_delete[$sanitized_site_id] = array();
+							}
+							array_push($relationships_to_delete[$sanitized_site_id], $sanitized_item_id);
 						}
-						array_push($relationships_to_delete[$relationship_info[0]], $relationship_info[1]);
 					}
 					// Delete relationships
 					foreach($relationships_to_delete as $site_id => $object_ids){
@@ -218,9 +229,12 @@ class ADBC_Clean_Relationship extends WP_List_Table {
 					}
 				}else{
 					global $wpdb;
-					foreach($_POST['aDBc_relationships_to_clean'] as $relationship) {
-						$relationship_info = explode("|", $relationship);
-						$wpdb->query("DELETE FROM $wpdb->term_relationships WHERE term_taxonomy_id=1 AND object_id = " . $relationship_info[1]);
+					foreach($_POST['aDBc_elements_to_process'] as $relationship){
+						$relationship_info 	= explode("|", $relationship);
+						$sanitized_id 		= sanitize_html_class($relationship_info[1]);
+						if(is_numeric($sanitized_id)){
+							$wpdb->query("DELETE FROM $wpdb->term_relationships WHERE term_taxonomy_id=1 AND object_id = " . $sanitized_id);
+						}
 					}
 				}
 				// Update the message to show to the user

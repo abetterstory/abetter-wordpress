@@ -89,8 +89,8 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 */
 	public function get_init_priority() {
 		return isset( $_POST['xliff_upload'] ) ||
-		       ( isset( $_GET['wpml_xliff_action'] ) && $_GET['wpml_xliff_action'] === 'download' ) ||
-		       isset( $_POST['wpml_xliff_export_all_filtered'] ) ?
+			   ( isset( $_GET['wpml_xliff_action'] ) && $_GET['wpml_xliff_action'] === 'download' ) ||
+			   isset( $_POST['wpml_xliff_export_all_filtered'] ) ?
 			$this->get_late_init_priority() : 10;
 	}
 
@@ -589,10 +589,10 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 			<div class="alignleft actions">
 				<select name="<?php echo esc_html( $action_name ); ?>">
 					<option
-							value="-1" <?php echo $user_version == false ? "selected='selected'" : ""; ?>><?php _e( 'Bulk Actions' ); ?></option>
+							value="-1" <?php echo $user_version == false ? "selected='selected'" : ''; ?>><?php _e( 'Bulk Actions' ); ?></option>
 					<?php foreach ( $actions as $key => $action ) : ?>
 						<option <?php disabled( ! $this->simplexml_on ); ?>
-								value="<?php echo $key; ?>" <?php echo $user_version == $key && $this->simplexml_on ? "selected='selected'" : ""; ?>><?php echo $action; ?></option>
+								value="<?php echo $key; ?>" <?php echo $user_version == $key && $this->simplexml_on ? "selected='selected'" : ''; ?>><?php echo $action; ?></option>
 					<?php endforeach; ?>
 				</select>
 				<input
@@ -600,7 +600,7 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 						name="do<?php echo esc_html( $action_name ); ?>"
 						class="button-secondary action"/>
 			</div>
-		<?php
+			<?php
 		endif;
 	}
 
@@ -661,19 +661,19 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		<script type="text/javascript">
 			<?php
 			if ( isset( $data['job'] ) ) {
-			?>
+				?>
 			var xliff_export_data  = "<?php echo base64_encode( json_encode( $data ) ); ?>";
 			var xliff_export_nonce = "<?php echo wp_create_nonce( 'xliff-export' ); ?>";
 			var xliff_version      = "<?php echo $xliff_version; ?>";
 			addLoadEvent( function() {
 				window.location = "<?php echo htmlentities( $_SERVER['REQUEST_URI'] ); ?>&wpml_xliff_action=download&xliff_export_data=" + xliff_export_data + '&nonce=' + xliff_export_nonce + '&xliff_version=' + xliff_version;
 			} );
-			<?php
+				<?php
 			} else {
-			?>
+				?>
 			var error_message = "<?php echo esc_html__( 'No translation jobs were selected for export.', 'wpml-translation-management' ); ?>";
 			alert( error_message );
-			<?php
+				<?php
 			}
 			?>
 		</script>
@@ -746,16 +746,16 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 				}
 			}
 
-			$from   = ! empty( $cookie_filters['from'] )
+			$from = ! empty( $cookie_filters['from'] )
 				? $this->sitepress->get_display_language_name( $cookie_filters['from'] )
 				: __( 'Any language', 'wpml-translation-management' );
-			$to     = ! empty( $cookie_filters['to'] )
+			$to   = ! empty( $cookie_filters['to'] )
 				? $this->sitepress->get_display_language_name( $cookie_filters['to'] )
 				: __( 'Any language', 'wpml-translation-management' );
 
 			$status = ! empty( $cookie_filters['status'] ) && (int) $cookie_filters['status'] !== ICL_TM_WAITING_FOR_TRANSLATOR
 				? TranslationManagement::status2text( $cookie_filters['status'] )
-				: ( ! empty( $cookie_filters['status'] ) ? __('Available to translate', 'wpml-translation-management') : 'All statuses' );
+				: ( ! empty( $cookie_filters['status'] ) ? __( 'Available to translate', 'wpml-translation-management' ) : 'All statuses' );
 
 			$export_label = sprintf(
 			// translators: %1: post type, %2: from language, %3: to language, %4: status.
@@ -791,12 +791,18 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 					<?php endif; ?>
 					<form method="post" id="translation-xliff-export-all-filtered" action="">
 						<label for="wpml_xliff_export_all_filtered"><?php echo $export_label; ?></label>
-						<select name="xliff_version" class="select" <?php disabled( ! $this->simplexml_on ); ?>><?php
-							echo $this->get_xliff_version_select_options(); ?></select>
+						<select name="xliff_version" class="select" <?php disabled( ! $this->simplexml_on ); ?>>
+																					<?php
+																					echo $this->get_xliff_version_select_options();
+																					?>
+							</select>
 						<input
 								type="submit"
-								value="<?php esc_attr_e( 'Export', 'wpml-translation-management' ); ?>" <?php
-						disabled( ! $this->simplexml_on ); ?> name="wpml_xliff_export_all_filtered" id="xliff_download"
+								value="<?php esc_attr_e( 'Export', 'wpml-translation-management' ); ?>" 
+														 <?php
+															disabled( ! $this->simplexml_on );
+															?>
+						 name="wpml_xliff_export_all_filtered" id="xliff_download"
 								class="button-secondary action"/>
 						<input
 								type="hidden" value="<?php echo wp_create_nonce( 'xliff-export-all-filtered' ); ?>"
@@ -810,8 +816,11 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 								name="import" <?php disabled( ! $this->simplexml_on ); ?> />
 						<input
 								type="submit" value="<?php _e( 'Upload', 'wpml-translation-management' ); ?>"
-								name="xliff_upload" id="xliff_upload" class="button-secondary action" <?php
-						disabled( ! $this->simplexml_on ); ?> />
+								name="xliff_upload" id="xliff_upload" class="button-secondary action" 
+								<?php
+								disabled( ! $this->simplexml_on );
+								?>
+						 />
 					</form>
 				</td>
 			</tr>

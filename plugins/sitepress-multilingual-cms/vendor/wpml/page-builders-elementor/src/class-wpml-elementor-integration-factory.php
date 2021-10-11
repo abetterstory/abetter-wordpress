@@ -23,6 +23,10 @@ class WPML_Elementor_Integration_Factory {
 				'WPML_Elementor_WooCommerce_Hooks_Factory',
 				\WPML\PB\Elementor\LanguageSwitcher\LanguageSwitcher::class,
 				\WPML\PB\Elementor\Hooks\DynamicElements::class,
+				\WPML\PB\Elementor\Hooks\GutenbergCleanup::class,
+				\WPML\PB\Elementor\Hooks\Frontend::class,
+				\WPML\PB\Elementor\Config\Factory::class,
+				\WPML\PB\Elementor\Hooks\LandingPages::class,
 			)
 		);
 

@@ -31,7 +31,7 @@ class ADBC_SCHEDULE_CLEANUP extends WP_List_Table {
 			if(!check_admin_referer('add_cleanup_schedule_nonce', 'add_cleanup_schedule_nonce'))
 				return; //get out if we didn't click the save_schedule button
 
-			if(!empty($_POST['aDBc_elements_to_clean'])){
+			if(!empty($_POST['aDBc_elements_to_process'])){
 				if(!empty(trim($_POST['aDBc_schedule_name']))){
 					if(preg_match('/^[a-zA-Z0-9_]+$/',$_POST['aDBc_schedule_name'])){
 
@@ -49,16 +49,21 @@ class ADBC_SCHEDULE_CLEANUP extends WP_List_Table {
 								if(!empty($_POST['aDBc_time'])){
 
 									// We will create the new schedule
-									$new_schedule_params['elements_to_clean'] 	= $_POST['aDBc_elements_to_clean'];
-									$new_schedule_params['repeat'] 				= $_POST['aDBc_schedule_repeat'];
-									$new_schedule_params['start_date'] 			= $_POST['aDBc_date'];
-									$new_schedule_params['start_time'] 			= $_POST['aDBc_time'];
-									$new_schedule_params['active'] 				= $_POST['aDBc_status'];
+									$sanitized_elements_to_process = array();
+									foreach($_POST['aDBc_elements_to_process'] as $element){
+										array_push($sanitized_elements_to_process, sanitize_html_class($element));
+									}
+
+									$new_schedule_params['elements_to_clean'] 	= $sanitized_elements_to_process;
+									$new_schedule_params['repeat'] 				= sanitize_html_class($_POST['aDBc_schedule_repeat']);
+									$new_schedule_params['start_date'] 			= preg_replace("/[^0-9-]/", '', $_POST['aDBc_date']);
+									$new_schedule_params['start_time'] 			= preg_replace("/[^0-9:]/", '', $_POST['aDBc_time']);
+									$new_schedule_params['active'] 				= sanitize_html_class($_POST['aDBc_status']);
 									$clean_schedule_setting[$_POST['aDBc_schedule_name']] = $new_schedule_params;
 									update_option('aDBc_clean_schedule', $clean_schedule_setting, "no");
 
-									list($year, $month, $day) = explode('-', $_POST['aDBc_date']);
-									list($hours, $minutes) = explode(':', $_POST['aDBc_time']);
+									list($year, $month, $day) 	= explode('-', preg_replace("/[^0-9-]/", '', $_POST['aDBc_date']));
+									list($hours, $minutes) 		= explode(':', preg_replace("/[^0-9:]/", '', $_POST['aDBc_time']));
 									$seconds = "0";
 									$timestamp =  mktime($hours, $minutes, $seconds, $month, $day, $year);
 
@@ -66,7 +71,7 @@ class ADBC_SCHEDULE_CLEANUP extends WP_List_Table {
 										if($_POST['aDBc_schedule_repeat'] == "once"){
 											wp_schedule_single_event($timestamp, "aDBc_clean_scheduler", array($_POST['aDBc_schedule_name']));
 										}else{
-											wp_schedule_event($timestamp, $_POST['aDBc_schedule_repeat'], "aDBc_clean_scheduler", array($_POST['aDBc_schedule_name']));
+											wp_schedule_event($timestamp, sanitize_html_class($_POST['aDBc_schedule_repeat']), "aDBc_clean_scheduler", array($_POST['aDBc_schedule_name']));
 										}
 										$this->aDBc_message = __('The clean-up schedule saved successfully!', 'advanced-database-cleaner');
 									}else{
@@ -202,12 +207,12 @@ class ADBC_SCHEDULE_CLEANUP extends WP_List_Table {
 	/** WP: Column cb for check box */
 	function column_cb($item) {
 		$checked = "";
-		if(isset($_POST['aDBc_elements_to_clean'])){
-			if(in_array($item['type'], $_POST['aDBc_elements_to_clean'])){
+		if(isset($_POST['aDBc_elements_to_process'])){
+			if(in_array($item['type'], $_POST['aDBc_elements_to_process'])){
 				$checked = "checked";
 			}
 		}
-		return sprintf('<input type="checkbox" name="aDBc_elements_to_clean[]" value="%s"' .  $checked . '/>', $item['type']);
+		return sprintf('<input type="checkbox" name="aDBc_elements_to_process[]" value="%s"' .  $checked . '/>', $item['type']);
 	}
 
 	/** WP: Get bulk actions */
@@ -262,55 +267,49 @@ class ADBC_SCHEDULE_CLEANUP extends WP_List_Table {
 						<div id="add_schedule" style="border-top:1px dashed #ccc">
 							<br/>
 							<div style="text-align:left"><?php _e('Name your schedule','advanced-database-cleaner');?></div>
-							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="text" name="aDBc_schedule_name" placeholder="Schedule name" value="<?php echo isset($_POST['aDBc_schedule_name']) ? $_POST['aDBc_schedule_name'] : ""?>" maxlength="25">
+							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="text" name="aDBc_schedule_name" placeholder="Schedule name" value="<?php echo isset($_POST['aDBc_schedule_name']) ? esc_attr($_POST['aDBc_schedule_name']) : ""?>" maxlength="25">
 							
 							<div style="text-align:left"><?php _e('Frequency of execution','advanced-database-cleaner');?></div>
 							<select style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" class="aDBc-schedule-select" name="aDBc_schedule_repeat">	
+							<?php
+								$schedules_repeat = array('once' 		=> __('Once','advanced-database-cleaner'),
+														  'hourly' 		=> __('Hourly','advanced-database-cleaner'),
+														  'twicedaily' 	=> __('Twice a day','advanced-database-cleaner'),
+														  'daily' 		=> __('Daily','advanced-database-cleaner'),
+													      'weekly' 		=> __('Weekly','advanced-database-cleaner'),
+													      'monthly' 	=> __('Monthly','advanced-database-cleaner'));
 
-								<option value="once" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "once" ? "selected='selected'" : "" ?>>
-									<?php _e('Once','advanced-database-cleaner');?>
-								</option>
-								
-								<option value="hourly" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "hourly" ? "selected='selected'" : "" ?>>
-									<?php _e('Hourly','advanced-database-cleaner');?>
-								</option>
-								<option value="twicedaily" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "twicedaily" ? "selected='selected'" : "" ?>>
-									<?php _e('Twice a day','advanced-database-cleaner');?>
-								</option>
-								<option value="daily" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "daily" ? "selected='selected'" : "" ?>>
-									<?php _e('Daily','advanced-database-cleaner');?>
-								</option>
-								<option value="weekly" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "weekly" ? "selected='selected'" : "" ?>>
-									<?php _e('Weekly','advanced-database-cleaner');?>
-								</option>
-								<option value="monthly" <?php echo isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == "monthly" ? "selected='selected'" : "" ?>>
-									<?php _e('Monthly','advanced-database-cleaner');?>
-								</option>
+								foreach($schedules_repeat as $code_repeat => $name_repeat){
+									if(isset($_POST['aDBc_schedule_repeat']) && $_POST['aDBc_schedule_repeat'] == $code_repeat){
+										echo "<option value='$code_repeat' selected='selected'>$name_repeat</option>";
+									}else{
+										echo "<option value='$code_repeat'>$name_repeat</option>";
+									}
+								}
+							?>
 							</select>
 
 							<div style="text-align:left"><?php _e('Start date','advanced-database-cleaner');?></div>
-							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="date" name="aDBc_date" placeholder="" value="<?php echo isset($_POST['aDBc_date']) ? $_POST['aDBc_date'] : date("Y-m-d"); ?>" min="<?php echo date("Y-m-d"); ?>">
-							
+							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="date" name="aDBc_date" placeholder="" value="<?php echo isset($_POST['aDBc_date']) ? esc_attr($_POST['aDBc_date']) : date("Y-m-d"); ?>" min="<?php echo date("Y-m-d"); ?>">
+
 							<div style="text-align:left"><?php _e('Start time (GMT)','advanced-database-cleaner');?></div>
-							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="time" name="aDBc_time" value="<?php echo isset($_POST['aDBc_time']) ? $_POST['aDBc_time'] : date("H:i", time()); ?>">
-						
+							<input style="width:100%;margin-bottom:10px;height:30px;border-radius:5px;box-shadow:0 0 10px #e0e0e0" type="time" name="aDBc_time" value="<?php echo isset($_POST['aDBc_time']) ? esc_attr($_POST['aDBc_time']) : date("H:i", time()); ?>">
 
 							<div style="text-align:left"><?php _e('Schedule status','advanced-database-cleaner');?></div>
-					
+
 							<div style="margin-top:2px;text-align:left;background:#fff;padding:5px;box-shadow:0 0 10px #e0e0e0;border-radius:5px">
 									<input type="radio" name="aDBc_status" value="1" checked> 
 									<span style="margin-right:20px"><?php _e('Active','advanced-database-cleaner');?></span>
-									
+
 									<input type="radio" name="aDBc_status" value="0" <?php echo (isset($_POST['aDBc_status']) && $_POST['aDBc_status'] == "0") ? 'checked' : ''; ?>>
 									<?php _e('Inactive','advanced-database-cleaner');?>
 							</div>
-							
+
 							<div style="width:100%;margin-top:20px">
 								<input class="button-primary" type="submit"  value="<?php _e('Save the schedule','advanced-database-cleaner'); ?>" style="width:100%;"/>
 							</div>
-						
-						</div>		
 
+						</div>
 				</div>
 			</div>	
 

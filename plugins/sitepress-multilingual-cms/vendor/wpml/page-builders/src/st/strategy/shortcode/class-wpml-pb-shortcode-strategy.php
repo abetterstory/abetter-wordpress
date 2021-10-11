@@ -1,5 +1,8 @@
 <?php
 
+use \WPML\LIB\WP\Gutenberg;
+use WPML\FP\Obj;
+
 class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 
 	private $shortcodes = array(
@@ -32,13 +35,14 @@ class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 			}
 
 			if ( ! in_array( $tag, $this->shortcodes ) ) {
-				$this->shortcodes[ $tag ] = array(
+				$this->shortcodes[ $tag ] = [
 					'encoding'           => $shortcode['tag']['encoding'],
 					'encoding-condition' => isset( $shortcode['tag']['encoding-condition'] ) ? $shortcode['tag']['encoding-condition'] : '',
 					'type'               => isset( $shortcode['tag']['type'] ) ? $shortcode['tag']['type'] : '',
 					'ignore-content'     => isset( $shortcode['tag']['ignore-content'] ) ? (bool) $shortcode['tag']['ignore-content'] : false,
-					'attributes'         => array(),
-				);
+					'label'              => isset( $shortcode['tag']['label'] ) ? $shortcode['tag']['label'] : '',
+					'attributes'         => [],
+				];
 			}
 			if ( isset( $shortcode['attributes'] ) ) {
 				foreach ( $shortcode['attributes'] as $attribute ) {
@@ -86,6 +90,12 @@ class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 		return 'LINE';
 	}
 
+	public function get_shortcode_attribute_label( $tag, $attribute ) {
+		$labelPath = 'content' === $attribute ? [ $tag, 'label' ] : [ $tag, 'attributes', $attribute, 'label' ];
+
+		return Obj::pathOr( '', $labelPath, $this->shortcodes );
+	}
+
 	public function get_shortcode_parser() {
 		return $this->factory->get_shortcode_parser( $this );
 	}
@@ -95,8 +105,22 @@ class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 	 *
 	 */
 	public function register_strings( $post ) {
+		if ( Gutenberg::doesNotHaveBlock( $post->post_content ) ) {
+			$this->register_strings_in_content( $post->ID, $post->post_content, null );
+		}
+	}
+
+	/**
+	 * @param string|int $post_id
+	 * @param string     $content
+	 * @param WPML\PB\Shortcode\StringCleanUp $stringCleanUp
+	 *
+	 * @return bool
+	 */
+	public function register_strings_in_content( $post_id, $content, WPML\PB\Shortcode\StringCleanUp $stringCleanUp = null ) {
 		$register_shortcodes = $this->factory->get_register_shortcodes( $this );
-		$register_shortcodes->register_shortcode_strings( $post->ID, $post->post_content );
+
+		return $register_shortcodes->register_shortcode_strings( $post_id, $content, $stringCleanUp );
 	}
 
 	public function set_factory( $factory ) {
@@ -139,6 +163,6 @@ class WPML_PB_Shortcode_Strategy implements IWPML_PB_Strategy {
 	 */
 	public function migrate_location( $post_id, $post_content ) {
 		$migrate_locations = $this->factory->get_register_shortcodes( $this, true );
-		$migrate_locations->register_shortcode_strings( $post_id, $post_content );
+		$migrate_locations->register_shortcode_strings( $post_id, $post_content, null );
 	}
 }

@@ -44,17 +44,23 @@ class OTGS_Installer_Plugins_Page_Notice {
 	 * @param string $plugin_file
 	 */
 	public function show_purchase_notice_under_plugin( $plugin_file, $plugin_data ) {
-		$should_display_subscription_notice = isset( $this->plugins[ $plugin_file ][ self::DISPLAY_SUBSCRIPTION_NOTICE_KEY ] )
+		$display_subscription_notice = isset( $this->plugins[ $plugin_file ][ self::DISPLAY_SUBSCRIPTION_NOTICE_KEY ] )
 			? $this->plugins[ $plugin_file ][ self::DISPLAY_SUBSCRIPTION_NOTICE_KEY ]
 			: false;
 
 		$plugin = $this->plugin_finder->get_plugin_by_name( $plugin_data['Name'] );
 
-		if ( $should_display_subscription_notice ) {
+		if ( $display_subscription_notice ) {
 			if ( $plugin && 'toolset' === $plugin->get_external_repo() && $plugin->is_lite() ) {
-				echo $this->template_service->show( $this->get_toolset_lite_notice_model( $plugin->get_name() ), self::TEMPLATE );
+				echo $this->template_service->show(
+						$this->get_toolset_lite_notice_model( $plugin->get_name() ),
+						self::TEMPLATE
+				);
 			} else {
-				echo $this->template_service->show( $this->get_model(), self::TEMPLATE );
+				echo $this->template_service->show(
+						$this->get_model( $display_subscription_notice ),
+						self::TEMPLATE
+				);
 			}
 		}
 	}
@@ -62,7 +68,7 @@ class OTGS_Installer_Plugins_Page_Notice {
 	/**
 	 * @return array
 	 */
-	private function get_model() {
+	private function get_model( $notice ) {
 		$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
 
 		list( $tr_classes, $notice_classes ) = $this->get_classes();
@@ -77,10 +83,49 @@ class OTGS_Installer_Plugins_Page_Notice {
 			$menu_url = admin_url( 'plugin-install.php?tab=commercial' );
 		}
 
+		$menu_url .= '&repository=' . $notice['repo'];
+		$menu_url_with_action = $menu_url . '&action=' . $notice['type'];
+
+		switch ( $notice['type'] ) {
+			case 'expired':
+				$message = $this->prepareMessage(
+					__( 'You are using an expired account of %s. %sExtend your subscription%s', 'installer' ),
+					$notice['product'],
+					$menu_url_with_action
+				);
+				break;
+
+			case 'refunded':
+				$message = $this->prepareMessage(
+					__( 'Remember to remove %s from this website. %sCheck my order status%s', 'installer' ),
+					$notice['product'],
+					$menu_url_with_action
+				);
+
+				$notice_classes .= ' notice-otgs-refund';
+				break;
+
+			case 'legacy_free':
+				$message = sprintf(
+					__( 'You have an old Types-free subscription, which doesn\'t provide automatic updates. %sUpgrade your account%s', 'installer' ),
+					'<a href="' . $menu_url . '">',
+					'</a>'
+				);
+
+				break;
+
+			default:
+				$message = $this->prepareMessage(
+					__( 'You are using an unregistered version of %s and are not receiving compatibility and security updates. %sRegister now%s', 'installer' ),
+					$notice['product'],
+					$menu_url_with_action
+				);
+				break;
+		}
+
 		return array(
 			'strings'   => array(
-				'valid_subscription' => sprintf( __( 'You must have a valid subscription in order to get upgrades or support for this plugin. %sPurchase a subscription or enter an existing site key%s.', 'installer' ),
-					'<a href="' . $menu_url . '">', '</a>' ),
+				'valid_subscription' => $this->prepareMessage($message, $notice['product'], $menu_url_with_action),
 			),
 			'css'       => array(
 				'tr_classes'     => $tr_classes,
@@ -113,10 +158,14 @@ class OTGS_Installer_Plugins_Page_Notice {
 		$notice_classes = 'update-message installer-q-icon';
 
 		if ( version_compare( get_bloginfo( 'version' ), '4.6', '>=' ) ) {
-			$tr_classes     = 'plugin-update-tr installer-plugin-update-tr';
-			$notice_classes = 'notice inline notice-warning notice-alt';
+			$tr_classes     = 'plugin-update-tr installer-plugin-update-tr js-otgs-plugin-tr';
+			$notice_classes = 'update-message notice inline notice-otgs';
 		}
 
 		return array( $tr_classes, $notice_classes );
 	}
+
+    private function prepareMessage($message, $notice, $menu_url) {
+        return sprintf($message, $notice, '<a href="' . $menu_url . '">', '</a>');
+    }
 }

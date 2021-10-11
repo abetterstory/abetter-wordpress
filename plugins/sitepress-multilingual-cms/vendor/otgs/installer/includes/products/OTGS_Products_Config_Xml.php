@@ -12,9 +12,6 @@ class OTGS_Products_Config_Xml {
 	 */
 	public function __construct( $xml_file ) {
 		$this->repositories_config = $this->load_configuration( $xml_file );
-		if ( ! $this->repositories_config ) {
-			throw new RuntimeException('Unable to parse configuration file');
-		}
 	}
 
 	/**
@@ -35,11 +32,6 @@ class OTGS_Products_Config_Xml {
 	 * @return string|null
 	 */
 	public function get_repository_products_url( $repository_id ) {
-		$repo_upper = strtoupper( $repository_id );
-		if ( defined( "OTGS_INSTALLER_{$repo_upper}_PRODUCTS" ) ) {
-			return constant( "OTGS_INSTALLER_{$repo_upper}_PRODUCTS" );
-		}
-
 		foreach ( $this->repositories_config as $repository_config ) {
 			if ( isset( $repository_config->id ) && strval( $repository_config->id ) == $repository_id ) {
 				return isset( $repository_config->products) ? strval( $repository_config->products ) : null;
@@ -47,6 +39,16 @@ class OTGS_Products_Config_Xml {
 		}
 
 		return null;
+	}
+
+	public function get_repository_products_default_data() {
+		$productDefaults = [];
+		foreach ( $this->repositories_config as $repository_config ) {
+			$productDefaults[ strval( $repository_config->id ) ] = isset( $repository_config->default_products )
+				? json_decode( strval( $repository_config->default_products ), true ) : null;
+		}
+
+		return $productDefaults;
 	}
 
 	/**

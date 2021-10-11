@@ -79,7 +79,7 @@ class WPML_Support_Info_UI {
 					),
 					'utf8mb4_charset' => array(
 						'label'      => __( 'Utf8mb4 charset', 'sitepress' ),
-						'value' => __( $this->support_info->is_utf8mb4_charset_supported() ? 'Yes' : 'No', 'sitepress' ),
+						'value' => $this->support_info->is_utf8mb4_charset_supported() ? __( 'Yes' ) : __( 'No' ),
 						'url'        => 'https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html',
 						'messages'   => array(
 							__( 'Some features related to String Translations may not work correctly without utf8mb4 character.', 'sitepress' ) => 'https://wpml.org/home/minimum-requirements/',
@@ -122,6 +122,15 @@ class WPML_Support_Info_UI {
 							__( 'A memory limit of at least 128MB is required.', 'sitepress' ) => 'https://wpml.org/home/minimum-requirements/',
 						),
 						'is_error' => $this->support_info->is_memory_less_than( $minimum_required_memory, $this->support_info->get_wp_max_memory_limit() ),
+					),
+					'rest_enabled' => array(
+						'label'    => __( 'REST enabled', 'sitepress' ),
+						'value'    => wpml_is_rest_enabled() ? __( 'Yes' ) : __( 'No' ),
+						'url'      => 'https://wpml.org/home/minimum-requirements/',
+						'messages' => array(
+							__( 'REST API is disabled, blocking some features of WPML', 'sitepress' ) => 'https://wpml.org/documentation/support/rest-api-dependencies/',
+						),
+						'is_error' => ! wpml_is_rest_enabled(),
 					),
 				),
 			),
@@ -177,8 +186,8 @@ class WPML_Support_Info_UI {
 	}
 
 	/**
-	 * @param array $blocks
-	 * @param       $type
+	 * @param array  $blocks
+	 * @param string $type
 	 */
 	private function set_has_messages( array &$blocks, $type ) {
 		/**

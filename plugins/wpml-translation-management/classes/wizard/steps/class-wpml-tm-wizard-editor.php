@@ -7,7 +7,7 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 			'ate'     => ICL_TM_TMETHOD_ATE,
 			'classic' => ICL_TM_TMETHOD_EDITOR,
 			'manual'  => ICL_TM_TMETHOD_MANUAL,
-		)
+		),
 	);
 	/**
 	 * @var WPML_TM_MCS_ATE
@@ -15,10 +15,11 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 	private $mscs_ate;
 
 	public function __construct( WPML_TM_MCS_ATE $mcs_ate, $current_mode ) {
-		$this->mscs_ate = $mcs_ate;
+		$this->mscs_ate              = $mcs_ate;
 		$this->model['current_mode'] = $current_mode;
 
-		parent::__construct( array(
+		parent::__construct(
+			array(
 				WPML_TM_PATH . '/templates/wizard',
 				$mcs_ate->get_template_path(),
 			)
@@ -34,10 +35,10 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 	public function add_strings() {
 
 		$this->model['strings'] = array(
-			'title'          => __( 'What translation tool do you want to use?', 'wpml-translation-management' ),
-			'options'        => array(
+			'title'    => __( 'What translation tool do you want to use?', 'wpml-translation-management' ),
+			'options'  => array(
 				'classic' => array(
-					'heading'    => __( "WPML's Classic Translation Editor", 'wpml-translation-management' ),
+					'heading' => __( "WPML's Classic Translation Editor", 'wpml-translation-management' ),
 
 				),
 				'ate'     => array(
@@ -45,7 +46,7 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 					'extra_template' => array(
 						'template' => 'mcs-ate-controls.twig',
 						'model'    => $this->mscs_ate->get_model(),
-					)
+					),
 				),
 			),
 
@@ -74,15 +75,14 @@ class WPML_TM_Wizard_Translation_Editor_Step extends WPML_Twig_Template_Loader {
 					'label'   => __( 'Translator preview', 'wpml-translation-management' ),
 					'classic' => false,
 					'ate'     => true,
-				)
+				),
 			),
 
-			'ate' => $this->mscs_ate->get_model( array( 'wizard' => true ) ),
+			'ate'      => $this->mscs_ate->get_model( array( 'wizard' => true ) ),
 
 			'select'   => __( 'Select', 'wpml-translation-management' ),
 			'continue' => __( 'Continue', 'wpml-translation-management' ),
 			'go_back'  => __( 'Go back', 'wpml-translation-management' ),
-
 
 		);
 	}

@@ -90,7 +90,9 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 
 	private function post_edit_languages_dropdown() {
 		?>
-		<div id="icl_document_language_dropdown" class="icl_box_paragraph" data-metabox-refresh-nonce="<?php echo wp_create_nonce( 'wpml_get_meta_boxes_html' ) ?>">
+		<div id="icl_document_language_dropdown" class="icl_box_paragraph"
+		     data-metabox-refresh-nonce="<?php echo wp_create_nonce( WPML_Meta_Boxes_Post_Edit_Ajax::ACTION_GET_META_BOXES ) ?>"
+		     data-admin-ls-refresh-nonce="<?php echo wp_create_nonce( WPML_Meta_Boxes_Post_Edit_Ajax::ACTION_GET_ADMIN_LS ) ?>">
 			<p>
 				<label for="icl_post_language">
                     <strong><?php printf( esc_html__( 'Language of this %s', 'sitepress' ), esc_html( $this->post_type_label ) ); ?></strong>
@@ -199,7 +201,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 
                 <div class="hidden">
                     <div id="connect_translations_dialog"
-                         title="<?php esc_attr_e( 'Choose a post to assign', 'sitepress' ); ?>"
+                         title="<?php esc_attr_e( sprintf( 'Choose a %s to assign', get_post_type_object( get_post_type( $this->post ) )->labels->singular_name ), 'sitepress' ); ?>"
                          data-set_as_source-text="<?php echo esc_attr( sprintf( __( 'Make %s the original language for this %s', 'sitepress' ), $language_name, $this->post->post_type ) ); ?>"
                          data-alert-text="<?php esc_attr_e( "Please make sure to save your post, if you've made any change, before proceeding with this action!", 'sitepress' ); ?>"
                          data-cancel-label="<?php esc_attr_e( 'Cancel', 'sitepress' ); ?>"
@@ -253,6 +255,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 					</select>
 					<?php //Add hidden value when the dropdown is hidden ?>
 					<?php
+					$source_element_id = SitePress::get_original_element_id_by_trid( $this->get_trid() );
 					if ( $disabled && ! empty( $source_element_id ) ) {
 						?>
 						<input type="hidden" name="icl_translation_of" id="icl_translation_of_hidden" value="<?php echo esc_attr( $source_element_id ); ?>">
@@ -370,9 +373,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 			<tr>
 				<th>&nbsp;</th>
 				<th align="right"><?php esc_html_e( 'Translate', 'sitepress' ) ?></th>
-				<?php if ( ! $this->is_display_as_translated_mode() ) { ?>
-					<th align="right" width="10" style="padding-left:8px;"><?php echo esc_html__( 'Duplicate', 'sitepress' ) ?></th>
-				<?php } ?>
+				<th align="right" width="10" style="padding-left:8px;"><?php echo esc_html__( 'Duplicate', 'sitepress' ) ?></th>
 			</tr>
 			<?php
 			$active_langs = $this->sitepress->get_active_languages();
@@ -506,28 +507,26 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 				<td align="right">
 					<?php echo $status_display->get_status_html( $this->post->ID, $lang[ 'code' ] ); ?>
 				</td>
-				<?php if ( ! $this->is_display_as_translated_mode() ) { ?>
-					<td align="right">
-						<?php
-						$disabled_duplication       = false;
-						$disabled_duplication_title = esc_attr__( 'Create duplicate', 'sitepress' );
-						$element_key                = array( 'trid' => $this->trid, 'language_code' => $lang['code'] );
-						$translation_status         = apply_filters( 'wpml_tm_translation_status', null, $element_key );
-						echo PHP_EOL . '<!-- $translation_status = ' . $translation_status . ' -->' . PHP_EOL;
+				<td align="right">
+				    <?php
+				    $disabled_duplication       = false;
+				    $disabled_duplication_title = esc_attr__( 'Create duplicate', 'sitepress' );
+				    $element_key                = array( 'trid' => $this->trid, 'language_code' => $lang['code'] );
+				    $translation_status         = apply_filters( 'wpml_tm_translation_status', null, $element_key );
+				    echo PHP_EOL . '<!-- $translation_status = ' . $translation_status . ' -->' . PHP_EOL;
 
-						if ( $translation_status && $translation_status < ICL_TM_COMPLETE ) {
-							$disabled_duplication       = true;
-							if ( ICL_TM_DUPLICATE === (int) $translation_status ) {
-								$disabled_duplication_title = esc_attr__( 'This post is already duplicated.', 'sitepress' );
-							} else {
-								$disabled_duplication_title = esc_attr__( "Can't create a duplicate. A translation is in progress.", 'sitepress' );
-							}
-						}
+				    if ( $translation_status && $translation_status < ICL_TM_COMPLETE ) {
+				        $disabled_duplication       = true;
+				        if ( ICL_TM_DUPLICATE === (int) $translation_status ) {
+				            $disabled_duplication_title = esc_attr__( 'This post is already duplicated.', 'sitepress' );
+				        } else {
+				            $disabled_duplication_title = esc_attr__( "Can't create a duplicate. A translation is in progress.", 'sitepress' );
+				        }
+				    }
 
-						?>
-						<input<?php disabled( true, $disabled_duplication ); ?> type="checkbox" name="icl_dupes[]" value="<?php echo esc_attr( $lang['code'] ); ?>" title="<?php echo $disabled_duplication_title ?>"/>
-					</td>
-				<?php } ?>
+				    ?>
+				    <input<?php disabled( true, $disabled_duplication ); ?> type="checkbox" name="icl_dupes[]" value="<?php echo esc_attr( $lang['code'] ); ?>" title="<?php echo $disabled_duplication_title ?>"/>
+				</td>
 
 			<?php
 			}
@@ -750,13 +749,6 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 		return $element_title;
 	}
 
-	/**
-	 * @return bool
-	 */
-	private function is_display_as_translated_mode() {
-		return $this->sitepress->is_display_as_translated_post_type( $this->post->post_type );
-	}
-
 	private function init_post_data() {
 		global $wp_post_types;
 
@@ -851,7 +843,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML {
 				if ( ! $this->is_original ) {
 					$selected_content_language_details = $this->sitepress->get_element_translations( $selected_content_translation,
 					                                                                                 'post_' . $this->post->post_type );
-					if ( isset( $selected_content_language_details ) && isset( $selected_content_language_details->source_language_code ) ) {
+					if (isset( $selected_content_language_details->source_language_code ) ) {
 						$this->source_language = $selected_content_language_details->source_language_code;
 					}
 				}

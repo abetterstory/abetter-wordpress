@@ -1,7 +1,9 @@
 <?php
 
 use WPML\TM\Menu\TranslationBasket\Utility;
+use WPML\TM\Menu\TranslationServices\Section;
 use function WPML\Container\make;
+use WPML\TM\ATE\ClonedSites\Lock as AteApiLock;
 
 class WPML_TM_Menus_Management extends WPML_TM_Menus {
 
@@ -46,7 +48,7 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 		$this->manager_records    = $manager_records;
 		$this->translator_records = $translator_records;
 
-		$wpml_wp_api     = new WPML_WP_API();
+		$wpml_wp_api = new WPML_WP_API();
 
 		$this->admin_sections = WPML\Container\make( 'WPML_TM_Admin_Sections' );
 		$this->admin_sections->init_hooks();
@@ -55,7 +57,8 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 	}
 
 	protected function render_main() {
-		?>
+		if ( ! AteApiLock::isLocked() ) {
+			?>
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Translation Management', 'wpml-translation-management' ); ?></h1>
 
@@ -88,7 +91,8 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 			}
 			?>
 		</div>
-		<?php
+			<?php
+		}
 	}
 
 	/**
@@ -206,8 +210,8 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 		$this->current_language = $sitepress->get_current_language();
 		$this->source_language  = TranslationProxy_Basket::get_source_language();
 
-		if ( isset( $_COOKIE['translation_dashboard_filter'] ) ) {
-			parse_str( $_COOKIE['translation_dashboard_filter'], $this->translation_filter );
+		if ( isset( $_COOKIE['wp-translation_dashboard_filter'] ) ) {
+			parse_str( $_COOKIE['wp-translation_dashboard_filter'], $this->translation_filter );
 
 			$this->translation_filter = filter_var_array(
 				$this->translation_filter,
@@ -221,6 +225,8 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 					'status'               => FILTER_SANITIZE_STRING,
 					'translation_priority' => FILTER_SANITIZE_NUMBER_INT,
 					'title'                => FILTER_SANITIZE_STRING,
+					'sort_by'              => FILTER_SANITIZE_STRING,
+					'sort_order'           => FILTER_SANITIZE_STRING,
 				)
 			);
 		}
@@ -329,7 +335,8 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 			<p>
 			<?php
 				echo sprintf(
-					esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ), '<a href="https://wpml.org/documentation/translating-your-contents/how-to-send-content-for-translation/?utm_source=wpmlplugin&utm_campaign=content-translation&utm_medium=translation-dashboard&utm_term=how-to-send-content-for-translation" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>'
+					esc_html__( 'To see more items, use the filter and narrow down the search. %s', 'wpml-translation-management' ),
+					'<a href="https://wpml.org/documentation/translating-your-contents/how-to-send-content-for-translation/?utm_source=wpmlplugin&utm_campaign=content-translation&utm_medium=translation-dashboard&utm_term=how-to-send-content-for-translation" target="_blank">' . esc_html__( 'Help', 'wpml-translation-management' ) . '</a>'
 				)
 			?>
 				</p>
@@ -711,7 +718,7 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 				'caption'          => $this->build_basket_item_caption( $basket_items_count ),
 				'current_user_can' => WPML_Manage_Translations_Role::CAPABILITY,
 				'callback'         => array( $this, 'build_content_basket' ),
-				'order'            => 101
+				'order'            => 101,
 			);
 
 		}
@@ -792,7 +799,9 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 			$source_language         = TranslationProxy_Basket::get_source_language();
 			$basket                  = new WPML_Translation_Basket( $wpdb );
 			$basket_name_placeholder = sprintf(
-				__( '%1$s|WPML|%2$s', 'wpml-translation-management' ), htmlspecialchars_decode( get_option( 'blogname' ), ENT_QUOTES ), $source_language
+				__( '%1$s|WPML|%2$s', 'wpml-translation-management' ),
+				htmlspecialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
+				$source_language
 			);
 			$basket_name_placeholder = $basket->get_unique_basket_name( $basket_name_placeholder, $basket_name_max_length );
 
@@ -801,7 +810,7 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 			$isTheOnlyAvailableTranslator = $utility->isTheOnlyAvailableTranslatorForTargetLanguages( $target_languages );
 
 			$translators_dropdowns = \wpml_collect( $target_languages )->pluck( 'code', 'code' )
-			                                                           ->map( [ $this, 'get_translators_dropdown' ] );
+																	   ->map( [ $this, 'get_translators_dropdown' ] );
 
 			$tooltip_content = esc_html__( 'This deadline is what WPML suggests according to the amount of work that you already sent to this translator. You can modify this date to set the deadline manually.', 'wpml-translation-management' );
 
@@ -827,7 +836,7 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 				'target_languages'             => $target_languages,
 				'dropdowns_translators'        => $translators_dropdowns,
 				'pro_translation_link'         => '<br /><a href="' . admin_url( 'admin.php?page=' . WPML_TM_FOLDER . $this->get_page_slug() . '&sm=translation-services' ) . '">'
-				                                  . __( 'Check available Translation Services', 'wpml-translation-management' ) . '</a>',
+												  . __( 'Check available Translation Services', 'wpml-translation-management' ) . '</a>',
 				'deadline_estimation_date'     => $deadline_estimate_date,
 				'extra_basket_fields'          => TranslationProxy_Basket::get_basket_extra_fields_section(),
 				'nonces'                       => array(
@@ -836,6 +845,7 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 					'_icl_nonce_send_basket_commit' => wp_create_nonce( 'send_basket_commit_nonce' ),
 					'_icl_nonce_check_basket_name'  => wp_create_nonce( 'check_basket_name_nonce' ),
 					'_icl_nonce_refresh_deadline'   => wp_create_nonce( 'wpml-tm-jobs-deadline-estimate-ajax-action' ),
+					'_icl_nonce_rollback_basket'    => wp_create_nonce( 'rollback_basket_nonce' ),
 				),
 				'translation_service_enabled'  => $translation_service_enabled,
 				'current_user_only_translator' => $isTheOnlyAvailableTranslator,
@@ -1023,15 +1033,15 @@ class WPML_TM_Menus_Management extends WPML_TM_Menus {
 	 * @return string
 	 */
 	private function get_translation_services_link( $text ) {
-		return $this->get_tm_menu_link( WPML_TM_Translation_Services_Admin_Section::SLUG, $text );
+		return $this->get_tm_menu_link( Section::SLUG, $text );
 	}
 
 	private function get_tm_menu_link( $section, $text ) {
 		$admin_url = admin_url( 'admin.php' );
 
 		$args          = array(
-			'page' => urlencode(WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_MANAGEMENT),
-			'sm'   => urlencode($section),
+			'page' => urlencode( WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_MANAGEMENT ),
+			'sm'   => urlencode( $section ),
 		);
 		$menu_link_url = add_query_arg( $args, $admin_url );
 

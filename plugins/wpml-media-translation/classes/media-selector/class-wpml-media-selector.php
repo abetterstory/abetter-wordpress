@@ -66,16 +66,21 @@ class WPML_Media_Selector implements IWPML_Action {
 
 		$model = array(
 			'files'   => $media_files_list,
-			'post_id' => $post_id
+			'post_id' => $post_id,
 		);
 
 		$html = $this->template_loader->get_template()->show( $model, 'media-selector.twig' );
 
-		wp_send_json_success( array( 'html' => $html, 'media_files_count' => $media_files_count ) );
+		wp_send_json_success(
+			array(
+				'html'              => $html,
+				'media_files_count' => $media_files_count,
+			)
+		);
 	}
 
 	/**
-	 * @param int $post_id
+	 * @param int   $post_id
 	 * @param array $languages
 	 *
 	 * @return array
@@ -93,7 +98,7 @@ class WPML_Media_Selector implements IWPML_Action {
 			$media_files_list[ $attachment_id ] = array(
 				'thumbnail'  => wp_get_attachment_thumb_url( $attachment_id ),
 				'name'       => get_post_field( 'post_title', $attachment_id ),
-				'translated' => $this->media_file_is_translated( $attachment_id, $languages )
+				'translated' => $this->media_file_is_translated( $attachment_id, $languages ),
 			);
 		}
 
@@ -105,7 +110,7 @@ class WPML_Media_Selector implements IWPML_Action {
 		foreach ( $languages as $language ) {
 			$translation = $post_element->get_translation( $language );
 			if ( null === $translation || get_post_meta( $attachment_id, '_wp_attached_file', true )
-			                              === get_post_meta( $translation->get_id(), '_wp_attached_file', true ) ) {
+										  === get_post_meta( $translation->get_id(), '_wp_attached_file', true ) ) {
 				return false;
 			}
 		}
@@ -120,7 +125,7 @@ class WPML_Media_Selector implements IWPML_Action {
 	}
 
 	/**
-	 * @param array $row_data
+	 * @param array    $row_data
 	 * @param stdClass $doc_data
 	 *
 	 * @return array
@@ -138,7 +143,7 @@ class WPML_Media_Selector implements IWPML_Action {
 
 	/**
 	 * @param array $data
-	 * @param int $post_id
+	 * @param int   $post_id
 	 *
 	 * @return array
 	 */
@@ -150,7 +155,7 @@ class WPML_Media_Selector implements IWPML_Action {
 
 	/**
 	 * @param array $data
-	 * @param int $post_id
+	 * @param int   $post_id
 	 *
 	 * @return array
 	 */
@@ -170,11 +175,12 @@ class WPML_Media_Selector implements IWPML_Action {
 					__(
 						'Choose which media to translate with this %s',
 						'wpml-media'
-					), '%POST_TYPE%'
+					),
+					'%POST_TYPE%'
 				),
-				'loading'   => __( 'Loading...', 'wpml-media' )
+				'loading'   => __( 'Loading...', 'wpml-media' ),
 			),
-			'hide_selector' => get_user_meta( get_current_user_id(), self::USER_META_HIDE_POST_MEDIA_SELECTOR, true )
+			'hide_selector' => get_user_meta( get_current_user_id(), self::USER_META_HIDE_POST_MEDIA_SELECTOR, true ),
 		);
 		echo $this->template_loader->get_template()->show( $model, 'media-selector-preloader.twig' );
 	}

@@ -143,7 +143,15 @@ var CodeMirror = wp.CodeMirror || CodeMirror;
 				'!top':                       ['wpml-config'],
 				'wpml-config':                {
 					children: [
-						'language-switcher-settings', 'custom-types', 'taxonomies', 'shortcodes', 'custom-fields', 'admin-texts'
+						'language-switcher-settings',
+						'custom-types',
+						'taxonomies',
+						'shortcodes',
+						'custom-fields',
+						'admin-texts',
+						'elementor-widgets',
+						'beaver-builder-widgets',
+						'cornerstone-widgets'
 					]
 				},
 				'language-switcher-settings': {
@@ -183,7 +191,61 @@ var CodeMirror = wp.CodeMirror || CodeMirror;
 				'admin-texts':                {
 					children: ['key']
 				},
-				'key':                        genericKey
+				'key':                        genericKey,
+				'elementor-widgets':          {
+					children: ['widget']
+				},
+				'beaver-builder-widgets':     {
+					children: ['widget']
+				},
+				'cornerstone-widgets':        {
+					children: ['widget']
+				},
+				'widget': {
+					attrs: {
+						name: null,
+					},
+					children: [
+						'conditions',
+						'fields',
+						'fields-in-item',
+						'integration-classes'
+					]
+				},
+				'conditions': {
+					children: ['condition']
+				},
+				'condition': {
+					attrs: {
+						key: null
+					}
+				},
+				'fields': {
+					children: ['field']
+				},
+				'fields-in-item': {
+					children: ['field'],
+					attrs: {
+						items_of: null
+					}
+				},
+				'field': {
+					attrs: {
+						type: null,
+						editor_type: [
+							'LINE',
+							'AREA',
+							'VISUAL',
+							'LINK'
+						],
+						key_of: null,
+						field_id: null
+					}
+				},
+				'integration-classes': {
+					children: ['integration-class']
+				},
+				'integration-class': {}
 			};
 		},
 		getKeysMap:            function () {

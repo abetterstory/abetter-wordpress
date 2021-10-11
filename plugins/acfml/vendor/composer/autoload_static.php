@@ -4,9 +4,20 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitddad4a8ef65d06f45da608143d241ade
+class ComposerStaticInitf1803c06aaa83a74c0880ad070f9fb7f
 {
     public static $classMap = array (
+        'ACFML\\Convertable\\LinkFieldData' => __DIR__ . '/../..' . '/classes/Convertable/LinkFieldData.php',
+        'ACFML\\FieldReferenceAdjuster' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-reference-adjuster.php',
+        'ACFML\\FieldState' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-state.php',
+        'ACFML\\MigrateBlockPreferences' => __DIR__ . '/../..' . '/classes/class-wpml-acf-migrate-block-preferences.php',
+        'ACFML\\Repeater\\Shuffle\\Post' => __DIR__ . '/../..' . '/classes/strategy/repeater-shuffle/post.php',
+        'ACFML\\Repeater\\Shuffle\\Strategy' => __DIR__ . '/../..' . '/classes/strategy/repeater-shuffle/strategy.php',
+        'ACFML\\Repeater\\Shuffle\\Term' => __DIR__ . '/../..' . '/classes/strategy/repeater-shuffle/term.php',
+        'ACFML\\Tools\\Export' => __DIR__ . '/../..' . '/classes/Tools/Export.php',
+        'ACFML\\Tools\\Import' => __DIR__ . '/../..' . '/classes/Tools/Import.php',
+        'ACFML\\Tools\\Local' => __DIR__ . '/../..' . '/classes/Tools/Local.php',
+        'ACFML\\Tools\\Transfer' => __DIR__ . '/../..' . '/classes/Tools/Transfer.php',
         'WPML_ACF' => __DIR__ . '/../..' . '/classes/class-wpml-acf.php',
         'WPML_ACF_Attachments' => __DIR__ . '/../..' . '/classes/class-wpml-acf-attachments.php',
         'WPML_ACF_Blocks' => __DIR__ . '/../..' . '/classes/class-wpml-acf-blocks.php',
@@ -20,6 +31,7 @@ class ComposerStaticInitddad4a8ef65d06f45da608143d241ade
         'WPML_ACF_Field_Annotations' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-annotations.php',
         'WPML_ACF_Field_Groups' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-groups.php',
         'WPML_ACF_Field_Settings' => __DIR__ . '/../..' . '/classes/class-wpml-acf-field-settings.php',
+        'WPML_ACF_Link_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-link-field.php',
         'WPML_ACF_Location_Rules' => __DIR__ . '/../..' . '/classes/class-wpml-acf-location-rules.php',
         'WPML_ACF_Migrate_Option_Page_Strings' => __DIR__ . '/../..' . '/classes/class-wpml-acf-migrate-option-page-strings.php',
         'WPML_ACF_Options_Page' => __DIR__ . '/../..' . '/classes/class-wpml-acf-options-page.php',
@@ -30,6 +42,7 @@ class ComposerStaticInitddad4a8ef65d06f45da608143d241ade
         'WPML_ACF_Pro' => __DIR__ . '/../..' . '/classes/class-wpml-acf-pro.php',
         'WPML_ACF_Processed_Data' => __DIR__ . '/../..' . '/classes/class-wpml-acf-processed-data.php',
         'WPML_ACF_Relationship_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-relationship-field.php',
+        'WPML_ACF_Repeater_Shuffle' => __DIR__ . '/../..' . '/classes/class-wpml-acf-repeater-shuffle.php',
         'WPML_ACF_Requirements' => __DIR__ . '/../..' . '/classes/class-wpml-acf-requirements.php',
         'WPML_ACF_Taxonomy_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-taxonomy-field.php',
         'WPML_ACF_Term_Id' => __DIR__ . '/../..' . '/classes/class-wpml-acf-term-id.php',
@@ -37,12 +50,15 @@ class ComposerStaticInitddad4a8ef65d06f45da608143d241ade
         'WPML_ACF_Void_Field' => __DIR__ . '/../..' . '/classes/class-wpml-acf-void-field.php',
         'WPML_ACF_Worker' => __DIR__ . '/../..' . '/classes/class-wpml-acf-worker.php',
         'WPML_ACF_Xliff' => __DIR__ . '/../..' . '/classes/class-wpml-acf-xliff.php',
+        'WPML_Core_Version_Check' => __DIR__ . '/..' . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-core-version-check.php',
+        'WPML_Dependencies' => __DIR__ . '/..' . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-dependencies.php',
+        'WPML_PHP_Version_Check' => __DIR__ . '/..' . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-php-version-check.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInitddad4a8ef65d06f45da608143d241ade::$classMap;
+            $loader->classMap = ComposerStaticInitf1803c06aaa83a74c0880ad070f9fb7f::$classMap;
 
         }, null, ClassLoader::class);
     }

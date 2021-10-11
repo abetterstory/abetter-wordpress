@@ -38,11 +38,11 @@ class View {
 
 				<tbody id="the-list">
 				<?php
-					if ( $this->logs->isEmpty() ) {
-						$this->renderEmptyTable();
-					} else {
-						$this->logs->each( [ $this, 'renderTableRow' ] );
-					}
+				if ( $this->logs->isEmpty() ) {
+					$this->renderEmptyTable();
+				} else {
+					$this->logs->each( [ $this, 'renderTableRow' ] );
+				}
 				?>
 				</tbody>
 				<tfoot><?php $this->renderTableHeader(); ?></tfoot>

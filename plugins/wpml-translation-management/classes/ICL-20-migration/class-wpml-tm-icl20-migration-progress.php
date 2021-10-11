@@ -164,8 +164,10 @@ class WPML_TM_ICL20_Migration_Progress {
 		$result = true;
 		if ( $this->requires_migration() ) {
 			foreach ( $this->steps as $step ) {
-				if ( self::STEP_DONE !== get_option( sprintf( self::OPTION_KEY_MIGRATION_STEPS, $step ),
-				                                     self::STEP_FAILED ) ) {
+				if ( self::STEP_DONE !== get_option(
+					sprintf( self::OPTION_KEY_MIGRATION_STEPS, $step ),
+					self::STEP_FAILED
+				) ) {
 					$result = false;
 					break;
 				}
@@ -194,12 +196,16 @@ class WPML_TM_ICL20_Migration_Progress {
 	 * It will increases on every migration attempt
 	 */
 	private function increase_attempts_count() {
-		update_option( self::OPTION_KEY_MIGRATION_ATTEMPTS,
-		               $this->get_current_attempts_count() + 1,
-		               false );
-		update_option( self::OPTION_KEY_MIGRATION_LAST_ATTEMPT,
-		               time(),
-		               false );
+		update_option(
+			self::OPTION_KEY_MIGRATION_ATTEMPTS,
+			$this->get_current_attempts_count() + 1,
+			false
+		);
+		update_option(
+			self::OPTION_KEY_MIGRATION_LAST_ATTEMPT,
+			time(),
+			false
+		);
 		if ( $this->has_too_many_automatic_attempts() ) {
 			$this->block_next_automatic_attempts();
 		}
@@ -217,7 +223,7 @@ class WPML_TM_ICL20_Migration_Progress {
 	 */
 	public function has_too_many_automatic_attempts() {
 		return $this->get_current_attempts_count() >= self::MAX_AUTOMATIC_ATTEMPTS
-		       || $this->are_next_automatic_attempts_locked();
+			   || $this->are_next_automatic_attempts_locked();
 	}
 
 	/**

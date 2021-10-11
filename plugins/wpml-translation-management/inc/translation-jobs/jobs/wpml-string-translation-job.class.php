@@ -66,7 +66,7 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 	public function cancel() {
 		global $WPML_String_Translation, $wpdb;
 		/** @var WPML_String_Translation $WPML_String_Translation */
-		if ( isset( $WPML_String_Translation ) ) {
+		if ( $WPML_String_Translation ) {
 			$rid = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT rid

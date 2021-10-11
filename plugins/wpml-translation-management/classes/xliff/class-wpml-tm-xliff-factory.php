@@ -14,7 +14,7 @@ class WPML_TM_XLIFF_Factory {
 
 	public function create_frontend() {
 		global $sitepress;
-		$support_info   = new WPML_TM_Support_Info();
+		$support_info = new WPML_TM_Support_Info();
 
 		return new WPML_TM_Xliff_Frontend( wpml_tm_load_job_factory(), $sitepress, $support_info->is_simplexml_extension_loaded() );
 	}

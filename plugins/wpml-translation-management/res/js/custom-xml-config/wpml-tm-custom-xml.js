@@ -146,27 +146,27 @@ var WPML_TM = WPML_TM || {};
 							html += data[property].error;
 						} else {
 							html += this.convertObjectToTable(data[property]);
-						}
-					}
-					html += '</li>';
-				}
-			}
-			html += '</ul>';
-			return html;
-		}
-	};
+                        }
+                    }
+                    html += '</li>';
+                }
+            }
+            html += '</ul>';
+            return html;
+        }
+    };
 
-	jQuery(document).ready(function () {
-		var items = document.getElementsByClassName('js-wpml-tm-custom-xml');
+    jQuery(function () {
+        var items = document.getElementsByClassName('js-wpml-tm-custom-xml');
 
-		var i;
-		for (i = 0; i < items.length; i++) {
-			var codeMirror;
-			if (WPML_TM.Custom_XML_Editor) {
-				codeMirror = new WPML_TM.Custom_XML_Editor(items[i]);
-			}
-			var customXML = new WPML_TM.Custom_XML(jQuery(items[i]), codeMirror);
-			customXML.init();
+        var i;
+        for (i = 0; i < items.length; i++) {
+            var codeMirror;
+            if (WPML_TM.Custom_XML_Editor) {
+                codeMirror = new WPML_TM.Custom_XML_Editor(items[i]);
+            }
+            var customXML = new WPML_TM.Custom_XML(jQuery(items[i]), codeMirror);
+            customXML.init();
 		}
 	});
 

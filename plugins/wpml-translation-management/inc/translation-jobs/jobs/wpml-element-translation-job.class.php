@@ -85,7 +85,8 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 				'job_id'   => $this->get_id(),
 				'complete' => $complete,
 				'fields'   => array(),
-			), $wpml_tm_records
+			),
+			$wpml_tm_records
 		);
 		$save_data_action->save_translation();
 	}
@@ -141,7 +142,8 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 			$wpdb->delete( $wpdb->prefix . 'icl_translations', array( 'translation_id' => $translation_id ) );
 			if ( $rid ) {
 				$wpdb->delete(
-					$wpdb->prefix . 'icl_translation_status', array(
+					$wpdb->prefix . 'icl_translation_status',
+					array(
 						'translation_id' => $translation_id,
 						'rid'            => $rid,
 					)
@@ -256,9 +258,17 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		);
 	}
 
+	/**
+	 * @param int $job_id
+	 *
+	 * @return bool|stdClass|WPML_Element_Translation_Job
+	 */
 	protected function load_job_data( $job_id ) {
+		if ( $this->job_factory ) {
+			return $this->job_factory->get_translation_job( $job_id, false, 1 );
+		}
 
-		return $this->job_factory->get_translation_job( $job_id, false, 1 );
+		return false;
 	}
 
 	protected function save_updated_assignment() {

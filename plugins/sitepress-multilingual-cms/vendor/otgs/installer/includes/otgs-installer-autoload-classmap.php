@@ -1,7 +1,7 @@
 <?php
-$baseDir = dirname( dirname( __FILE__ ) );
+$baseDir = dirname( __DIR__ );
 
-return array(
+return [
 	'Installer_Dependencies'                                 => $baseDir . '/includes/class-installer-dependencies.php',
 	'Installer_Theme_Class'                                  => $baseDir . '/includes/class-installer-theme.php',
 	'Installer_Upgrader_Skins'                               => $baseDir . '/includes/class-installer-upgrader-skins.php',
@@ -71,4 +71,41 @@ return array(
 	'OTGS_Products_Manager_Factory'                          => $baseDir . '/includes/products/OTGS_Products_Manager_Factory.php',
 	'OTGS_Products_Config_Db_Storage'                        => $baseDir . '/includes/products/OTGS_Products_Config_Db_Storage.php',
 	'OTGS_Products_Config_Xml'                               => $baseDir . '/includes/products/OTGS_Products_Config_Xml.php',
-);
+	'OTGS\Installer\Collection'                              => $baseDir . '/includes/utilities/Collection.php',
+	'OTGS_Installer_Products_Parser'                         => $baseDir . '/includes/products/OTGS_Installer_Products_Parser.php',
+	'OTGS_Installer_Products_Parsing_Exception'              => $baseDir . '/includes/exceptions/OTGS_Installer_Products_Parsing_Exception.php',
+	'OTGS\Installer\AdminNotices\Display'                    => $baseDir . '/includes/admin-notices/Display.php',
+	'OTGS\Installer\AdminNotices\Config'                     => $baseDir . '/includes/admin-notices/Config.php',
+	'OTGS\Installer\AdminNotices\PageConfig'                 => $baseDir . '/includes/admin-notices/PageConfig.php',
+	'OTGS\Installer\AdminNotices\ScreenConfig'               => $baseDir . '/includes/admin-notices/ScreenConfig.php',
+	'OTGS\Installer\AdminNotices\MessageTexts'               => $baseDir . '/includes/admin-notices/MessageTexts.php',
+	'OTGS\Installer\AdminNotices\Dismissed'                  => $baseDir . '/includes/admin-notices/Dismissed.php',
+	'OTGS\Installer\AdminNotices\Loader'                     => $baseDir . '/includes/admin-notices/Loader.php',
+	'OTGS\Installer\AdminNotices\Store'                      => $baseDir . '/includes/admin-notices/Store.php',
+	'OTGS\Installer\AdminNotices\WPMLConfig'                 => $baseDir . '/includes/admin-notices/config/WPMLConfig.php',
+	'OTGS\Installer\AdminNotices\ToolsetConfig'              => $baseDir . '/includes/admin-notices/config/ToolsetConfig.php',
+	'OTGS\Installer\AdminNotices\Notices\Account'            => $baseDir . '/includes/admin-notices/notices/Account.php',
+	'OTGS\Installer\AdminNotices\Notices\Texts'              => $baseDir . '/includes/admin-notices/notices/Texts.php',
+	'OTGS\Installer\AdminNotices\Notices\WPMLTexts'          => $baseDir . '/includes/admin-notices/notices/WPMLTexts.php',
+	'OTGS\Installer\AdminNotices\Notices\ToolsetTexts'       => $baseDir . '/includes/admin-notices/notices/ToolsetTexts.php',
+	'OTGS\Installer\AdminNotices\Notices\ApiConnection'      => $baseDir . '/includes/admin-notices/notices/ApiConnection.php',
+	'OTGS\Installer\AdminNotices\Notices\Notice'             => $baseDir . '/includes/admin-notices/notices/Notice.php',
+	'OTGS\Installer\AdminNotices\Notices\Hooks'              => $baseDir . '/includes/admin-notices/notices/Hooks.php',
+	'OTGS\Installer\Templates\Repository\Register'           => $baseDir . '/templates/repository-register.php',
+	'OTGS\Installer\Templates\Repository\Expired'            => $baseDir . '/templates/repository-expired.php',
+	'OTGS\Installer\Templates\Repository\Refunded'           => $baseDir . '/templates/repository-refunded.php',
+	'OTGS\Installer\Templates\Repository\EndUsers'           => $baseDir . '/templates/repository-end-users.php',
+	'OTGS\Installer\Templates\Repository\Registered'         => $baseDir . '/templates/repository-registered.php',
+	'OTGS\Installer\Templates\Repository\LegacyFree'         => $baseDir . '/templates/repository-legacy-free.php',
+	'OTGS\Installer\Templates\Repository\RegisteredButtons'  => $baseDir . '/templates/repository-registered-buttons.php',
+	'OTGS\Installer\Rest\Push'                               => $baseDir . '/includes/rest/Push.php',
+	'OTGS\Installer\Recommendations\RecommendationsManager'        => $baseDir . '/src/Recommendations/RecommendationsManager.php',
+	'OTGS\Installer\Recommendations\RecommendationsManagerFactory' => $baseDir . '/src/Recommendations/RecommendationsManagerFactory.php',
+	'OTGS\Installer\Recommendations\Storage'                       => $baseDir . '/src/Recommendations/Storage.php',
+	'OTGS\Installer\AdminNotices\Notices\Recommendation'           => $baseDir . '/includes/admin-notices/notices/Recommendation.php',
+	'OTGS\Installer\AdminNotices\Notices\Dismissions'              => $baseDir . '/includes/admin-notices/notices/Dismissions.php',
+	'OTGS\Installer\Loader\Config'                              => $baseDir . '/includes/loader/Config.php',
+	'OTGS\Installer\CommercialTab\SectionsManager'                 => $baseDir . '/includes/products/commercial-tab/SectionsManager.php',
+	'OTGS\Installer\CommercialTab\DownloadsList'                   => $baseDir . '/includes/products/commercial-tab/DownloadsList.php',
+	'OTGS\Installer\Settings'                                      => $baseDir . '/includes/class-otgs-installer-settings.php',
+];

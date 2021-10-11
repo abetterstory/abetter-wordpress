@@ -15,10 +15,14 @@ class WPML_TM_AJAX {
 		}
 
 		if ( ! array_key_exists( 'nonce', $_POST ) || ! $action
-		     || ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), $action ) ) {
+			 || ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), $action ) ) {
 
-			wp_send_json_error( __( 'You have attempted to submit data in a not legit way.',
-				'wpml-translation-management' ) );
+			wp_send_json_error(
+				__(
+					'You have attempted to submit data in a not legit way.',
+					'wpml-translation-management'
+				)
+			);
 
 			return false;
 		}

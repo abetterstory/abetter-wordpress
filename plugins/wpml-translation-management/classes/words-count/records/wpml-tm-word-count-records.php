@@ -251,7 +251,7 @@ class WPML_TM_Word_Count_Records {
 		} elseif ( 'post_types' === $group ) {
 			return $this->post_records->count_word_counts_by_type( $type );
 		}
-		
+
 		return 0;
 	}
 

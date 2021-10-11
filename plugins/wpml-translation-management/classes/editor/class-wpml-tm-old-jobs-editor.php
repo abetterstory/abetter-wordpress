@@ -33,6 +33,26 @@ class WPML_TM_Old_Jobs_Editor {
 		}
 	}
 
+	/**
+	 * @param int $job_id
+	 *
+	 * @return bool
+	 */
+	public function shouldStickToWPMLEditor( $job_id ) {
+		$sql = "
+			SELECT job.editor
+			FROM {$this->wpdb->prefix}icl_translate_job job
+			WHERE job.job_id < %d AND job.rid = (
+				SELECT rid FROM {$this->wpdb->prefix}icl_translate_job WHERE job_id = %s
+			)			
+			ORDER BY job.job_id DESC
+		";
+
+		$previousJobEditor = $this->wpdb->get_var( $this->wpdb->prepare( $sql, $job_id, $job_id ) );
+
+		return $previousJobEditor === WPML_TM_Editors::WPML && get_option( self::OPTION_NAME, null ) === WPML_TM_Editors::WPML;
+	}
+
 	public function set( $job_id, $editor ) {
 		$this->job_factory->update_job_data( $job_id, array( 'editor' => $editor ) );
 	}

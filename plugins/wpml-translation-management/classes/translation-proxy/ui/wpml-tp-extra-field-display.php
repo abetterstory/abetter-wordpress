@@ -16,10 +16,10 @@ class WPML_TP_Extra_Field_Display {
 		if ( $this->must_render( $field ) ) {
 			$field_id = 'wpml-tp-extra-field-' . $field->name;
 			$row      = '<tr>';
-			$row .= '<th scope="row">';
-			$row .= '<label for="' . esc_attr( $field_id ) . '">' . esc_html( $field->label ) . '</label>';
-			$row .= '</th>';
-			$row .= '<td>';
+			$row     .= '<th scope="row">';
+			$row     .= '<label for="' . esc_attr( $field_id ) . '">' . esc_html( $field->label ) . '</label>';
+			$row     .= '</th>';
+			$row     .= '<td>';
 			switch ( $field->type ) {
 				case 'select':
 					$row .= '<select id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field->name ) . '">';
@@ -45,7 +45,7 @@ class WPML_TP_Extra_Field_Display {
 				case 'text':
 				default:
 					$type = null !== $field->type ? $field->type : 'text';
-					$row .= '<input id="' . esc_attr( $field_id ) . '" type="' . esc_attr( $type ). '" name="' . esc_attr( $field->name ) . '">';
+					$row .= '<input id="' . esc_attr( $field_id ) . '" type="' . esc_attr( $type ) . '" name="' . esc_attr( $field->name ) . '">';
 					break;
 			}
 			$row .= '</td>';

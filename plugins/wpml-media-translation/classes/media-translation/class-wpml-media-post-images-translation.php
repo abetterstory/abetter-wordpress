@@ -103,9 +103,13 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 			foreach ( array_keys( $this->sitepress->get_active_languages() ) as $target_language ) {
 				/** @var WPML_Post_Element $translation */
 				$translation = $post_element->get_translation( $target_language );
-				if ( null !== $translation && $post_id !== $translation->get_id() ) {
-					$this->translate_images_in_post_content( get_post( $translation->get_id() ), $translation );
-					$this->translate_images_in_custom_fields( $translation->get_id() );
+				if ( null !== $translation && $post_id !== $translation->get_id()  ) {
+					$translatedPost = get_post( $translation->get_id() );
+
+					if ( $translatedPost ) {
+						$this->translate_images_in_post_content( $translatedPost, $translation );
+						$this->translate_images_in_custom_fields( $translation->get_id() );
+					}
 				}
 			}
 		}
@@ -236,11 +240,13 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 
 			}
 
-			$new_caption_shortcode = $this->replace_caption_id_with_translated_id(
-				$new_caption_shortcode,
-				$attachment_id,
-				$language
-			);
+			if ( $attachment_id ) {
+				$new_caption_shortcode = $this->replace_caption_id_with_translated_id(
+					$new_caption_shortcode,
+					$attachment_id,
+					$language
+				);
+			}
 
 			if ( $new_caption_shortcode !== $caption_shortcode ) {
 				$text                                     = str_replace( $caption_shortcode, $new_caption_shortcode, $text );

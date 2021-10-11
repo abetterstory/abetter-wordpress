@@ -21,7 +21,7 @@ class WPML_TM_Troubleshooting_Clear_TS extends WPML_TM_AJAX_Factory_Obsolete {
 		$action              = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 		$wpml_clear_ts_nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
 		$valid_nonce         = wp_verify_nonce( $wpml_clear_ts_nonce, $action );
-		if ( $valid_nonce && isset( $_POST ) && $_POST ) {
+		if ( $valid_nonce && $_POST ) {
 			$this->clear_tp_default_suid();
 			return $this->wpml_wp_api->wp_send_json_success( __( 'Ok!', 'wpml-translation-management' ) );
 		} else {

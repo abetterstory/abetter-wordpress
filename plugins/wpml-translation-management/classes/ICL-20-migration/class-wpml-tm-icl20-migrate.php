@@ -23,7 +23,7 @@ class WPML_TM_ICL20_Migrate {
 		$this->status           = $status;
 		$this->remote_migration = $remote_migration;
 		$this->local_migration  = $local_migration;
-		$this->tp_services           = $tp_services;
+		$this->tp_services      = $tp_services;
 	}
 
 	public function migrate_project_rollback() {
@@ -47,14 +47,18 @@ class WPML_TM_ICL20_Migrate {
 		$token   = $project ? $this->get_token( $project ) : null;
 
 		if ( (bool) $token
-		     && $this->migrate_project( $project, $token )
-		     && $this->acknowledge_icl( $project )
-		     && $this->migrate_local_service( $token )
-		     && $this->migrate_local_project()
-		     && $this->migrate_local_jobs( WPML_TM_ICL20_Migrate_Local::JOBS_TYPES_DOCUMENTS,
-		                                   WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_JOBS_DOCUMENTS )
-		     && $this->migrate_local_jobs( WPML_TM_ICL20_Migrate_Local::JOBS_TYPES_STRINGS,
-		                                   WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_JOBS_STRINGS ) ) {
+			 && $this->migrate_project( $project, $token )
+			 && $this->acknowledge_icl( $project )
+			 && $this->migrate_local_service( $token )
+			 && $this->migrate_local_project()
+			&& $this->migrate_local_jobs(
+				WPML_TM_ICL20_Migrate_Local::JOBS_TYPES_DOCUMENTS,
+				WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_JOBS_DOCUMENTS
+			)
+			&& $this->migrate_local_jobs(
+				WPML_TM_ICL20_Migrate_Local::JOBS_TYPES_STRINGS,
+				WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_JOBS_STRINGS
+			) ) {
 
 			$this->progress->set_migration_done();
 

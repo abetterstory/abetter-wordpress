@@ -75,8 +75,39 @@ const installerSupport = (env) => {
 	};
 };
 
+const expiredNotice = (env) => {
+	const isProduction = env === 'production';
+
+	return {
+		entry: ['whatwg-fetch', './src/js/expired-notice/app.js'],
+		output: {
+			path: path.join(__dirname,  'dist'),
+			filename: path.join('js', 'expired-notice', 'app.js'),
+		},
+		module: webPackModule(!isProduction),
+		devtool: isProduction ? '' : 'inline-source-map'
+	};
+};
+
+const domPurify = (env) => {
+	const isProduction = env === 'production';
+
+	return {
+		entry: ['whatwg-fetch', './src/js/domPurify/app.js'],
+		output: {
+			path: path.join(__dirname,  'dist'),
+			filename: path.join('js', 'domPurify', 'app.js'),
+		},
+		module: webPackModule(!isProduction),
+		devtool: isProduction ? '' : 'inline-source-map'
+	};
+};
+
+
 module.exports = [
 	componentSettings,
-	installerSupport
+	installerSupport,
+	expiredNotice,
+	domPurify
 ];
 

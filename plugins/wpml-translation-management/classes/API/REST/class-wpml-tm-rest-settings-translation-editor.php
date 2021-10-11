@@ -23,18 +23,20 @@ class WPML_TM_REST_Settings_Translation_Editor extends WPML_REST_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( '/settings/translation_editor',
-		                        array(
-			                        'methods'  => 'POST',
-			                        'callback' => array( $this, 'set_translation_editor' ),
-			                        'args'     => array(
-				                        'editor_type' => array(
-					                        'required'          => true,
-					                        'validate_callback' => array( $this, 'validate_editor_type' ),
-					                        'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
-				                        ),
-			                        ),
-		                        ) );
+		parent::register_route(
+			'/settings/translation_editor',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'set_translation_editor' ),
+				'args'     => array(
+					'editor_type' => array(
+						'required'          => true,
+						'validate_callback' => array( $this, 'validate_editor_type' ),
+						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
+					),
+				),
+			)
+		);
 	}
 
 	public function get_allowed_capabilities( WP_REST_Request $request ) {

@@ -34,7 +34,7 @@ class WPML_Language_Domain_Validation {
 	 * @return bool
 	 */
 	public function is_valid() {
-		if( is_multisite() && defined( 'SUBDOMAIN_INSTALL' ) && SUBDOMAIN_INSTALL ) {
+		if ( is_multisite() && defined( 'SUBDOMAIN_INSTALL' ) && SUBDOMAIN_INSTALL ) {
 			return true;
 		}
 

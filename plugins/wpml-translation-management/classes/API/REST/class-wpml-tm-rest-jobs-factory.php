@@ -19,7 +19,7 @@ class WPML_TM_REST_Jobs_Factory extends WPML_REST_Factory_Loader {
 				new WPML_TM_Rest_Job_Translator_Name(),
 				new WPML_TM_Rest_Job_Progress()
 			),
-			new WPML_TP_Sync_Update_Job( $wpdb ),
+			new WPML_TP_Sync_Update_Job( $wpdb, $sitepress ),
 			new WPML_TM_Last_Picked_Up( $sitepress )
 		);
 	}

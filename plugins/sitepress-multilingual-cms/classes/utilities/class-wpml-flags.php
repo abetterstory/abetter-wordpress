@@ -9,35 +9,40 @@ class WPML_Flags {
 	/** @var icl_cache  */
 	private $cache;
 
-	/** @var WPDB $wpdb */
+	/** @var wpdb $wpdb */
 	private $wpdb;
 
 	/** @var WP_Filesystem_Direct */
 	private $filesystem;
 
 	/**
-	 * @param WPDB $wpdb
-	 * @param icl_cache $cache
+	 * @param wpdb                 $wpdb
+	 * @param icl_cache            $cache
 	 * @param WP_Filesystem_Direct $filesystem
 	 */
 	public function __construct( $wpdb, icl_cache $cache, WP_Filesystem_Direct $filesystem ) {
-		$this->wpdb = $wpdb;
-		$this->cache = $cache;
+		$this->wpdb       = $wpdb;
+		$this->cache      = $cache;
 		$this->filesystem = $filesystem;
 	}
 
 	/**
-	 * @param $lang_code
+	 * @param string $lang_code
 	 *
-	 * @return bool|object
+	 * @return \stdClass|null
 	 */
 	public function get_flag( $lang_code ) {
 		$flag = $this->cache->get( $lang_code );
 
 		if ( ! $flag ) {
-			$flag = $this->wpdb->get_row( $this->wpdb->prepare( "SELECT flag, from_template
+			$flag = $this->wpdb->get_row(
+				$this->wpdb->prepare(
+					"SELECT flag, from_template
                                                     FROM {$this->wpdb->prefix}icl_flags
-                                                    WHERE lang_code=%s", $lang_code ) );
+                                                    WHERE lang_code=%s",
+					$lang_code
+				)
+			);
 
 			$this->cache->set( $lang_code, $flag );
 		}
@@ -45,6 +50,11 @@ class WPML_Flags {
 		return $flag;
 	}
 
+	/**
+	 * @param string $lang_code
+	 *
+	 * @return string
+	 */
 	public function get_flag_url( $lang_code ) {
 		$flag = $this->get_flag( $lang_code );
 		if ( ! $flag ) {
@@ -89,14 +99,14 @@ class WPML_Flags {
 	/**
 	 * @return string
 	 */
-	public final function get_wpml_flags_directory() {
+	final public function get_wpml_flags_directory() {
 		return WPML_PLUGIN_PATH . '/res/flags/';
 	}
 
 	/**
 	 * @return string
 	 */
-	public final function get_wpml_flags_url() {
+	final public function get_wpml_flags_url() {
 		return ICL_PLUGIN_URL . '/res/flags/';
 	}
 
@@ -122,8 +132,8 @@ class WPML_Flags {
 	}
 
 	/**
-	 * @param $base_url
-	 * @param $path
+	 * @param string $base_url
+	 * @param string $path
 	 *
 	 * @return string
 	 */

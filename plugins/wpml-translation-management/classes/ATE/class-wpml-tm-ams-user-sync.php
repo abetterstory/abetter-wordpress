@@ -16,8 +16,8 @@ class WPML_TM_AMS_User_Sync {
 		WPML_Translator_Records $translator_records,
 		WPML_Translator_Admin_Records $translator_admin_records
 	) {
-		$this->manager_records    = $manager_records;
-		$this->translator_records = $translator_records;
+		$this->manager_records          = $manager_records;
+		$this->translator_records       = $translator_records;
 		$this->translator_admin_records = $translator_admin_records;
 	}
 

@@ -5,7 +5,7 @@ if(!function_exists('add_action')){
 	exit;
 }
 
-define('LOGINIZER_VERSION', '1.5.5');
+define('LOGINIZER_VERSION', '1.6.7');
 define('LOGINIZER_DIR', dirname(LOGINIZER_FILE));
 define('LOGINIZER_URL', plugins_url('', LOGINIZER_FILE));
 define('LOGINIZER_PRO_URL', 'https://loginizer.com/features#compare');
@@ -34,7 +34,7 @@ function loginizer_activation(){
 				`ip` varchar(255) NOT NULL DEFAULT '',
 				`url` varchar(255) NOT NULL DEFAULT '',
 				UNIQUE KEY `ip` (`ip`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+			) DEFAULT CHARSET=utf8;";
 
 	foreach($sql as $sk => $sv){
 		$wpdb->query($sv);
@@ -45,10 +45,17 @@ function loginizer_activation(){
 	add_option('loginizer_last_reset', 0);
 	add_option('loginizer_whitelist', array());
 	add_option('loginizer_blacklist', array());
+	add_option('loginizer_2fa_whitelist', array());
 
 }
 
-// Checks if we are to update ?
+/**
+ * Updates the database structure for Loginizer
+ *
+ * If the plugin files are updated but database structure is not updated
+ * this function will update the database structure as per the plugin version
+ * NOTE: This does not update plugin files it just updates the database structure
+ */
 function loginizer_update_check(){
 
 global $wpdb;
@@ -110,7 +117,15 @@ global $wpdb;
 		// Update the existing failed logs to new table
 		if(is_array($lz_failed_logs)){
 			foreach($lz_failed_logs as $fk => $fv){
-				$wpdb->query("INSERT INTO ".$wpdb->prefix."loginizer_logs SET `username` = '".$fv['username']."', `time` = '".$fv['time']."', `count` = '".$fv['count']."', `lockout` = '".$fv['lockout']."', `ip` = '".$fv['ip']."';");
+				$insert_data = array('username' => $fv['username'], 
+									'time' => $fv['time'], 
+									'count' => $fv['count'], 
+									'lockout' => $fv['lockout'], 
+									'ip' => $fv['ip']);
+									
+				$format = array('%s','%d','%d','%d','%s');
+				
+				$wpdb->insert($wpdb->prefix.'loginizer_logs', $insert_data, $format);
 			}			
 		}
 
@@ -229,10 +244,31 @@ function loginizer_load_plugin(){
 			$loginizer['msg'][$lk] = $loginizer['d_msg'][$lk];
 		}
 	}
+	
+	$loginizer['2fa_d_msg']['otp_app'] = __('Please enter the OTP as seen in your App', 'loginizer');
+	$loginizer['2fa_d_msg']['otp_email'] = __('Please enter the OTP emailed to you', 'loginizer');
+	$loginizer['2fa_d_msg']['otp_field'] = __('One Time Password', 'loginizer');
+	$loginizer['2fa_d_msg']['otp_question'] = __('Please answer your security question', 'loginizer');
+	$loginizer['2fa_d_msg']['otp_answer'] = __('Your Answer', 'loginizer');
+	
+	// Message Strings
+	$loginizer['2fa_msg'] = get_option('loginizer_2fa_msg');
+	
+	foreach($loginizer['2fa_d_msg'] as $lk => $lv){
+		if(empty($loginizer['2fa_msg'][$lk])){
+			$loginizer['2fa_msg'][$lk] = $loginizer['2fa_d_msg'][$lk];
+		}
+	}
 		
 	// Load the blacklist and whitelist
 	$loginizer['blacklist'] = get_option('loginizer_blacklist');
 	$loginizer['whitelist'] = get_option('loginizer_whitelist');
+	$loginizer['2fa_whitelist'] = get_option('loginizer_2fa_whitelist');
+	
+	// It should not be false
+	if(empty($loginizer['2fa_whitelist'])){
+		$loginizer['2fa_whitelist'] = array();
+	}
 	
 	// When was the database cleared last time
 	$loginizer['last_reset']  = get_option('loginizer_last_reset');
@@ -298,6 +334,29 @@ $site_name';
 	$loginizer['email_pass_less'] = empty($options['email_pass_less']) ? 0 : $options['email_pass_less'];
 	$loginizer['passwordless_sub'] = empty($options['passwordless_sub']) ? $loginizer['pl_d_sub'] : $options['passwordless_sub'];
 	$loginizer['passwordless_msg'] = empty($options['passwordless_msg']) ? $loginizer['pl_d_msg'] : $options['passwordless_msg'];
+	$loginizer['passwordless_msg_is_custom'] = empty($options['passwordless_msg']) ? 0 : 1;
+	$loginizer['passwordless_html'] = empty($options['passwordless_html']) ? 0 : $options['passwordless_html'];
+	
+	// 2FA OTP Email to Login
+	$options = get_option('loginizer_2fa_email_template');
+	$loginizer['2fa_email_d_sub'] = 'OTP : Login at $site_name';
+	$loginizer['2fa_email_d_msg'] = 'Hi,
+
+A login request was submitted for your account $email at :
+$site_name - $site_url
+
+Please use the following One Time password (OTP) to login : 
+$otp
+
+Note : The OTP expires after 10 minutes.
+
+If you haven\'t requested for the OTP, please ignore this email.
+
+Regards,
+$site_name';
+
+	$loginizer['2fa_email_sub'] = empty($options['2fa_email_sub']) ? $loginizer['2fa_email_d_sub'] : $options['2fa_email_sub'];
+	$loginizer['2fa_email_msg'] = empty($options['2fa_email_msg']) ? $loginizer['2fa_email_d_msg'] : $options['2fa_email_msg'];
 	
 	// For SitePad its always on
 	if(defined('SITEPAD')){
@@ -539,6 +598,10 @@ function loginizer_wp_authenticate($user, $username, $password){
 	// Are you blacklisted ?
 	if(loginizer_is_blacklisted()){
 		$lz_cannot_login = 1;
+		
+		// This is used by WP Activity Log
+		apply_filters( 'wp_login_blocked', $username );
+		
 		return new WP_Error('ip_blacklisted', implode('', $lz_error), 'loginizer');
 	}
 	
@@ -546,6 +609,10 @@ function loginizer_wp_authenticate($user, $username, $password){
 	if(function_exists('loginizer_user_blacklisted')){
 		if(loginizer_user_blacklisted($username)){
 			$lz_cannot_login = 1;
+		
+			// This is used by WP Activity Log
+			apply_filters( 'wp_login_blocked', $username );
+			
 			return new WP_Error('user_blacklisted', implode('', $lz_error), 'loginizer');
 		}
 	}
@@ -555,6 +622,9 @@ function loginizer_wp_authenticate($user, $username, $password){
 	}
 	
 	$lz_cannot_login = 1;
+		
+	// This is used by WP Activity Log
+	apply_filters( 'wp_login_blocked', $username );
 	
 	return new WP_Error('ip_blocked', implode('', $lz_error), 'loginizer');
 	
@@ -565,7 +635,8 @@ function loginizer_can_login(){
 	global $wpdb, $loginizer, $lz_error;
 	
 	// Get the logs
-	$result = lz_selectquery("SELECT * FROM `".$wpdb->prefix."loginizer_logs` WHERE `ip` = '".$loginizer['current_ip']."';");
+	$sel_query = $wpdb->prepare("SELECT * FROM `".$wpdb->prefix."loginizer_logs` WHERE `ip` = %s", $loginizer['current_ip']);
+	$result = lz_selectquery($sel_query);
 	
 	if(!empty($result['count']) && ($result['count'] % $loginizer['max_retries']) == 0){
 		
@@ -603,7 +674,11 @@ function loginizer_is_blacklisted(){
 	global $wpdb, $loginizer, $lz_error;
 	
 	$blacklist = $loginizer['blacklist'];
-			
+	
+	if(empty($blacklist)){
+		return false;
+	}
+	  
 	foreach($blacklist as $k => $v){
 		
 		// Is the IP in the blacklist ?
@@ -645,6 +720,10 @@ function loginizer_is_whitelisted(){
 	
 	$whitelist = $loginizer['whitelist'];
 			
+	if(empty($whitelist)){
+		return false;
+	}
+	  
 	foreach($whitelist as $k => $v){
 		
 		// Is the IP in the blacklist ?
@@ -686,6 +765,11 @@ function loginizer_login_failed($username, $is_2fa = ''){
 	
 	global $wpdb, $loginizer, $lz_cannot_login;
 	
+	// Some plugins are changing the value for username as null so we need to handle it before using it for the INSERT OR UPDATE query
+	if(empty($username) || is_null($username)){
+		$username = '';
+	}
+	
 	$fail_type = 'Login';
 	
 	if(!empty($is_2fa)){
@@ -697,11 +781,24 @@ function loginizer_login_failed($username, $is_2fa = ''){
 		$url = @addslashes((!empty($_SERVER['HTTPS']) ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$url = esc_url($url);
 		
-		$result = lz_selectquery("SELECT * FROM `".$wpdb->prefix."loginizer_logs` WHERE `ip` = '".$loginizer['current_ip']."';");
+		$sel_query = $wpdb->prepare("SELECT * FROM `".$wpdb->prefix."loginizer_logs` WHERE `ip` = %s", $loginizer['current_ip']);
+		$result = lz_selectquery($sel_query);
 		
 		if(!empty($result)){
 			$lockout = floor((($result['count']+1) / $loginizer['max_retries']));
-			$sresult = $wpdb->query("UPDATE `".$wpdb->prefix."loginizer_logs` SET `username` = '".$username."', `time` = '".time()."', `count` = `count`+1, `lockout` = '".$lockout."', `url` = '".$url."' WHERE `ip` = '".$loginizer['current_ip']."';");
+			
+			$update_data = array('username' => $username, 
+								'time' => time(), 
+								'count' => $result['count']+1, 
+								'lockout' => $lockout, 
+								'url' => $url);
+			
+			$where_data = array('ip' => $loginizer['current_ip']);
+			
+			$format = array('%s','%d','%d','%d','%s');
+			$where_format = array('%s');
+			
+			$wpdb->update($wpdb->prefix.'loginizer_logs', $update_data, $where_data, $format, $where_format);
 			
 			// Do we need to email admin ?
 			if(!empty($loginizer['notify_email']) && $lockout >= $loginizer['notify_email']){
@@ -712,7 +809,8 @@ function loginizer_login_failed($username, $is_2fa = ''){
 				$mail['subject'] = 'Failed '.$fail_type.' Attempts from IP '.$loginizer['current_ip'].' ('.$sitename.')';
 				$mail['message'] = 'Hi,
 
-'.($result['count']+1).' failed '.strtolower($fail_type).' attempts and '.$lockout.' lockout(s) from IP '.$loginizer['current_ip'].'
+'.($result['count']+1).' failed '.strtolower($fail_type).' attempts and '.$lockout.' lockout(s) from IP '.$loginizer['current_ip'].' on your site :
+'.home_url().'
 
 Last '.$fail_type.' Attempt : '.date('d/M/Y H:i:s P', time()).'
 Last User Attempt : '.$username.'
@@ -724,7 +822,19 @@ Loginizer';
 				@wp_mail($mail['to'], $mail['subject'], $mail['message']);
 			}
 		}else{
-			$insert = $wpdb->query("INSERT INTO `".$wpdb->prefix."loginizer_logs` SET `username` = '".$username."', `time` = '".time()."', `count` = '1', `ip` = '".$loginizer['current_ip']."', `lockout` = '0', `url` = '".$url."';");
+			$result = array();
+			$result['count'] = 0;
+			
+			$insert_data = array('username' => $username, 
+								'time' => time(), 
+								'count' => 1, 
+								'ip' => $loginizer['current_ip'], 
+								'lockout' => 0, 
+								'url' => $url);
+								
+			$format = array('%s','%d','%d','%s','%d','%s');
+			
+			$wpdb->insert($wpdb->prefix.'loginizer_logs', $insert_data, $format);
 		}
 	
 		// We need to add one as this is a failed attempt as well
@@ -801,8 +911,10 @@ function loginizer_reset_retries(){
 	
 	global $wpdb, $loginizer;
 	
-	$deltime = time() - $loginizer['reset_retries'];	
-	$result = $wpdb->query("DELETE FROM `".$wpdb->prefix."loginizer_logs` WHERE `time` <= '".$deltime."';");
+	$deltime = time() - $loginizer['reset_retries'];
+	
+	$del_query = $wpdb->prepare("DELETE FROM `".$wpdb->prefix."loginizer_logs` WHERE `time` <= %d", $deltime);
+	$result = $wpdb->query($del_query);
 	
 	update_option('loginizer_last_reset', time());
 	
@@ -1100,46 +1212,8 @@ function loginizer_page_dashboard(){
 	if(count($_POST) > 0){
 		check_admin_referer('loginizer-options');
 	}
-
-	// Is there a license key ?
-	if(isset($_POST['save_lz'])){
 	
-		$license = lz_optpost('lz_license');
-		
-		// Check if its a valid license
-		if(empty($license)){
-			$lz_error['lic_invalid'] = __('The license key was not submitted', 'loginizer');
-			return loginizer_page_dashboard_T();
-		}
-		
-		$resp = wp_remote_get(LOGINIZER_API.'license.php?license='.$license, array('timeout' => 30));
-		
-		if(is_array($resp)){
-			$json = json_decode($resp['body'], true);
-			//print_r($json);
-		}else{
-		
-			$lz_error['resp_invalid'] = __('The response was malformed<br>'.var_export($resp, true), 'loginizer');
-			return loginizer_page_dashboard_T();
-			
-		}
-		
-		// Save the License
-		if(empty($json['license'])){
-		
-			$lz_error['lic_invalid'] = __('The license key is invalid', 'loginizer');
-			return loginizer_page_dashboard_T();
-			
-		}else{
-			
-			update_option('loginizer_license', $json);
-			
-			// Mark as saved
-			$GLOBALS['lz_saved'] = true;
-		}
-		
-	}
-	
+	do_action('loginizer_pre_page_dashboard');
 	
 	// Is there a IP Method ?
 	if(isset($_POST['save_lz_ip_method'])){
@@ -1187,15 +1261,22 @@ input[type="text"], textarea, select {
 	font-size:12px;
 }
 </style>
+		
+	<?php 
+	$lz_ip = lz_getip();
 	
-	<?php
+	if($lz_ip != '127.0.0.1' && @$_SERVER['SERVER_ADDR'] == $lz_ip){
+		echo '<div class="update-message notice error inline notice-error notice-alt"><p style="color:red"> &nbsp; Your Server IP Address seems to match the Client IP detected by Loginizer. You might want to change the IP detection method to HTTP_X_FORWARDED_FOR under System Information section.</p></div><br>';
+	 }
+	
+	loginizer_newsletter_subscribe();
 	
 	$hide_announcement = get_option('loginizer_no_announcement');
 	if(empty($hide_announcement)){
 		echo '<div id="message" class="welcome-panel">'. __('<a href="https://loginizer.com/blog/loginizer-has-been-acquired-by-softaculous/" target="_blank" style="text-decoration:none;">We are excited to announce that we have joined forces with Softaculous and have been acquired by them 😊. Read full announcement here.</a>', 'loginizer'). '<a class="welcome-panel-close" style="top:3px;right:2px;" href="'.menu_page_url('loginizer', false).'&dismiss_announcement=1" aria-label="Dismiss announcement"></a></div><br />';
 	}
-	
-	echo '<script src="https://api.loginizer.com/'.(defined('LOGINIZER_PREMIUM') ? 'news_security.js' : 'news.js').'"></script><br>';
+		
+	echo '<div class="welcome-panel">Thank you for choosing Loginizer! Many more features coming soon... &nbsp; Review Loginizer at WordPress &nbsp; &nbsp; <a href="https://wordpress.org/support/view/plugin-reviews/loginizer" class="button button-primary" target="_blank">Add Review</a></div><br />';
 
 	// Saved ?
 	if(!empty($GLOBALS['lz_saved'])){
@@ -1259,30 +1340,7 @@ input[type="text"], textarea, select {
 				<td>'.LOGINIZER_VERSION.(defined('LOGINIZER_PREMIUM') ? ' (<font color="green">Security PRO Version</font>)' : '').'</td>
 			</tr>';
 			
-			if(defined('LOGINIZER_PREMIUM')){
-			echo '
-			<tr>			
-				<th align="left" valign="top">'.__('Loginizer License', 'loginizer').'</th>
-				<td align="left">
-					'.(empty($loginizer['license']) ? '<span style="color:red">Unlicensed</span> &nbsp; &nbsp;' : '').' 
-					<input type="text" name="lz_license" value="'.(empty($loginizer['license']) ? '' : $loginizer['license']['license']).'" size="30" placeholder="e.g. WXCSE-SFJJX-XXXXX-AAAAA-BBBBB" style="width:300px;" /> &nbsp; 
-					<input name="save_lz" class="button button-primary" value="Update License" type="submit" />';
-					
-					if(!empty($loginizer['license'])){
-						
-						$expires = $loginizer['license']['expires'];
-						$expires = substr($expires, 0, 4).'/'.substr($expires, 4, 2).'/'.substr($expires, 6);
-						
-						echo '<div style="margin-top:10px;">License Active : '.(empty($loginizer['license']['active']) ? '<span style="color:red">No</span>' : '<span style="color:green">Yes</span>').' &nbsp; &nbsp; &nbsp; 
-						License Expires : '.($loginizer['license']['expires'] <= date('Ymd') ? '<span style="color:red">'.$expires.'</span>' : $expires).'
-						</div>';
-					}
-					
-					
-				echo 
-				'</td>
-			</tr>';
-			}
+			do_action('loginizer_system_information');
 			
 			echo '<tr>
 				<th align="left">'.__('URL', 'loginizer').'</th>
@@ -1372,14 +1430,14 @@ lz_ip_method_handle();
 			
 			$wp_content = basename(dirname(dirname(dirname(__FILE__))));
 			
-			$files_to_check = array('/' => '0755',
-								'/wp-admin' => '0755',
-								'/wp-includes' => '0755',
-								'/wp-config.php' => '0444',
-								'/'.$wp_content => '0755',
-								'/'.$wp_content.'/themes' => '0755',
-								'/'.$wp_content.'/plugins' => '0755',
-								'.htaccess' => '0444');
+			$files_to_check = array('/' => array('0755', '0750'),
+								'/wp-admin' => array('0755'),
+								'/wp-includes' => array('0755'),
+								'/wp-config.php' => array('0444'),
+								'/'.$wp_content => array('0755'),
+								'/'.$wp_content.'/themes' => array('0755'),
+								'/'.$wp_content.'/plugins' => array('0755'),
+								'.htaccess' => array('0444'));
 			
 			$root = ABSPATH;
 			
@@ -1393,8 +1451,8 @@ lz_ip_method_handle();
 				echo '
 			<tr>
 				<td>'.$k.'</td>
-				<td>'.$suggested.'</td>
-				<td><span '.($suggested != $actual ? 'style="color: red;"' : '').'>'.$actual.'</span></td>
+				<td>'.current($suggested).'</td>
+				<td><span '.(!in_array($actual, $suggested) ? 'style="color: red;"' : '').'>'.$actual.'</span></td>
 			</tr>';
 				
 			}
@@ -1564,22 +1622,21 @@ function loginizer_page_brute_force(){
 	// Reset All Logs
 	if(isset($_POST['lz_reset_all_ip'])){
 	
-		$result = $wpdb->query("DELETE FROM `".$wpdb->prefix."loginizer_logs` 
-							WHERE `time` > 0");
-			
+		$result = $wpdb->query("DELETE FROM `".$wpdb->prefix."loginizer_logs` WHERE `time` > 0");
+		
 		echo '<div id="message" class="updated fade"><p>'
 					. __('All the IP Logs have been cleared', 'loginizer')
 					. '</p></div><br />';
 	}
 	
 	// Reset Logs
-	if(isset($_POST['lz_reset_ips']) && is_array($_POST['lz_reset_ips'])){
+	if(isset($_POST['lz_reset_ip']) && isset($_POST['lz_reset_ips']) && is_array($_POST['lz_reset_ips'])){
 
 		$ips = $_POST['lz_reset_ips'];
 		
 		foreach($ips as $ip){
 			if(!lz_valid_ip($ip)){
-				$error[] = 'The IP - '.$ip.' is invalid !';
+				$error[] = 'The IP - '.esc_html($ip).' is invalid !';
 			}
 		}
 		
@@ -1590,9 +1647,10 @@ function loginizer_page_brute_force(){
 		// Should we start deleting logs
 		if(empty($error)){
 			
-			$result = $wpdb->query("DELETE FROM `".$wpdb->prefix."loginizer_logs` 
-							WHERE `ip` IN ('".implode("', '", $ips)."')");
-		
+			foreach($ips as $ip){			
+				$result = $wpdb->query($wpdb->prepare("DELETE FROM `".$wpdb->prefix."loginizer_logs` WHERE `ip` = %s", $ip));			
+			}
+			
 			if(empty($error)){
 				
 				echo '<div id="message" class="updated fade"><p>'
@@ -1614,79 +1672,25 @@ function loginizer_page_brute_force(){
 		$start_ip = lz_optpost('start_ip');
 		$end_ip = lz_optpost('end_ip');
 		
-		if(empty($start_ip)){
-			$error[] = __('Please enter the Start IP', 'loginizer');
-		}
-		
-		// If no end IP we consider only 1 IP
-		if(empty($end_ip)){
-			$end_ip = $start_ip;
-		}
-				
-		if(!lz_valid_ip($start_ip)){
-			$error[] = __('Please provide a valid start IP', 'loginizer');
-		}
-		
-		if(!lz_valid_ip($end_ip)){
-			$error[] = __('Please provide a valid end IP', 'loginizer');			
-		}
-		
-		// Regular ranges will work
-		if(inet_ptoi($start_ip) > inet_ptoi($end_ip)){
-			
-			// BUT, if 0.0.0.1 - 255.255.255.255 is given, it will not work
-			if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
-				// This is right
-			}else{
-				$error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer');
-			}
-			
-		}
+		// Validate the IP against all checks
+		loginizer_iprange_validate($start_ip, $end_ip, $loginizer['blacklist'], $error);
 		
 		if(empty($error)){
-			
+		
 			$blacklist = $loginizer['blacklist'];
 			
-			foreach($blacklist as $k => $v){
-				
-				// This is to check if there is any other range exists with the same Start or End IP
-				if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
-					|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
-				){
-					$error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer');
-					break;
-				}
-				
-				// This is to check if there is any other range exists with the same Start IP
-				if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
-					$error[] = __('The Start IP is present in an existing range !', 'loginizer');
-					break;
-				}
-				
-				// This is to check if there is any other range exists with the same End IP
-				if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
-					$error[] = __('The End IP is present in an existing range!', 'loginizer');
-					break;
-				}
-				
-			}
-			
 			$newid = ( empty($blacklist) ? 0 : max(array_keys($blacklist)) ) + 1;
-		
-			if(empty($error)){
-				
-				$blacklist[$newid] = array();
-				$blacklist[$newid]['start'] = $start_ip;
-				$blacklist[$newid]['end'] = $end_ip;
-				$blacklist[$newid]['time'] = time();
-				
-				update_option('loginizer_blacklist', $blacklist);
-				
-				echo '<div id="message" class="updated fade"><p>'
-						. __('Blacklist IP range added successfully', 'loginizer')
-						. '</p></div><br />';
-				
-			}
+			
+			$blacklist[$newid] = array();
+			$blacklist[$newid]['start'] = $start_ip;
+			$blacklist[$newid]['end'] = $end_ip;
+			$blacklist[$newid]['time'] = time();
+			
+			update_option('loginizer_blacklist', $blacklist);
+			
+			echo '<div id="message" class="updated fade"><p>'
+					. __('Blacklist IP range added successfully', 'loginizer')
+					. '</p></div><br />';
 			
 		}
 		
@@ -1701,81 +1705,154 @@ function loginizer_page_brute_force(){
 		$start_ip = lz_optpost('start_ip_w');
 		$end_ip = lz_optpost('end_ip_w');
 		
-		if(empty($start_ip)){
-			$error[] = __('Please enter the Start IP', 'loginizer');
-		}
-		
-		// If no end IP we consider only 1 IP
-		if(empty($end_ip)){
-			$end_ip = $start_ip;
-		}
-				
-		if(!lz_valid_ip($start_ip)){
-			$error[] = __('Please provide a valid start IP', 'loginizer');
-		}
-		
-		if(!lz_valid_ip($end_ip)){
-			$error[] = __('Please provide a valid end IP', 'loginizer');
-		}
-			
-		if(inet_ptoi($start_ip) > inet_ptoi($end_ip)){
-			
-			// BUT, if 0.0.0.1 - 255.255.255.255 is given, it will not work
-			if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
-				// This is right
-			}else{
-				$error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer');
-			}
-			
-		}
+		// Validate the IP against all checks
+		loginizer_iprange_validate($start_ip, $end_ip, $loginizer['whitelist'], $error);
 		
 		if(empty($error)){
 			
 			$whitelist = $loginizer['whitelist'];
 			
-			foreach($whitelist as $k => $v){
-				
-				// This is to check if there is any other range exists with the same Start or End IP
-				if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
-					|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
-				){
-					$error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer');
-					break;
-				}
-				
-				// This is to check if there is any other range exists with the same Start IP
-				if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
-					$error[] = __('The Start IP is present in an existing range !', 'loginizer');
-					break;
-				}
-				
-				// This is to check if there is any other range exists with the same End IP
-				if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
-					$error[] = __('The End IP is present in an existing range!', 'loginizer');
-					break;
-				}
-				
-			}
-			
 			$newid = ( empty($whitelist) ? 0 : max(array_keys($whitelist)) ) + 1;
 			
-			if(empty($error)){
-				
-				$whitelist[$newid] = array();
-				$whitelist[$newid]['start'] = $start_ip;
-				$whitelist[$newid]['end'] = $end_ip;
-				$whitelist[$newid]['time'] = time();
-				
-				update_option('loginizer_whitelist', $whitelist);
-				
-				echo '<div id="message" class="updated fade"><p>'
-						. __('Whitelist IP range added successfully', 'loginizer')
-						. '</p></div><br />';
-				
-			}
+			$whitelist[$newid] = array();
+			$whitelist[$newid]['start'] = $start_ip;
+			$whitelist[$newid]['end'] = $end_ip;
+			$whitelist[$newid]['time'] = time();
+			
+			update_option('loginizer_whitelist', $whitelist);
+			
+			echo '<div id="message" class="updated fade"><p>'
+					. __('Whitelist IP range added successfully', 'loginizer')
+					. '</p></div><br />';
 			
 		}
 		
+		if(!empty($error)){
+			lz_report_error($error);echo '<br />';
+		}
+	}
+	
+	if(isset($_POST['lz_import_csv'])){
+
+		if(!empty($_FILES['lz_import_file_csv']['name'])){
+
+			$lz_csv_type = lz_optpost('lz_csv_type');
+			
+			// Is the submitted type in the allowed list ? 
+			if(!in_array($lz_csv_type, array('blacklist', 'whitelist'))){
+				$error[] = __('Invalid import type', 'loginizer');
+			}
+			
+			if(empty($error)){
+				
+				//Get the extension of the file
+				$csv_file_name = basename($_FILES['lz_import_file_csv']['name']);
+				$csv_ext_name = strtolower(pathinfo($csv_file_name, PATHINFO_EXTENSION));
+
+				//Check if it's a csv file
+				if($csv_ext_name == 'csv'){
+					
+					$file = fopen($_FILES['lz_import_file_csv']['tmp_name'], "r");
+
+					$line_count = 0;
+					$update_record = 0;
+					
+					while($content = fgetcsv($file)){
+
+						//Increment the $line_count
+						$line_count++;
+						
+						//Skip the first line
+						if($line_count <= 1){
+							continue;
+						}
+						
+						if(loginizer_iprange_validate($content[0], $content[1], $loginizer[$lz_csv_type], $error, $line_count)){
+							
+							$newid = ( empty($loginizer[$lz_csv_type]) ? 0 : max(array_keys($loginizer[$lz_csv_type])) ) + 1;
+							
+							$loginizer[$lz_csv_type][$newid] = array();
+							$loginizer[$lz_csv_type][$newid]['start'] = $content[0];
+							$loginizer[$lz_csv_type][$newid]['end'] = $content[1];
+							$loginizer[$lz_csv_type][$newid]['time'] = time();
+							
+							$update_record = 1;
+							
+						}
+					}
+					
+					fclose($file);
+					
+					if(!empty($update_record)){
+						
+						update_option('loginizer_'.$lz_csv_type, $loginizer[$lz_csv_type]);
+						
+						echo '<div id="message" class="updated fade"><p>'
+								. __('Imported '.ucfirst($lz_csv_type).' IP range(s) successfully', 'loginizer')
+								. '</p></div><br />';
+						
+					}
+					
+					if(!empty($error)){
+						lz_report_error($error);echo '<br />';
+					}
+				}
+				
+			}
+		}
+	}
+ 
+	//Brute Force Bulk Blacklist/ Whitelist Ip
+	if(isset($_POST['lz_blacklist_selected_ip'])){
+		if(isset($_POST['lz_reset_ips']) && is_array($_POST['lz_reset_ips'])){
+
+			$ips = $_POST['lz_reset_ips'];
+			
+			foreach($ips as $ip){
+				if(!lz_valid_ip($ip)){
+					$error[] = 'The IP - '.esc_html($ip).' is invalid !';
+				}
+			}
+			
+			if(count($ips) < 1){
+				$error[] = __('There are no IPs submitted', 'loginizer');
+			}
+			
+			// Should we start deleting logs
+			if(empty($error)){
+				
+				$update_record = 0;
+				
+				foreach($ips as $ip){
+					
+					if(loginizer_iprange_validate($ip, '', $loginizer['blacklist'], $error)){
+							
+						$newid = ( empty($loginizer['blacklist']) ? 0 : max(array_keys($loginizer['blacklist'])) ) + 1;
+						
+						$loginizer['blacklist'][$newid] = array();
+						$loginizer['blacklist'][$newid]['start'] = $ip;
+						$loginizer['blacklist'][$newid]['end'] = $ip;
+						$loginizer['blacklist'][$newid]['time'] = time();
+						
+						$update_record = 1;
+					}
+				}
+				
+				if(!empty($update_record)){
+						
+					update_option('loginizer_blacklist', $loginizer['blacklist']);
+					
+					echo '<div id="message" class="updated fade"><p>'
+							. __('The selected IP(s) have been blacklisted', 'loginizer')
+							. '</p></div><br />';
+					
+				}
+				
+			}
+		}else{
+			$error[] = __('No IP(s) selected', 'loginizer');
+		}
+			
 		if(!empty($error)){
 			lz_report_error($error);echo '<br />';
 		}
@@ -1842,6 +1919,57 @@ function loginizer_page_brute_force(){
 			window.location = '<?php echo menu_page_url('loginizer_brute_force', false);?>&lzpage='+jQuery("#current-page-selector").val();
 			return false;
 		}
+		
+		function lz_export_ajax(lz_csv_type){
+	
+			var data = new Object();
+			data["action"] = "loginizer_export";
+			data["lz_csv_type"] = lz_csv_type;
+			data["nonce"]	= "<?php echo wp_create_nonce('loginizer_admin_ajax'); ?>";
+			
+			var admin_url = "<?php admin_url(); ?>"+"admin-ajax.php";
+			
+			jQuery.post(admin_url, data, function(response){
+				
+				// Was the ajax call successful ?
+				if(response.substring(0,2) == "-1"){
+					
+					var err_message = response.substring(2);
+					
+					if(err_message){
+						alert(err_message);
+					}else{
+						alert("Failed to export data");
+					}
+					
+					return false;
+				}
+				
+				/*
+				* Make CSV downloadable
+				*/
+				var downloadLink = document.createElement("a");
+				var fileData = ['\ufeff'+response];
+
+				var blobObject = new Blob(fileData,{
+				 type: "text/csv;charset=utf-8;"
+				});
+
+				var url = URL.createObjectURL(blobObject);
+				downloadLink.href = url;
+				downloadLink.download = "loginizer-"+lz_csv_type+".csv";
+
+				/*
+				* Actually download CSV
+				*/
+				document.body.appendChild(downloadLink);
+				downloadLink.click();
+				document.body.removeChild(downloadLink);
+				
+			});
+			
+		}
+		
 		</script>
 		
 		<form method="get" onsubmit="return yesdsd();">
@@ -1890,25 +2018,25 @@ function loginizer_page_brute_force(){
 					echo '
 					<tr>
 						<td>
-							<input type="checkbox" value="'.$iv['ip'].'" name="lz_reset_ips[]" />
+							<input type="checkbox" value="'.esc_attr($iv['ip']).'" name="lz_reset_ips[]" />
 						</td>
 						<td>
-							'.$iv['ip'].'
+							<a href="https://ipinfo.io/'.esc_html($iv['ip']).'" target="_blank">'.esc_html($iv['ip']).'&nbsp;<span class="dashicons dashicons-external"></span></a>
 						</td>
 						<td>
-							'.$iv['username'].'
+							'.esc_html($iv['username']).'
 						</td>
 						<td>
 							'.date('d/M/Y H:i:s P', $iv['time']).'
 						</td>
 						<td>
-							'.$iv['count'].'
+							'.esc_html($iv['count']).'
 						</td>
 						<td>
-							'.$iv['lockout'].'
+							'.esc_html($iv['lockout']).'
 						</td>
 						<td>
-							'.$iv['url'].'
+							'.esc_html($iv['url']).'
 						</td>
 					</tr>';
 				}
@@ -1921,6 +2049,8 @@ function loginizer_page_brute_force(){
 		<input name="lz_reset_ip" class="button button-primary action" value="<?php echo __('Remove From Logs', 'loginizer'); ?>" type="submit" />
 		&nbsp; &nbsp; 
 		<input name="lz_reset_all_ip" class="button button-primary action" value="<?php echo __('Clear All Logs', 'loginizer'); ?>" type="submit" />
+		&nbsp; &nbsp; 
+		<input name="lz_blacklist_selected_ip" class="button button-primary action" value="<?php echo __('Blacklist Selected IPs', 'loginizer'); ?>" type="submit" />
 		</div>
 	</div>
 	</form>
@@ -2092,6 +2222,32 @@ function del_confirm_all(msg){
 		</div>
 		
 		<div id="lz_bl_nav" style="margin: 5px 10px; text-align:right"></div>
+		
+		<!--Brute Force Blacklist Import CSV Form-->
+		<div class="inside" id="blacklist_csv" style="display:none;">
+			<form action="" method="post" enctype="multipart/form-data">
+				<?php wp_nonce_field('loginizer-options'); ?>
+				<input type="hidden" value="blacklist" name="lz_csv_type" />
+				<h3><?php echo __('Import Blacklist IPs (CSV)', 'loginizer'); ?>:</h3>
+				<input type="file" name="lz_import_file_csv" value="Import CSV" />
+				<br><br>
+				<input name="lz_import_csv" class="button button-primary action" value="<?php echo __('Submit', 'loginizer'); ?>" type="submit" />
+			</form>
+		</div>
+		<!---->
+		
+		<!--Brute Force Blacklist Export CSV Form-->
+		<div class="inside" style="float:right;">
+			<form action="" method="post">
+				<?php wp_nonce_field('loginizer-options'); ?>
+				<input type="hidden" value="blacklist" name="lz_csv_type" />
+				<input class="button button-primary action" value="<?php echo __('Import CSV', 'loginizer'); ?>" type="button" onclick="jQuery('#blacklist_csv').toggle();"/>
+				<input name="lz_export_csv" onclick="lz_export_ajax('blacklist'); return false;" class="button button-primary action" value="<?php echo __('Export CSV', 'loginizer'); ?>" type="submit" />
+			</form>
+		
+		</div>
+		<!---->
+		
 		<table id="lz_bl_table" class="wp-list-table fixed striped users" border="0" width="95%" cellpadding="10" align="center">
 			<tr>
 				<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Start IP','loginizer'); ?></th>
@@ -2170,6 +2326,31 @@ function del_confirm_all(msg){
 		</div>
 		
 		<div id="lz_wl_nav" style="margin: 5px 10px; text-align:right"></div>
+		
+		<!--Brute Force Whitelist Import CSV Form-->
+		<div class="inside" id="lz_whitelist_csv_div" style="display:none;">
+			<form action="" method="post" enctype="multipart/form-data">
+				<?php wp_nonce_field('loginizer-options'); ?>
+				<input type="hidden" value="whitelist" name="lz_csv_type" />
+				<h3><?php echo __('Import Whitelist IPs (CSV)', 'loginizer'); ?>:</h3>
+				<input type="file" name="lz_import_file_csv" value="Import CSV" />
+				<br><br>
+				<input name="lz_import_csv" class="button button-primary action" value="<?php echo __('Submit', 'loginizer'); ?>" type="submit" />
+			</form>
+		</div>
+		<!---->
+		
+		<!--Brute Force Whitelist Export CSV Form-->
+		<div class="inside" style="float:right;">
+			<form action="" method="post">
+				<?php wp_nonce_field('loginizer-options'); ?>
+				<input type="hidden" value="whitelist" name="lz_csv_type" />
+				<input class="button button-primary action" value="<?php echo __('Import CSV', 'loginizer'); ?>" type="button" onclick="jQuery('#lz_whitelist_csv_div').toggle();"/>
+				<input name="lz_export_csv" onclick="lz_export_ajax('whitelist'); return false;" class="button button-primary action" value="<?php echo __('Export CSV', 'loginizer'); ?>" type="submit" />
+			</form>
+		</div>
+		<!---->
+		
 		<table id="lz_wl_table" class="wp-list-table fixed striped users" border="0" width="95%" cellpadding="10" align="center">
 		<tr>
 			<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Start IP','loginizer'); ?></th>
@@ -2274,6 +2455,153 @@ function del_confirm_all(msg){
 
 loginizer_page_footer();
 
+}
+
+add_action('wp_ajax_loginizer_export', 'loginizer_export');
+
+// Export CSV
+function loginizer_export(){
+
+	// Some AJAX security
+	check_ajax_referer('loginizer_admin_ajax', 'nonce');
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	$lz_csv_type = lz_optpost('lz_csv_type');
+	
+	switch($lz_csv_type){
+		
+		case 'blacklist':
+		$csv_array = get_option('loginizer_blacklist');
+		$filename = 'loginizer-blacklist';
+		break;
+		
+		case 'whitelist':
+		$csv_array = get_option('loginizer_whitelist');
+		$filename = 'loginizer-whitelist';
+		break;
+	}
+	
+	if(empty($csv_array)){
+		echo -1;
+		echo __('No data to export', 'loginizer');
+		wp_die();
+	}
+		
+	header('Content-Type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename='.$filename.'.csv');
+	
+	$allowed_fields = array('start' => 'Start IP', 'end' => 'End IP', 'time' => 'Time');
+
+	$file = fopen("php://output","w");
+	
+	fputcsv($file, array_values($allowed_fields));
+
+	foreach($csv_array as $ik => $iv){
+		
+		$iv['start'] = $iv['start'];
+		$iv['end'] = $iv['end'];
+		$iv['time'] = date('d/m/Y', $iv['time']);
+		
+		$row = array();
+		foreach($allowed_fields as $ak => $av){
+			$row[$ak] = $iv[$ak];
+		}
+		
+		fputcsv($file, $row);
+	}
+
+	fclose($file);
+	
+	wp_die();
+        
+}
+	
+// IP range validations
+function loginizer_iprange_validate($start_ip, $end_ip, $cur_list, &$error = array(), $line_count = ''){
+	
+	$line_error = '';
+	if(!empty($line_count)){
+		$line_error = ' '.__('Line no.', 'loginizer').' '.$line_count;
+	}
+			
+	if(empty($start_ip)){
+		$cur_error[] = __('Please enter the Start IP', 'loginizer').$line_error;
+	}
+
+	// If no end IP we consider only 1 IP
+	if(empty($end_ip)){
+		$end_ip = $start_ip;
+	}
+	
+	if(!lz_valid_ip($start_ip)){
+		$cur_error[] = __('Please provide a valid start IP', 'loginizer').$line_error;
+	}
+	
+	if(!lz_valid_ip($end_ip)){
+		$cur_error[] = __('Please provide a valid end IP', 'loginizer').$line_error;
+	}
+	
+	if(inet_ptoi($start_ip) > inet_ptoi($end_ip)){
+		
+		// BUT, if 0.0.0.1 - 255.255.255.255 is given, it will not work
+		if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
+			// This is right
+		}else{
+			$cur_error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer').$line_error;
+		}
+		
+	}
+			
+	if(!empty($cur_error)){
+		
+		foreach($cur_error as $rk => $rv){
+			$error[] = $rv;
+		}
+		
+		return false;
+	}
+	
+	if(!empty($cur_list)){
+		
+		foreach($cur_list as $k => $v){
+			
+			// This is to check if there is any other range exists with the same Start or End IP
+			if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
+				|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
+			){
+				$cur_error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer').$line_error;
+				break;
+			}
+			
+			// This is to check if there is any other range exists with the same Start IP
+			if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
+				$cur_error[] = __('The Start IP is present in an existing range !', 'loginizer').$line_error;
+				break;
+			}
+			
+			// This is to check if there is any other range exists with the same End IP
+			if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
+				$cur_error[] = __('The End IP is present in an existing range!', 'loginizer').$line_error;
+				break;
+			}
+			
+		}
+		
+	}
+			
+	if(!empty($cur_error)){
+		
+		foreach($cur_error as $rk => $rv){
+			$error[] = $rv;
+		}
+		
+		return false;
+	}
+	
+	return true;
 }
 
 //---------------------
@@ -2516,7 +2844,7 @@ input[type="text"], textarea, select {
 				</td>
 				<td>
 					<input type="text" size="50" value="<?php echo lz_optpost('captcha_key', $loginizer['captcha_key']); ?>" name="captcha_key" /><br />
-					<?php echo __('Get the Site Key and Secret Key from <a href="https://www.google.com/recaptcha/" target="_blank">Google</a>', 'loginizer'); ?>
+					<?php echo __('Get the Site Key and Secret Key from <a href="https://www.google.com/recaptcha/admin/" target="_blank">Google</a>', 'loginizer'); ?>
 				</td>
 			</tr>
 			<tr class="lz_google_cap">
@@ -2729,7 +3057,7 @@ function google_recaptcha_type(obj){
 // Loginizer - Two Factor Auth Page
 function loginizer_page_2fa(){
 	
-	global $loginizer, $lz_error, $lz_env, $lz_roles;
+	global $loginizer, $lz_error, $lz_env, $lz_roles, $lz_options, $saved_msgs;
 	 
 	if(!current_user_can('manage_options')){
 		wp_die('Sorry, but you do not have permissions to change settings.');
@@ -2816,6 +3144,155 @@ function loginizer_page_2fa(){
 		
 	}
 	
+	if(isset($_POST['save_2fa_email_template_lz'])){
+		
+		// In the future there can be more settings
+		$option['2fa_email_sub'] = lz_optpost('lz_2fa_email_sub');
+		$option['2fa_email_msg'] = lz_optpost('lz_2fa_email_msg');
+		
+		// Is there an error ?
+		if(!empty($lz_error)){
+			return loginizer_page_2fa_T();
+		}
+		
+		// Save the options
+		update_option('loginizer_2fa_email_template', $option);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = true;
+		
+	}
+	
+	// Save the messages
+	if(isset($_POST['save_msgs_lz'])){
+		
+		$msgs['otp_app'] = lz_optpost('msg_otp_app');
+		$msgs['otp_email'] = lz_optpost('msg_otp_email');
+		$msgs['otp_field'] = lz_optpost('msg_otp_field');
+		$msgs['otp_question'] = lz_optpost('msg_otp_question');
+		$msgs['otp_answer'] = lz_optpost('msg_otp_answer');
+		
+		// Update them
+		update_option('loginizer_2fa_msg', $msgs);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = __('Messages were saved successfully', 'loginizer');
+		
+	}
+	
+	// Delete a Whitelist IP range
+	if(isset($_POST['delid'])){
+		
+		$delid = (int) lz_optreq('delid');
+		
+		// Unset and save
+		$whitelist = $loginizer['2fa_whitelist'];
+		unset($whitelist[$delid]);
+		update_option('loginizer_2fa_whitelist', $whitelist);
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = __('The Whitelist IP range has been deleted successfully', 'loginizer');
+		
+	}
+	
+	// Delete all Blackist IP ranges
+	if(isset($_POST['del_all_whitelist'])){
+		
+		// Unset and save
+		update_option('loginizer_2fa_whitelist', array());
+		
+		// Mark as saved
+		$GLOBALS['lz_saved'] = __('The Whitelist IP range(s) have been cleared successfully', 'loginizer');
+		
+	}
+	
+	// Add IP range to 2FA whitelist
+	if(isset($_POST['2fa_whitelist_iprange'])){
+
+		$start_ip = lz_optpost('start_ip_w_2fa');
+		$end_ip = lz_optpost('end_ip_w_2fa');
+		
+		if(empty($start_ip)){
+			$lz_error[] = __('Please enter the Start IP', 'loginizer');
+			return loginizer_page_2fa_T();
+		}
+		
+		// If no end IP we consider only 1 IP
+		if(empty($end_ip)){
+			$end_ip = $start_ip;
+		}
+				
+		if(!lz_valid_ip($start_ip)){
+			$lz_error[] = __('Please provide a valid start IP', 'loginizer');
+		}
+		
+		if(!lz_valid_ip($end_ip)){
+			$lz_error[] = __('Please provide a valid end IP', 'loginizer');
+		}
+			
+		if(inet_ptoi($start_ip) > inet_ptoi($end_ip)){
+			
+			// BUT, if 0.0.0.1 - 255.255.255.255 is given, it will not work
+			if(inet_ptoi($start_ip) >= 0 && inet_ptoi($end_ip) < 0){
+				// This is right
+			}else{
+				$lz_error[] = __('The End IP cannot be smaller than the Start IP', 'loginizer');
+			}
+			
+		}
+		
+		if(empty($lz_error)){
+			
+			$whitelist = $loginizer['2fa_whitelist'];
+			
+			foreach($whitelist as $k => $v){
+				
+				// This is to check if there is any other range exists with the same Start or End IP
+				if(( inet_ptoi($start_ip) <= inet_ptoi($v['start']) && inet_ptoi($v['start']) <= inet_ptoi($end_ip) )
+					|| ( inet_ptoi($start_ip) <= inet_ptoi($v['end']) && inet_ptoi($v['end']) <= inet_ptoi($end_ip) )
+				){
+					$lz_error[] = __('The Start IP or End IP submitted conflicts with an existing IP range !', 'loginizer');
+					break;
+				}
+				
+				// This is to check if there is any other range exists with the same Start IP
+				if(inet_ptoi($v['start']) <= inet_ptoi($start_ip) && inet_ptoi($start_ip) <= inet_ptoi($v['end'])){
+					$lz_error[] = __('The Start IP is present in an existing range !', 'loginizer');
+					break;
+				}
+				
+				// This is to check if there is any other range exists with the same End IP
+				if(inet_ptoi($v['start']) <= inet_ptoi($end_ip) && inet_ptoi($end_ip) <= inet_ptoi($v['end'])){
+					$lz_error[] = __('The End IP is present in an existing range!', 'loginizer');
+					break;
+				}
+				
+			}
+			
+			$newid = ( empty($whitelist) ? 0 : max(array_keys($whitelist)) ) + 1;
+			
+			if(empty($lz_error)){
+				
+				$whitelist[$newid] = array();
+				$whitelist[$newid]['start'] = $start_ip;
+				$whitelist[$newid]['end'] = $end_ip;
+				$whitelist[$newid]['time'] = time();
+				
+				update_option('loginizer_2fa_whitelist', $whitelist);
+		
+				// Mark as saved
+				$GLOBALS['lz_saved'] = __('Whitelist IP range for Two Factor Authentication added successfully', 'loginizer');
+				
+			}
+			
+		}
+	}
+	
+	
+	$lz_options = get_option('loginizer_2fa_email_template');
+	$saved_msgs = get_option('loginizer_2fa_msg');
+	$loginizer['2fa_whitelist'] = get_option('loginizer_2fa_whitelist');
+	
 	// Call theme
 	loginizer_page_2fa_T();
 	
@@ -2825,7 +3302,7 @@ function loginizer_page_2fa(){
 // Loginizer - Two Factor Auth Page
 function loginizer_page_2fa_T(){
 	
-	global $loginizer, $lz_error, $lz_env, $lz_roles;
+	global $loginizer, $lz_error, $lz_env, $lz_roles, $lz_options, $saved_msgs;
 	
 	// Universal header
 	loginizer_page_header('Two Factor Authentication');
@@ -2882,7 +3359,7 @@ input[type="text"], textarea, select {
 					<span class="exp"><?php echo __('After entering the correct login credentials, the user will be asked for the OTP. The OTP will be obtained from the users mobile app e.g. <b>Google Authenticator, Authy, etc.</b>', 'loginizer'); ?></span>
 				</td>
 				<td>
-					<input type="checkbox" value="1" name="2fa_app" <?php echo lz_POSTchecked('2fa_app', (empty($loginizer['2fa_app']) ? false : true)); ?> />
+					<input type="checkbox" value="1" name="2fa_app" <?php echo lz_POSTchecked('2fa_app', (empty($loginizer['2fa_app']) ? false : true), 'save_lz'); ?> />
 				</td>
 			</tr>
 			<tr>
@@ -2891,7 +3368,7 @@ input[type="text"], textarea, select {
 					<span class="exp"><?php echo __('After entering the correct login credentials, the user will be asked for the OTP. The OTP will be emailed to the user.', 'loginizer'); ?></span>
 				</td>
 				<td>
-					<input type="checkbox" value="1" name="2fa_email" <?php echo lz_POSTchecked('2fa_email', (empty($loginizer['2fa_email']) ? false : true)); ?> />
+					<input type="checkbox" value="1" name="2fa_email" <?php echo lz_POSTchecked('2fa_email', (empty($loginizer['2fa_email']) ? false : true), 'save_lz'); ?> />
 				</td>
 			</tr>
 			<tr>
@@ -2900,7 +3377,7 @@ input[type="text"], textarea, select {
 					<span class="exp"><?php echo __('In this method the user will be asked to set a secret personal question and answer. After entering the correct login credentials, the user will be asked to answer the question set by them, thus increasing the security', 'loginizer'); ?></span>
 				</td>
 				<td>
-					<input type="checkbox" value="1" name="question" <?php echo lz_POSTchecked('question', (empty($loginizer['question']) ? false : true)); ?> />
+					<input type="checkbox" value="1" name="question" <?php echo lz_POSTchecked('question', (empty($loginizer['question']) ? false : true), 'save_lz'); ?> />
 				</td>
 			</tr>
 		</table><br />
@@ -2912,7 +3389,7 @@ input[type="text"], textarea, select {
 					<span class="exp"><?php echo __('If the user does not have any 2FA method selected, this will enforce the OTP via Email for the users.', 'loginizer'); ?></span>
 				</td>
 				<td>
-					<input type="checkbox" value="1" name="2fa_email_force" <?php echo lz_POSTchecked('2fa_email_force', (empty($loginizer['2fa_email_force']) ? false : true)); ?> />
+					<input type="checkbox" value="1" name="2fa_email_force" <?php echo lz_POSTchecked('2fa_email_force', (empty($loginizer['2fa_email_force']) ? false : true), 'save_lz'); ?> />
 				</td>
 			</tr>
 			<tr>
@@ -2921,11 +3398,11 @@ input[type="text"], textarea, select {
 					<span class="exp"><?php echo __('Select the Roles to which 2FA should be applied.', 'loginizer'); ?></span>
 				</td>
 				<td>
-					<input type="checkbox" value="1" onchange="lz_roles_handle()" name="2fa_roles_all" id="2fa_roles_all" <?php echo lz_POSTchecked('2fa_roles_all', (empty($loginizer['2fa_roles']) ? true : false)); ?> /> All<br />
+					<input type="checkbox" value="1" onchange="lz_roles_handle()" name="2fa_roles_all" id="2fa_roles_all" <?php echo lz_POSTchecked('2fa_roles_all', (empty($loginizer['2fa_roles']) ? true : false), 'save_lz'); ?> /> All<br />
 					<?php
 					
 					foreach($lz_roles as $k => $v){
-						echo '<span class="lz_roles"><input type="checkbox" value="1" name="2fa_roles_'.$k.'" '.lz_POSTchecked('2fa_roles_'.$k, (empty($loginizer['2fa_roles'][$k]) ? false : true)).' /> '.$v['name'].'<br /></span>';
+						echo '<span class="lz_roles"><input type="checkbox" value="1" name="2fa_roles_'.$k.'" '.lz_POSTchecked('2fa_roles_'.$k, (empty($loginizer['2fa_roles'][$k]) ? false : true), 'save_lz').' /> '.$v['name'].'<br /></span>';
 					}
 					
 					?>
@@ -2955,6 +3432,137 @@ function lz_roles_handle(){
 lz_roles_handle();
 
 </script>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('OTP via Email Template', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<td colspan="2" valign="top">
+					<?php echo __('Customize the email template to be used when sending the OTP to login via Email for 2FA.', 'loginizer'); ?><br>
+					<?php echo __('If you do not make changes below the default email template will be used !', 'loginizer'); ?>
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top" style="width:350px !important">
+					<label><?php echo __('Email Subject', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the default subject', 'loginizer'); ?></span>
+					<br />Default : <?php echo @$loginizer['2fa_email_d_sub']; ?>
+				</td>
+				<td valign="top">
+					<input type="text" size="40" value="<?php echo lz_optpost('lz_2fa_email_sub', @$lz_options['2fa_email_sub']); ?>" name="lz_2fa_email_sub" />
+				</td>
+			</tr>
+			<tr>
+				<td scope="row" valign="top">
+					<label><?php echo __('Email Body', 'loginizer'); ?></label><br>
+					<span class="exp"><?php echo __('Set blank to reset to the default message', 'loginizer'); ?></span>
+					<br />Default : <pre style="font-size:10px"><?php echo @$loginizer['2fa_email_d_msg']; ?></pre>
+				</td>
+				<td valign="top">
+					<textarea rows="10" name="lz_2fa_email_msg"><?php echo lz_optpost('lz_2fa_email_msg', @$lz_options['2fa_email_msg']); ?></textarea>
+					<br />
+					Variables :
+					<br />$otp - The OTP for login
+					<br />$site_name - The Site Name
+					<br />$site_url - The Site URL
+					<br />$email  - Users Email
+					<br />$display_name  - Users Display Name
+					<br />$user_login  - Username
+					<br />$first_name  - Users First Name
+					<br />$last_name  - Users Last Name
+				</td>
+			</tr>
+		</table><br />
+		<center><input name="save_2fa_email_template_lz" class="button button-primary action" value="<?php echo __('Save Settings', 'loginizer'); ?>" type="submit" /></center>
+		</form>
+	
+		</div>
+	</div>
+
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Custom Messages for OTP', 'loginizer'); ?></span>
+		</h2>
+		</div>
+
+		<div class="inside">
+
+			<form action="" method="post" enctype="multipart/form-data" loginizer-premium-only="1">
+				<?php wp_nonce_field('loginizer-options'); ?>
+				<table class="form-table">
+					<tr>
+						<td colspan="2" valign="top">
+							<?php echo __('Customize the title for OTP field displayed to the user on the login form.', 'loginizer'); ?><br>
+							<?php echo __('If you do not make changes below the default messages will be used !', 'loginizer'); ?>
+						</td>
+					</tr>
+					<tr>
+						<td scope="row" valign="top" style="width:350px !important">
+							<label for="msg_otp_app"><?php echo __('OTP via APP','loginizer'); ?></label><br />
+							<?php echo __('Default: <em>&quot;' . $loginizer['2fa_d_msg']['otp_app']. '&quot;</em>', 'loginizer'); ?>
+						</td>
+						<td>
+							<input type="text" size="50" value="<?php echo esc_attr(@$saved_msgs['otp_app']); ?>" name="msg_otp_app" id="msg_otp_app" style="width:auto !important;" />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td scope="row" valign="top" style="width:350px !important">
+							<label for="msg_otp_email"><?php echo __('OTP via Email','loginizer'); ?></label><br />
+							<?php echo __('Default: <em>&quot;' . $loginizer['2fa_d_msg']['otp_email']. '&quot;</em>', 'loginizer'); ?>
+						</td>
+						<td>
+							<input type="text" size="50" value="<?php echo esc_attr(@$saved_msgs['otp_email']); ?>" name="msg_otp_email" id="msg_otp_email" style="width:auto !important;" />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td scope="row" valign="top" style="width:350px !important">
+							<label for="msg_otp_field"><?php echo __('Title for OTP field','loginizer'); ?></label><br />
+							<?php echo __('Default: <em>&quot;' . $loginizer['2fa_d_msg']['otp_field']. '&quot;</em>', 'loginizer'); ?>
+						</td>
+						<td>
+							<input type="text" size="50" value="<?php echo esc_attr(@$saved_msgs['otp_field']); ?>" name="msg_otp_field" id="msg_otp_field" style="width:auto !important;" />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td scope="row" valign="top" style="width:350px !important">
+							<label for="msg_otp_question"><?php echo __('Title for Security Question','loginizer'); ?></label><br />
+							<?php echo __('Default: <em>&quot;' . $loginizer['2fa_d_msg']['otp_question']. '&quot;</em>', 'loginizer'); ?>
+						</td>
+						<td>
+							<input type="text" size="50" value="<?php echo esc_attr(@$saved_msgs['otp_question']); ?>" name="msg_otp_question" id="msg_otp_question" style="width:auto !important;" />
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td scope="row" valign="top" style="width:350px !important">
+							<label for="msg_otp_answer"><?php echo __('Title for Security Answer','loginizer'); ?></label><br />
+							<?php echo __('Default: <em>&quot;' . $loginizer['2fa_d_msg']['otp_answer']. '&quot;</em>', 'loginizer'); ?>
+						</td>
+						<td>
+							<input type="text" size="50" value="<?php echo esc_attr(@$saved_msgs['otp_answer']); ?>" name="msg_otp_answer" id="msg_otp_answer" style="width:auto !important;" />
+							<br />
+						</td>
+					</tr>
+				</table><br />
+				<center><input name="save_msgs_lz" class="button button-primary action" value="<?php echo __('Save Messages','loginizer'); ?>" type="submit" /></center>
+			</form>
+		</div>
+	</div>
 	
 	<!--Bypass a single user-->
 	<div id="" class="postbox">
@@ -2993,6 +3601,144 @@ lz_roles_handle();
 	</div>
 	
 	<br />
+	
+<?php
+	
+	wp_enqueue_script('jquery-paginate', LOGINIZER_URL.'/jquery-paginate.js', array('jquery'), '1.10.15');
+	
+?>
+
+<style>
+.page-navigation a {
+margin: 5px 2px;
+display: inline-block;
+padding: 5px 8px;
+color: #0073aa;
+background: #e5e5e5 none repeat scroll 0 0;
+border: 1px solid #ccc;
+text-decoration: none;
+transition-duration: 0.05s;
+transition-property: border, background, color;
+transition-timing-function: ease-in-out;
+}
+ 
+.page-navigation a[data-selected] {
+background-color: #00a0d2;
+color: #fff;
+}
+</style>
+
+<script>
+
+jQuery(document).ready(function(){
+	jQuery('#lz_wl_2fa_table').paginate({ limit: 11, navigationWrapper: jQuery('#lz_wl_2fa_nav')});
+});
+
+// Delete a 2FA Whitelist IP Range
+function del_2fa_confirm(field, todo_id, msg){
+	var ret = confirm(msg);
+	
+	if(ret){
+		jQuery('#lz_wl_2fa_todo').attr('name', field);
+		jQuery('#lz_wl_2fa_todo').val(todo_id);
+		jQuery('#lz_wl_2fa_form').submit();
+	}
+	
+	return false;
+	
+}
+
+// Delete all 2FA Whitelist IP Ranges
+function del_2fa_confirm_all(msg){
+	var ret = confirm(msg);
+	
+	if(ret){
+		return true;
+	}
+	
+	return false;
+	
+}
+
+</script>
+	
+	<div id="" class="postbox">
+	
+		<div class="postbox-header">
+		<h2 class="hndle ui-sortable-handle">
+			<span><?php echo __('Disable Two Factor Authentication for IP', 'loginizer'); ?></span>
+		</h2>
+		</div>
+		
+		<div class="inside">
+		
+		<?php echo __('Enter the IP you want to whitelist for two factor authentication', 'loginizer'); ?>
+		<form action="" method="post" loginizer-premium-only="1">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<table class="form-table">
+			<tr>
+				<th scope="row" valign="top"><label for="start_ip_w_2fa"><?php echo __('Start IP','loginizer'); ?></label></th>
+				<td>
+					<input type="text" size="25" style="width:auto;" value="<?php echo(lz_optpost('start_ip_w_2fa')); ?>" name="start_ip_w_2fa" id="start_ip_w_2fa"/> <?php echo __('Start IP of the range','loginizer'); ?> <br />
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top"><label for="end_ip_w_2fa"><?php echo __('End IP (Optional)','loginizer'); ?></label></th>
+				<td>
+					<input type="text" size="25" style="width:auto;" value="<?php echo(lz_optpost('end_ip_w_2fa')); ?>" name="end_ip_w_2fa" id="end_ip_w_2fa"/> <?php echo __('End IP of the range. <br />If you want to whitelist single IP leave this field blank.','loginizer'); ?> <br />
+				</td>
+			</tr>
+		</table><br />
+		<input name="2fa_whitelist_iprange" class="button button-primary action" value="<?php echo __('Add Whitelist IP Range','loginizer'); ?>" type="submit" />		
+		<input style="float:right" name="del_all_whitelist" onclick="return del_2fa_confirm_all('<?php echo __('Are you sure you want to delete all Whitelist IP Range(s) for 2FA ?','loginizer'); ?>')" class="button action" value="<?php echo __('Delete All Whitelist IP Range(s) for 2FA','loginizer'); ?>" type="submit" />
+		</form>
+		</div>
+		
+		<div id="lz_wl_2fa_nav" style="margin: 5px 10px; text-align:right"></div>
+		<table id="lz_wl_2fa_table" class="wp-list-table fixed striped users" border="0" width="95%" cellpadding="10" align="center">
+		<tr>
+			<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Start IP','loginizer'); ?></th>
+			<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('End IP','loginizer'); ?></th>
+			<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Date (DD/MM/YYYY)','loginizer'); ?></th>
+			<th scope="row" valign="top" style="background:#EFEFEF;" width="100"><?php echo __('Options','loginizer'); ?></th>
+		</tr>
+		<?php
+			if(empty($loginizer['2fa_whitelist'])){
+				echo '
+				<tr>
+					<td colspan="4">
+						'.__('No Whitelist IPs for Two Factor Authentication. You will see whitelisted IP ranges here.', 'loginizer').'
+					</td>
+				</tr>';
+			}else{
+				foreach($loginizer['2fa_whitelist'] as $ik => $iv){
+					echo '
+					<tr>
+						<td>
+							'.$iv['start'].'
+						</td>
+						<td>
+							'.$iv['end'].'
+						</td>
+						<td>
+							'.date('d/m/Y', $iv['time']).'
+						</td>
+						<td>
+							<a class="submitdelete" href="javascript:void(0)" onclick="return del_2fa_confirm(\'delid\', '.$ik.', \'Are you sure you want to delete this IP range for 2FA ?\')">Delete</a>
+						</td>
+					</tr>';
+				}
+			}
+		?>
+		</table>
+		<br />
+		<form action="" method="post" id="lz_wl_2fa_form">
+		<?php wp_nonce_field('loginizer-options'); ?>
+		<input type="hidden" value="" name="" id="lz_wl_2fa_todo"/> 
+		</form>
+		<br />
+	
+	</div>
 
 	<?php
 	loginizer_page_footer();
@@ -3024,6 +3770,7 @@ function loginizer_page_passwordless(){
 		$option['email_pass_less'] = (int) lz_optpost('email_pass_less');
 		$option['passwordless_sub'] = lz_optpost('lz_passwordless_sub');
 		$option['passwordless_msg'] = lz_optpost('lz_passwordless_msg');
+		$option['passwordless_html'] = (int) lz_optpost('lz_passwordless_html');
 		
 		// Is there an error ?
 		if(!empty($lz_error)){
@@ -3098,9 +3845,9 @@ input[type="text"], textarea, select {
 		<?php wp_nonce_field('loginizer-options'); ?>
 		<table class="form-table">
 			<tr>
-				<th scope="row" valign="top" style="width:350px !important"><label><?php echo __('Enable PasswordLess Login', 'loginizer'); ?></label></th>
+				<th scope="row" valign="top" style="width:350px !important"><label for="email_pass_less"><?php echo __('Enable PasswordLess Login', 'loginizer'); ?></label></th>
 				<td>
-					<input type="checkbox" value="1" name="email_pass_less" <?php echo lz_POSTchecked('email_pass_less', (empty($loginizer['email_pass_less']) ? false : true)); echo (defined('SITEPAD') ? 'disabled="disabled"' : '') ?> />
+					<input type="checkbox" value="1" name="email_pass_less" id="email_pass_less" <?php echo lz_POSTchecked('email_pass_less', (empty($loginizer['email_pass_less']) ? false : true)); echo (defined('SITEPAD') ? 'disabled="disabled"' : '') ?> />
 				</td>
 			</tr>
 			<tr>
@@ -3111,28 +3858,34 @@ input[type="text"], textarea, select {
 			</tr>
 			<tr>
 				<td scope="row" valign="top">
-					<label><?php echo __('Email Subject', 'loginizer'); ?></label><br>
+					<label for="lz_passwordless_sub"><?php echo __('Email Subject', 'loginizer'); ?></label><br>
 					<span class="exp"><?php echo __('Set blank to reset to the default subject', 'loginizer'); ?></span>
 					<br />Default : <?php echo @$loginizer['pl_d_sub']; ?>
 				</td>
 				<td valign="top">
-					<input type="text" size="40" value="<?php echo lz_optpost('lz_passwordless_sub', @$lz_options['passwordless_sub']); ?>" name="lz_passwordless_sub" />
+					<input type="text" size="40" value="<?php echo lz_optpost('lz_passwordless_sub', @$lz_options['passwordless_sub']); ?>" name="lz_passwordless_sub" id="lz_passwordless_sub" />
 				</td>
 			</tr>
 			<tr>
 				<td scope="row" valign="top">
-					<label><?php echo __('Email Body', 'loginizer'); ?></label><br>
+					<label for="lz_passwordless_msg"><?php echo __('Email Body', 'loginizer'); ?></label><br>
 					<span class="exp"><?php echo __('Set blank to reset to the default message', 'loginizer'); ?></span>
 					<br />Default : <pre style="font-size:10px"><?php echo @$loginizer['pl_d_msg']; ?></pre>
 				</td>
 				<td valign="top">
-					<textarea rows="10" name="lz_passwordless_msg"><?php echo lz_optpost('lz_passwordless_msg', @$lz_options['passwordless_msg']); ?></textarea>
+					<textarea rows="10" name="lz_passwordless_msg" id="lz_passwordless_msg"><?php echo lz_optpost('lz_passwordless_msg', @$lz_options['passwordless_msg']); ?></textarea>
 					<br />
 					Variables :
 					<br />$email  - Users Email
 					<br />$site_name - The Site Name
 					<br />$site_url - The Site URL
 					<br />$login_url - The Login URL
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top" style="width:350px !important"><label for="lz_passwordless_html"><?php echo __('Send email as HTML', 'loginizer'); ?></label></th>
+				<td>
+					<input type="checkbox" value="1" name="lz_passwordless_html" id="lz_passwordless_html" <?php echo lz_POSTchecked('lz_passwordless_html', (empty($loginizer['passwordless_html']) ? false : true)); ?> />
 				</td>
 			</tr>
 		</table><br />
@@ -3247,9 +4000,13 @@ function loginizer_page_security(){
 		}
 		
 		// Update the username
-		$wpdb->query("UPDATE `".$wpdb->prefix."users`
-					SET user_login = '$new_username'
-					WHERE `ID` = '".$old_user->ID."'");
+		$update_data = array('user_login' => $new_username);
+		$where_data = array('ID' => $old_user->ID);
+		
+		$format = array('%s');
+		$where_format = array('%d');
+		
+		$wpdb->update($wpdb->prefix.'users', $update_data, $where_data, $format, $where_format);
 		
 		// Mark as saved
 		$GLOBALS['lz_saved'] = true;
@@ -4191,6 +4948,91 @@ function lz_apply_status(ele, the_class){
 	
 }
 
+function loginizer_dismiss_newsletter(){
+
+	// Some AJAX security
+	check_ajax_referer('loginizer_admin_ajax', 'nonce');
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	update_option('loginizer_dismiss_newsletter', time());
+	echo 1;
+	wp_die();
+}
+
+add_action('wp_ajax_loginizer_dismiss_newsletter', 'loginizer_dismiss_newsletter');
+
+function loginizer_newsletter_subscribe(){
+	
+	$newsletter_dismiss = get_option('loginizer_dismiss_newsletter');
+	
+	if(!empty($newsletter_dismiss)){
+		return;
+	}
+	
+	$env['url'] = 'https://loginizer.com/';
+	
+	echo '
+	<style>
+	.newsletter_container{
+		color: #000000;
+		background: #FFFFFF;
+		text-align:center;
+	}
+	.subscribe_form_row{
+		color: #000000;
+		padding-bottom:0px !important;
+	}
+	.subscribe_heading{
+		font-size:22px;
+	}
+	</style>
+				
+	<div class="notice my-loginizer-dismiss-notice is-dismissible" style="background:#FFF;padding:15px; border: 1px solid #ccd0d4; width:80%;margin-left:0px;margin:auto;">
+		<div class="container">
+			<div class="col-md-6 col-md-offset-3 text-center newsletter_container">
+				<h2 style="font-weight:100; margin-bottom:20px; margin-top:5px;" class="subscribe_heading">Subscribe to our Newsletter</h2>
+				<form class="form-inline" action="" method="POST">
+					<div class="row subscribe_form_row">
+						<div class="col-md-12">
+							<input type="email" name="email" size="40" id="subscribe_email" class="" placeholder="email@example.com" value="">&nbsp;
+							<input type="button" name="subscribe" id="subscribe_button" class="button button-primary" value="Subscribe" onclick="loginizer_email_subscribe();" style="margin-top:0px;">
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+				</form>
+				<p><b>Note :</b> If a Loginizer account does not exist it will be created.</p>
+			</div>
+		</div>
+	</div><br />
+	
+	<script type="text/javascript">
+		function loginizer_dismiss_newsletter(){
+	
+			var data = new Object();
+			data["action"] = "loginizer_dismiss_newsletter";
+			data["nonce"]	= "'.wp_create_nonce('loginizer_admin_ajax').'";
+			
+			var admin_url = "'.admin_url().'"+"admin-ajax.php";
+			jQuery.post(admin_url, data, function(response){
+				
+			});
+			
+		}
+		
+		function loginizer_email_subscribe(){
+			var subs_location = "'.$env['url'].'?email="+encodeURIComponent(jQuery("#subscribe_email").val());
+			window.open(subs_location, "_blank");
+		}
+		jQuery(document).on("click", ".my-loginizer-dismiss-notice .notice-dismiss", loginizer_dismiss_newsletter);
+	</script>';
+	
+	return true;
+}
+
 
 // Sorry to see you going
 register_uninstall_hook(LOGINIZER_FILE, 'loginizer_deactivation');
@@ -4212,6 +5054,8 @@ global $wpdb;
 	delete_option('loginizer_whitelist');
 	delete_option('loginizer_blacklist');
 	delete_option('loginizer_msg');
+	delete_option('loginizer_2fa_msg');
+	delete_option('loginizer_2fa_email_template');
 	delete_option('loginizer_security');
 	delete_option('loginizer_wp_admin');
 

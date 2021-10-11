@@ -1,6 +1,11 @@
 <?php
 
+use WPML\FP\Fns;
+use WPML\FP\Maybe;
+use WPML\FP\Obj;
 use function WPML\Container\make;
+use WPML\TM\Menu\TranslationQueue\CloneJobs;
+use WPML\Element\API\PostTranslations;
 
 class WPML_Translations_Queue {
 
@@ -14,23 +19,32 @@ class WPML_Translations_Queue {
 	private $table_sort;
 
 	private $must_render_the_editor = false;
+
 	/** @var WPML_Translation_Editor_UI */
 	private $translation_editor;
 
 	/**
-	 * WPML_Translations_Queue constructor.
-	 *
+	 * @var CloneJobs
+	 */
+	private $clone_jobs;
+
+	/**
 	 * @param SitePress                      $sitepress
 	 * @param WPML_UI_Screen_Options_Factory $screen_options_factory
+	 * @param CloneJobs                      $clone_jobs
 	 */
 	public function __construct(
 		$sitepress,
-		$screen_options_factory
+		$screen_options_factory,
+		CloneJobs $clone_jobs
 	) {
 		$this->sitepress      = $sitepress;
-		$this->screen_options = $screen_options_factory->create_pagination( 'tm_translations_queue_per_page',
-			ICL_TM_DOCS_PER_PAGE );
+		$this->screen_options = $screen_options_factory->create_pagination(
+			'tm_translations_queue_per_page',
+			ICL_TM_DOCS_PER_PAGE
+		);
 		$this->table_sort     = $screen_options_factory->create_admin_table_sort();
+		$this->clone_jobs     = $clone_jobs;
 	}
 
 	public function init_hooks() {
@@ -45,14 +59,26 @@ class WPML_Translations_Queue {
 				if ( $job_object->get_translator_id() <= 0 ) {
 					$job_object->assign_to( $this->sitepress->get_wp_api()->get_current_user_id() );
 				}
+
+				$isDuplicate = $this->isDuplicate( $job_object );
+				if ( $isDuplicate ) {
+					$this->mark_job_as( $job_object, ICL_TM_DUPLICATE );
+				} elseif ( (int) $job_object->get_status_value() !== ICL_TM_COMPLETE ) {
+					$this->mark_job_as( $job_object, ICL_TM_IN_PROGRESS );
+				}
+
 				if ( $job_object->user_can_translate( wp_get_current_user() ) ) {
+					$this->clone_jobs->cloneCompletedJob( $job_id, $job_object );
+					$this->clone_jobs->maybeCloneWPMLJob( $job_id );
+
 					$this->attempt_opening_ATE( $job_id );
 
 					wpml_tm_load_old_jobs_editor()->set( $job_id, WPML_TM_Editors::WPML );
 
 					global $wpdb;
 					$this->must_render_the_editor = true;
-					$this->translation_editor     = new WPML_Translation_Editor_UI( $wpdb,
+					$this->translation_editor     = new WPML_Translation_Editor_UI(
+						$wpdb,
 						$this->sitepress,
 						wpml_load_core_tm(),
 						$job_object,
@@ -91,11 +117,15 @@ class WPML_Translations_Queue {
 		$job_id           = null;
 
 		if ( ! empty( $_GET['resigned'] ) ) {
-			$iclTranslationManagement->add_message( array(
-				'type' => 'updated',
-				'text' => __( "You've resigned from this job.",
-					'wpml-translation-management' )
-			) );
+			$iclTranslationManagement->add_message(
+				array(
+					'type' => 'updated',
+					'text' => __(
+						"You've resigned from this job.",
+						'wpml-translation-management'
+					),
+				)
+			);
 		}
 
 		$cookie_filters = self::get_cookie_filters();
@@ -115,26 +145,45 @@ class WPML_Translations_Queue {
 			if ( isset( $_GET['updated'] ) && $_GET['updated'] ) {
 				$tm_post_link_updated = $post_link_factory->view_link( $_GET['updated'] );
 				if ( $iclTranslationManagement->is_external_type( $element_type_prefix ) ) {
-					$tm_post_link_updated = apply_filters( 'wpml_external_item_link',
+					$tm_post_link_updated = apply_filters(
+						'wpml_external_item_link',
 						$tm_post_link_updated,
 						$_GET['updated'],
-						false );
+						false
+					);
 				}
 				$user_message = __( 'Translation updated: ', 'wpml-translation-management' ) . $tm_post_link_updated;
-				$iclTranslationManagement->add_message( array( 'type' => 'updated', 'text' => $user_message ) );
+				$iclTranslationManagement->add_message(
+					array(
+						'type' => 'updated',
+						'text' => $user_message,
+					)
+				);
 			} elseif ( isset( $_GET['added'] ) && $_GET['added'] ) {
 				$tm_post_link_added = $post_link_factory->view_link( $_GET['added'] );
 				if ( $iclTranslationManagement->is_external_type( $element_type_prefix ) ) {
-					$tm_post_link_added = apply_filters( 'wpml_external_item_link',
+					$tm_post_link_added = apply_filters(
+						'wpml_external_item_link',
 						$tm_post_link_added,
 						$_GET['added'],
-						false );
+						false
+					);
 				}
 				$user_message = __( 'Translation added: ', 'wpml-translation-management' ) . $tm_post_link_added;
-				$iclTranslationManagement->add_message( array( 'type' => 'updated', 'text' => $user_message ) );
+				$iclTranslationManagement->add_message(
+					array(
+						'type' => 'updated',
+						'text' => $user_message,
+					)
+				);
 			} elseif ( isset( $_GET['job-cancelled'] ) ) {
 				$user_message = __( 'Translation has been removed by admin', 'wpml-translation-management' );
-				$iclTranslationManagement->add_message( array( 'type' => 'error', 'text' => $user_message ) );
+				$iclTranslationManagement->add_message(
+					array(
+						'type' => 'error',
+						'text' => $user_message,
+					)
+				);
 			}
 
 			if ( isset( $_GET['title'] ) && $_GET['title'] ) {
@@ -163,11 +212,13 @@ class WPML_Translations_Queue {
 					$lang_to                      = $this->sitepress->get_language_details( current( $_langs_to ) );
 					$icl_translation_filter['to'] = $lang_to['code'];
 				}
-				$job_types = $wpml_translation_job_factory->get_translation_job_types_filter( array(),
+				$job_types = $wpml_translation_job_factory->get_translation_job_types_filter(
+					array(),
 					array(
 						'translator_id'      => $current_translator->ID,
-						'include_unassigned' => true
-					) );
+						'include_unassigned' => true,
+					)
+				);
 
 				if ( isset( $_GET['orderby'] ) ) {
 					$icl_translation_filter['order_by'] = filter_var( $_GET['orderby'], FILTER_SANITIZE_STRING );
@@ -181,77 +232,92 @@ class WPML_Translations_Queue {
 			}
 		}
 		?>
-        <div class="wrap">
-            <h2><?php echo __( 'Translations queue', 'wpml-translation-management' ) ?></h2>
+		<div class="wrap">
+			<h2><?php echo __( 'Translations queue', 'wpml-translation-management' ); ?></h2>
 
-			<?php if ( empty( $current_translator->language_pairs ) ): ?>
-                <div class="error below-h2"><p><?php _e( "No translation languages configured for this user.",
-							'wpml-translation-management' ); ?></p></div>
+			<?php if ( empty( $current_translator->language_pairs ) ) : ?>
+				<div class="error below-h2"><p><?php _e( 'No translation languages configured for this user.', 'wpml-translation-management' ); ?></p></div>
 			<?php endif; ?>
 			<?php do_action( 'icl_tm_messages' ); ?>
 
-			<?php if ( ! empty( $current_translator->language_pairs ) ): ?>
+			<?php if ( ! empty( $current_translator->language_pairs ) ) : ?>
 
-                <div class="alignright">
-                    <form method="post"
-                          name="translation-jobs-filter"
-                          id="tm-queue-filter"
-                          action="admin.php?page=<?php echo WPML_TM_FOLDER ?>/menu/translations-queue.php">
-                        <input type="hidden" name="icl_tm_action" value="ujobs_filter"/>
-                        <table class="">
-                            <tbody>
-                            <tr valign="top">
-                                <td>
-                                    <select name="filter[type]">
-                                        <option value=""><?php _e( 'All types', 'wpml-translation-management' ) ?></option>
-										<?php foreach ( $job_types as $job_type => $job_type_name ): ?>
-                                            <option value="<?php echo $job_type ?>" <?php
-											if ( ! empty( $icl_translation_filter['type'] )
-											     && $icl_translation_filter['type']
-											        === $job_type ): ?>selected="selected"<?php endif; ?>><?php echo $job_type_name ?></option>
+				<div class="alignright">
+					<form method="post"
+						  name="translation-jobs-filter"
+						  id="tm-queue-filter"
+						  action="admin.php?page=<?php echo WPML_TM_FOLDER; ?>/menu/translations-queue.php">
+						<input type="hidden" name="icl_tm_action" value="ujobs_filter"/>
+						<table class="">
+							<tbody>
+							<tr valign="top">
+								<td>
+									<select name="filter[type]">
+										<option value=""><?php _e( 'All types', 'wpml-translation-management' ); ?></option>
+										<?php foreach ( $job_types as $job_type => $job_type_name ) : ?>
+											<option value="<?php echo $job_type; ?>"
+																	  <?php
+																		if ( ! empty( $icl_translation_filter['type'] )
+																		&& $icl_translation_filter['type']
+																		=== $job_type ) :
+
+																			?>
+													selected="selected"<?php endif; ?>><?php echo $job_type_name; ?></option>
 										<?php endforeach; ?>
-                                    </select>&nbsp;
-                                    <label>
-                                        <strong><?php _e( 'From', 'wpml-translation-management' ); ?></strong>
-										<?php if ( 1 < count( $current_translator->language_pairs ) ) {
+									</select>&nbsp;
+									<label>
+										<strong><?php _e( 'From', 'wpml-translation-management' ); ?></strong>
+										<?php
+										if ( 1 < count( $current_translator->language_pairs ) ) {
 
 											$from_select = new WPML_Simple_Language_Selector( $this->sitepress );
-											echo $from_select->render( array(
-												'name'               => 'filter[from]',
-												'please_select_text' => __( 'Any language',
-													'wpml-translation-management' ),
-												'style'              => '',
-												'languages'          => $langs_from,
-												'selected'           => isset( $icl_translation_filter['from'] )
-													? $icl_translation_filter['from'] : ''
-											) );
-										} else { ?>
-                                            <input type="hidden"
-                                                   name="filter[from]"
-                                                   value="<?php echo esc_attr( $lang_from['code'] ) ?>"/>
-											<?php echo $this->sitepress->get_flag_img( $lang_from['code'] )
-											           . ' '
-											           . $lang_from['display_name']; ?>
+											echo $from_select->render(
+												array(
+													'name' => 'filter[from]',
+													'please_select_text' => __(
+														'Any language',
+														'wpml-translation-management'
+													),
+													'style' => '',
+													'languages' => $langs_from,
+													'selected' => isset( $icl_translation_filter['from'] )
+															? $icl_translation_filter['from'] : '',
+												)
+											);
+										} else {
+											?>
+											<input type="hidden"
+												   name="filter[from]"
+												   value="<?php echo esc_attr( $lang_from['code'] ); ?>"/>
+											<?php
+											echo $this->sitepress->get_flag_img( $lang_from['code'] )
+													   . ' '
+													   . $lang_from['display_name'];
+											?>
 										<?php } ?>
-                                    </label>&nbsp;
-                                    <label>
-                                        <strong><?php _e( 'To', 'wpml-translation-management' ); ?></strong>
+									</label>&nbsp;
+									<label>
+										<strong><?php _e( 'To', 'wpml-translation-management' ); ?></strong>
 										<?php
 										if ( 1 < @count( $langs_to ) ) {
 											$to_select = new WPML_Simple_Language_Selector( $this->sitepress );
-											echo $to_select->render( array(
-												'name'               => 'filter[to]',
-												'please_select_text' => __( 'Any language',
-													'wpml-translation-management' ),
-												'style'              => '',
-												'languages'          => $langs_to,
-												'selected'           => isset( $icl_translation_filter['to'] )
-													? $icl_translation_filter['to'] : ''
-											) );
+											echo $to_select->render(
+												array(
+													'name' => 'filter[to]',
+													'please_select_text' => __(
+														'Any language',
+														'wpml-translation-management'
+													),
+													'style' => '',
+													'languages' => $langs_to,
+													'selected' => isset( $icl_translation_filter['to'] )
+															? $icl_translation_filter['to'] : '',
+												)
+											);
 										} else {
 											?>
-                                            <input type="hidden" name="filter[to]"
-                                                   value="<?php echo esc_attr( $lang_to['code'] ) ?>"/>
+											<input type="hidden" name="filter[to]"
+												   value="<?php echo esc_attr( $lang_to['code'] ); ?>"/>
 											<?php
 											echo $this->sitepress->get_flag_img( $lang_to['code'] ) . ' ' . $lang_to['display_name'];
 										}
@@ -262,32 +328,40 @@ class WPML_Translations_Queue {
 										}
 
 										?>
-                                    </label>
-                                    &nbsp;
-                                    <select name="filter[status]">
-                                        <option value=""><?php _e( 'All statuses',
-												'wpml-translation-management' ) ?></option>
-                                        <option value="<?php echo ICL_TM_COMPLETE ?>" <?php
-										if ( $translation_filter_status === ICL_TM_COMPLETE ): ?>selected="selected"<?php endif; ?>><?php
-											echo TranslationManagement::status2text( ICL_TM_COMPLETE ); ?></option>
-                                        <option value="<?php echo ICL_TM_IN_PROGRESS ?>" <?php
-										if ( $translation_filter_status
-										     === ICL_TM_IN_PROGRESS ): ?>selected="selected"<?php endif; ?>><?php
-											echo TranslationManagement::status2text( ICL_TM_IN_PROGRESS ); ?></option>
-                                        <option value="<?php echo ICL_TM_WAITING_FOR_TRANSLATOR ?>" <?php
-										if ( $translation_filter_status === ICL_TM_WAITING_FOR_TRANSLATOR ): ?>selected="selected"<?php endif; ?>><?php
-											_e( 'Available to translate', 'wpml-translation-management' ) ?></option>
-                                    </select>
-                                    &nbsp;
-                                    <input class="button-secondary"
-                                           type="submit"
-                                           value="<?php _e( 'Filter', 'wpml-translation-management' ) ?>"/>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
+									</label>
+									&nbsp;
+									<select name="filter[status]">
+										<option value=""><?php _e( 'All statuses', 'wpml-translation-management' ) ?></option>
+										<option value="<?php echo ICL_TM_COMPLETE; ?>"
+																  <?php
+																	if ( $translation_filter_status === ICL_TM_COMPLETE ) :
+
+																		?>
+										selected="selected"<?php endif; ?>><?php echo TranslationManagement::status2text( ICL_TM_COMPLETE ); ?></option>
+										<option value="<?php echo ICL_TM_IN_PROGRESS; ?>"
+																  <?php
+																	if ( $translation_filter_status
+																	=== ICL_TM_IN_PROGRESS ) :
+
+																		?>
+											 selected="selected"<?php endif; ?>><?php echo TranslationManagement::status2text( ICL_TM_IN_PROGRESS ); ?></option>
+										<option value="<?php echo ICL_TM_WAITING_FOR_TRANSLATOR; ?>"
+																  <?php
+																	if ( $translation_filter_status === ICL_TM_WAITING_FOR_TRANSLATOR ) :
+
+																		?>
+										selected="selected"<?php endif; ?>><?php _e( 'Available to translate', 'wpml-translation-management' ) ?></option>
+									</select>
+									&nbsp;
+									<input class="button-secondary"
+										   type="submit"
+										   value="<?php _e( 'Filter', 'wpml-translation-management' ); ?>"/>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
 				<?php
 				$actions = apply_filters( 'wpml_translation_queue_actions', array() );
 
@@ -296,8 +370,8 @@ class WPML_Translations_Queue {
 				 */
 				$actions = apply_filters( 'WPML_translation_queue_actions', $actions );
 				?>
-				<?php if ( count( $actions ) > 0 ): ?>
-                    <form method="post" name="translation-jobs-action" action="admin.php?page=<?php echo WPML_TM_FOLDER ?>/menu/translations-queue.php">
+				<?php if ( count( $actions ) > 0 ) : ?>
+					<form method="post" name="translation-jobs-action" action="admin.php?page=<?php echo WPML_TM_FOLDER; ?>/menu/translations-queue.php">
 				<?php endif; ?>
 
 				<?php
@@ -311,8 +385,10 @@ class WPML_Translations_Queue {
 
 				<?php
 
-				$translation_queue_pagination = new WPML_Translations_Queue_Pagination_UI( $translation_jobs,
-					$this->screen_options->get_items_per_page() );
+				$translation_queue_pagination = new WPML_Translations_Queue_Pagination_UI(
+					$translation_jobs,
+					$this->screen_options->get_items_per_page()
+				);
 				$translation_jobs             = $translation_queue_pagination->get_paged_jobs();
 
 				?>
@@ -334,8 +410,8 @@ class WPML_Translations_Queue {
 				$this->show_table( $translation_jobs, count( $actions ) > 0, $job_id );
 				?>
 
-                <div id="tm-queue-pagination" class="tablenav">
-					<?php $translation_queue_pagination->show() ?>
+				<div id="tm-queue-pagination" class="tablenav">
+					<?php $translation_queue_pagination->show(); ?>
 
 					<?php
 					do_action( 'wpml_xliff_select_actions', $actions, 'action2', $translation_jobs );
@@ -345,21 +421,21 @@ class WPML_Translations_Queue {
 					 */
 					do_action( 'WPML_xliff_select_actions', $actions, 'action2', $translation_jobs );
 					?>
-                </div>
+				</div>
 				<?php // pagination - end ?>
 
-				<?php if ( count( $actions ) > 0 ): ?>
-                    </form>
+				<?php if ( count( $actions ) > 0 ) : ?>
+					</form>
 				<?php endif; ?>
 
 				<?php do_action( 'wpml_translation_queue_after_display', $translation_jobs ); ?>
 
 			<?php endif; ?>
-        </div>
+		</div>
 
 		<?php
 		// Check for any bulk actions
-		if ( isset( $_POST['action'] ) || isset( $_POST["action2"] ) ) {
+		if ( isset( $_POST['action'] ) || isset( $_POST['action2'] ) ) {
 			$xliff_version = isset( $_POST['doaction'] ) ? $_POST['action'] : $_POST['action2'];
 			do_action( 'wpml_translation_queue_do_actions_export_xliff', $_POST, $xliff_version );
 
@@ -378,8 +454,8 @@ class WPML_Translations_Queue {
 	public function show_table( $translation_jobs, $has_actions, $open_job ) {
 		?>
 			<table class="widefat striped icl-translation-jobs" id="icl-translation-jobs" cellspacing="0"
-				data-string-complete="<?php esc_attr_e( 'Complete', 'wpml-translation-management'); ?>"
-				data-string-edit="<?php esc_attr_e( 'Edit', 'wpml-translation-management'); ?>"
+				data-string-complete="<?php esc_attr_e( 'Complete', 'wpml-translation-management' ); ?>"
+				data-string-edit="<?php esc_attr_e( 'Edit', 'wpml-translation-management' ); ?>"
 			>
 		<?php foreach ( array( 'thead', 'tfoot' ) as $element_type ) { ?>
 				<<?php echo $element_type; ?>>
@@ -387,7 +463,7 @@ class WPML_Translations_Queue {
 					<?php if ( $has_actions ) { ?>
 					<td class="manage-column column-cb check-column js-check-all" scope="col">
 						<input title="<?php echo esc_attr( $translation_jobs['strings']['check_all'] ); ?>"
-						       type="checkbox"/>
+							   type="checkbox"/>
 					</td>
 					<?php } ?>
 					<th scope="col" class="cloumn-job_id <?php echo $this->table_sort->get_column_classes( 'job_id' ); ?>">
@@ -397,101 +473,109 @@ class WPML_Translations_Queue {
 						</a>
 					</th>
 					<th scope="col"
-					    class="column-title"><?php echo esc_html( $translation_jobs['strings']['title'] ); ?></th>
+						class="column-title"><?php echo esc_html( $translation_jobs['strings']['title'] ); ?></th>
 					<th scope="col"
-					    class="column-type"><?php echo esc_html( $translation_jobs['strings']['type'] ); ?></th>
+						class="column-type"><?php echo esc_html( $translation_jobs['strings']['type'] ); ?></th>
 					<th scope="col"
-					    class="column-language"><?php echo esc_html( $translation_jobs['strings']['language'] ); ?></th>
+						class="column-language"><?php echo esc_html( $translation_jobs['strings']['language'] ); ?></th>
 					<th scope="col"
-					    class="column-status"><?php echo esc_html( $translation_jobs['strings']['status'] ); ?></th>
+						class="column-status"><?php echo esc_html( $translation_jobs['strings']['status'] ); ?></th>
 					<th scope="col"
-					    class="column-deadline <?php echo $this->table_sort->get_column_classes( 'deadline' ); ?>">
+						class="column-deadline <?php echo $this->table_sort->get_column_classes( 'deadline' ); ?>">
 						<a href="<?php echo $this->table_sort->get_column_url( 'deadline' ); ?>">
 							<span><?php echo esc_html( $translation_jobs['strings']['deadline'] ); ?></span>
 							<span class="sorting-indicator"></span>
 						</a>
 					</th>
 					<th scope="col"
-					    class="column-actions"></th>
+						class="column-actions"></th>
 				</tr>
 				</<?php echo $element_type; ?>>
 		<?php } ?>
 
 			<tbody>
-	  <?php if ( empty( $translation_jobs['jobs'] ) ) { ?>
+		<?php if ( empty( $translation_jobs['jobs'] ) ) { ?>
 				<tr>
 					<td colspan="7"
-					    align="center"><?php _e( 'No translation jobs found', 'wpml-translation-management' ) ?></td>
+						align="center"><?php _e( 'No translation jobs found', 'wpml-translation-management' ); ?></td>
 				</tr>
-	  <?php } else {
+			<?php
+		} else {
 
-		  $ate_jobs = apply_filters( 'wpml_tm_ate_jobs_data', array(), $translation_jobs['jobs'] );
+			$ate_jobs = apply_filters( 'wpml_tm_ate_jobs_data', array(), $translation_jobs['jobs'] );
 
-		  foreach ( $translation_jobs['jobs'] as $index => $job ) { ?>
+			foreach ( $translation_jobs['jobs'] as $index => $job ) {
+				?>
 						<tr<?php echo $this->get_row_css_attribute( $job ); ?>>
-							<?php if ( $has_actions ) { ?>
+							  <?php if ( $has_actions ) { ?>
 							<td>
-									<input type="checkbox" name="job[<?php echo $job->job_id ?>]" value="1"/>
+									<input type="checkbox" name="job[<?php echo $job->job_id; ?>]" value="1"/>
 							</td>
 							<?php } ?>
 							<td class="column-job_id"><?php echo $job->job_id; ?></td>
 							<td class="column-title">
-								<?php echo esc_html( $job->post_title ); ?>
+								  <?php echo esc_html( $job->post_title ); ?>
 								<div class="row-actions">
 									<span class="view"><?php echo $job->tm_post_link; ?></span>
 								</div>
 							</td>
 							<td class="column-type" data-colname=""><?php echo esc_html( $job->post_type ); ?></td>
-							<td class="column-languages"><?php echo $job->lang_text_with_flags ?></td>
+							<td class="column-languages"><?php echo $job->lang_text_with_flags; ?></td>
 							<td class="column-status"><span><i class="<?php echo esc_attr( $job->icon ); ?>"></i><?php echo esc_html( $job->status_text ); ?></span></td>
 							<td class="column-deadline">
-							  <?php if ( $job->deadline_date ) {
-								  if ( '0000-00-00 00:00:00' === $job->deadline_date ) {
-									  $deadline_day = __( 'Not set', 'wpml-translation-management' );
-								  } else {
-									  $deadline_day = date( 'Y-m-d', strtotime( $job->deadline_date ) );
-								  }
-								  echo esc_html( $deadline_day );
-							  } ?>
+								<?php
+								if ( $job->deadline_date ) {
+									if ( '0000-00-00 00:00:00' === $job->deadline_date ) {
+										$deadline_day = __( 'Not set', 'wpml-translation-management' );
+									} else {
+										$deadline_day = date( 'Y-m-d', strtotime( $job->deadline_date ) );
+									}
+									echo esc_html( $deadline_day );
+								}
+								?>
 							</td>
 							<td class="column-actions">
-				  <?php
-				  if ( $job->original_doc_id ) {
-					  $ate_job_id       = null;
-					  if ( array_key_exists( $job->job_id, $ate_jobs ) ) {
-						  if ( array_key_exists( 'ate_job_id', $ate_jobs[ $job->job_id ] ) ) {
-							  $ate_job_id = $ate_jobs[ $job->job_id ]['ate_job_id'];
-						  }
-					  }
-					  ?>
+					<?php
+					if ( $job->original_doc_id ) {
+						$ate_job_id = null;
+						if ( array_key_exists( $job->job_id, $ate_jobs ) ) {
+							if ( array_key_exists( 'ate_job_id', $ate_jobs[ $job->job_id ] ) ) {
+								$ate_job_id = $ate_jobs[ $job->job_id ]['ate_job_id'];
+							}
+						}
+						?>
 										<a class="button-secondary js-translation-queue-edit"
 										   href="<?php echo esc_attr( $job->edit_url ); ?>"
-										   data-job-id="<?php echo $job->job_id ?>"
+										   data-job-id="<?php echo $job->job_id; ?>"
 										   data-ate-job-id="<?php echo esc_attr( $ate_job_id ); ?>"
-										   data-ate-job-url="<?php echo $job->edit_url ?>"
-										   data-ate-auto-open="<?php echo $job->job_id === $open_job ?>"
+										   data-ate-job-url="<?php echo $job->edit_url; ?>"
+										   data-ate-auto-open="<?php echo $job->job_id === $open_job; ?>"
 										>
 						<?php echo $job->button_text; ?>
 										</a>
-					  <?php
-				  }
-				  ?>
+						<?php
+					}
+					?>
 								<?php if ( $job->is_doing_job ) { ?>
 									<br>
 									<a class="link-resign"
 									   href="<?php echo esc_attr( $job->resign_url ); ?>"
-									   onclick="if ( !confirm( '<?php echo esc_js( $translation_jobs['strings']['confirm'] ) ?>' ) ) { return false; }">
-										<?php echo $job->resign_text ?>
+									   onclick="if ( !confirm( '<?php echo esc_js( $translation_jobs['strings']['confirm'] ); ?>' ) ) { return false; }">
+										<?php echo $job->resign_text; ?>
 									</a>
 								<?php } ?>
-								<?php if ( $job->view_link ) {
+								<?php
+								if ( $job->view_link ) {
 									echo '<br>';
 									echo $job->view_link;
-								} ?>
+								}
+								?>
 							</td>
 						</tr>
-		  <?php }
-	  } ?>
+				<?php
+			}
+		}
+		?>
 			</tbody>
 			</table>
 		<?php
@@ -508,31 +592,40 @@ class WPML_Translations_Queue {
 		$job_id = filter_var( isset( $_GET['job_id'] ) ? $_GET['job_id'] : '', FILTER_SANITIZE_NUMBER_INT );
 
 		list( $trid, $update_needed, $language_code, $element_type ) = $this->get_job_data_for_restore( $job_id );
-		$source_language_code = filter_var( isset( $_GET['source_language_code'] ) ? $_GET['source_language_code'] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$source_language_code                                        = filter_var( isset( $_GET['source_language_code'] ) ? $_GET['source_language_code'] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( $trid && $language_code ) {
 			if ( ! $job_id ) {
-				$job_id = $iclTranslationManagement->get_translation_job_id( $trid,
-					$language_code );
+				$job_id = $iclTranslationManagement->get_translation_job_id(
+					$trid,
+					$language_code
+				);
 				if ( ! $job_id ) {
 					if ( ! $source_language_code ) {
 						$post_id = SitePress::get_original_element_id_by_trid( $trid );
 					} else {
-						$posts_in_trid = $wpml_post_translations->get_element_translations( false,
-							$trid );
+						$posts_in_trid = $wpml_post_translations->get_element_translations(
+							false,
+							$trid
+						);
 						$post_id       = isset( $posts_in_trid[ $source_language_code ] ) ? $posts_in_trid[ $source_language_code ] : false;
 					}
 					$blog_translators = wpml_tm_load_blog_translators();
-					$args             = array(
+					$args             = [
 						'lang_from' => $source_language_code,
 						'lang_to'   => $language_code,
-						'job_id'    => $job_id
-					);
-					if ( $post_id && $blog_translators->is_translator( $sitepress->get_current_user()->ID,
-							$args )
+						'job_id'    => $job_id,
+						'post_id'   => $post_id,
+					];
+					if ( $post_id && $blog_translators->is_translator(
+						$sitepress->get_current_user()->ID,
+						$args
+					)
 					) {
-						$job_id = $wpml_translation_job_factory->create_local_post_job( $post_id,
-							$language_code );
+						$job_id = $wpml_translation_job_factory->create_local_post_job(
+							$post_id,
+							$language_code
+						);
 					}
 				}
 			} elseif ( $update_needed ) {
@@ -579,7 +672,7 @@ class WPML_Translations_Queue {
 				$result['trid'],
 				$result['update_needed'],
 				$result['language_code'],
-				$result['element_type']
+				$result['element_type'],
 			);
 		}
 
@@ -627,7 +720,7 @@ class WPML_Translations_Queue {
 	 */
 	private function must_open_the_editor() {
 		return ( isset( $_GET['job_id'] ) && $_GET['job_id'] > 0 )
-		       || ( isset( $_GET['trid'] ) && $_GET['trid'] > 0 );
+			   || ( isset( $_GET['trid'] ) && $_GET['trid'] > 0 );
 	}
 
 	/**
@@ -638,7 +731,7 @@ class WPML_Translations_Queue {
 			return;
 		}
 
-	    // a job already exists
+		// a job already exists
 		if ( isset( $_GET['job_id'] ) && $_GET['job_id'] > 0 ) {
 			$current_editor = wpml_tm_load_old_jobs_editor()->get( $job_id );
 			if ( WPML_TM_Editors::ATE !== $current_editor && WPML_TM_Editors::NONE !== $current_editor ) {
@@ -652,8 +745,9 @@ class WPML_Translations_Queue {
 			make( \WPML\TM\ATE\Sync\Trigger::class )->setSyncRequiredForCurrentUser();
 			wpml_tm_load_old_jobs_editor()->set( $job_id, WPML_TM_Editors::ATE );
 
-			wp_safe_redirect( $editor_url );
-			die();
+			if ( wp_safe_redirect( $editor_url, 302, 'WPML' ) ) {
+				exit;
+			}
 		}
 	}
 
@@ -678,7 +772,7 @@ class WPML_Translations_Queue {
 			}
 
 			if ( array_key_exists( 'query', $return_url_parts ) ) {
-				$admin_url_parts['query'] = $return_url_parts['query'];
+				$admin_url_parts['query'] = $this->filterQueryParameters( $return_url_parts['query'] );
 			}
 
 			$return_url = http_build_url( $admin_url_parts );
@@ -687,14 +781,25 @@ class WPML_Translations_Queue {
 		return $return_url;
 	}
 
+	private function filterQueryParameters( $query ) {
+		$parameters = [];
+		parse_str( $query, $parameters );
+
+		unset( $parameters['ate_original_id'] );
+		unset( $parameters['back'] );
+		unset( $parameters['complete'] );
+
+		return http_build_query( $parameters );
+	}
+
 	/**
 	 * @return array
 	 */
 	public static function get_cookie_filters() {
 		$filters = array();
 
-		if ( isset( $_COOKIE['translation_ujobs_filter'] ) ) {
-			parse_str( $_COOKIE['translation_ujobs_filter'], $filters );
+		if ( isset( $_COOKIE['wp-translation_ujobs_filter'] ) ) {
+			parse_str( $_COOKIE['wp-translation_ujobs_filter'], $filters );
 
 			$filters = filter_var_array(
 				$filters,
@@ -708,5 +813,27 @@ class WPML_Translations_Queue {
 		}
 
 		return $filters;
+	}
+
+	/**
+	 * @param  \WPML_Translation_Job $job_object
+	 * @param int $status
+	 */
+	private function mark_job_as( \WPML_Translation_Job $job_object, $status ) {
+		wpml_load_core_tm()->update_translation_status(
+			[
+				'translation_id' => $job_object->get_translation_id(),
+				'status'         => $status,
+			]
+		);
+	}
+
+	private function isDuplicate( \WPML_Translation_Job $jobObject ) {
+		return Maybe::of( $jobObject->get_original_element_id() )
+		            ->map( PostTranslations::get() )
+		            ->map( Obj::prop( $jobObject->get_language_code() ) )
+		            ->map( Obj::prop( 'element_id' ) )
+		            ->map( [ wpml_get_post_status_helper(), 'is_duplicate' ] )
+		            ->getOrElse( false );
 	}
 }

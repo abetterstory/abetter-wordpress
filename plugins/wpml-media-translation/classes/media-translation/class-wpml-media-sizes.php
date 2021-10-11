@@ -23,7 +23,6 @@ class WPML_Media_Sizes {
 					}
 				}
 			}
-
 		}
 
 		return null;
@@ -127,10 +126,12 @@ class WPML_Media_Sizes {
 
 		$thumb_file_name      = basename( $url );
 		$attachment_meta_data = wp_get_attachment_metadata( $attachment_id );
-		foreach ( $attachment_meta_data['sizes'] as $key => $size_array ) {
-			if ( $thumb_file_name === $size_array['file'] ) {
-				$size = $key;
-				break;
+		if ( isset( $attachment_meta_data['sizes'] ) ) {
+			foreach ( $attachment_meta_data['sizes'] as $key => $size_array ) {
+				if ( $thumb_file_name === $size_array['file'] ) {
+					$size = $key;
+					break;
+				}
 			}
 		}
 

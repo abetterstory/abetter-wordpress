@@ -35,34 +35,44 @@ class WPML_TM_REST_AMS_Clients extends WPML_REST_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( '/ams/register_manager',
-		                        array(
-			                        'methods'  => 'POST',
-			                        'callback' => array( $this, 'register_manager' ),
-		                        ) );
+		parent::register_route(
+			'/ams/register_manager',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'register_manager' ),
+			)
+		);
 
-		parent::register_route( '/ams/synchronize/translators',
-		                        array(
-			                        'methods'  => 'GET',
-			                        'callback' => array( $this, 'synchronize_translators' ),
-		                        ) );
-		parent::register_route( '/ams/synchronize/managers',
-		                        array(
-			                        'methods'  => 'GET',
-			                        'callback' => array( $this, 'synchronize_managers' ),
-		                        ) );
+		parent::register_route(
+			'/ams/synchronize/translators',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'synchronize_translators' ),
+			)
+		);
+		parent::register_route(
+			'/ams/synchronize/managers',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'synchronize_managers' ),
+			)
+		);
 
-		parent::register_route( '/ams/status',
+		parent::register_route(
+			'/ams/status',
 			array(
 				'methods'  => 'GET',
 				'callback' => array( $this, 'get_status' ),
-			) );
+			)
+		);
 
-		parent::register_route( '/ams/console',
+		parent::register_route(
+			'/ams/console',
 			array(
 				'methods'  => 'GET',
 				'callback' => array( $this, 'get_console' ),
-			) );
+			)
+		);
 	}
 
 	/**

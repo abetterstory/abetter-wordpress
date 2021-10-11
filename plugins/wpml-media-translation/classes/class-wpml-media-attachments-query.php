@@ -6,7 +6,7 @@
 class WPML_Media_Attachments_Query implements IWPML_Action {
 
 
-	public function add_hooks(){
+	public function add_hooks() {
 		add_action( 'pre_get_posts', array( $this, 'adjust_attachment_query' ), 10 );
 	}
 

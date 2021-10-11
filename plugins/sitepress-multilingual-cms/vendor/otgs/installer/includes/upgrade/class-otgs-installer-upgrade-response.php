@@ -38,36 +38,38 @@ class OTGS_Installer_Upgrade_Response {
 	}
 
 	public function modify_upgrade_response( $update_plugins ) {
+		if ( isset( $update_plugins ) && is_object( $update_plugins ) ) {
+			foreach ( $this->plugins as $plugin ) {
+				$repository   = $this->repositories->get( $plugin->get_repo() );
+				$subscription = $repository->get_subscription();
 
-		foreach ( $this->plugins as $plugin ) {
-			$repository   = $this->repositories->get( $plugin->get_repo() );
-			$subscription = $repository->get_subscription();
+				if ( $this->should_skip_upgrade_process( $plugin, $update_plugins, $repository ) ) {
+					continue;
+				}
 
-			if ( $this->should_skip_upgrade_process( $plugin, $update_plugins, $repository ) ) {
-				continue;
+				$response                 = new stdClass();
+				$response->id             = 0;
+				$response->slug           = $plugin->get_slug();
+				$response->plugin         = $plugin->get_id();
+				$response->new_version    = $plugin->get_version();
+				$response->upgrade_notice = '';
+				$response->url            = $plugin->get_url();
+				$response->tested         = $plugin->get_tested();
+
+				if ( $subscription->get_site_key() ) {
+					$response->package = $this->append_site_key_to_download_url(
+						$plugin->get_url(),
+						$subscription->get_site_key(),
+						$repository->get_id(),
+						WP_Installer()->get_installer_site_url()
+					);
+				}
+
+				$response = apply_filters( 'otgs_installer_upgrade_check_response', $response, $plugin->get_name(), $repository->get_id() );
+
+				$update_plugins->checked[ $plugin->get_id() ]  = $plugin->get_installed_version();
+				$update_plugins->response[ $plugin->get_id() ] = $response;
 			}
-
-			$response                 = new stdClass();
-			$response->id             = 0;
-			$response->slug           = $plugin->get_slug();
-			$response->plugin         = $plugin->get_id();
-			$response->new_version    = $plugin->get_version();
-			$response->upgrade_notice = '';
-			$response->url            = $plugin->get_url();
-
-			if ( $subscription->get_site_key() ) {
-				$response->package = $this->append_site_key_to_download_url(
-					$plugin->get_url(),
-					$subscription->get_site_key(),
-					$repository->get_id(),
-					WP_Installer()->get_installer_site_url()
-				);
-			}
-
-			$response = apply_filters( 'otgs_installer_upgrade_check_response', $response, $plugin->get_name(), $repository->get_id() );
-
-			$update_plugins->checked[ $plugin->get_id() ]  = $plugin->get_installed_version();
-			$update_plugins->response[ $plugin->get_id() ] = $response;
 		}
 
 		return $update_plugins;
@@ -125,16 +127,6 @@ class OTGS_Installer_Upgrade_Response {
 
 		$url_params['site_key'] = $key;
 		$url_params['site_url'] = $site_url;
-		$package_source         = $this->source_factory->create()->get();
-
-		// Add extra parameters for custom Installer packages
-		if ( $package_source ) {
-			$extra = $this->get_extra_url_parameters( $package_source );
-			if ( ! empty( $extra['repository'] ) && $extra['repository'] == $repository_id ) {
-				unset( $extra['repository'] );
-				$url_params = array_merge( $url_params, $extra );
-			}
-		}
 
 		$url = add_query_arg( $url_params, $url );
 
@@ -146,7 +138,6 @@ class OTGS_Installer_Upgrade_Response {
 		}
 
 		return $url;
-
 	}
 
 	private function get_extra_url_parameters( $source ) {

@@ -12,7 +12,7 @@ class TranslationProxy_Service {
 	public $name;
 	public $description;
 	public $default_service;
-	public $has_translator_selection = true;    //Todo: read this from service properties
+	public $has_translator_selection = true;    // Todo: read this from service properties
 	public $delivery_method;
 	public $project_details_url;
 	public $custom_text_url;
@@ -32,7 +32,7 @@ class TranslationProxy_Service {
 
 	public static function is_authenticated( $service ) {
 
-		//for services that do not require authentication return true by default
+		// for services that do not require authentication return true by default
 		if ( ! TranslationProxy::service_requires_authentication( $service ) ) {
 			return true;
 		}
@@ -108,7 +108,7 @@ class TranslationProxy_Service {
 			$result['translation_service'] = 'local';
 			$result['translator_id']       = $translator_id;
 		} else {
-			$translator_data = explode( '-', $translator_id );
+			$translator_data               = explode( '-', $translator_id );
 			$result                        = array();
 			$result['translation_service'] = $translator_data[1];
 			$result['translator_id']       = isset( $translator_data[2] ) ? $translator_data[2] : 0;

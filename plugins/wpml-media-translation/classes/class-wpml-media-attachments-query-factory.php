@@ -8,7 +8,7 @@ class WPML_Media_Attachments_Query_Factory implements IWPML_Frontend_Action_Load
 	/**
 	 * @return IWPML_Action|WPML_Media_Attachments_Query
 	 */
-	public function create(){
+	public function create() {
 		return new WPML_Media_Attachments_Query();
 	}
 

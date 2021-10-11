@@ -77,7 +77,7 @@ class WPML_Editor_UI_Job {
 	public function is_translation_complete() {
 		return $this->translation_complete;
 	}
-	
+
 	public function save( $data ) {
 		$translations = array();
 
@@ -110,9 +110,9 @@ class WPML_Editor_UI_Job {
 	public function is_hide_empty_fields() {
 		return true;
 	}
-	
+
 	public function save_translations( $translations ) {
-		
+
 	}
 
 }

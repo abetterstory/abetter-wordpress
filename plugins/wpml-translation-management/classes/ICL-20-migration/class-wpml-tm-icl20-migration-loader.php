@@ -42,8 +42,10 @@ class WPML_TM_ICL20_Migration_Loader {
 
 		if ( $requires_migration ) {
 			if ( ! $this->progress->get_user_confirmed() ) {
-				add_action( 'wp_ajax_' . WPML_TM_ICL20_Migration_Support::PREFIX . 'user_confirm',
-				            array( $this->factory->create_ajax(), 'user_confirmation' ) );
+				add_action(
+					'wp_ajax_' . WPML_TM_ICL20_Migration_Support::PREFIX . 'user_confirm',
+					array( $this->factory->create_ajax(), 'user_confirmation' )
+				);
 
 				return;
 			}
@@ -53,8 +55,10 @@ class WPML_TM_ICL20_Migration_Loader {
 				$migration = $this->factory->create_migration();
 
 				if ( $this->factory->can_rollback() ) {
-					add_action( 'wpml_tm_icl20_migration_rollback',
-					            array( $migration, 'migrate_project_rollback' ) );
+					add_action(
+						'wpml_tm_icl20_migration_rollback',
+						array( $migration, 'migrate_project_rollback' )
+					);
 				}
 
 				$support = $this->factory->create_ui_support();
@@ -76,9 +80,9 @@ class WPML_TM_ICL20_Migration_Loader {
 	/** @return bool */
 	private function is_back_end() {
 		return $this->wp_api->is_admin()
-		       && ! $this->wp_api->is_ajax()
-		       && ! $this->wp_api->is_cron_job()
-		       && ! $this->wp_api->is_heartbeat();
+			   && ! $this->wp_api->is_ajax()
+			   && ! $this->wp_api->is_cron_job()
+			   && ! $this->wp_api->is_heartbeat();
 	}
 
 	/** @return bool */

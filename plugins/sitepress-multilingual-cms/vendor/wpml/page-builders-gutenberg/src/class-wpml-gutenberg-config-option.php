@@ -25,6 +25,7 @@ class WPML_Gutenberg_Config_Option {
 				if ( '1' === $block_config['attr']['translate'] ) {
 					$blocks = $this->add_block_xpaths( $blocks, $block_config );
 					$blocks = $this->add_block_attribute_keys( $blocks, $block_config );
+					$blocks = $this->add_block_label( $blocks, $block_config );
 				}
 			}
 		}
@@ -43,7 +44,7 @@ class WPML_Gutenberg_Config_Option {
 			$block_name                     = $block_config['attr']['type'];
 			$blocks[ $block_name ]['xpath'] = array();
 
-			foreach ( $block_config['xpath'] as $xpaths ) {
+			foreach ( $this->normalize_key_data( $block_config['xpath'] ) as $xpaths ) {
 				$xpaths                         = XPath::normalize( $xpaths );
 				$blocks[ $block_name ]['xpath'] = array_merge( $blocks[ $block_name ]['xpath'], array_values( $xpaths ) );
 
@@ -67,6 +68,14 @@ class WPML_Gutenberg_Config_Option {
 		return $blocks;
 	}
 
+	private function add_block_label( array $blocks, array $block_config ) {
+		if ( isset( $block_config['attr']['label'] ) ) {
+			$blocks[ $block_config['attr']['type'] ]['label'] = $block_config['attr']['label'];
+		}
+
+		return $blocks;
+	}
+
 	/**
 	 * @param array $keys_config
 	 *
@@ -82,6 +91,10 @@ class WPML_Gutenberg_Config_Option {
 
 			if ( isset( $key_config['attr']['search-method'] ) ) {
 				$partial_config['search-method'] = $key_config['attr']['search-method'];
+			}
+
+			if ( isset( $key_config['attr']['label'] ) ) {
+				$partial_config['label'] = $key_config['attr']['label'];
 			}
 
 			if ( isset( $key_config['key'] ) ) {

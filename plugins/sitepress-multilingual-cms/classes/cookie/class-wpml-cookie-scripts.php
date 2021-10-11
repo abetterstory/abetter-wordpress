@@ -23,7 +23,7 @@ class WPML_Cookie_Scripts {
 	 */
 	public function __construct( $language_cookie_name, $current_language ) {
 		$this->language_cookie_name = $language_cookie_name;
-		$this->current_language = $current_language;
+		$this->current_language     = $current_language;
 	}
 
 	public function add_hooks() {

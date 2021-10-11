@@ -27,7 +27,8 @@ class WPML_TP_Apply_Translation_String_Strategy implements WPML_TP_Apply_Transla
 		if ( ! icl_translation_add_string_translation(
 			$job->get_tp_id(),
 			$this->map_translations_to_legacy_array( $translations ),
-			$translations->get_target_language() )
+			$translations->get_target_language()
+		)
 		) {
 			throw new WPML_TP_API_Exception( 'Could not apply string translation!' );
 		}

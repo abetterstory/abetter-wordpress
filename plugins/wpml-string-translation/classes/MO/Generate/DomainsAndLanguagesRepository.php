@@ -4,6 +4,7 @@ namespace WPML\ST\MO\Generate;
 
 use wpdb;
 use WPML\Collect\Support\Collection;
+use function WPML\Container\make;
 use WPML\ST\TranslationFile\Domains;
 use function wpml_collect;
 use WPML_Locale;
@@ -61,5 +62,12 @@ class DomainsAndLanguagesRepository {
 		$result = $this->wpdb->get_results( $sql );
 
 		return wpml_collect( $result );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function hasTranslationFilesTable() {
+		return make( \WPML_Upgrade_Schema::class )->does_table_exist( 'icl_mo_files_domains' );
 	}
 }

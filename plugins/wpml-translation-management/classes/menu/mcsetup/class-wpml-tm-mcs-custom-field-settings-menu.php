@@ -78,7 +78,7 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 		<div class="wpml-section wpml-section-<?php echo esc_attr( $this->kind_shorthand() ); ?>-translation"
 			 id="ml-content-setup-sec-<?php echo esc_attr( $this->kind_shorthand() ); ?>">
 			<div class="wpml-section-header">
-				<h3><?php echo esc_html( $this->get_title() ) ?></h3>
+				<h3><?php echo esc_html( $this->get_title() ); ?></h3>
 				<p>
 					<?php
 					// We need htmlspecialchars() here only for testing, as DOMDocument::loadHTML() cannot parse url with '&'.
@@ -119,7 +119,7 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 
 						<div class="wpml-flex-table wpml-translation-setup-table wpml-margin-top-sm">
 
-							<?php echo $this->render_heading() ?>
+							<?php echo $this->render_heading(); ?>
 
 							<div class="wpml-flex-table-body">
 								<?php
@@ -134,9 +134,9 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 
 						<p class="buttons-wrap">
 							<span class="icl_ajx_response"
-								  id="icl_ajx_response_<?php echo esc_attr( $this->kind_shorthand() ) ?>"></span>
+								  id="icl_ajx_response_<?php echo esc_attr( $this->kind_shorthand() ); ?>"></span>
 							<input type="submit" class="button-primary"
-								   value="<?php echo esc_attr__( 'Save', 'wpml-translation-management' ) ?>"/>
+								   value="<?php echo esc_attr__( 'Save', 'wpml-translation-management' ); ?>"/>
 						</p>
 						<?php
 					}
@@ -153,29 +153,32 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 	/**
 	 * @return string
 	 */
-	protected abstract function kind_shorthand();
+	abstract protected function kind_shorthand();
 
 	/**
 	 * @return string
 	 */
-	protected abstract function get_title();
+	abstract protected function get_title();
 
-	protected abstract function get_meta_type();
+	abstract protected function get_meta_type();
 
 	/**
 	 * @param string $key
 	 *
 	 * @return WPML_Custom_Field_Setting
 	 */
-	protected abstract function get_setting( $key );
+	abstract protected function get_setting( $key );
 
 	private function render_radio( $cf_key, $html_disabled, $status, $ref_status ) {
 		ob_start();
 		?>
 		<input type="radio" name="<?php echo $this->get_radio_name( $cf_key ); ?>"
-			   value="<?php echo esc_attr( $ref_status ) ?>"
-			   title="<?php echo esc_attr( $ref_status ) ?>" <?php echo $html_disabled ?>
-		       <?php if ( $status == $ref_status ): ?>checked<?php endif; ?> />
+			   value="<?php echo esc_attr( $ref_status ); ?>"
+			   title="<?php echo esc_attr( $ref_status ); ?>" <?php echo $html_disabled; ?>
+			   <?php
+				if ( $status == $ref_status ) :
+					?>
+					checked<?php endif; ?> />
 		<?php
 
 		return ob_get_clean();
@@ -199,19 +202,19 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 			<?php $this->render_search(); ?>
 			<div class="wpml-flex-table-row">
 				<div class="wpml-flex-table-cell name">
-					<?php echo esc_html( $this->get_column_header( 'name' ) ) ?>
+					<?php echo esc_html( $this->get_column_header( 'name' ) ); ?>
 				</div>
 				<div class="wpml-flex-table-cell text-center">
-					<?php echo esc_html__( "Don't translate", 'wpml-translation-management' ) ?>
+					<?php echo esc_html__( "Don't translate", 'wpml-translation-management' ); ?>
 				</div>
 				<div class="wpml-flex-table-cell text-center">
-					<?php echo esc_html_x( "Copy", 'Verb', 'wpml-translation-management' ) ?>
+					<?php echo esc_html_x( 'Copy', 'Verb', 'wpml-translation-management' ); ?>
 				</div>
 				<div class="wpml-flex-table-cell text-center">
-					<?php echo esc_html__( "Copy once", 'wpml-translation-management' ) ?>
+					<?php echo esc_html__( 'Copy once', 'wpml-translation-management' ); ?>
 				</div>
 				<div class="wpml-flex-table-cell text-center">
-					<?php echo esc_html__( "Translate", 'wpml-translation-management' ) ?>
+					<?php echo esc_html__( 'Translate', 'wpml-translation-management' ); ?>
 				</div>
 			</div>
 		</div>
@@ -273,9 +276,9 @@ abstract class WPML_TM_MCS_Custom_Field_Settings_Menu {
 		echo $pagination->create( $this->total_keys, $current_page )->render();
 	}
 
-	public abstract function get_no_data_message();
+	abstract public function get_no_data_message();
 
-	public abstract function get_column_header( $id );
+	abstract public function get_column_header( $id );
 
 	/**
 	 * @return WPML_Custom_Field_Setting_Query

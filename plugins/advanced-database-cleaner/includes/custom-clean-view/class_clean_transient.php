@@ -38,9 +38,6 @@ class ADBC_Clean_Transient extends WP_List_Table {
 		}
 
 		// Prepare additional sql args if any: per page, LIMIT, OFFSET, etc.
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-			$this->aDBc_search_sql_arg 			= aDBc_get_search_sql_arg("a.option_name", "a.option_value");
-		}
 		$this->aDBc_order_by_sql_arg 		= aDBc_get_order_by_sql_arg("a.option_id");
 		$this->aDBc_limit_offset_sql_arg 	= aDBc_get_limit_offset_sql_args();
 
@@ -228,7 +225,7 @@ class ADBC_Clean_Transient extends WP_List_Table {
 
 	/** WP: Column cb for check box */
 	function column_cb($item) {
-		return sprintf('<input type="checkbox" name="aDBc_feed_to_clean[]" value="%s" />', $item['site_id']."|".$item['transient_id']);
+		return sprintf('<input type="checkbox" name="aDBc_elements_to_process[]" value="%s" />', $item['site_id']."|".$item['transient_id']);
 	}
 
 	/** WP: Get bulk actions */
@@ -252,20 +249,34 @@ class ADBC_Clean_Transient extends WP_List_Table {
             $action = 'bulk-' . $this->_args['plural'];
             if (!wp_verify_nonce( $nonce, $action))
                 wp_die('Security check failed!');
-        }
+        }else{
+			// If $_POST['_wpnonce'] is not set, return
+			return;
+		}
+
+		// Check role
+		if(!current_user_can('administrator'))
+			wp_die('Security check failed!');
+
         $action = $this->current_action();
+
         if($action == 'clean'){
 			// If the user wants to clean the elements he/she selected
-			if(isset($_POST['aDBc_feed_to_clean'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				if(function_exists('is_multisite') && is_multisite()){
 					// Prepare feeds to delete
 					$feeds_to_delete = array();
-					foreach($_POST['aDBc_feed_to_clean'] as $aDBc_feed){
-						$feed_info = explode("|", $aDBc_feed);
-						if(empty($feeds_to_delete[$feed_info[0]])){
-							$feeds_to_delete[$feed_info[0]] = array();
+					foreach($_POST['aDBc_elements_to_process'] as $aDBc_feed){
+						$feed_info 			= explode("|", $aDBc_feed);
+						$sanitized_site_id 	= sanitize_html_class($feed_info[0]);
+						$sanitized_item_id 	= sanitize_html_class($feed_info[1]);
+						// For security, we only proceed if both parts are clean and are numbers
+						if(is_numeric($sanitized_site_id) && is_numeric($sanitized_item_id)){
+							if(empty($feeds_to_delete[$sanitized_site_id])){
+								$feeds_to_delete[$sanitized_site_id] = array();
+							}
+							array_push($feeds_to_delete[$sanitized_site_id], $sanitized_item_id);
 						}
-						array_push($feeds_to_delete[$feed_info[0]], $feed_info[1]);
 					}
 					// Delete feeds
 					foreach($feeds_to_delete as $site_id => $feed_ids){
@@ -287,9 +298,12 @@ class ADBC_Clean_Transient extends WP_List_Table {
 				}else{
 					global $wpdb;
 					$ids_to_delete = array();
-					foreach($_POST['aDBc_feed_to_clean'] as $aDBc_feed) {
-						$feed_info = explode("|", $aDBc_feed);
-						array_push($ids_to_delete, $feed_info[1]);
+					foreach($_POST['aDBc_elements_to_process'] as $aDBc_feed){
+						$feed_info 		= explode("|", $aDBc_feed);
+						$sanitized_id 	= sanitize_html_class($feed_info[1]);
+						if(is_numeric($sanitized_id)){
+							array_push($ids_to_delete, $sanitized_id);
+						}
 					}
 
 					$names_to_delete = $wpdb->get_col("select option_name from $wpdb->options WHERE option_id IN (" . implode(',',$ids_to_delete) . ")");

@@ -53,7 +53,7 @@ class WPML_TM_Rest_Jobs_Criteria_Parser {
 	}
 
 	private function set_filters( WPML_TM_Jobs_Search_Params $params, WP_REST_Request $request ) {
-		foreach ( ['source_language', 'translated_by'] as $key ) {
+		foreach ( [ 'source_language', 'translated_by' ] as $key ) {
 			$value = (string) $request->get_param( $key );
 			if ( $value ) {
 				$params->{'set_' . $key}( $value );
@@ -106,8 +106,10 @@ class WPML_TM_Rest_Jobs_Criteria_Parser {
 	 * @return WPML_TM_Jobs_Sorting_Param[]
 	 */
 	private function build_sorting_params( array $request_param ) {
-		return \wpml_collect( $request_param )->map( function ( $direction, $column ) {
-			return new WPML_TM_Jobs_Sorting_Param( $column, $direction );
-		} )->toArray();
+		return \wpml_collect( $request_param )->map(
+			function ( $direction, $column ) {
+				return new WPML_TM_Jobs_Sorting_Param( $column, $direction );
+			}
+		)->toArray();
 	}
 }

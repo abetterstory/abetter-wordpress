@@ -40,8 +40,10 @@ class WPML_Translation_Jobs_Migration_Hooks {
 
 			add_action( 'wpml_tm_lock_ui', array( $this, 'lock_tm_ui' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-			add_action( 'wp_ajax_' . WPML_Translation_Jobs_Migration_Ajax::ACTION,
-				array( $this->ajax_handler, 'run_migration' ) );
+			add_action(
+				'wp_ajax_' . WPML_Translation_Jobs_Migration_Ajax::ACTION,
+				array( $this->ajax_handler, 'run_migration' )
+			);
 		}
 	}
 
@@ -64,8 +66,12 @@ class WPML_Translation_Jobs_Migration_Hooks {
 	}
 
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'wpml-tm-translation-jobs-migration',
-			WPML_TM_URL . '/dist/js/translationJobsMigration/app.js', array(), WPML_TM_VERSION );
+		wp_enqueue_script(
+			'wpml-tm-translation-jobs-migration',
+			WPML_TM_URL . '/dist/js/translationJobsMigration/app.js',
+			array(),
+			WPML_TM_VERSION
+		);
 	}
 
 	/**
@@ -86,7 +92,7 @@ class WPML_Translation_Jobs_Migration_Hooks {
 	 */
 	private function skip_migration_if_service_is_not_active() {
 		if ( ! TranslationProxy::is_current_service_active_and_authenticated() ) {
-			$this->migration_state->skip_migration(true);
+			$this->migration_state->skip_migration( true );
 
 			return true;
 		}

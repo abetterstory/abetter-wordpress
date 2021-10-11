@@ -111,6 +111,20 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+# $output = esc_html(
+# sprintf( __( "You are creating a %1\$s in %3\$s and you've set %2\$s to display even when not translated. Please note that this %1\$s will only appear in %3\$s. Only %2\$s that you create in the site's default language (%4\$s) will appear in all the site's languages.", 'sitepress' ),
+# $singular_name,
+
+msgid "You are creating a %1$s in %3$s and you've set %2$s to display even when not translated. Please note that this %1$s will only appear in %3$s. Only %2$s that you create in the site's default language (%4$s) will appear in all the site's languages."
+msgstr ""
+
+# $output .= '<br /><br />';
+# $output .= '<a href="https://wpml.org/?page_id=1451509" target="_blank">' . esc_html__( 'Read how this works', 'sitepress' ) . '</a>';
+# 
+
+msgid "Read how this works"
+msgstr ""
+
 # return array(
 # 'before_message'   => __( "Changing the site's default language can cause some content to disappear.", 'sitepress' ),
 # 'after_message'    => sprintf(
@@ -139,67 +153,18 @@ msgstr ""
 msgid "Got it"
 msgstr ""
 
-# $output = esc_html(
-# sprintf( __( "You are creating a %1\$s in %3\$s and you've set %2\$s to display even when not translated. Please note that this %1\$s will only appear in %3\$s. Only %2\$s that you create in the site's default language (%4\$s) will appear in all the site's languages.", 'sitepress' ),
-# $singular_name,
-
-msgid "You are creating a %1$s in %3$s and you've set %2$s to display even when not translated. Please note that this %1$s will only appear in %3$s. Only %2$s that you create in the site's default language (%4$s) will appear in all the site's languages."
-msgstr ""
-
-# $output .= '<br /><br />';
-# $output .= '<a href="https://wpml.org/?page_id=1451509" target="_blank">' . esc_html__( 'Read how this works', 'sitepress' ) . '</a>';
+# 
+# $dummy_item = esc_html__( 'menu items', 'sitepress' );
 # 
 
-msgid "Read how this works"
+msgid "menu items"
 msgstr ""
 
-# $text = $twig_service->show(array(
-# 'header' => __( 'Need help with how to translate?', 'sitepress' ),
-# 'content_1' => __( 'Get personalized instructions for translating this site. You will also have access to WPML-users support.', 'sitepress' ),
+# 'display_before_content'        => 1,
+# 'availability_text'             => esc_html__( 'This post is also available in: %s', 'sitepress' ),
+# 'template'                      => $core_templates['post-translations'],
 
-msgid "Need help with how to translate?"
-msgstr ""
-
-# 'header' => __( 'Need help with how to translate?', 'sitepress' ),
-# 'content_1' => __( 'Get personalized instructions for translating this site. You will also have access to WPML-users support.', 'sitepress' ),
-# 'content_2' => __( 'Registration is free and only takes a minute.', 'sitepress' ),
-
-msgid "Get personalized instructions for translating this site. You will also have access to WPML-users support."
-msgstr ""
-
-# 'content_1' => __( 'Get personalized instructions for translating this site. You will also have access to WPML-users support.', 'sitepress' ),
-# 'content_2' => __( 'Registration is free and only takes a minute.', 'sitepress' ),
-# 'button_label' => __( 'Get translation instructions', 'sitepress' ),
-
-msgid "Registration is free and only takes a minute."
-msgstr ""
-
-# 'content_2' => __( 'Registration is free and only takes a minute.', 'sitepress' ),
-# 'button_label' => __( 'Get translation instructions', 'sitepress' ),
-# 'confirm_message' => __( 'We are sending you to WPML.org to see your personalized translation instructions. If you need to access these instructions again, click on the "How to translate" button in the list of pages or in WPML\'s Translation Dashboard.', 'sitepress' ),
-
-msgid "Get translation instructions"
-msgstr ""
-
-# 'button_label' => __( 'Get translation instructions', 'sitepress' ),
-# 'confirm_message' => __( 'We are sending you to WPML.org to see your personalized translation instructions. If you need to access these instructions again, click on the "How to translate" button in the list of pages or in WPML\'s Translation Dashboard.', 'sitepress' ),
-# ), 'notice.twig');
-
-msgid "We are sending you to WPML.org to see your personalized translation instructions. If you need to access these instructions again, click on the \"How to translate\" button in the list of pages or in WPML's Translation Dashboard."
-msgstr ""
-
-# 'endpoint' => $endpoint,
-# 'confirm_button_label' => esc_attr__( 'Continue', 'sitepress' ),
-# );
-
-msgid "Continue"
-msgstr ""
-
-# 
-# $button = sprintf( $button, esc_html__( 'How to translate', 'sitepress' ) );
-# 
-
-msgid "How to translate"
+msgid "This post is also available in: %s"
 msgstr ""
 
 # 'url'    => $url,
@@ -748,13 +713,6 @@ msgstr ""
 msgid "Text for alternative languages for posts:"
 msgstr ""
 
-# 'label_alternative_languages_text'   => __( 'Text for alternative languages for posts:', 'sitepress' ),
-# 'default_alternative_languages_text' => __( 'This post is also available in: %s', 'sitepress' ),
-# 'dialog_title'                       => __( 'Edit Post Translations Language Switcher', 'sitepress' ),
-
-msgid "This post is also available in: %s"
-msgstr ""
-
 # 'default_alternative_languages_text' => __( 'This post is also available in: %s', 'sitepress' ),
 # 'dialog_title'                       => __( 'Edit Post Translations Language Switcher', 'sitepress' ),
 # );
@@ -999,13 +957,6 @@ msgctxt "Custom languuage switcher description: text"
 msgid "Need more options? See how you can %s."
 msgstr ""
 
-# 
-# $dummy_item = esc_html__( 'menu items', 'sitepress' );
-# 
-
-msgid "menu items"
-msgstr ""
-
 # return array(
 # 'void'  => array( 'label' => esc_html__( 'Clear all colors', 'sitepress' ), 'values' => $void ),
 # 'gray'  => array( 'label' => esc_html__( 'Gray', 'sitepress' ), 'values' => $gray ),
@@ -1034,18 +985,18 @@ msgstr ""
 msgid "Blue"
 msgstr ""
 
-# } elseif ( strpos( $path, $this->wpml_file->fix_dir_separator( $this->get_uploads_path() ) ) === 0 ) {
-# $name = __( 'Uploads', 'sitepress' ) . ' - ' . $name;
-# } elseif (
-
-msgid "Uploads"
-msgstr ""
-
 # self::SLUG, // Base ID
 # __( 'Language Switcher', 'sitepress' ), // Name
 # array(
 
 msgid "Language Switcher"
+msgstr ""
+
+# } elseif ( strpos( $path, $this->wpml_file->fix_dir_separator( $this->get_uploads_path() ) ) === 0 ) {
+# $name = __( 'Uploads', 'sitepress' ) . ' - ' . $name;
+# } elseif (
+
+msgid "Uploads"
 msgstr ""
 
 # if ( $is_default ) {
@@ -1137,27 +1088,6 @@ msgstr ""
 # 
 
 msgid "Media Translation"
-msgstr ""
-
-# <p>
-# <?php esc_html_e( 'WPML needs to set languages to existing media in your site.', 'sitepress' ) ?>
-# <a href="<?php echo $settings_page ?>"
-
-msgid "WPML needs to set languages to existing media in your site."
-msgstr ""
-
-# <a href="<?php echo $settings_page ?>"
-# class="button-secondary"><?php esc_html_e( 'Set media languages', 'sitepress' ) ?></a>
-# 
-
-msgid "Set media languages"
-msgstr ""
-
-# onclick="<?php echo $onclick_js; ?> ">
-# <span class="screen-reader-text"><?php esc_html_e( "Dismiss", 'sitepress' ) ?></span>
-# </span>
-
-msgid "Dismiss"
 msgstr ""
 
 # <td align="right">
@@ -1258,6 +1188,27 @@ msgstr ""
 msgid "You're all done. From now on, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen."
 msgstr ""
 
+# <p>
+# <?php esc_html_e( 'WPML needs to set languages to existing media in your site.', 'sitepress' ) ?>
+# <a href="<?php echo $settings_page ?>"
+
+msgid "WPML needs to set languages to existing media in your site."
+msgstr ""
+
+# <a href="<?php echo $settings_page ?>"
+# class="button-secondary"><?php esc_html_e( 'Set media languages', 'sitepress' ) ?></a>
+# 
+
+msgid "Set media languages"
+msgstr ""
+
+# onclick="<?php echo $onclick_js; ?> ">
+# <span class="screen-reader-text"><?php esc_html_e( "Dismiss", 'sitepress' ) ?></span>
+# </span>
+
+msgid "Dismiss"
+msgstr ""
+
 # var icl_ajx_url = '<?php echo esc_url( $icl_ajax_url ); ?>',
 # icl_ajx_saved = '<?php echo icl_js_escape( __( 'Data saved', 'sitepress' ) ); ?>',
 # icl_ajx_error = '<?php echo icl_js_escape( __( 'Error: data not saved', 'sitepress' ) ); ?>',
@@ -1342,176 +1293,6 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-# 'strings' => array(
-# 'title'    => __( "There is content in the following languages but it won't be visible on the site because those languages are not activated.", 'sitepress' ),
-# 'language' => __( 'Language', 'sitepress' ),
-
-msgid "There is content in the following languages but it won't be visible on the site because those languages are not activated."
-msgstr ""
-
-# 'title'    => __( "There is content in the following languages but it won't be visible on the site because those languages are not activated.", 'sitepress' ),
-# 'language' => __( 'Language', 'sitepress' ),
-# 'total'    => __( 'Total', 'sitepress' ),
-
-msgid "Language"
-msgstr ""
-
-# 'language' => __( 'Language', 'sitepress' ),
-# 'total'    => __( 'Total', 'sitepress' ),
-# ),
-
-msgid "Total"
-msgstr ""
-
-# for="validate_language_domains_<?php echo esc_attr($code) ?>">
-# <?php esc_html_e( 'Validate on save', 'sitepress' ) ?>
-# </label>
-
-msgid "Validate on save"
-msgstr ""
-
-# <input type="checkbox" id="sso_enabled" name="sso_enabled" value="1" <?php checked( $is_sso_enabled, true, true ); ?>>
-# <?php esc_html_e( 'Auto sign-in and sign-out users from all domains', 'sitepress' ); ?>
-# </label>
-
-msgid "Auto sign-in and sign-out users from all domains"
-msgstr ""
-
-# <div id="sso_enabled_notice" style="display: none;">
-# <?php esc_html_e( 'Please log-out and login again in order to be able to access the admin features in all language domains.', 'sitepress' ); ?>
-# </div>
-
-msgid "Please log-out and login again in order to be able to access the admin features in all language domains."
-msgstr ""
-
-# /* translators: this is the first of two sentences explaining the "Auto sign-in and sign-out users from all domains" feature */
-# echo esc_html_x( 'This feature allows the theme and plugins to work correctly when on sites that use languages in domains.', 'Tooltip: Auto sign-in and sign-out users from all domains', 'sitepress' );
-# ?>
-
-msgctxt "Tooltip: Auto sign-in and sign-out users from all domains"
-msgid "This feature allows the theme and plugins to work correctly when on sites that use languages in domains."
-msgstr ""
-
-# /* translators: this is the second of two sentences explaining the "Auto sign-in and sign-out users from all domains" feature */
-# echo esc_html_x( "It requires a call to each of the site's language domains on both log-in and log-out, so there's a small performance penalty to using it.", 'Tooltip: Auto sign-in and sign-out users from all domains', 'sitepress' );
-# ?>
-
-msgctxt "Tooltip: Auto sign-in and sign-out users from all domains"
-msgid "It requires a call to each of the site's language domains on both log-in and log-out, so there's a small performance penalty to using it."
-msgstr ""
-
-# <div class="wpml-section-header">
-# <h3><?php esc_html_e( 'Current content language', 'sitepress' ) ?></h3>
-# </div>
-
-msgid "Current content language"
-msgstr ""
-
-# <p class="wpml-wizard-instruction">
-# <label for="icl_initial_language_code"><?php esc_html_e( 'Before adding other languages, please select the language existing contents are written in:', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Before adding other languages, please select the language existing contents are written in:"
-msgstr ""
-
-# return '<p class="missing-extension-message">'
-# . esc_html__( 'It looks like the %1$s extension, which is required by WPML, is not installed. Please refer to this link to know how to install this extension: %2$s.', 'sitepress' )
-# . '</p>';
-
-msgid "It looks like the %1$s extension, which is required by WPML, is not installed. Please refer to this link to know how to install this extension: %2$s."
-msgstr ""
-
-# private function missing_extension_message_for_php7() {
-# return '<p class="missing-extension-message-for-php7">' . esc_html__( 'You are using PHP 7: in some cases, the extension might have been removed during a system update. In this case, please see %3$s.', 'sitepress' ) . '</p>';
-# }
-
-msgid "You are using PHP 7: in some cases, the extension might have been removed during a system update. In this case, please see %3$s."
-msgstr ""
-
-# private function contact_the_admin() {
-# return '<p class="contact-the-admin">' . esc_html__( 'You may need to contact your server administrator or your hosting company to install this extension.', 'sitepress' ) . '</p>';
-# }
-
-msgid "You may need to contact your server administrator or your hosting company to install this extension."
-msgstr ""
-
-# if ( $screen_options_factory ) {
-# $help_title = esc_html__( 'Taxonomy Translation', 'sitepress' );
-# $help_text  = $this->get_help_text();
-
-msgid "Taxonomy Translation"
-msgstr ""
-
-# /* translators: this is the title of a documentation page used to terminate the sentence "is not possible to ..."  */
-# $translate_base_taxonomy_slug_link_title = esc_html__( 'translate the base taxonomy slugs with WPML',
-# 'sitepress' );
-
-msgid "translate the base taxonomy slugs with WPML"
-msgstr ""
-
-# /* translators: this is the title of a documentation page used to terminate the sentence "To learn more, please visit our documentation page about..."  */
-# $translate_taxonomies_link_title = esc_html__( 'translating post categories and custom taxonomies',
-# 'sitepress' );
-
-msgid "translating post categories and custom taxonomies"
-msgstr ""
-
-# $help_sentences   = array();
-# $help_sentences[] = esc_html__( "WPML allows you to easily translate your site's taxonomies. Only taxonomies marked as translatable will be available for translation. Select the taxonomy in the dropdown menu and then use the list of taxonomy terms that appears to translate them.",
-# 'sitepress' );
-
-msgid "WPML allows you to easily translate your site's taxonomies. Only taxonomies marked as translatable will be available for translation. Select the taxonomy in the dropdown menu and then use the list of taxonomy terms that appears to translate them."
-msgstr ""
-
-# /* translators: the sentence is completed with "translate the base taxonomy slugs with WPML" */
-# $help_sentences[] = sprintf( esc_html__( 'Please note that currently, you can translate the slugs of taxonomy terms but it is not possible to %s.',
-# 'sitepress' ),
-
-msgid "Please note that currently, you can translate the slugs of taxonomy terms but it is not possible to %s."
-msgstr ""
-
-# /* translators: the sentence is completed with "translating post categories and custom taxonomies" */
-# $help_sentences[] = sprintf( esc_html__( 'To learn more, please visit our documentation page about %s.',
-# 'sitepress' ),
-
-msgid "To learn more, please visit our documentation page about %s."
-msgstr ""
-
-# $states         = array(
-# array( 'value' => WPML_IGNORE_CUSTOM_FIELD, 'text' => __( "Don't translate", 'sitepress' ) ),
-# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
-
-msgid "Don't translate"
-msgstr ""
-
-# array( 'value' => WPML_IGNORE_CUSTOM_FIELD, 'text' => __( "Don't translate", 'sitepress' ) ),
-# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
-# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
-
-msgid "Copy"
-msgstr ""
-
-# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
-# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
-# array( 'value' => WPML_TRANSLATE_CUSTOM_FIELD, 'text' => __( "Translate", 'sitepress' ) ),
-
-msgid "Copy once"
-msgstr ""
-
-# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
-# array( 'value' => WPML_TRANSLATE_CUSTOM_FIELD, 'text' => __( "Translate", 'sitepress' ) ),
-# );
-
-msgid "Translate"
-msgstr ""
-
-# <tr>
-# <th colspan="2"><?php esc_html_e( 'Custom fields', 'sitepress' ); ?></th>
-# </tr>
-
-msgid "Custom fields"
-msgstr ""
-
 # <option value=""<?php selected( true, $admin_default_language_selected ) ?>>
 # <?php echo esc_html( sprintf( __( 'Default admin language (currently %s)', 'sitepress' ), $this->admin_default_language ) ); ?>
 # </option>
@@ -1589,6 +1370,197 @@ msgstr ""
 msgid "Display hidden languages"
 msgstr ""
 
+# $states         = array(
+# array( 'value' => WPML_IGNORE_CUSTOM_FIELD, 'text' => __( "Don't translate", 'sitepress' ) ),
+# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
+
+msgid "Don't translate"
+msgstr ""
+
+# array( 'value' => WPML_IGNORE_CUSTOM_FIELD, 'text' => __( "Don't translate", 'sitepress' ) ),
+# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
+# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
+
+msgid "Copy"
+msgstr ""
+
+# array( 'value' => WPML_COPY_CUSTOM_FIELD, 'text' => __( "Copy", 'sitepress' ) ),
+# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
+# array( 'value' => WPML_TRANSLATE_CUSTOM_FIELD, 'text' => __( "Translate", 'sitepress' ) ),
+
+msgid "Copy once"
+msgstr ""
+
+# array( 'value' => WPML_COPY_ONCE_CUSTOM_FIELD, 'text' => __( "Copy once", 'sitepress' ) ),
+# array( 'value' => WPML_TRANSLATE_CUSTOM_FIELD, 'text' => __( "Translate", 'sitepress' ) ),
+# );
+
+msgid "Translate"
+msgstr ""
+
+# <tr>
+# <th colspan="2"><?php esc_html_e( 'Custom fields', 'sitepress' ); ?></th>
+# </tr>
+
+msgid "Custom fields"
+msgstr ""
+
+# for="validate_language_domains_<?php echo esc_attr($code) ?>">
+# <?php esc_html_e( 'Validate on save', 'sitepress' ) ?>
+# </label>
+
+msgid "Validate on save"
+msgstr ""
+
+# <input type="checkbox" id="sso_enabled" name="sso_enabled" value="1" <?php checked( $is_sso_enabled, true, true ); ?>>
+# <?php esc_html_e( 'Auto sign-in and sign-out users from all domains', 'sitepress' ); ?>
+# </label>
+
+msgid "Auto sign-in and sign-out users from all domains"
+msgstr ""
+
+# <div id="sso_enabled_notice" style="display: none;">
+# <?php esc_html_e( 'Please log-out and login again in order to be able to access the admin features in all language domains.', 'sitepress' ); ?>
+# </div>
+
+msgid "Please log-out and login again in order to be able to access the admin features in all language domains."
+msgstr ""
+
+# /* translators: this is the first of two sentences explaining the "Auto sign-in and sign-out users from all domains" feature */
+# echo esc_html_x( 'This feature allows the theme and plugins to work correctly when on sites that use languages in domains.', 'Tooltip: Auto sign-in and sign-out users from all domains', 'sitepress' );
+# ?>
+
+msgctxt "Tooltip: Auto sign-in and sign-out users from all domains"
+msgid "This feature allows the theme and plugins to work correctly when on sites that use languages in domains."
+msgstr ""
+
+# /* translators: this is the second of two sentences explaining the "Auto sign-in and sign-out users from all domains" feature */
+# echo esc_html_x( "It requires a call to each of the site's language domains on both log-in and log-out, so there's a small performance penalty to using it.", 'Tooltip: Auto sign-in and sign-out users from all domains', 'sitepress' );
+# ?>
+
+msgctxt "Tooltip: Auto sign-in and sign-out users from all domains"
+msgid "It requires a call to each of the site's language domains on both log-in and log-out, so there's a small performance penalty to using it."
+msgstr ""
+
+# <div class="wpml-section-header">
+# <h3><?php esc_html_e( 'Current content language', 'sitepress' ) ?></h3>
+# </div>
+
+msgid "Current content language"
+msgstr ""
+
+# <p class="wpml-wizard-instruction">
+# <label for="icl_initial_language_code"><?php esc_html_e( 'Before adding other languages, please select the language existing contents are written in:', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Before adding other languages, please select the language existing contents are written in:"
+msgstr ""
+
+# 'strings' => array(
+# 'title'    => __( "There is content in the following languages but it won't be visible on the site because those languages are not activated.", 'sitepress' ),
+# 'language' => __( 'Language', 'sitepress' ),
+
+msgid "There is content in the following languages but it won't be visible on the site because those languages are not activated."
+msgstr ""
+
+# 'title'    => __( "There is content in the following languages but it won't be visible on the site because those languages are not activated.", 'sitepress' ),
+# 'language' => __( 'Language', 'sitepress' ),
+# 'total'    => __( 'Total', 'sitepress' ),
+
+msgid "Language"
+msgstr ""
+
+# 'language' => __( 'Language', 'sitepress' ),
+# 'total'    => __( 'Total', 'sitepress' ),
+# ),
+
+msgid "Total"
+msgstr ""
+
+# if ( $screen_options_factory ) {
+# $help_title = esc_html__( 'Taxonomy Translation', 'sitepress' );
+# $help_text  = $this->get_help_text();
+
+msgid "Taxonomy Translation"
+msgstr ""
+
+# /* translators: this is the title of a documentation page used to terminate the sentence "is not possible to ..."  */
+# $translate_base_taxonomy_slug_link_title = esc_html__( 'translate the base taxonomy slugs with WPML',
+# 'sitepress' );
+
+msgid "translate the base taxonomy slugs with WPML"
+msgstr ""
+
+# /* translators: this is the title of a documentation page used to terminate the sentence "To learn more, please visit our documentation page about..."  */
+# $translate_taxonomies_link_title = esc_html__( 'translating post categories and custom taxonomies',
+# 'sitepress' );
+
+msgid "translating post categories and custom taxonomies"
+msgstr ""
+
+# $help_sentences   = array();
+# $help_sentences[] = esc_html__( "WPML allows you to easily translate your site's taxonomies. Only taxonomies marked as translatable will be available for translation. Select the taxonomy in the dropdown menu and then use the list of taxonomy terms that appears to translate them.",
+# 'sitepress' );
+
+msgid "WPML allows you to easily translate your site's taxonomies. Only taxonomies marked as translatable will be available for translation. Select the taxonomy in the dropdown menu and then use the list of taxonomy terms that appears to translate them."
+msgstr ""
+
+# /* translators: the sentence is completed with "translate the base taxonomy slugs with WPML" */
+# $help_sentences[] = sprintf( esc_html__( 'Please note that currently, you can translate the slugs of taxonomy terms but it is not possible to %s.',
+# 'sitepress' ),
+
+msgid "Please note that currently, you can translate the slugs of taxonomy terms but it is not possible to %s."
+msgstr ""
+
+# /* translators: the sentence is completed with "translating post categories and custom taxonomies" */
+# $help_sentences[] = sprintf( esc_html__( 'To learn more, please visit our documentation page about %s.',
+# 'sitepress' ),
+
+msgid "To learn more, please visit our documentation page about %s."
+msgstr ""
+
+# return '<p class="missing-extension-message">'
+# . esc_html__( 'It looks like the %1$s extension, which is required by WPML, is not installed. Please refer to this link to know how to install this extension: %2$s.', 'sitepress' )
+# . '</p>';
+
+msgid "It looks like the %1$s extension, which is required by WPML, is not installed. Please refer to this link to know how to install this extension: %2$s."
+msgstr ""
+
+# private function missing_extension_message_for_php7() {
+# return '<p class="missing-extension-message-for-php7">' . esc_html__( 'You are using PHP 7: in some cases, the extension might have been removed during a system update. In this case, please see %3$s.', 'sitepress' ) . '</p>';
+# }
+
+msgid "You are using PHP 7: in some cases, the extension might have been removed during a system update. In this case, please see %3$s."
+msgstr ""
+
+# private function contact_the_admin() {
+# return '<p class="contact-the-admin">' . esc_html__( 'You may need to contact your server administrator or your hosting company to install this extension.', 'sitepress' ) . '</p>';
+# }
+
+msgid "You may need to contact your server administrator or your hosting company to install this extension."
+msgstr ""
+
+# 
+# wp_send_json_error( __( 'Notice does not exists.', 'sitepress' ) );
+# }
+
+msgid "Notice does not exists."
+msgstr ""
+
+# 
+# wp_send_json_error( __( 'Notice does not exist.', 'sitepress' ) );
+# }
+
+msgid "Notice does not exist."
+msgstr ""
+
+# }
+# wp_send_json_error( __( 'Group does not exist.', 'sitepress' ) );
+# }
+
+msgid "Group does not exist."
+msgstr ""
+
 # if ( $this->hide_html_added || $notice->can_be_hidden() ) {
 # $result .= ' data-hide-text="' . __( 'Hide', 'sitepress' ) . '" ';
 # }
@@ -1615,27 +1587,6 @@ msgstr ""
 # $notice->get_text()
 
 msgid "Show this notice."
-msgstr ""
-
-# 
-# wp_send_json_error( __( 'Notice does not exists.', 'sitepress' ) );
-# }
-
-msgid "Notice does not exists."
-msgstr ""
-
-# 
-# wp_send_json_error( __( 'Notice does not exist.', 'sitepress' ) );
-# }
-
-msgid "Notice does not exist."
-msgstr ""
-
-# }
-# wp_send_json_error( __( 'Group does not exist.', 'sitepress' ) );
-# }
-
-msgid "Group does not exist."
 msgstr ""
 
 # return array(
@@ -1694,47 +1645,18 @@ msgstr ""
 msgid "While you use the plugin, WPML will share data regarding the site through Installer. No data from the user itself will be shared."
 msgstr ""
 
-# if ( ! $this->is_valid_request() ) {
-# wp_send_json_error( __( 'This action is not allowed', 'sitepress' ) );
-# } else {
-
-msgid "This action is not allowed"
-msgstr ""
-
-# if ( $this->has_issues( 'page-builders' ) ) {
-# $document_action = new WPML_Notice_Action( __( 'Translating content created with page builders', 'sitepress' ), self::DOCUMENTATION_LINK );
-# $notice->add_action( $document_action );
-
-msgid "Translating content created with page builders"
-msgstr ""
-
-# if ( $this->has_issues( WPML_Integrations::SCOPE_WP_CORE ) ) {
-# $document_action = new WPML_Notice_Action( __( 'How to translate Gutenberg content', 'sitepress' ), self::DOCUMENTATION_LINK_BLOCK_EDITOR );
-# $document_action->set_link_target( '_blank' );
-
-msgid "How to translate Gutenberg content"
-msgstr ""
-
-# 
-# $enable_action = new WPML_Notice_Action( _x( 'Enable it now', 'Integration requirement notice title for translation editor: enable action', 'sitepress' ), '#', false, false, true );
-# $enable_action->set_js_callback( 'js-set-translation-editor' );
-
-msgctxt "Integration requirement notice title for translation editor: enable action"
-msgid "Enable it now"
-msgstr ""
-
 # $strings = array(
-# 'title'   => __( 'Your WPML installation may cause problems with Gutenberg editor', 'sitepress' ),
-# 'message' => __( 'You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Gutenberg editor.', 'sitepress' ),
+# 'title'   => __( 'Your WPML installation may cause problems with Block editor', 'sitepress' ),
+# 'message' => __( 'You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Block editor.', 'sitepress' ),
 
-msgid "Your WPML installation may cause problems with Gutenberg editor"
+msgid "Your WPML installation may cause problems with Block editor"
 msgstr ""
 
-# 'title'   => __( 'Your WPML installation may cause problems with Gutenberg editor', 'sitepress' ),
-# 'message' => __( 'You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Gutenberg editor.', 'sitepress' ),
+# 'title'   => __( 'Your WPML installation may cause problems with Block editor', 'sitepress' ),
+# 'message' => __( 'You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Block editor.', 'sitepress' ),
 # );
 
-msgid "You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Gutenberg editor."
+msgid "You are using WPML Translation Management without String Translation. Some of the translations may not work this way. Please download and install WPML String Translation before you translate the content from Block editor."
 msgstr ""
 
 # $strings = array(
@@ -1830,6 +1752,42 @@ msgctxt "Used before the last element of a three or more elements list"
 msgid ", and"
 msgstr ""
 
+# <div class="error">
+# <p><?php esc_html_e( 'WPML is disabled because it requires WordPress version 4.4 or above.', 'sitepress' ); ?></p>
+# </div>
+
+msgid "WPML is disabled because it requires WordPress version 4.4 or above."
+msgstr ""
+
+# if ( ! $this->is_valid_request() ) {
+# wp_send_json_error( __( 'This action is not allowed', 'sitepress' ) );
+# } else {
+
+msgid "This action is not allowed"
+msgstr ""
+
+# if ( $this->has_issues( 'page-builders' ) ) {
+# $document_action = new WPML_Notice_Action( __( 'Translating content created with page builders', 'sitepress' ), self::DOCUMENTATION_LINK );
+# $notice->add_action( $document_action );
+
+msgid "Translating content created with page builders"
+msgstr ""
+
+# if ( $this->has_issues( WPML_Integrations::SCOPE_WP_CORE ) ) {
+# $document_action = new WPML_Notice_Action( __( 'How to translate Block editor content', 'sitepress' ), self::DOCUMENTATION_LINK_BLOCK_EDITOR );
+# $document_action->set_link_target( '_blank' );
+
+msgid "How to translate Block editor content"
+msgstr ""
+
+# 
+# $enable_action = new WPML_Notice_Action( _x( 'Enable it now', 'Integration requirement notice title for translation editor: enable action', 'sitepress' ), '#', false, false, true );
+# $enable_action->set_js_callback( 'js-set-translation-editor' );
+
+msgctxt "Integration requirement notice title for translation editor: enable action"
+msgid "Enable it now"
+msgstr ""
+
 # '<li>' .
 # __( 'This will be the last version of WPML which works with the currently installed PHP version', 'sitepress' ) .
 # '</li>' .
@@ -1845,7 +1803,7 @@ msgid "This version of WPML will only receive security fixes for the next 12 mon
 msgstr ""
 
 # foreach ( array( 1, 10 ) as $priority ) {
-# $label    = __( 'As early as possible', 'sitepress' );
+# $label = __( 'As early as possible', 'sitepress' );
 # if ( $priority > 1 ) {
 
 msgid "As early as possible"
@@ -1859,14 +1817,14 @@ msgid "Later in the head section (priority %d)"
 msgstr ""
 
 # <div class="wpml-section-header">
-# <h3><?php esc_html_e( 'SEO Options', 'sitepress' ) ?></h3>
+# <h3><?php esc_html_e( 'SEO Options', 'sitepress' ); ?></h3>
 # </div>
 
 msgid "SEO Options"
 msgstr ""
 
-# echo 'checked="checked"' ?> value="1"/>
-# <label for="icl_seo_head_langs"><?php esc_html_e( "Display alternative languages in the HEAD section.", 'sitepress' ); ?></label>
+# value="1"/>
+# <label for="icl_seo_head_langs"><?php esc_html_e( 'Display alternative languages in the HEAD section.', 'sitepress' ); ?></label>
 # </p>
 
 msgid "Display alternative languages in the HEAD section."
@@ -1874,7 +1832,7 @@ msgstr ""
 
 # <p>
 # <label for="wpml-seo-head-langs-priority"><?php esc_html_e( 'Position of hreflang links', 'sitepress' ); ?></label>
-# <select name="wpml_seo_head_langs_priority" id="wpml-seo-head-langs-priority" <?php if ( ! $seo['head_langs'] ) echo 'disabled="disabled"' ?>>
+# <select name="wpml_seo_head_langs_priority" id="wpml-seo-head-langs-priority"
 
 msgid "Position of hreflang links"
 msgstr ""
@@ -1958,7 +1916,7 @@ msgstr ""
 
 # 'utf8mb4_charset' => array(
 # 'label'      => __( 'Utf8mb4 charset', 'sitepress' ),
-# 'value' => __( $this->support_info->is_utf8mb4_charset_supported() ? 'Yes' : 'No', 'sitepress' ),
+# 'value' => $this->support_info->is_utf8mb4_charset_supported() ? __( 'Yes' ) : __( 'No' ),
 
 msgid "Utf8mb4 charset"
 msgstr ""
@@ -1991,20 +1949,6 @@ msgstr ""
 msgid "Multisite"
 msgstr ""
 
-# 'label' => __( 'Multisite', 'sitepress' ),
-# 'value' => $this->support_info->get_wp_multisite() ? __( 'Yes' ) : __( 'No' ),
-# ),
-
-msgid "Yes"
-msgstr ""
-
-# 'label' => __( 'Multisite', 'sitepress' ),
-# 'value' => $this->support_info->get_wp_multisite() ? __( 'Yes' ) : __( 'No' ),
-# ),
-
-msgid "No"
-msgstr ""
-
 # 'messages' => array(
 # __( 'A memory limit of at least 128MB is required.', 'sitepress' ) => 'https://wpml.org/home/minimum-requirements/',
 # ),
@@ -2017,6 +1961,20 @@ msgstr ""
 # 'value'    => $this->support_info->get_wp_max_memory_limit(),
 
 msgid "Max memory limit"
+msgstr ""
+
+# 'rest_enabled' => array(
+# 'label'    => __( 'REST enabled', 'sitepress' ),
+# 'value'    => wpml_is_rest_enabled() ? __( 'Yes' ) : __( 'No' ),
+
+msgid "REST enabled"
+msgstr ""
+
+# 'messages' => array(
+# __( 'REST API is disabled, blocking some features of WPML', 'sitepress' ) => 'https://wpml.org/documentation/support/rest-api-dependencies/',
+# ),
+
+msgid "REST API is disabled, blocking some features of WPML"
 msgstr ""
 
 # $blocks['php']['data']['eval_suhosin'] = array(
@@ -2090,10 +2048,10 @@ msgid "Localization options"
 msgstr ""
 
 # 'value' => 1,
-# 'label' => __( "Automatically load the theme's .mo file using 'load_theme_textdomain'", 'sitepress' ),
+# 'label' => __( "Automatically load the theme's .mo file using 'load_textdomain'", 'sitepress' ),
 # 'checked' => checked( $this->sitepress->get_setting( 'theme_localization_load_textdomain' ), true, false ),
 
-msgid "Automatically load the theme's .mo file using 'load_theme_textdomain'"
+msgid "Automatically load the theme's .mo file using 'load_textdomain'"
 msgstr ""
 
 # 'value' => $this->sitepress->get_setting( 'gettext_theme_domain_name', '' ),
@@ -2117,6 +2075,13 @@ msgstr ""
 msgid "Scanning Results"
 msgstr ""
 
+# $menu['order']      = 1200;
+# $menu['page_title'] = __( 'Translation Feedback', 'sitepress' );
+# $menu['menu_title'] = __( 'Translation Feedback', 'sitepress' );
+
+msgid "Translation Feedback"
+msgstr ""
+
 # if ( ! $feedback ) {
 # throw new WPML_TF_AJAX_Exception( esc_html__( 'Failed to update the feedback.', 'sitepress' ) );
 # }
@@ -2131,13 +2096,6 @@ msgstr ""
 msgid "Missing key \"%s\"."
 msgstr ""
 
-# $menu['order']      = 1200;
-# $menu['page_title'] = __( 'Translation Feedback', 'sitepress' );
-# $menu['menu_title'] = __( 'Translation Feedback', 'sitepress' );
-
-msgid "Translation Feedback"
-msgstr ""
-
 # $key_to_insert_before = 'date';
 # $column_name          = __( 'Translation rating', 'sitepress' );
 # 
@@ -2145,11 +2103,25 @@ msgstr ""
 msgid "Translation rating"
 msgstr ""
 
-# public function get_reviewer_display_name() {
-# $display_name = __( 'Unknown reviewer', 'sitepress' );
-# 
+# return array(
+# 'display_for_manual' => __( '%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually.', 'sitepress' ),
+# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
 
-msgid "Unknown reviewer"
+msgid "%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually."
+msgstr ""
+
+# 'display_for_manual' => __( '%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually.', 'sitepress' ),
+# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
+# 'display_for_api'    => __( 'Issue tracking in %s', 'sitepress' ),
+
+msgid "An email has been sent to %s to report the issue. Please check your email for a feedback from their part."
+msgstr ""
+
+# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
+# 'display_for_api'    => __( 'Issue tracking in %s', 'sitepress' ),
+# );
+
+msgid "Issue tracking in %s"
 msgstr ""
 
 # case 'pending':
@@ -2236,25 +2208,11 @@ msgstr ""
 msgid "Reply to admin"
 msgstr ""
 
-# return array(
-# 'display_for_manual' => __( '%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually.', 'sitepress' ),
-# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
+# public function get_reviewer_display_name() {
+# $display_name = __( 'Unknown reviewer', 'sitepress' );
+# 
 
-msgid "%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually."
-msgstr ""
-
-# 'display_for_manual' => __( '%1s cannot receive feedback about the translation automatically. Please log-in to %1s website and report these issues manually.', 'sitepress' ),
-# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
-# 'display_for_api'    => __( 'Issue tracking in %s', 'sitepress' ),
-
-msgid "An email has been sent to %s to report the issue. Please check your email for a feedback from their part."
-msgstr ""
-
-# 'display_for_email'  => __( 'An email has been sent to %s to report the issue. Please check your email for a feedback from their part.', 'sitepress' ),
-# 'display_for_api'    => __( 'Issue tracking in %s', 'sitepress' ),
-# );
-
-msgid "Issue tracking in %s"
+msgid "Unknown reviewer"
 msgstr ""
 
 # public function get_author_display_label() {
@@ -2411,6 +2369,13 @@ msgstr ""
 msgid "Learn more about translation feedback"
 msgstr ""
 
+# $average = get_post_meta( $post_id, self::AVERAGE_KEY, true );
+# $title   = sprintf( __( 'Average rating - %s', 'sitepress' ), $average );
+# $stars   = round( $average );
+
+msgid "Average rating - %s"
+msgstr ""
+
 # $translator_name = get_the_author_meta( 'display_name', $translation_job->translator_id );
 # $translator_name .= ' (' . __( 'local translator', 'sitepress' ) . ')';
 # } else {
@@ -2444,13 +2409,6 @@ msgstr ""
 # mb_strimwidth( $post->post_title, 0, 40, '...' )
 
 msgid "For \"%s\""
-msgstr ""
-
-# $average = get_post_meta( $post_id, self::AVERAGE_KEY, true );
-# $title   = sprintf( __( 'Average rating - %s', 'sitepress' ), $average );
-# $stars   = round( $average );
-
-msgid "Average rating - %s"
 msgstr ""
 
 # 'page_title'    => __( 'Translation Feedback', 'sitepress' ),
@@ -2570,6 +2528,118 @@ msgstr ""
 # 
 
 msgid "Delete permanently"
+msgstr ""
+
+# 'strings' => array(
+# 'dialog_title'      => __( 'Rate translation', 'sitepress' ),
+# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
+
+msgid "Rate translation"
+msgstr ""
+
+# 'dialog_title'      => __( 'Rate translation', 'sitepress' ),
+# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
+# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
+
+msgid "Thank you for your rating!"
+msgstr ""
+
+# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
+# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
+# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
+
+msgid "Thank you for your rating and comment!"
+msgstr ""
+
+# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
+# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
+# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
+
+msgid "This page was translated from:"
+msgstr ""
+
+# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
+# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
+# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
+
+msgid "Please rate this translation:"
+msgstr ""
+
+# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
+# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
+# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
+
+msgid "Your rating:"
+msgstr ""
+
+# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
+# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
+# 'star4_title'       => __( 'It is OK', 'sitepress' ),
+
+msgid "It is perfect!"
+msgstr ""
+
+# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
+# 'star4_title'       => __( 'It is OK', 'sitepress' ),
+# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
+
+msgid "It is OK"
+msgstr ""
+
+# 'star4_title'       => __( 'It is OK', 'sitepress' ),
+# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
+# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
+
+msgid "It could be improved"
+msgstr ""
+
+# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
+# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
+# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
+
+msgid "I can see a lot of language errors"
+msgstr ""
+
+# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
+# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
+# 'change_rating'     => __( 'Change', 'sitepress' ),
+
+msgid "I can't understand anything"
+msgstr ""
+
+# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
+# 'change_rating'     => __( 'Change', 'sitepress' ),
+# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
+
+msgid "Change"
+msgstr ""
+
+# 'change_rating'     => __( 'Change', 'sitepress' ),
+# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
+# 'send_button'       => __( 'Send', 'sitepress' ),
+
+msgid "Please give some examples of errors and how would you improve them:"
+msgstr ""
+
+# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
+# 'send_button'       => __( 'Send', 'sitepress' ),
+# 'honeypot_label'    => __( 'If you are a human, do not fill in this field.', 'sitepress' ),
+
+msgid "Send"
+msgstr ""
+
+# 'send_button'       => __( 'Send', 'sitepress' ),
+# 'honeypot_label'    => __( 'If you are a human, do not fill in this field.', 'sitepress' ),
+# ),
+
+msgid "If you are a human, do not fill in this field."
+msgstr ""
+
+# 'strings' => array(
+# 'form_open_title'   => __( 'Rate translation of this page', 'sitepress' ),
+# ),
+
+msgid "Rate translation of this page"
 msgstr ""
 
 # return array(
@@ -2866,146 +2936,6 @@ msgstr ""
 msgid "Ask for feedback about translated content that was %1s in the last %2s %3s"
 msgstr ""
 
-# 'strings' => array(
-# 'dialog_title'      => __( 'Rate translation', 'sitepress' ),
-# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
-
-msgid "Rate translation"
-msgstr ""
-
-# 'dialog_title'      => __( 'Rate translation', 'sitepress' ),
-# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
-# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
-
-msgid "Thank you for your rating!"
-msgstr ""
-
-# 'thank_you_rating'  => __( 'Thank you for your rating!', 'sitepress' ),
-# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
-# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
-
-msgid "Thank you for your rating and comment!"
-msgstr ""
-
-# 'thank_you_comment' => __( 'Thank you for your rating and comment!', 'sitepress' ),
-# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
-# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
-
-msgid "This page was translated from:"
-msgstr ""
-
-# 'translated_from'   => __( 'This page was translated from:', 'sitepress' ),
-# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
-# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
-
-msgid "Please rate this translation:"
-msgstr ""
-
-# 'please_rate'       => __( 'Please rate this translation:', 'sitepress' ),
-# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
-# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
-
-msgid "Your rating:"
-msgstr ""
-
-# 'your_rating'       => __( 'Your rating:', 'sitepress' ),
-# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
-# 'star4_title'       => __( 'It is OK', 'sitepress' ),
-
-msgid "It is perfect!"
-msgstr ""
-
-# 'star5_title'       => __( 'It is perfect!', 'sitepress' ),
-# 'star4_title'       => __( 'It is OK', 'sitepress' ),
-# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
-
-msgid "It is OK"
-msgstr ""
-
-# 'star4_title'       => __( 'It is OK', 'sitepress' ),
-# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
-# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
-
-msgid "It could be improved"
-msgstr ""
-
-# 'star3_title'       => __( 'It could be improved', 'sitepress' ),
-# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
-# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
-
-msgid "I can see a lot of language errors"
-msgstr ""
-
-# 'star2_title'       => __( 'I can see a lot of language errors', 'sitepress' ),
-# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
-# 'change_rating'     => __( 'Change', 'sitepress' ),
-
-msgid "I can't understand anything"
-msgstr ""
-
-# 'star1_title'       => __( "I can't understand anything", 'sitepress' ),
-# 'change_rating'     => __( 'Change', 'sitepress' ),
-# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
-
-msgid "Change"
-msgstr ""
-
-# 'change_rating'     => __( 'Change', 'sitepress' ),
-# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
-# 'send_button'       => __( 'Send', 'sitepress' ),
-
-msgid "Please give some examples of errors and how would you improve them:"
-msgstr ""
-
-# 'error_examples'    => __( 'Please give some examples of errors and how would you improve them:', 'sitepress' ),
-# 'send_button'       => __( 'Send', 'sitepress' ),
-# 'honeypot_label'    => __( 'If you are a human, do not fill in this field.', 'sitepress' ),
-
-msgid "Send"
-msgstr ""
-
-# 'send_button'       => __( 'Send', 'sitepress' ),
-# 'honeypot_label'    => __( 'If you are a human, do not fill in this field.', 'sitepress' ),
-# ),
-
-msgid "If you are a human, do not fill in this field."
-msgstr ""
-
-# 'strings' => array(
-# 'form_open_title'   => __( 'Rate translation of this page', 'sitepress' ),
-# ),
-
-msgid "Rate translation of this page"
-msgstr ""
-
-# 'Server'    => array(
-# 'jQueryVersion'  => wp_script_is( 'jquery', 'registered' ) ? $GLOBALS['wp_scripts']->registered['jquery']->ver : __( 'n/a', 'bbpress' ),
-# 'PHPVersion'     => $this->sitepress->get_wp_api()->phpversion(),
-
-msgid "n/a"
-msgstr ""
-
-# <input id="wpml_fix_tables_collation" type="button" class="button-secondary"
-# value="<?php _e( 'Fix WPML tables collation', 'sitepress' ) ?>"/><br/>
-# <?php wp_nonce_field( self::AJAX_ACTION, 'wpml-fix-tables-collation-nonce' ); ?>
-
-msgid "Fix WPML tables collation"
-msgstr ""
-
-# <?php wp_nonce_field( self::AJAX_ACTION, 'wpml-fix-tables-collation-nonce' ); ?>
-# <small style="margin-left:10px;"><?php esc_attr_e( 'Fixes the collation of WPML tables in order to match the collation of default WP tables.', 'sitepress' ) ?></small>
-# </p>
-
-msgid "Fixes the collation of WPML tables in order to match the collation of default WP tables."
-msgstr ""
-
-# if ( ! $response ) {
-# wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce.', 'sitepress' ) ) );
-# return $response;
-
-msgid "Invalid nonce."
-msgstr ""
-
 # if ( ! array_key_exists( 'post_type', $_POST ) || ! array_key_exists( 'batch_number', $_POST ) ) {
 # wp_send_json_error( array( 'message' => esc_html__( 'Some parameters are missing for this request.', 'sitepress' ) ) );
 # return;
@@ -3027,6 +2957,27 @@ msgstr ""
 msgid "Completed: %1$d posts were processed for \"%2$s\"."
 msgstr ""
 
+# if ( ! $response ) {
+# wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce.', 'sitepress' ) ) );
+# return $response;
+
+msgid "Invalid nonce."
+msgstr ""
+
+# <input id="wpml_fix_tables_collation" type="button" class="button-secondary"
+# value="<?php _e( 'Fix WPML tables collation', 'sitepress' ) ?>"/><br/>
+# <?php wp_nonce_field( self::AJAX_ACTION, 'wpml-fix-tables-collation-nonce' ); ?>
+
+msgid "Fix WPML tables collation"
+msgstr ""
+
+# <?php wp_nonce_field( self::AJAX_ACTION, 'wpml-fix-tables-collation-nonce' ); ?>
+# <small style="margin-left:10px;"><?php esc_attr_e( 'Fixes the collation of WPML tables in order to match the collation of default WP tables.', 'sitepress' ) ?></small>
+# </p>
+
+msgid "Fixes the collation of WPML tables in order to match the collation of default WP tables."
+msgstr ""
+
 # class="button-secondary wpml-button-lock js-wpml-sync-lock"
 # title="<?php esc_html_e( 'This setting is controlled by a wpml-config.xml file. Click here to unlock and override this setting.', 'sitepress' ); ?>"
 # data-radio-name="<?php echo $radio_name; ?>"
@@ -3039,13 +2990,6 @@ msgstr ""
 # </div>
 
 msgid "Thank you for choosing. You can always change your selection in %sPost Types Translation setup%s."
-msgstr ""
-
-# 
-# <input type="button" class="button-primary" name="save" value="<?php esc_attr_e( 'Save' ); ?>"
-# disabled="disabled"/>
-
-msgid "Save"
 msgstr ""
 
 # <div class="js-main-content">
@@ -3104,13 +3048,6 @@ msgstr ""
 msgid "The following exception has occurred while running the migration, please try again later or contact support if the problem persists."
 msgstr ""
 
-# 
-# <input type="button" class="button-primary" name="upgrade" value="<?php esc_attr_e( 'Upgrade' ); ?>"/>
-# <span class="js-wpml-upgrade-progress" style="display:none"><?php esc_html_e( 'Starting...', 'sitepress' ); ?></span>
-
-msgid "Upgrade"
-msgstr ""
-
 # <div class="js-main-content">
 # <h2><?php esc_html_e( "WPML needs to upgrade the post's media information.", 'sitepress' ); ?></h2>
 # 
@@ -3139,7 +3076,7 @@ msgstr ""
 msgid "Choose language:"
 msgstr ""
 
-# 'strings'     => array(
+# return [
 # 'listNavigation' => __( 'Navigation', 'sitepress' ),
 # 'firstPage'      => __( 'First page', 'sitepress' ),
 
@@ -3147,17 +3084,24 @@ msgid "Navigation"
 msgstr ""
 
 # 'totalItemsText' => sprintf(
-# _n( '%s item', '%s items', $this->pagination->get_total_items(), 'sitepress' ),
-# $this->pagination->get_total_items()
+# _n( '%s item', '%s items', $totalItems, 'sitepress' ),
+# $totalItems
 
 msgid "%s item"
 msgstr ""
 
 # 'totalItemsText' => sprintf(
-# _n( '%s item', '%s items', $this->pagination->get_total_items(), 'sitepress' ),
-# $this->pagination->get_total_items()
+# _n( '%s item', '%s items', $totalItems, 'sitepress' ),
+# $totalItems
 
 msgid "%s items"
+msgstr ""
+
+# 'show_please_select' => true,
+# 'please_select_text' => __( '-- Please select --', 'sitepress' ),
+# 'selected'           => '',
+
+msgid "-- Please select --"
 msgstr ""
 
 # if ( '' === trim( $url ) ) {
@@ -3195,13 +3139,6 @@ msgstr ""
 
 msgctxt "You may need to {re-save the site permalinks} - 1/2"
 msgid "You may need to %s."
-msgstr ""
-
-# 'show_please_select' => true,
-# 'please_select_text' => __( '-- Please select --', 'sitepress' ),
-# 'selected'           => '',
-
-msgid "-- Please select --"
 msgstr ""
 
 # if ( 1 === $languages_count ) {
@@ -3288,27 +3225,6 @@ msgstr ""
 msgid "WPML Site Languages section"
 msgstr ""
 
-# 
-# $show_logs = $notices->get_new_notice_action( __( 'Detailed error log', 'sitepress' ), $log_url );
-# 
-
-msgid "Detailed error log"
-msgstr ""
-
-# $retry_url = add_query_arg( array( self::NOTICE_ERROR_GROUP . '-action' => 'wpml_xml_update_refresh', self::NOTICE_ERROR_GROUP . '-nonce' => wp_create_nonce( 'wpml_xml_update_refresh' ) ), $return_url );
-# $retry     = $notices->get_new_notice_action( __( 'Retry', 'sitepress' ), $retry_url, false, false, true );
-# 
-
-msgid "Retry"
-msgstr ""
-
-# 
-# $text = '<p>' . esc_html__( 'WPML could not load configuration files, which your site needs.', 'sitepress' ) . '</p>';
-# 
-
-msgid "WPML could not load configuration files, which your site needs."
-msgstr ""
-
 # 'strings' => array(
 # 'title'     => __( 'Remote XML Config Log', 'sitepress' ),
 # 'message'   => __( "WPML needs to load configuration files, which tell it how to translate your theme and the plugins that you use. If there's a problem, use the Retry button. If the problem continues, contact WPML support, show the error details and we'll help you resolve it.", 'sitepress' ),
@@ -3337,11 +3253,32 @@ msgstr ""
 msgid "The remote XML Config Log is empty"
 msgstr ""
 
+# 'retry' => array(
+# 'label' => __( 'Retry', 'sitepress' ),
+# 'url'   => null,
+
+msgid "Retry"
+msgstr ""
+
 # 'clear' => array(
 # 'label' => __( 'Clear log', 'sitepress' ),
 # 'url'   => null,
 
 msgid "Clear log"
+msgstr ""
+
+# 
+# $show_logs = $notices->get_new_notice_action( __( 'Detailed error log', 'sitepress' ), $log_url );
+# 
+
+msgid "Detailed error log"
+msgstr ""
+
+# 
+# $text = '<p>' . esc_html__( 'WPML could not load configuration files, which your site needs.', 'sitepress' ) . '</p>';
+# 
+
+msgid "WPML could not load configuration files, which your site needs."
 msgstr ""
 
 # 'icl_duplicate_message' => $success,
@@ -3383,7 +3320,7 @@ msgctxt "Use Translation Editor notice 2/3"
 msgid "Some functionalities may not work properly. We encourage you to switch to use the Translation Editor."
 msgstr ""
 
-# $msg .= ' ' . sprintf(
+# /* translators: %s will be replaced with a URL. */
 # esc_html_x(
 # 'You can find more information here: %s',
 
@@ -3391,18 +3328,18 @@ msgctxt "Use Translation Editor notice 2/3"
 msgid "You can find more information here: %s"
 msgstr ""
 
-# ep_register_feature( 'wpml_integration', array(
-# 'title' => __( 'Integration WPML with ElasticPress', 'sitepress' ),
-# 'setup_cb' => array( $this, 'set_up' ),
+# // translators: 1 and 2 are html <strong></strong> tags.
+# __( '%1$sWarning:%2$s You are trying to add a translation using the Fusion Builder Live editor but your site is configured to use the WPML Translation Editor.', 'sitepress' ),
+# '<strong>',
 
-msgid "Integration WPML with ElasticPress"
+msgid "%1$sWarning:%2$s You are trying to add a translation using the Fusion Builder Live editor but your site is configured to use the WPML Translation Editor."
 msgstr ""
 
-# public function box_description_long() {
-# $content = esc_html__( 'This allows to search for content in a specific language only.', 'sitepress' );
-# echo '<p>' . $content . '</p>';
+# $message = '<p>' . $message . '</p>';
+# $button  = '<button>' . __( 'OK', 'sitepress' ) . '</button>';
+# $warning = '<div class="wpml-fusion-builder-live-edit-warning"><div class="wpml-message">' . $message . $button . '</div></div>';
 
-msgid "This allows to search for content in a specific language only."
+msgid "OK"
 msgstr ""
 
 # if ( 1 < count( $languages ) ) {
@@ -3412,11 +3349,11 @@ msgstr ""
 msgid "This post is also available in: "
 msgstr ""
 
-# && $post->ID == $root_id ) ) {
-# _e ( "This page does not have a language since it's the site's root page." );
-# echo '<input type="hidden" name="_wpml_root_page" value="1" />';
+# $sitepress->switch_locale( $initial_lang );
+# $tr_cat = __( 'Uncategorized', 'sitepress' );
+# $tr_cat = $tr_cat === 'Uncategorized' ? 'Uncategorized @' . $initial_lang : $tr_cat;
 
-msgid "This page does not have a language since it's the site's root page."
+msgid "Uncategorized"
 msgstr ""
 
 # /* general string translation */
@@ -3424,13 +3361,6 @@ msgstr ""
 # $table_name = $wpdb->prefix . 'icl_strings';
 
 msgid "Optional"
-msgstr ""
-
-# $sitepress->switch_locale ( $lang_code );
-# $tr_cat = __ ( 'Uncategorized', 'sitepress' );
-# $tr_cat = $tr_cat === 'Uncategorized' && $lang_code !== 'en' ? 'Uncategorized @' . $lang_code : $tr_cat;
-
-msgid "Uncategorized"
 msgstr ""
 
 # if ( ! $batch_data || ! isset( $batch_data->batch_name ) ) {
@@ -3748,83 +3678,6 @@ msgstr ""
 msgid "Network settings"
 msgstr ""
 
-# if ( $file == WPML_PLUGIN_BASENAME ) {
-# $links[] = '<a href="admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php">' . __( 'Configure', 'sitepress' ) . '</a>';
-# }
-
-msgid "Configure"
-msgstr ""
-
-# $time_offset = get_option( 'gmt_offset' )*3600;
-# $local_time  = __( 'Last Update Time could not be determined', 'sitepress' );
-# 
-
-msgid "Last Update Time could not be determined"
-msgstr ""
-
-# $restore_post_link = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=untrash', $post->ID ) ), 'untrash-post_' . $post->ID ) . '">' . esc_html( 'restore', 'sitepress' ) . '</a>';
-# $ret               = '<p>' . sprintf( esc_html__( 'This translation is currently in the trash. You need to either %s or %s it in order to continue.' ), $delete_post_link, $restore_post_link );
-# 
-
-msgid "This translation is currently in the trash. You need to either %s or %s it in order to continue."
-msgstr ""
-
-# <div class="message error">
-# <h3><?php esc_html_e( "WPML can't be functional because it requires a disabled PHP extension!", 'sitepress' ); ?></h3>
-# 
-
-msgid "WPML can't be functional because it requires a disabled PHP extension!"
-msgstr ""
-
-# 
-# <p><?php esc_html_e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ); ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
-# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
-
-msgid "To ensure and improve the security of your website, WPML makes use of the "
-msgstr ""
-
-# <p><?php esc_html_e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ); ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
-# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
-# used, however, the PECL version is no longer recommended to be used or updated. (source: ", 'sitepress' ); ?><a href="http://php.net/manual/en/filter.installation.php">PHP Manual Function Reference Variable and
-
-msgid "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was\n            used, however, the PECL version is no longer recommended to be used or updated. (source: "
-msgstr ""
-
-# <br>
-# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ); ?>
-# <br><?php esc_html_e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ); ?><br>
-
-msgid "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host."
-msgstr ""
-
-# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ); ?>
-# <br><?php esc_html_e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ); ?><br>
-# <ol>
-
-msgid "To enable it, either you or your host will need to open your website's php.ini file and either:"
-msgstr ""
-
-# <ol>
-# <li><?php esc_html_e( "Remove the 'filter_var' string from the 'disable_functions' directive or...", 'sitepress' ); ?>
-# </li>
-
-msgid "Remove the 'filter_var' string from the 'disable_functions' directive or..."
-msgstr ""
-
-# </li>
-# <li><?php esc_html_e( "Add the following line:", 'sitepress' ); ?> <code class="inline-code">extension=filter.so</code></li>
-# </ol>
-
-msgid "Add the following line:"
-msgstr ""
-
-# ?>
-# <strong><?php esc_html_e( "Your php.ini file is located at", 'sitepress' ) . ' ' . esc_html( $ini_location ); ?>.</strong>
-# <?php
-
-msgid "Your php.ini file is located at"
-msgstr ""
-
 # <p>
 # <input id="icl_restore_notifications" type="button" class="button-secondary" value="<?php echo __( 'Restore messages and notification', 'sitepress' ); ?>"/>
 # <br/>
@@ -3865,41 +3718,6 @@ msgstr ""
 # <?php
 
 msgid "Messages and notifications"
-msgstr ""
-
-# 
-# $out = '<h3>' . esc_html__('Select Language', 'sitepress') . '</h3><p><select name="icl_post_language">';
-# foreach ($langs as $lang) {
-
-msgid "Select Language"
-msgstr ""
-
-# 'classes' => array( 'error' ),
-# 'text' => sprintf( __( "%sIMPORTANT:%s You are using a version of WooCommerce Multilingual that is not fully compatible with the current WPML version. The %sproducts translation editor has been deactivated%s for this reason.%sPlease upgrade to %sWooCommerce Multilingual 3.8%s to restore the translation editor for products and use all the other functions.", 'sitepress' ),
-# '<strong>', '</strong>', '<strong>', '</strong>', '<br /><br />', '<strong><a href="https://wpml.org/?p=867248">', '</a></strong>' )
-
-msgid "%sIMPORTANT:%s You are using a version of WooCommerce Multilingual that is not fully compatible with the current WPML version. The %sproducts translation editor has been deactivated%s for this reason.%sPlease upgrade to %sWooCommerce Multilingual 3.8%s to restore the translation editor for products and use all the other functions."
-msgstr ""
-
-# echo '<div class="error"><ul><li><strong>';
-# esc_html_e( 'WPML cannot be activated together with these older plugins:', 'sitepress' );
-# echo '<ul style="list-style:disc;margin:20px;">';
-
-msgid "WPML cannot be activated together with these older plugins:"
-msgstr ""
-
-# echo '</ul>';
-# esc_html_e( 'WPML will be deactivated', 'sitepress' );
-# echo '</strong></li></ul></div>';
-
-msgid "WPML will be deactivated"
-msgstr ""
-
-# echo '<a name="icl_inc_plugins_notice"></a><div class="error" style="padding:10px;">';
-# esc_html_e( 'These plugins are known to have compatibiliy issues with WPML:', 'sitepress' );
-# echo '<ul style="list-style:disc;margin-left:20px;">';
-
-msgid "These plugins are known to have compatibiliy issues with WPML:"
 msgstr ""
 
 # $capabilities = array(
@@ -4056,13 +3874,6 @@ msgstr ""
 msgid "Copy from original to translation"
 msgstr ""
 
-# <div style=";margin: 5px 0 5px 0;" id="wpml_cf_translation_preferences_ajax_response_' . $id . '"></div>
-# <input type="button" onclick="icl_cf_translation_preferences_submit(\'' . $id . '\', jQuery(this));" style="margin-top:5px;" class="button-secondary" value="' . __( 'Apply' ) . '" name="wpml_cf_translation_preferences_submit_' . $id . '" />
-# <input type="hidden" name="wpml_cf_translation_preferences_data_' . $id . '" value="custom_field=' . $custom_field . '&amp;_icl_nonce=' . wp_create_nonce( 'wpml_cf_translation_preferences_nonce' ) . '" />';
-
-msgid "Apply"
-msgstr ""
-
 # $ccf_note                        = '<img src="' . ICL_PLUGIN_URL . '/res/img/alert.png" alt="Notice" width="16" height="16" style="margin-right:8px" />';
 # $copied_cf[ 'copy_message' ]     = $ccf_note . sprintf( __( 'WPML will copy this field from %s when you save this post.', 'sitepress' ), $lang_details[ 'display_name' ] );
 # 
@@ -4077,7 +3888,7 @@ msgstr ""
 msgid "Missing post ID"
 msgstr ""
 
-# if ( empty( $post ) ) {
+# // translators: Post id.
 # return new WP_Error( 'missing_post', sprintf( __( 'No such post for ID = %d', 'sitepress' ), $post_id ) );
 # }
 
@@ -4131,6 +3942,13 @@ msgstr ""
 # '1.7.0', get_option('icl_sitepress_version'), ' href="http://downloads.wordpress.org/plugin/sitepress-multilingual-cms.2.0.4.zip"'); ?></p>
 
 msgid "<strong>WPML notice:</strong> Upgrades to this version are only supported from versions %s and above. To upgrade from version %s, first, download <a%s>2.0.4</a>, do the DB upgrade and then go to this version."
+msgstr ""
+
+# 
+# $out = '<h3>' . esc_html__('Select Language', 'sitepress') . '</h3><p><select name="icl_post_language">';
+# foreach ($langs as $lang) {
+
+msgid "Select Language"
 msgstr ""
 
 # <br>
@@ -4196,13 +4014,6 @@ msgstr ""
 msgid "Deleted comments:"
 msgstr ""
 
-# } else {
-# $fields_contents[ 'error' ] = __( 'Post not found', 'sitepress' );
-# }
-
-msgid "Post not found"
-msgstr ""
-
 # if ( (bool) $taxonomies ) {
 # $text      = __(
 # '<p>Some taxonomy terms are out of sync between languages. This means that content in some languages will not have the correct tags or categories.</p>
@@ -4224,6 +4035,174 @@ msgstr ""
 msgid "Not valid"
 msgstr ""
 
+# if ( $file == WPML_PLUGIN_BASENAME ) {
+# $links[] = '<a href="admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php">' . __( 'Configure', 'sitepress' ) . '</a>';
+# }
+
+msgid "Configure"
+msgstr ""
+
+# $time_offset = get_option( 'gmt_offset' )*3600;
+# $local_time  = __( 'Last Update Time could not be determined', 'sitepress' );
+# 
+
+msgid "Last Update Time could not be determined"
+msgstr ""
+
+# <div class="message error">
+# <h3><?php esc_html_e( "WPML can't be functional because it requires a disabled PHP extension!", 'sitepress' ); ?></h3>
+# 
+
+msgid "WPML can't be functional because it requires a disabled PHP extension!"
+msgstr ""
+
+# 
+# <p><?php esc_html_e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ); ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
+# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
+
+msgid "To ensure and improve the security of your website, WPML makes use of the "
+msgstr ""
+
+# <p><?php esc_html_e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ); ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
+# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
+# used, however, the PECL version is no longer recommended to be used or updated. (source: ", 'sitepress' ); ?><a href="http://php.net/manual/en/filter.installation.php">PHP Manual Function Reference Variable and
+
+msgid "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was\n            used, however, the PECL version is no longer recommended to be used or updated. (source: "
+msgstr ""
+
+# <br>
+# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ); ?>
+# <br><?php esc_html_e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ); ?><br>
+
+msgid "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host."
+msgstr ""
+
+# <?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ); ?>
+# <br><?php esc_html_e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ); ?><br>
+# <ol>
+
+msgid "To enable it, either you or your host will need to open your website's php.ini file and either:"
+msgstr ""
+
+# <ol>
+# <li><?php esc_html_e( "Remove the 'filter_var' string from the 'disable_functions' directive or...", 'sitepress' ); ?>
+# </li>
+
+msgid "Remove the 'filter_var' string from the 'disable_functions' directive or..."
+msgstr ""
+
+# </li>
+# <li><?php esc_html_e( "Add the following line:", 'sitepress' ); ?> <code class="inline-code">extension=filter.so</code></li>
+# </ol>
+
+msgid "Add the following line:"
+msgstr ""
+
+# ?>
+# <strong><?php esc_html_e( "Your php.ini file is located at", 'sitepress' ) . ' ' . esc_html( $ini_location ); ?>.</strong>
+# <?php
+
+msgid "Your php.ini file is located at"
+msgstr ""
+
+# 'classes' => array( 'error' ),
+# 'text' => sprintf( __( "%sIMPORTANT:%s You are using a version of WooCommerce Multilingual that is not fully compatible with the current WPML version. The %sproducts translation editor has been deactivated%s for this reason.%sPlease upgrade to %sWooCommerce Multilingual 3.8%s to restore the translation editor for products and use all the other functions.", 'sitepress' ),
+# '<strong>', '</strong>', '<strong>', '</strong>', '<br /><br />', '<strong><a href="https://wpml.org/?p=867248">', '</a></strong>' )
+
+msgid "%sIMPORTANT:%s You are using a version of WooCommerce Multilingual that is not fully compatible with the current WPML version. The %sproducts translation editor has been deactivated%s for this reason.%sPlease upgrade to %sWooCommerce Multilingual 3.8%s to restore the translation editor for products and use all the other functions."
+msgstr ""
+
+# echo '<div class="error"><ul><li><strong>';
+# esc_html_e( 'WPML cannot be activated together with these older plugins:', 'sitepress' );
+# echo '<ul style="list-style:disc;margin:20px;">';
+
+msgid "WPML cannot be activated together with these older plugins:"
+msgstr ""
+
+# echo '</ul>';
+# esc_html_e( 'WPML will be deactivated', 'sitepress' );
+# echo '</strong></li></ul></div>';
+
+msgid "WPML will be deactivated"
+msgstr ""
+
+# echo '<a name="icl_inc_plugins_notice"></a><div class="error" style="padding:10px;">';
+# esc_html_e( 'These plugins are known to have compatibiliy issues with WPML:', 'sitepress' );
+# echo '<ul style="list-style:disc;margin-left:20px;">';
+
+msgid "These plugins are known to have compatibiliy issues with WPML:"
+msgstr ""
+
+# } else {
+# $fields_contents[ 'error' ] = __( 'Post not found', 'sitepress' );
+# }
+
+msgid "Post not found"
+msgstr ""
+
+# $this->labels = array(
+# 'del' => array( esc_html__( 'Remove %s', 'sitepress' ), '' ),
+# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
+
+msgid "Remove %s"
+msgstr ""
+
+# 'del' => array( esc_html__( 'Remove %s', 'sitepress' ), '' ),
+# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
+# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
+
+msgid "Rename label to %s"
+msgstr ""
+
+# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
+# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
+# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
+
+msgid "Update URL to %s"
+msgstr ""
+
+# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
+# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
+# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
+
+msgid "Untranslated URL %s"
+msgstr ""
+
+# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
+# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
+# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
+
+msgid "Change menu order for %s"
+msgstr ""
+
+# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
+# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
+# 'options_changed' => array( esc_html__( 'Update %s menu option to %s', 'sitepress' ), '' ),
+
+msgid "Add %s"
+msgstr ""
+
+# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
+# 'options_changed' => array( esc_html__( 'Update %s menu option to %s', 'sitepress' ), '' ),
+# );
+
+msgid "Update %s menu option to %s"
+msgstr ""
+
+# $this->labels['label_missing'] = array(
+# esc_html__( 'Untranslated string %s', 'sitepress' ),
+# $this->print_label_missing_text( $icl_ms, $menu_id ),
+
+msgid "Untranslated string %s"
+msgstr ""
+
+# $res = '&nbsp;' . sprintf(
+# esc_html__(
+# 'The selected strings can now be translated using the %s string translation %s screen',
+
+msgid "The selected strings can now be translated using the %s string translation %s screen"
+msgstr ""
+
 # <h2><?php esc_html_e( 'WP Menus Sync', 'sitepress' ) ?></h2>
 # <p><?php printf( esc_html__( 'Menu synchronization will sync the menu structure from the default language of %s to the secondary languages.', 'sitepress' ), $def_lang['display_name'] ) ?></p>
 # 
@@ -4243,20 +4222,6 @@ msgstr ""
 # '<strong>max_input_vars</strong>',
 
 msgid "The menus on this page may not sync because it requires more input variables. Please modify the %s setting in your php.ini or .htaccess files to %s or more."
-msgstr ""
-
-# <?php echo $icl_menu_sync_submit_disabled; ?> />&nbsp;
-# <input id="icl_msync_cancel" class="button-secondary" type="button" value="<?php _e( 'Cancel' ) ?>"/>
-# <span id="icl_msync_message"></span>
-
-msgid "Cancel"
-msgstr ""
-
-# type="button"
-# value="<?php esc_attr_e( 'Apply changes' ) ?>"
-# data-message="<?php esc_attr_e( 'Syncing menus %1 of %2', 'sitepress' ) ?>"
-
-msgid "Apply changes"
 msgstr ""
 
 # value="<?php esc_attr_e( 'Apply changes' ) ?>"
@@ -4385,70 +4350,7 @@ msgstr ""
 msgid "Untranslated URLs for menus"
 msgstr ""
 
-# $this->labels = array(
-# 'del' => array( esc_html__( 'Remove %s', 'sitepress' ), '' ),
-# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
-
-msgid "Remove %s"
-msgstr ""
-
-# 'del' => array( esc_html__( 'Remove %s', 'sitepress' ), '' ),
-# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
-# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
-
-msgid "Rename label to %s"
-msgstr ""
-
-# 'label_changed' => array( esc_html__( 'Rename label to %s', 'sitepress' ), '' ),
-# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
-# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
-
-msgid "Update URL to %s"
-msgstr ""
-
-# 'url_changed' => array( esc_html__( 'Update URL to %s', 'sitepress' ), '' ),
-# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
-# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
-
-msgid "Untranslated URL %s"
-msgstr ""
-
-# 'url_missing' => array( esc_html__( 'Untranslated URL %s', 'sitepress' ), '' ),
-# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
-# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
-
-msgid "Change menu order for %s"
-msgstr ""
-
-# 'mov' => array( esc_html__( 'Change menu order for %s', 'sitepress' ), '' ),
-# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
-# 'options_changed' => array( esc_html__( 'Update %s menu option to %s', 'sitepress' ), '' ),
-
-msgid "Add %s"
-msgstr ""
-
-# 'add' => array( esc_html__( 'Add %s', 'sitepress' ), '' ),
-# 'options_changed' => array( esc_html__( 'Update %s menu option to %s', 'sitepress' ), '' ),
-# );
-
-msgid "Update %s menu option to %s"
-msgstr ""
-
-# $this->labels['label_missing'] = array(
-# esc_html__( 'Untranslated string %s', 'sitepress' ),
-# $this->print_label_missing_text( $icl_ms, $menu_id ),
-
-msgid "Untranslated string %s"
-msgstr ""
-
-# $res = '&nbsp;' . sprintf(
-# esc_html__(
-# 'The selected strings can now be translated using the %s string translation %s screen',
-
-msgid "The selected strings can now be translated using the %s string translation %s screen"
-msgstr ""
-
-# title="<?php esc_attr_e( 'Choose a post to assign', 'sitepress' ); ?>"
+# title="<?php esc_attr_e( sprintf( 'Choose a %s to assign', get_post_type_object( get_post_type( $this->post ) )->labels->singular_name ), 'sitepress' ); ?>"
 # data-set_as_source-text="<?php echo esc_attr( sprintf( __( 'Make %s the original language for this %s', 'sitepress' ), $language_name, $this->post->post_type ) ); ?>"
 # data-alert-text="<?php esc_attr_e( "Please make sure to save your post, if you've made any change, before proceeding with this action!", 'sitepress' ); ?>"
 
@@ -4586,13 +4488,6 @@ msgstr ""
 # <?php
 
 msgid "This operation will synchronize this translation with the original language. When you edit the original, this translation will update immediately. It's meant when you want the content in this language to always be the same as the content in the original language."
-msgstr ""
-
-# <div id="connect_translations_dialog"
-# title="<?php esc_attr_e( 'Choose a post to assign', 'sitepress' ); ?>"
-# data-set_as_source-text="<?php echo esc_attr( sprintf( __( 'Make %s the original language for this %s', 'sitepress' ), $language_name, $this->post->post_type ) ); ?>"
-
-msgid "Choose a post to assign"
 msgstr ""
 
 # data-set_as_source-text="<?php echo esc_attr( sprintf( __( 'Make %s the original language for this %s', 'sitepress' ), $language_name, $this->post->post_type ) ); ?>"
@@ -4833,13 +4728,6 @@ msgstr ""
 msgid "Copy to all languages"
 msgstr ""
 
-# 'copyToAllLanguages'              => __( 'Copy to all languages', 'sitepress' ),
-# 'copyToAllMessage'                => sprintf( __( 'Copy this term from original: %1$s to all other languages?' ), '%language%' ),
-# 'copyAllOverwrite'                => __( 'Overwrite existing translations', 'sitepress' ),
-
-msgid "Copy this term from original: %1$s to all other languages?"
-msgstr ""
-
 # 'copyToAllMessage'                => sprintf( __( 'Copy this term from original: %1$s to all other languages?' ), '%language%' ),
 # 'copyAllOverwrite'                => __( 'Overwrite existing translations', 'sitepress' ),
 # 'willBeRemoved'                   => __( 'Will be removed', 'sitepress' ),
@@ -4943,13 +4831,6 @@ msgstr ""
 # 'Ok'                              => __( 'OK', 'sitepress' ),
 
 msgid "Description"
-msgstr ""
-
-# 'Description'                     => __( 'Description', 'sitepress' ),
-# 'Ok'                              => __( 'OK', 'sitepress' ),
-# 'save'                            => __( 'Save', 'sitepress' ),
-
-msgid "OK"
 msgstr ""
 
 # 'save'                            => __( 'Save', 'sitepress' ),
@@ -5114,164 +4995,101 @@ msgid "Wrong nonce"
 msgstr ""
 
 # echo '<div id="icl_tax_adding_notice" class="updated fade"><p>'
-# . sprintf ( __ ( 'Adding translation for: %s.', 'sitepress' ), $tax_name )
+# . sprintf( esc_html__( 'Adding translation for: %s.', 'sitepress' ), $tax_name )
 # . '</p></div>';
 
 msgid "Adding translation for: %s."
 msgstr ""
 
-# if ( $elements ) {
-# $msg = esc_html( __( "You haven't set your synchronization preferences for these %s: %s. Default value was selected.", 'sitepress' ) );
-# $notice .= '<div class="updated below-h2"><p>';
+# case 'resetwpml':
+# $msg = esc_html__( 'WPML has been reset for the selected site.', 'sitepress' );
+# break;
 
-msgid "You haven't set your synchronization preferences for these %s: %s. Default value was selected."
+msgid "WPML has been reset for the selected site."
 msgstr ""
 
-# <div class="wpml-flex-table wpml-translation-setup-table wpml-margin-top-sm">
-# <?php $custom_types_ui->render_custom_types_header_ui( esc_html__( 'Post types', 'sitepress' ) ); ?>
-# <div class="wpml-flex-table-body">
+# case 'deactivatewpml':
+# $msg = esc_html__( 'WPML has been deactivated for the selected site.', 'sitepress' );
+# break;
 
-msgid "Post types"
+msgid "WPML has been deactivated for the selected site."
 msgstr ""
 
-# <div class="wpml-section-header">
-# <h3><?php esc_html_e( 'Post Types Translation', 'sitepress' );?></h3>
-# </div>
+# case 'activatewpml':
+# $msg = esc_html__( 'WPML has been activated for the selected site.', 'sitepress' );
+# break;
 
-msgid "Post Types Translation"
+msgid "WPML has been activated for the selected site."
 msgstr ""
 
-# <div class="wpml-section-header">
-# <h3><?php esc_html_e( 'Taxonomies Translation', 'sitepress' ); ?></h3>
-# </div>
+# <div class="wrap">
+# <h2><?php echo esc_html__( 'WPML Network Setup', 'sitepress' ) ?>
+# <?php if ( isset( $_REQUEST['s'] ) && $_REQUEST['s'] ) {
 
-msgid "Taxonomies Translation"
+msgid "WPML Network Setup"
 msgstr ""
 
-# <div class="wpml-section-header">
-# <h3><?php esc_html_e( 'Posts and pages synchronization', 'sitepress' ); ?></h3>
-# </div>
+# $actions['edit']    = '<span class="edit"><a href="' . esc_url( network_admin_url( 'site-info.php?id=' . $blog['blog_id'] ) ) . '">' . esc_html__( 'Edit', 'sitepress' ) . '</a></span>';
+# $actions['backend'] = "<span class='backend'><a href='" . esc_url( get_admin_url( $blog['blog_id'] ) ) . "' class='edit'>" . esc_html__( 'Dashboard', 'sitepress' ) . '</a></span>';
+# $actions['visit']   = "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'] ) ) . "' rel='permalink'>" . esc_html__( 'Visit', 'sitepress' ) . '</a></span>';
 
-msgid "Posts and pages synchronization"
+msgid "Dashboard"
 msgstr ""
 
-# <label><input type="checkbox" id="icl_sync_page_ordering" name="icl_sync_page_ordering" <?php checked( $sitepress_settings['sync_page_ordering'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize page order for translations', 'sitepress' ) ?></label>
-# </p>
+# $actions['backend'] = "<span class='backend'><a href='" . esc_url( get_admin_url( $blog['blog_id'] ) ) . "' class='edit'>" . esc_html__( 'Dashboard', 'sitepress' ) . '</a></span>';
+# $actions['visit']   = "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'] ) ) . "' rel='permalink'>" . esc_html__( 'Visit', 'sitepress' ) . '</a></span>';
+# 
 
-msgid "Synchronize page order for translations"
+msgid "Visit"
 msgstr ""
 
-# <label><input type="checkbox" id="icl_sync_page_parent" name="icl_sync_page_parent" <?php checked( $sitepress_settings['sync_page_parent'] ) ?> value="1" />
-# <?php esc_html_e( 'Set page parent for translation according to page parent of the original language', 'sitepress' ) ?></label>
-# </p>
+# data-msg="<?php echo
+# sprintf( esc_html__( 'You are about to reset WPML for this site: %s.', 'sitepress' ), esc_html( $blogname ) ) .
+# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
 
-msgid "Set page parent for translation according to page parent of the original language"
+msgid "You are about to reset WPML for this site: %s."
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_page_template" <?php checked( $sitepress_settings['sync_page_template'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize page template', 'sitepress' ) ?></label>
-# </p>
+# sprintf( esc_html__( 'You are about to reset WPML for this site: %s.', 'sitepress' ), esc_html( $blogname ) ) .
+# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
+# ?>"><?php esc_html_e( 'Reset', 'sitepress' ) ?></a></td>
 
-msgid "Synchronize page template"
+msgid "All translation data will be lost if you reset WPML's data. They cannot be recovered later."
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_comment_status" <?php checked( $sitepress_settings['sync_comment_status'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize comment status', 'sitepress' ) ?></label>
-# </p>
+# <tr>
+# <th><?php esc_html_e( 'Site', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Status', 'sitepress' ); ?></th>
 
-msgid "Synchronize comment status"
+msgid "Site"
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_ping_status" <?php checked( $sitepress_settings['sync_ping_status'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize ping status', 'sitepress' ) ?></label>
-# </p>
+# <?php if ( get_option( '_wpml_inactive', false, false ) ) : ?>
+# <?php esc_html_e( 'Inactive', 'sitepress' ); ?>
+# <div class="row-actions">
 
-msgid "Synchronize ping status"
+msgid "Inactive"
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_sticky_flag" <?php checked( $sitepress_settings['sync_sticky_flag'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize sticky flag', 'sitepress' ) ?></label>
-# </p>
+# <?php else : ?>
+# <?php esc_html_e( 'Active', 'sitepress' ); ?>
+# <div class="row-actions">
 
-msgid "Synchronize sticky flag"
+msgid "Active"
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_password" <?php checked( $sitepress_settings['sync_password'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize password for password protected posts', 'sitepress' ) ?></label>
-# </p>
+# <?php if ( $blog['blog_id'] != $current_blog->blog_id ) : ?>
+# <a href="<?php echo esc_url( wp_nonce_url( network_admin_url( 'sites.php?action=deactivatewpml&amp;id=' . (int) $blog['blog_id'] ), 'deactivatewpml' ) ) ?>"><?php esc_html_e( 'Deactivate', 'sitepress' ) ?></a>
+# <?php endif; ?>
 
-msgid "Synchronize password for password protected posts"
+msgid "Deactivate"
 msgstr ""
 
-# <label><input type="checkbox" name="icl_sync_private_flag" <?php checked( $sitepress_settings['sync_private_flag'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize private flag', 'sitepress' ) ?></label>
-# </p>
+# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
+# ?>"><?php esc_html_e( 'Reset', 'sitepress' ) ?></a></td>
+# </tr>
 
-msgid "Synchronize private flag"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_post_format" <?php checked( $sitepress_settings['sync_post_format'] ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize posts format', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Synchronize posts format"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_delete" <?php checked( $sitepress_settings['sync_delete'] ) ?> value="1" />
-# <?php esc_html_e( 'When deleting a post, delete translations as well', 'sitepress' ) ?></label>
-# </p>
-
-msgid "When deleting a post, delete translations as well"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_delete_tax" <?php checked( $sitepress_settings['sync_delete_tax'] ) ?> value="1" />
-# <?php esc_html_e( 'When deleting a taxonomy (category, tag or custom), delete translations as well', 'sitepress' ) ?></label>
-# </p>
-
-msgid "When deleting a taxonomy (category, tag or custom), delete translations as well"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_post_taxonomies" <?php checked( $sitepress_settings['sync_post_taxonomies'] ) ?> value="1" />
-# <?php esc_html_e( 'Copy taxonomy to translations', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Copy taxonomy to translations"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_post_date" <?php checked( $sitepress_settings['sync_post_date'] ) ?> value="1" />
-# <?php esc_html_e( 'Copy publishing date to translations', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Copy publishing date to translations"
-msgstr ""
-
-# <label><input type="checkbox" name="icl_sync_comments_on_duplicates" <?php checked( $sitepress->get_setting( 'sync_comments_on_duplicates' ) ) ?> value="1" />
-# <?php esc_html_e( 'Synchronize comments on duplicate content', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Synchronize comments on duplicate content"
-msgstr ""
-
-# <div class="wpml-section-content-inner">
-# <h4><?php esc_html_e( 'Page builders options', 'sitepress' ) ?></h4>
-# <?php $wpml_page_builder_options = new WPML_Page_Builder_Settings(); ?>
-
-msgid "Page builders options"
-msgstr ""
-
-# <label><input type="checkbox" name="wpml_pb_translate_raw_html" <?php checked( $wpml_page_builder_options->is_raw_html_translatable() ); ?> value="1" />
-# <?php esc_html_e( 'Send to translation the content of raw HTML cells', 'sitepress' ) ?></label>
-# </p>
-
-msgid "Send to translation the content of raw HTML cells"
-msgstr ""
-
-# <div class="inside">
-# <p><?php _e( 'This information allows our support team to see the versions of WordPress, plugins and theme on your site. Provide this information if requested in our support forum. No passwords or other confidential information is included.', 'sitepress' ) ?></p>
-# <br/>
-
-msgid "This information allows our support team to see the versions of WordPress, plugins and theme on your site. Provide this information if requested in our support forum. No passwords or other confidential information is included."
+msgid "Reset"
 msgstr ""
 
 # } catch ( Exception $ex ) {
@@ -5288,50 +5106,50 @@ msgstr ""
 msgid "Upload dir is not writable"
 msgstr ""
 
-# urlencode( $lang['id'] ) . '&amp;icl_nonce=' . wp_create_nonce('delete-language' . $lang['id'])) ?>" title="<?php esc_attr_e('Delete', 'sitepress')
-# ?>" onclick="if(!confirm('<?php echo esc_js(sprintf(__('Are you sure you want to delete this language?%sALL the data associated with this language will be ERASED!', 'sitepress'), "\n"))
-# ?>')) return false;"><img src="<?php echo ICL_PLUGIN_URL ?>/res/img/close.png" alt="<?php esc_attr_e('Delete', 'sitepress')
+# <?php
+# echo esc_js( sprintf( __( 'Are you sure you want to delete this language?%sALL the data associated with this language will be ERASED!', 'sitepress' ), "\n" ) )
+# ?>
 
 msgid "Are you sure you want to delete this language?%sALL the data associated with this language will be ERASED!"
 msgstr ""
 
-# if (!isset($_POST['icl_edit_languages']) || !is_array($_POST['icl_edit_languages'])){
-# $this->set_errors(__('Please, enter valid data.','sitepress'));
-# return;
+# if ( ! isset( $_POST['icl_edit_languages'] ) || ! is_array( $_POST['icl_edit_languages'] ) ) {
+# $this->set_errors( __( 'Please, enter valid data.', 'sitepress' ) );
+# 
 
 msgid "Please, enter valid data."
 msgstr ""
 
-# if (!$this->insert_translation($translation_value, $data['code'], $translation_code)) {
-# $this->set_errors(sprintf(__('Error adding translation %s for %s.', 'sitepress'), $data['code'], $translation_code));
+# if ( ! $this->insert_translation( $translation_value, $data['code'], $translation_code ) ) {
+# $this->set_errors( sprintf( __( 'Error adding translation %1$s for %2$s.', 'sitepress' ), $data['code'], $translation_code ) );
 # }
 
-msgid "Error adding translation %s for %s."
+msgid "Error adding translation %1$s for %2$s."
 msgstr ""
 
 # $data['flag'] = $data['code'] . '.png';
-# $this->set_errors(__('Error uploading flag file.', 'sitepress'));
+# $this->set_errors( __( 'Error uploading flag file.', 'sitepress' ) );
 # }
 
 msgid "Error uploading flag file."
 msgstr ""
 
-# if (!$this->insert_main_table($data['code'], $data['english_name'], $data['default_locale'], 0, 1, $data['encode_url'], $data['tag'])) {
-# $this->set_errors(__('Adding language failed.', 'sitepress'));
-# return false;
+# if ( ! $this->insert_main_table( $data['code'], $data['english_name'], $data['default_locale'], 0, 1, $data['encode_url'], $data['tag'] ) ) {
+# $this->set_errors( __( 'Adding language failed.', 'sitepress' ) );
+# 
 
 msgid "Adding language failed."
 msgstr ""
 
-# if (!$this->insert_translation($data['translations']['add'], $data['code'], $data['code'])) {
-# $this->set_errors(__('Error adding native name.', 'sitepress'));
+# if ( ! $this->insert_translation( $data['translations']['add'], $data['code'], $data['code'] ) ) {
+# $this->set_errors( __( 'Error adding native name.', 'sitepress' ) );
 # }
 
 msgid "Error adding native name."
 msgstr ""
 
-# if (!$this->insert_flag($data['code'], $data['flag'], $from_template)) {
-# $this->set_errors(__('Error adding flag.', 'sitepress'));
+# if ( ! $this->insert_flag( $data['code'], $data['flag'], $from_template ) ) {
+# $this->set_errors( __( 'Error adding flag.', 'sitepress' ) );
 # }
 
 msgid "Error adding flag."
@@ -5345,29 +5163,29 @@ msgid "Invalid character in language code."
 msgstr ""
 
 # }
-# $this->set_errors(__('Please, enter required data.','sitepress' ) );
+# $this->set_errors( __( 'Please, enter required data.', 'sitepress' ) );
 # if ( 'add' === $id ) {
 
 msgid "Please, enter required data."
 msgstr ""
 
 # if ( in_array( $lang->code, $this->built_in_languages, true ) ) {
-# $error = __("Error: This is a built in language. You can't delete it.", 'sitepress');
-# }else{
+# $error = __( "Error: This is a built in language. You can't delete it.", 'sitepress' );
+# } else {
 
 msgid "Error: This is a built in language. You can't delete it."
 msgstr ""
 
-# }else{
-# $error = __('Error: Language not found.', 'sitepress');
+# } else {
+# $error = __( 'Error: Language not found.', 'sitepress' );
 # }
 
 msgid "Error: Language not found."
 msgstr ""
 
-# if ( ! in_array( strtolower( $extension ), array( 'png', 'gif', 'jpg', 'svg' ), true ) ) {
-# $this->set_errors(__('File extension not allowed.','sitepress'));
-# return false;
+# if ( ! in_array( strtolower( $extension ), [ 'png', 'gif', 'jpg', 'svg' ], true ) ) {
+# $this->set_errors( __( 'File extension not allowed.', 'sitepress' ) );
+# 
 
 msgid "File extension not allowed."
 msgstr ""
@@ -5435,7 +5253,7 @@ msgstr ""
 msgid "(allowed: %s)"
 msgstr ""
 
-# $unique_columns = array(
+# $unique_columns = [
 # 'code'           => esc_html__( 'The Language code already exists.', 'sitepress' ),
 # 'english_name'   => esc_html__( 'The Language name already exists.', 'sitepress' ),
 
@@ -5458,21 +5276,21 @@ msgstr ""
 
 # 'default_locale' => esc_html__( 'The default locale already exists.', 'sitepress' ),
 # 'tag'            => esc_html__( 'The hreflang already exists.', 'sitepress' ),
-# );
+# ];
 
 msgid "The hreflang already exists."
 msgstr ""
 
 # 
-# $this->set_messages( sprintf( esc_html__( "The language %s was deleted.", 'sitepress' ), '<strong>' . $lang->code . '</strong>' ) );
+# $this->set_messages( sprintf( esc_html__( 'The language %s was deleted.', 'sitepress' ), '<strong>' . $lang->code . '</strong>' ) );
 # 
 
 msgid "The language %s was deleted."
 msgstr ""
 
-# echo 'style="display:none;" ';
-# } ?>class="icl_edit_languages_show"><?php _e( 'Translation (new)', 'sitepress' ); ?></th>
-# <?php foreach ($this->active_languages as $lang) { ?>
+# ?>
+# class="icl_edit_languages_show"><?php _e( 'Translation (new)', 'sitepress' ); ?></th>
+# <?php foreach ( $this->active_languages as $lang ) { ?>
 
 msgid "Translation (new)"
 msgstr ""
@@ -5484,78 +5302,78 @@ msgstr ""
 msgid "Custom flag"
 msgstr ""
 
-# <a href="<?php echo admin_url('admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php&amp;trop=1&amp;action=delete-language&amp;id=' .
-# urlencode( $lang['id'] ) . '&amp;icl_nonce=' . wp_create_nonce('delete-language' . $lang['id'])) ?>" title="<?php esc_attr_e('Delete', 'sitepress')
-# ?>" onclick="if(!confirm('<?php echo esc_js(sprintf(__('Are you sure you want to delete this language?%sALL the data associated with this language will be ERASED!', 'sitepress'), "\n"))
+# <?php
+# esc_attr_e( 'Delete', 'sitepress' )
+# ?>
 
 msgid "Delete"
 msgstr ""
 
 # <tr>
-# <th><?php esc_html_e('Language name', 'sitepress'); ?></th>
-# <th><?php esc_html_e('Code', 'sitepress'); ?></th>
+# <th><?php esc_html_e( 'Language name', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Code', 'sitepress' ); ?></th>
 
 msgid "Language name"
 msgstr ""
 
-# <th><?php esc_html_e('Language name', 'sitepress'); ?></th>
-# <th><?php esc_html_e('Code', 'sitepress'); ?></th>
-# <th <?php if ( $this->must_display_new_language_translation_column() ) {
+# <th><?php esc_html_e( 'Language name', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Code', 'sitepress' ); ?></th>
+# <th
 
 msgid "Code"
 msgstr ""
 
-# <th><?php esc_html_e('Flag', 'sitepress'); ?></th>
-# <th><?php esc_html_e('Default locale', 'sitepress'); ?></th>
-# <th><?php esc_html_e('Encode URLs', 'sitepress'); ?></th>
+# <th><?php esc_html_e( 'Flag', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Default locale', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Encode URLs', 'sitepress' ); ?></th>
 
 msgid "Default locale"
 msgstr ""
 
-# <th><?php esc_html_e('Default locale', 'sitepress'); ?></th>
-# <th><?php esc_html_e('Encode URLs', 'sitepress'); ?></th>
-# <th><?php esc_html_e('hreflang', 'sitepress'); ?></th>
+# <th><?php esc_html_e( 'Default locale', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'Encode URLs', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'hreflang', 'sitepress' ); ?></th>
 
 msgid "Encode URLs"
 msgstr ""
 
-# <th><?php esc_html_e('Encode URLs', 'sitepress'); ?></th>
-# <th><?php esc_html_e('hreflang', 'sitepress'); ?></th>
+# <th><?php esc_html_e( 'Encode URLs', 'sitepress' ); ?></th>
+# <th><?php esc_html_e( 'hreflang', 'sitepress' ); ?></th>
 # <th>&nbsp;</th>
 
 msgid "hreflang"
 msgstr ""
 
-# </table>
-# <span class="icl_error_text icl_edit_languages_show" style="display: none; margin:10px;"><p><?php esc_html_e('Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code.', 'sitepress'); ?></p></span>
-# <p class="submit"><a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER ?>/menu/languages.php">&laquo;&nbsp;<?php esc_html_e('Back to languages', 'sitepress'); ?></a></p>
+# <span class="icl_error_text icl_edit_languages_show"
+# style="display: none; margin:10px;"><p><?php esc_html_e( 'Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code.', 'sitepress' ); ?></p></span>
+# <p class="submit"><a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER; ?>/menu/languages.php">&laquo;&nbsp;<?php esc_html_e( 'Back to languages', 'sitepress' ); ?></a></p>
 
 msgid "Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code."
 msgstr ""
 
-# <span class="icl_error_text icl_edit_languages_show" style="display: none; margin:10px;"><p><?php esc_html_e('Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code.', 'sitepress'); ?></p></span>
-# <p class="submit"><a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER ?>/menu/languages.php">&laquo;&nbsp;<?php esc_html_e('Back to languages', 'sitepress'); ?></a></p>
+# style="display: none; margin:10px;"><p><?php esc_html_e( 'Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code.', 'sitepress' ); ?></p></span>
+# <p class="submit"><a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER; ?>/menu/languages.php">&laquo;&nbsp;<?php esc_html_e( 'Back to languages', 'sitepress' ); ?></a></p>
 # 
 
 msgid "Back to languages"
 msgstr ""
 
 # <input type="button" name="icl_edit_languages_add_language_button" id="icl_edit_languages_add_language_button"
-# value="<?php esc_html_e( 'Add Language', 'sitepress' ); ?>" class="button-secondary"<?php if ( $this->is_new_data_and_invalid() ) { ?> style="display:none;"<?php } ?> />
-# &nbsp;
+# value="<?php esc_html_e( 'Add Language', 'sitepress' ); ?>" class="button-secondary"
+# <?php
 
 msgid "Add Language"
 msgstr ""
 
-# <?php wp_nonce_field('reset_languages_nonce', '_icl_nonce_rl'); ?>
-# <input class="button-primary" type="button" id="icl_reset_languages" value="<?php esc_html_e('Reset languages', 'sitepress'); ?>" />
-# <span class="hidden"><?php esc_html_e('WPML will reset all language information to its default values. Any languages that you added or edited will be lost.','sitepress')?></span>
+# <?php wp_nonce_field( 'reset_languages_nonce', '_icl_nonce_rl' ); ?>
+# <input class="button-primary" type="button" id="icl_reset_languages" value="<?php esc_html_e( 'Reset languages', 'sitepress' ); ?>"/>
+# <span class="hidden"><?php esc_html_e( 'WPML will reset all language information to its default values. Any languages that you added or edited will be lost.', 'sitepress' ); ?></span>
 
 msgid "Reset languages"
 msgstr ""
 
-# <input class="button-primary" type="button" id="icl_reset_languages" value="<?php esc_html_e('Reset languages', 'sitepress'); ?>" />
-# <span class="hidden"><?php esc_html_e('WPML will reset all language information to its default values. Any languages that you added or edited will be lost.','sitepress')?></span>
+# <input class="button-primary" type="button" id="icl_reset_languages" value="<?php esc_html_e( 'Reset languages', 'sitepress' ); ?>"/>
+# <span class="hidden"><?php esc_html_e( 'WPML will reset all language information to its default values. Any languages that you added or edited will be lost.', 'sitepress' ); ?></span>
 # </p>
 
 msgid "WPML will reset all language information to its default values. Any languages that you added or edited will be lost."
@@ -5568,22 +5386,22 @@ msgstr ""
 msgid "WPML flag"
 msgstr ""
 
-# <select name="icl_edit_languages[<?php echo esc_attr( $lang['id'] ); ?>][encode_url]">
-# <option value="0" <?php if(empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php esc_html_e('No', 'sitepress') ?></option>
-# <option value="1" <?php if(!empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php esc_html_e('Yes', 'sitepress') ?></option>
+# ?>
+# ><?php esc_html_e( 'No', 'sitepress' ); ?></option>
+# <option value="1"
 
 msgid "No"
 msgstr ""
 
-# <option value="0" <?php if(empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php esc_html_e('No', 'sitepress') ?></option>
-# <option value="1" <?php if(!empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php esc_html_e('Yes', 'sitepress') ?></option>
+# ?>
+# ><?php esc_html_e( 'Yes', 'sitepress' ); ?></option>
 # </select>
 
 msgid "Yes"
 msgstr ""
 
 # <div class="wrap">
-# <h2><?php echo esc_html_x('Edit Languages', 'Edit languages page: page title', 'sitepress') ?></h2>
+# <h2><?php echo esc_html_x( 'Edit Languages', 'Edit languages page: page title', 'sitepress' ); ?></h2>
 # <div id="icl_edit_languages_info">
 
 msgctxt "Edit languages page: page title"
@@ -5592,13 +5410,13 @@ msgstr ""
 
 # <div id="icl_edit_languages_info">
 # <?php echo esc_html_x( 'This table allows you to edit languages for your site. Each row represents a language.', 'Edit languages page: sentence #1', 'sitepress' ); ?>
-# <br /><br />
+# <br/><br/>
 
 msgctxt "Edit languages page: sentence #1"
 msgid "This table allows you to edit languages for your site. Each row represents a language."
 msgstr ""
 
-# <br /><br />
+# <br/><br/>
 # <?php echo esc_html_x( 'For each language, you need to enter the following information:', 'Edit languages page: sentence #2', 'sitepress' ); ?>
 # <ul>
 
@@ -5606,100 +5424,128 @@ msgctxt "Edit languages page: sentence #2"
 msgid "For each language, you need to enter the following information:"
 msgstr ""
 
-# <ul>
-# <li><strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #1"
 msgid "Code:"
 msgstr ""
 
-# <ul>
-# <li><strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #1, description"
 msgid "a unique value that identifies the language. Once entered, the language code cannot be changed."
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #2"
 msgid "Translations:"
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Code:', 'Edit languages page: subtitle #1', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'a unique value that identifies the language. Once entered, the language code cannot be changed.', 'Edit languages page: subtitle #1, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #2, description"
 msgid "the way the language name will be displayed in different languages."
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #3"
 msgid "Flag:"
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #3, description"
 msgid "the flag to display next to the language (optional). You can either upload your own flag or use one of WPML's built in flag images."
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #4"
 msgid "Default locale:"
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #4, description"
 msgid "This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly."
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #5"
 msgid "Encode URLs:"
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
+# <li>
+# <strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #5, description"
 msgid "yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure)."
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
-# </ul>
+# <li>
+# <strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #6"
 msgid "hreflang:"
 msgstr ""
 
-# <li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
-# <li><strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
-# </ul>
+# <li>
+# <strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?>
+# </li>
 
 msgctxt "Edit languages page: subtitle #6, description"
 msgid "the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase."
+msgstr ""
+
+# $languages_links[ 'all' ] = array(
+# 'url'  => $link_url, 'current' => 'all' == $current_language, 'anchor' => __( 'All languages', 'sitepress' ),
+# 'flag' => '<i class="otgs-ico-wpml"></i>'
+
+msgid "All languages"
+msgstr ""
+
+# $lang   = $languages_links[ $current_language ];
+# $help_tip_text = __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to your profile.', 'sitepress' );
+# 
+
+msgid "This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to your profile."
+msgstr ""
+
+# 'id' => $parent,
+# 'title'  => '<span title="' . __( 'Showing content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ] .'">'
+# . wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] )
+
+msgid "Showing content in:"
+msgstr ""
+
+# 'parent' => $parent, 'id' => $parent . '_' . $code, 'title' => wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] ), 'href' => $lang[ 'url' ], 'meta' => array(
+# 'title' => __( 'Show content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ],
+# )
+
+msgid "Show content in:"
 msgstr ""
 
 # $wizard_progress = new WPML_Setup_Wizard_Progress( $setup_wizard_step, array(
@@ -6283,123 +6129,32 @@ msgstr ""
 msgid "Your browser doesn't seem to be allowing cookies to be set."
 msgstr ""
 
-# case 'resetwpml':
-# $msg = esc_html__( 'WPML has been reset for the selected site.', 'sitepress' );
-# break;
+# '3.2'   => array(
+# 'message' => __('This version of WPML includes major updates and improvements.', 'sitepress' ),
+# 'link'    => '<a href="https://wpml.org/version/wpml-3-2/">' . __('WPML 3.2 release notes', 'sitepress') . '</a>',
 
-msgid "WPML has been reset for the selected site."
+msgid "This version of WPML includes major updates and improvements."
 msgstr ""
 
-# case 'deactivatewpml':
-# $msg = esc_html__( 'WPML has been deactivated for the selected site.', 'sitepress' );
-# break;
+# 'message' => __('This version of WPML includes major updates and improvements.', 'sitepress' ),
+# 'link'    => '<a href="https://wpml.org/version/wpml-3-2/">' . __('WPML 3.2 release notes', 'sitepress') . '</a>',
+# 'dismiss' => false
 
-msgid "WPML has been deactivated for the selected site."
+msgid "WPML 3.2 release notes"
 msgstr ""
 
-# case 'activatewpml':
-# $msg = esc_html__( 'WPML has been activated for the selected site.', 'sitepress' );
-# break;
-
-msgid "WPML has been activated for the selected site."
-msgstr ""
-
-# <div class="wrap">
-# <h2><?php echo esc_html__( 'WPML Network Setup', 'sitepress' ) ?>
-# <?php if ( isset( $_REQUEST['s'] ) && $_REQUEST['s'] ) {
-
-msgid "WPML Network Setup"
-msgstr ""
-
-# <?php if ( isset( $_REQUEST['s'] ) && $_REQUEST['s'] ) {
-# printf( '<span class="subtitle">' . esc_html__( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( $s ) );
-# } ?>
-
-msgid "Search results for &#8220;%s&#8221;"
-msgstr ""
-
-# $status_list = array(
-# 'archived' => array( 'site-archived', esc_html__( 'Archived' ) ),
-# 'spam'     => array( 'site-spammed', esc_html_x( 'Spam', 'site' ) ),
-
-msgid "Archived"
-msgstr ""
-
-# 'spam'     => array( 'site-spammed', esc_html_x( 'Spam', 'site' ) ),
-# 'deleted'  => array( 'site-deleted', esc_html__( 'Deleted' ) ),
-# 'mature'   => array( 'site-mature', esc_html__( 'Mature' ) ),
-
-msgid "Deleted"
-msgstr ""
-
-# 'deleted'  => array( 'site-deleted', esc_html__( 'Deleted' ) ),
-# 'mature'   => array( 'site-mature', esc_html__( 'Mature' ) ),
-# );
-
-msgid "Mature"
-msgstr ""
-
-# $actions['edit']    = '<span class="edit"><a href="' . esc_url( network_admin_url( 'site-info.php?id=' . $blog['blog_id'] ) ) . '">' . esc_html__( 'Edit', 'sitepress' ) . '</a></span>';
-# $actions['backend'] = "<span class='backend'><a href='" . esc_url( get_admin_url( $blog['blog_id'] ) ) . "' class='edit'>" . esc_html__( 'Dashboard', 'sitepress' ) . '</a></span>';
-# $actions['visit']   = "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'] ) ) . "' rel='permalink'>" . esc_html__( 'Visit', 'sitepress' ) . '</a></span>';
-
-msgid "Dashboard"
-msgstr ""
-
-# $actions['backend'] = "<span class='backend'><a href='" . esc_url( get_admin_url( $blog['blog_id'] ) ) . "' class='edit'>" . esc_html__( 'Dashboard', 'sitepress' ) . '</a></span>';
-# $actions['visit']   = "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'] ) ) . "' rel='permalink'>" . esc_html__( 'Visit', 'sitepress' ) . '</a></span>';
-# 
-
-msgid "Visit"
-msgstr ""
-
-# data-msg="<?php echo
-# sprintf( esc_html__( 'You are about to reset WPML for this site: %s.', 'sitepress' ), esc_html( $blogname ) ) .
-# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
-
-msgid "You are about to reset WPML for this site: %s."
-msgstr ""
-
-# sprintf( esc_html__( 'You are about to reset WPML for this site: %s.', 'sitepress' ), esc_html( $blogname ) ) .
-# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
-# ?>"><?php esc_html_e( 'Reset', 'sitepress' ) ?></a></td>
-
-msgid "All translation data will be lost if you reset WPML's data. They cannot be recovered later."
-msgstr ""
-
-# <tr>
-# <th><?php esc_html_e( 'Site', 'sitepress' ); ?></th>
-# <th><?php esc_html_e( 'Status', 'sitepress' ); ?></th>
-
-msgid "Site"
-msgstr ""
-
-# <?php if ( get_option( '_wpml_inactive', false, false ) ) : ?>
-# <?php esc_html_e( 'Inactive', 'sitepress' ); ?>
-# <div class="row-actions">
-
-msgid "Inactive"
-msgstr ""
-
-# <?php else : ?>
-# <?php esc_html_e( 'Active', 'sitepress' ); ?>
-# <div class="row-actions">
-
-msgid "Active"
-msgstr ""
-
-# <?php if ( $blog['blog_id'] != $current_blog->blog_id ) : ?>
-# <a href="<?php echo esc_url( wp_nonce_url( network_admin_url( 'sites.php?action=deactivatewpml&amp;id=' . (int) $blog['blog_id'] ), 'deactivatewpml' ) ) ?>"><?php esc_html_e( 'Deactivate', 'sitepress' ) ?></a>
+# <?php else: ?>
+# <a href="https://wpml.org/?cat=48"><?php _e('Learn more', 'sitepress')?></a>
 # <?php endif; ?>
 
-msgid "Deactivate"
+msgid "Learn more"
 msgstr ""
 
-# " " . esc_html__( "All translation data will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' )
-# ?>"><?php esc_html_e( 'Reset', 'sitepress' ) ?></a></td>
-# </tr>
+# ?>
+# <span title="<?php _e('Stop showing this message', 'sitepress') ?>" id="icl_dismiss_upgrade_notice" class="notice-dismiss"><span class="screen-reader-text"><?php _e('Dismiss', 'sitepress') ?></span></span>
+# <?php
 
-msgid "Reset"
+msgid "Stop showing this message"
 msgstr ""
 
 # <p style="margin-top: 20px;">
@@ -6449,6 +6204,230 @@ msgstr ""
 # </p>
 
 msgid "For retrieving debug information if asked by support person, use the %sdebug information%s page."
+msgstr ""
+
+# $message = '<p>';
+# $message .= sprintf( __( "In this version of WPML, you can give your taxonomy terms the same name across multiple languages. You need to update %d taxonomy terms on your website so that they display the same name without any language suffixes.", "sitepress" ), $suffix_count );
+# $message .= '</p>';
+
+msgid "In this version of WPML, you can give your taxonomy terms the same name across multiple languages. You need to update %d taxonomy terms on your website so that they display the same name without any language suffixes."
+msgstr ""
+
+# $output .= '<a name="termsuffixupdate"></a>';
+# $output .= '<tr><h3>' . __( "Remove language suffixes from taxonomy names.", 'sitepress' ) . '</h3></tr>';
+# 
+
+msgid "Remove language suffixes from taxonomy names."
+msgstr ""
+
+# 
+# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
+# 
+
+msgid "Old Name"
+msgstr ""
+
+# 
+# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
+# 
+
+msgid "Updated Name"
+msgstr ""
+
+# 
+# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
+# 
+
+msgid "Affected Taxonomies"
+msgstr ""
+
+# $output .= '</br></br>';
+# $output .= '<button id="icl-update-term-names" class="button-primary">' . __( 'Update term names', 'sitepress' ) . '</button>';
+# $output .= '<button id="icl-update-term-names-done" class="button-primary" disabled="disabled" style="display:none;">' . __( 'All term names updated', 'sitepress' ) . '</button>';
+
+msgid "Update term names"
+msgstr ""
+
+# $output .= '<button id="icl-update-term-names" class="button-primary">' . __( 'Update term names', 'sitepress' ) . '</button>';
+# $output .= '<button id="icl-update-term-names-done" class="button-primary" disabled="disabled" style="display:none;">' . __( 'All term names updated', 'sitepress' ) . '</button>';
+# $output .= '</div>';
+
+msgid "All term names updated"
+msgstr ""
+
+# if ( $update ) {
+# $text = __( 'Update %s translation', 'sitepress' );
+# } else {
+
+msgid "Update %s translation"
+msgstr ""
+
+# } else {
+# $text = __( 'Edit the %s translation', 'sitepress' );
+# }
+
+msgid "Edit the %s translation"
+msgstr ""
+
+# return array(
+# sprintf( __( 'Add translation to %s', 'sitepress' ), $this->active_langs[ $lang_code ]['display_name'] ),
+# $link,
+
+msgid "Add translation to %s"
+msgstr ""
+
+# <div class="inside">
+# <p><?php _e( 'This information allows our support team to see the versions of WordPress, plugins and theme on your site. Provide this information if requested in our support forum. No passwords or other confidential information is included.', 'sitepress' ) ?></p>
+# <br/>
+
+msgid "This information allows our support team to see the versions of WordPress, plugins and theme on your site. Provide this information if requested in our support forum. No passwords or other confidential information is included."
+msgstr ""
+
+# if ( $elements ) {
+# $msg = esc_html( __( "You haven't set your synchronization preferences for these %s: %s. Default value was selected.", 'sitepress' ) );
+# $notice .= '<div class="updated below-h2"><p>';
+
+msgid "You haven't set your synchronization preferences for these %s: %s. Default value was selected."
+msgstr ""
+
+# <div class="wpml-flex-table wpml-translation-setup-table wpml-margin-top-sm">
+# <?php $custom_types_ui->render_custom_types_header_ui( esc_html__( 'Post types', 'sitepress' ) ); ?>
+# <div class="wpml-flex-table-body">
+
+msgid "Post types"
+msgstr ""
+
+# <div class="wpml-section-header">
+# <h3><?php esc_html_e( 'Post Types Translation', 'sitepress' );?></h3>
+# </div>
+
+msgid "Post Types Translation"
+msgstr ""
+
+# <div class="wpml-section-header">
+# <h3><?php esc_html_e( 'Taxonomies Translation', 'sitepress' ); ?></h3>
+# </div>
+
+msgid "Taxonomies Translation"
+msgstr ""
+
+# <div class="wpml-section-header">
+# <h3><?php esc_html_e( 'Posts and pages synchronization', 'sitepress' ); ?></h3>
+# </div>
+
+msgid "Posts and pages synchronization"
+msgstr ""
+
+# <label><input type="checkbox" id="icl_sync_page_ordering" name="icl_sync_page_ordering" <?php checked( $sitepress_settings['sync_page_ordering'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize page order for translations', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize page order for translations"
+msgstr ""
+
+# <label><input type="checkbox" id="icl_sync_page_parent" name="icl_sync_page_parent" <?php checked( $sitepress_settings['sync_page_parent'] ) ?> value="1" />
+# <?php esc_html_e( 'Set page parent for translation according to page parent of the original language', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Set page parent for translation according to page parent of the original language"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_page_template" <?php checked( $sitepress_settings['sync_page_template'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize page template', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize page template"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_comment_status" <?php checked( $sitepress_settings['sync_comment_status'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize comment status', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize comment status"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_ping_status" <?php checked( $sitepress_settings['sync_ping_status'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize ping status', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize ping status"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_sticky_flag" <?php checked( $sitepress_settings['sync_sticky_flag'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize sticky flag', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize sticky flag"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_password" <?php checked( $sitepress_settings['sync_password'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize password for password protected posts', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize password for password protected posts"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_private_flag" <?php checked( $sitepress_settings['sync_private_flag'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize private flag', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize private flag"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_post_format" <?php checked( $sitepress_settings['sync_post_format'] ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize posts format', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize posts format"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_delete" <?php checked( $sitepress_settings['sync_delete'] ) ?> value="1" />
+# <?php esc_html_e( 'When deleting a post, delete translations as well', 'sitepress' ) ?></label>
+# </p>
+
+msgid "When deleting a post, delete translations as well"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_delete_tax" <?php checked( $sitepress_settings['sync_delete_tax'] ) ?> value="1" />
+# <?php esc_html_e( 'When deleting a taxonomy (category, tag or custom), delete translations as well', 'sitepress' ) ?></label>
+# </p>
+
+msgid "When deleting a taxonomy (category, tag or custom), delete translations as well"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_post_taxonomies" <?php checked( $sitepress_settings['sync_post_taxonomies'] ) ?> value="1" />
+# <?php esc_html_e( 'Copy taxonomy to translations', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Copy taxonomy to translations"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_post_date" <?php checked( $sitepress_settings['sync_post_date'] ) ?> value="1" />
+# <?php esc_html_e( 'Copy publishing date to translations', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Copy publishing date to translations"
+msgstr ""
+
+# <label><input type="checkbox" name="icl_sync_comments_on_duplicates" <?php checked( $sitepress->get_setting( 'sync_comments_on_duplicates' ) ) ?> value="1" />
+# <?php esc_html_e( 'Synchronize comments on duplicate content', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Synchronize comments on duplicate content"
+msgstr ""
+
+# <div class="wpml-section-content-inner">
+# <h4><?php esc_html_e( 'Page builders options', 'sitepress' ) ?></h4>
+# <?php $wpml_page_builder_options = new WPML_Page_Builder_Settings(); ?>
+
+msgid "Page builders options"
+msgstr ""
+
+# <label><input type="checkbox" name="wpml_pb_translate_raw_html" <?php checked( $wpml_page_builder_options->is_raw_html_translatable() ); ?> value="1" />
+# <?php esc_html_e( 'Send to translation the content of raw HTML cells', 'sitepress' ) ?></label>
+# </p>
+
+msgid "Send to translation the content of raw HTML cells"
 msgstr ""
 
 # <div id="icl_theme_plugins_compatibility">
@@ -6833,132 +6812,6 @@ msgctxt "Sets the translation status to DUPLICATE in the icl_translation_status 
 msgid "Partially done"
 msgstr ""
 
-# '3.2'   => array(
-# 'message' => __('This version of WPML includes major updates and improvements.', 'sitepress' ),
-# 'link'    => '<a href="https://wpml.org/version/wpml-3-2/">' . __('WPML 3.2 release notes', 'sitepress') . '</a>',
-
-msgid "This version of WPML includes major updates and improvements."
-msgstr ""
-
-# 'message' => __('This version of WPML includes major updates and improvements.', 'sitepress' ),
-# 'link'    => '<a href="https://wpml.org/version/wpml-3-2/">' . __('WPML 3.2 release notes', 'sitepress') . '</a>',
-# 'dismiss' => false
-
-msgid "WPML 3.2 release notes"
-msgstr ""
-
-# <?php else: ?>
-# <a href="https://wpml.org/?cat=48"><?php _e('Learn more', 'sitepress')?></a>
-# <?php endif; ?>
-
-msgid "Learn more"
-msgstr ""
-
-# ?>
-# <span title="<?php _e('Stop showing this message', 'sitepress') ?>" id="icl_dismiss_upgrade_notice" class="notice-dismiss"><span class="screen-reader-text"><?php _e('Dismiss', 'sitepress') ?></span></span>
-# <?php
-
-msgid "Stop showing this message"
-msgstr ""
-
-# $languages_links[ 'all' ] = array(
-# 'url'  => $link_url, 'current' => 'all' == $current_language, 'anchor' => __( 'All languages', 'sitepress' ),
-# 'flag' => '<i class="otgs-ico-wpml"></i>'
-
-msgid "All languages"
-msgstr ""
-
-# $lang   = $languages_links[ $current_language ];
-# $help_tip_text = __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to your profile.', 'sitepress' );
-# 
-
-msgid "This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to your profile."
-msgstr ""
-
-# 'id' => $parent,
-# 'title'  => '<span title="' . __( 'Showing content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ] .'">'
-# . wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] )
-
-msgid "Showing content in:"
-msgstr ""
-
-# 'parent' => $parent, 'id' => $parent . '_' . $code, 'title' => wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] ), 'href' => $lang[ 'url' ], 'meta' => array(
-# 'title' => __( 'Show content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ],
-# )
-
-msgid "Show content in:"
-msgstr ""
-
-# if ( $update ) {
-# $text = __( 'Update %s translation', 'sitepress' );
-# } else {
-
-msgid "Update %s translation"
-msgstr ""
-
-# } else {
-# $text = __( 'Edit the %s translation', 'sitepress' );
-# }
-
-msgid "Edit the %s translation"
-msgstr ""
-
-# return array(
-# sprintf( __( 'Add translation to %s', 'sitepress' ), $this->active_langs[ $lang_code ]['display_name'] ),
-# $link,
-
-msgid "Add translation to %s"
-msgstr ""
-
-# $message = '<p>';
-# $message .= sprintf( __( "In this version of WPML, you can give your taxonomy terms the same name across multiple languages. You need to update %d taxonomy terms on your website so that they display the same name without any language suffixes.", "sitepress" ), $suffix_count );
-# $message .= '</p>';
-
-msgid "In this version of WPML, you can give your taxonomy terms the same name across multiple languages. You need to update %d taxonomy terms on your website so that they display the same name without any language suffixes."
-msgstr ""
-
-# $output .= '<a name="termsuffixupdate"></a>';
-# $output .= '<tr><h3>' . __( "Remove language suffixes from taxonomy names.", 'sitepress' ) . '</h3></tr>';
-# 
-
-msgid "Remove language suffixes from taxonomy names."
-msgstr ""
-
-# 
-# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
-# 
-
-msgid "Old Name"
-msgstr ""
-
-# 
-# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
-# 
-
-msgid "Updated Name"
-msgstr ""
-
-# 
-# $output .= '<tr id="icl-updated-term-names-headings"><th></th><th>' . __( "Old Name", "sitepress" ) . '</th><th>' . __( "Updated Name", "sitepress" ) . '</th><th>' . __( "Affected Taxonomies", "sitepress" ) . '</th></tr>';
-# 
-
-msgid "Affected Taxonomies"
-msgstr ""
-
-# $output .= '</br></br>';
-# $output .= '<button id="icl-update-term-names" class="button-primary">' . __( 'Update term names', 'sitepress' ) . '</button>';
-# $output .= '<button id="icl-update-term-names-done" class="button-primary" disabled="disabled" style="display:none;">' . __( 'All term names updated', 'sitepress' ) . '</button>';
-
-msgid "Update term names"
-msgstr ""
-
-# $output .= '<button id="icl-update-term-names" class="button-primary">' . __( 'Update term names', 'sitepress' ) . '</button>';
-# $output .= '<button id="icl-update-term-names-done" class="button-primary" disabled="disabled" style="display:none;">' . __( 'All term names updated', 'sitepress' ) . '</button>';
-# $output .= '</div>';
-
-msgid "All term names updated"
-msgstr ""
-
 # echo '<div class="updated message">';
 # echo '<h3>' . sprintf(__('<i>%s</i> integration', 'sitepress'), str_replace('_', ' ', substr($this->plugin_cp_class, 7))) . '</h3>';
 # echo '<p>';
@@ -6994,965 +6847,6 @@ msgstr ""
 msgid "You are using a caching plugin. When you translate strings, the cache needs to be cleared in order for the translation to display."
 msgstr ""
 
-# } else {
-# $error = __( 'Invalid site key for the current site.', 'installer' ) . '<br /><div class="installer-footnote">' . __( 'Please note that the site key is case sensitive.', 'installer' ) . '</div>';
-# }
-
-msgid "Invalid site key for the current site."
-msgstr ""
-
-# } else {
-# $error = __( 'Invalid site key for the current site.', 'installer' ) . '<br /><div class="installer-footnote">' . __( 'Please note that the site key is case sensitive.', 'installer' ) . '</div>';
-# }
-
-msgid "Please note that the site key is case sensitive."
-msgstr ""
-
-# $repository_data->set_subscription( null );
-# $error = __( 'Invalid site key for the current site. If the error persists, try to un-register first and then register again with the same site key.', 'installer' );
-# }
-
-msgid "Invalid site key for the current site. If the error persists, try to un-register first and then register again with the same site key."
-msgstr ""
-
-# if ( preg_match( '#Could not resolve host: (.*)#', $error, $matches ) || preg_match( '#Couldn\'t resolve host \'(.*)\'#', $error, $matches ) ) {
-# $error = sprintf( __( "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet. You can still use the plugin without registration, but you will not receive automated updates.", 'installer' ),
-# '<strong><i>' . $repository_data->get_product_name() . '</i></strong>',
-
-msgid "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet. You can still use the plugin without registration, but you will not receive automated updates."
-msgstr ""
-
-# if ( ! $repository || ! $nonce || ! $site_key || ! wp_verify_nonce( $nonce, 'save_site_key_' . $repository ) ) {
-# wp_send_json_error( esc_html__( 'Invalid request!', 'installer' ) );
-# }
-
-msgid "Invalid request!"
-msgstr ""
-
-# 'commercial',
-# __( 'Installer Support', 'installer' ),
-# 'Installer Support',
-
-msgid "Installer Support"
-msgstr ""
-
-# 'title' => __( 'Installer Support', 'installer' ),
-# 'content' => __( 'For retrieving Installer debug information use the %s page.', 'installer' ),
-# 'link' => array(
-
-msgid "For retrieving Installer debug information use the %s page."
-msgstr ""
-
-# 'log'          => array(
-# 'title'             => __( 'Installer Log', 'installer' ),
-# 'request_url'       => __( 'Request URL', 'installer' ),
-
-msgid "Installer Log"
-msgstr ""
-
-# 'title'             => __( 'Installer Log', 'installer' ),
-# 'request_url'       => __( 'Request URL', 'installer' ),
-# 'request_arguments' => __( 'Request Arguments', 'installer' ),
-
-msgid "Request URL"
-msgstr ""
-
-# 'request_url'       => __( 'Request URL', 'installer' ),
-# 'request_arguments' => __( 'Request Arguments', 'installer' ),
-# 'response'          => __( 'Response', 'installer' ),
-
-msgid "Request Arguments"
-msgstr ""
-
-# 'request_arguments' => __( 'Request Arguments', 'installer' ),
-# 'response'          => __( 'Response', 'installer' ),
-# 'component'         => __( 'Component', 'installer' ),
-
-msgid "Response"
-msgstr ""
-
-# 'response'          => __( 'Response', 'installer' ),
-# 'component'         => __( 'Component', 'installer' ),
-# 'time'              => __( 'Time', 'installer' ),
-
-msgid "Component"
-msgstr ""
-
-# 'component'         => __( 'Component', 'installer' ),
-# 'time'              => __( 'Time', 'installer' ),
-# 'empty_log'         => __( 'Log is empty', 'installer' ),
-
-msgid "Time"
-msgstr ""
-
-# 'time'              => __( 'Time', 'installer' ),
-# 'empty_log'         => __( 'Log is empty', 'installer' ),
-# ),
-
-msgid "Log is empty"
-msgstr ""
-
-# 'tester'       => array(
-# 'title'        => __( 'Installer System Status', 'installer' ),
-# 'button_label' => __( 'Check Now', 'installer' ),
-
-msgid "Installer System Status"
-msgstr ""
-
-# 'title'        => __( 'Installer System Status', 'installer' ),
-# 'button_label' => __( 'Check Now', 'installer' ),
-# ),
-
-msgid "Check Now"
-msgstr ""
-
-# 'requirements' => array(
-# 'title' => __( 'Required PHP Libraries', 'installer' ),
-# ),
-
-msgid "Required PHP Libraries"
-msgstr ""
-
-# 'instances' => array(
-# 'title' => __( 'All Installer Instances', 'installer' ),
-# 'path' => __( 'Path', 'installer' ),
-
-msgid "All Installer Instances"
-msgstr ""
-
-# 'title' => __( 'All Installer Instances', 'installer' ),
-# 'path' => __( 'Path', 'installer' ),
-# 'version' => __( 'Version', 'installer' ),
-
-msgid "Path"
-msgstr ""
-
-# 'path' => __( 'Path', 'installer' ),
-# 'version' => __( 'Version', 'installer' ),
-# 'high_priority' => __( 'High priority', 'installer' ),
-
-msgid "Version"
-msgstr ""
-
-# 'version' => __( 'Version', 'installer' ),
-# 'high_priority' => __( 'High priority', 'installer' ),
-# 'delegated' => __( 'Delegated', 'installer' ),
-
-msgid "High priority"
-msgstr ""
-
-# 'high_priority' => __( 'High priority', 'installer' ),
-# 'delegated' => __( 'Delegated', 'installer' ),
-# ),
-
-msgid "Delegated"
-msgstr ""
-
-# 'type'        => 'api',
-# 'description' => __( 'WPML API server', 'installer' )
-# ),
-
-msgid "WPML API server"
-msgstr ""
-
-# 'type'        => 'api',
-# 'description' => __( 'Toolset API server', 'installer' )
-# ),
-
-msgid "Toolset API server"
-msgstr ""
-
-# 'type'        => 'products',
-# 'description' => __( 'WPML remote products file', 'installer' )
-# ),
-
-msgid "WPML remote products file"
-msgstr ""
-
-# 'type'        => 'products',
-# 'description' => __( 'Toolset remote products file', 'installer' )
-# ),
-
-msgid "Toolset remote products file"
-msgstr ""
-
-# public function win_paths_exception_message() {
-# return __( 'Downloading is not possible. WordPress cannot create required folders because of the
-# 256 characters limitation of the current Windows environment.', 'installer' );
-
-msgid "Downloading is not possible. WordPress cannot create required folders because of the\n                                        256 characters limitation of the current Windows environment."
-msgstr ""
-
-# echo '<div class="wrap">';
-# echo '<h2>' . __( 'Update Plugin' ) . '</h2>';
-# echo '<a href="' . admin_url( 'update-core.php' ) . '">' . __( 'Return to the updates page', 'installer' ) . '</a>';
-
-msgid "Update Plugin"
-msgstr ""
-
-# echo '<h2>' . __( 'Update Plugin' ) . '</h2>';
-# echo '<a href="' . admin_url( 'update-core.php' ) . '">' . __( 'Return to the updates page', 'installer' ) . '</a>';
-# echo '</div>';
-
-msgid "Return to the updates page"
-msgstr ""
-
-# $installer_doc_url  = 'https://wpml.org/?p=72674#automated-updates';
-# $installer_doc_link = '<a href="' . $installer_doc_url . '">' . __( 'OTGS Installer', 'installer' ) . '</a>';
-# 
-
-msgid "OTGS Installer"
-msgstr ""
-
-# echo sprintf(
-# __( '%s, responsible for receiving automated updates for WPML and Toolset, requires the following PHP component(s) in order to function:', 'installer' ),
-# $installer_doc_link
-
-msgid "%s, responsible for receiving automated updates for WPML and Toolset, requires the following PHP component(s) in order to function:"
-msgstr ""
-
-# 
-# $minimum_requirements_link = '<a href="https://wpml.org/?page_id=716">' . __( 'Minimum WPML requirements' ) . '</a>';
-# echo '<p>' . sprintf( __( 'Learn more: %s', 'installer' ), $minimum_requirements_link ) . '</p>';
-
-msgid "Minimum WPML requirements"
-msgstr ""
-
-# $minimum_requirements_link = '<a href="https://wpml.org/?page_id=716">' . __( 'Minimum WPML requirements' ) . '</a>';
-# echo '<p>' . sprintf( __( 'Learn more: %s', 'installer' ), $minimum_requirements_link ) . '</p>';
-# 
-
-msgid "Learn more: %s"
-msgstr ""
-
-# $theme_repo_name = $this->installer_theme_get_repo_product_name( $frontend_tab_selected );;
-# $response['unregistered_messages'] = sprintf( __( 'To install and update %s, please %sregister%s %s for this site.', 'installer' ),
-# $theme_repo_name, '<a href="' . $registration_url . '">', '</a>', $theme_repo_name );
-
-msgid "To install and update %s, please %sregister%s %s for this site."
-msgstr ""
-
-# 'strings'   => array(
-# 'valid_subscription' => sprintf( __( 'You must have a valid subscription in order to get upgrades or support for this plugin. %sPurchase a subscription or enter an existing site key%s.', 'installer' ),
-# '<a href="' . $menu_url . '">', '</a>' ),
-
-msgid "You must have a valid subscription in order to get upgrades or support for this plugin. %sPurchase a subscription or enter an existing site key%s."
-msgstr ""
-
-# 'strings'   => array(
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-
-msgid "You are using the complementary %1$s. For the %2$s, %3$s."
-msgstr ""
-
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-# ),
-
-msgid "complete set of features"
-msgstr ""
-
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-# ),
-
-msgid "upgrade to Toolset"
-msgstr ""
-
-# 'strings'                    => array(
-# 'heading'                 => __( 'Reporting to', 'installer' ),
-# 'report_to'               => __( 'Report to', 'installer' ),
-
-msgid "Reporting to"
-msgstr ""
-
-# 'heading'                 => __( 'Reporting to', 'installer' ),
-# 'report_to'               => __( 'Report to', 'installer' ),
-# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
-
-msgid "Report to"
-msgstr ""
-
-# 'report_to'               => __( 'Report to', 'installer' ),
-# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
-# 'installer' ),
-
-msgid "Send theme and plugins information, in order to get faster support and compatibility alerts"
-msgstr ""
-
-# 'installer' ),
-# 'radio_report_no'         => __( "Don't send this information and skip compatibility alerts",
-# 'installer' ),
-
-msgid "Don't send this information and skip compatibility alerts"
-msgstr ""
-
-# 'installer' ),
-# 'which_theme_and_plugins' => __( 'which theme and plugins you are using.', 'installer' ),
-# ),
-
-msgid "which theme and plugins you are using."
-msgstr ""
-
-# 'use_radio'                  => false,
-# 'privacy_policy_text'        => __( 'Privacy and data usage policy', 'installer' ),
-# 'plugin_site'                => null,
-
-msgid "Privacy and data usage policy"
-msgstr ""
-
-# if ( self::CHANNEL_DEVELOPMENT === $id ) {
-# $channel = __( 'Development', 'installer' );
-# } elseif ( self::CHANNEL_BETA === $id ) {
-
-msgid "Development"
-msgstr ""
-
-# } elseif ( self::CHANNEL_BETA === $id ) {
-# $channel = __( 'Beta', 'installer' );
-# } else {
-
-msgid "Beta"
-msgstr ""
-
-# } else {
-# $channel = __( 'Production', 'installer' );
-# }
-
-msgid "Production"
-msgstr ""
-
-# $translation_array = array(
-# 'installing' => __( 'Installing %s', 'installer' ),
-# 'updating'   => __( 'Updating %s', 'installer' ),
-
-msgid "Installing %s"
-msgstr ""
-
-# 'installing' => __( 'Installing %s', 'installer' ),
-# 'updating'   => __( 'Updating %s', 'installer' ),
-# 'activating' => __( 'Activating %s', 'installer' )
-
-msgid "Updating %s"
-msgstr ""
-
-# 'updating'   => __( 'Updating %s', 'installer' ),
-# 'activating' => __( 'Activating %s', 'installer' )
-# );
-
-msgid "Activating %s"
-msgstr ""
-
-# $this->menu_multisite_redirect();
-# add_options_page( __( 'Installer', 'installer' ), __( 'Installer', 'installer' ), 'manage_options', 'installer', array(
-# $this,
-
-msgid "Installer"
-msgstr ""
-
-# public function types_upgrade_link( $links ) {
-# $links[] = '<a style="color: #55AA55" target="_blank" href="'. esc_url( 'https://toolset.com/buy/?utm_source=typesplugin&utm_campaign=moving-types-to-toolset&utm_medium=plugins-page&utm_term=upgrade-link' ) .'">' . __( 'Upgrade', 'installer' ) . '</a>';
-# return $links;
-
-msgid "Upgrade"
-msgstr ""
-
-# public function plugins_action_links_registered( $links ) {
-# $links[] = '<a href="' . $this->menu_url() . '">' . __( 'Registered', 'installer' ) . '</a>';
-# 
-
-msgid "Registered"
-msgstr ""
-
-# public function plugins_action_links_not_registered( $links ) {
-# $links[] = '<a href="' . $this->menu_url() . '">' . __( 'Register', 'installer' ) . '</a>';
-# 
-
-msgid "Register"
-msgstr ""
-
-# 'type' => 'error',
-# 'text' => sprintf( __( 'You are using an invalid site key defined as the constant %s (most likely in wp-config.php).
-# Please remove it or use the correct value in order to be able to register correctly.', 'installer' ), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper( $repository_id ) )
-
-msgid "You are using an invalid site key defined as the constant %s (most likely in wp-config.php).\n                                                Please remove it or use the correct value in order to be able to register correctly."
-msgstr ""
-
-# echo '<div class="updated error otgs-is-dismissible"><p>';
-# printf( __( "To get automatic updates, you need to register %s for this site. %sRegister %s%s", 'sitepress' ),
-# $nag['product_name'], '<a class="button-primary" href="' . $this->menu_url() . '">', $nag['product_name'], '</a>' );
-
-msgid "To get automatic updates, you need to register %s for this site. %sRegister %s%s"
-msgstr ""
-
-# 
-# $tabs['commercial'] = __( 'Commercial', 'installer' );
-# 
-
-msgid "Commercial"
-msgstr ""
-
-# 
-# $error = sprintf( __( "Installer cannot display the products information because the automatic updating for %s was explicitly disabled with the configuration below (usually in wp-config.php):", 'installer' ), strtoupper( join( ', ', $repository_names ) ) );
-# $error .= '<br /><br /><code>define("OTGS_DISABLE_AUTO_UPDATES", true);</code><br /><br />';
-
-msgid "Installer cannot display the products information because the automatic updating for %s was explicitly disabled with the configuration below (usually in wp-config.php):"
-msgstr ""
-
-# $error .= '<br /><br /><code>define("OTGS_DISABLE_AUTO_UPDATES", true);</code><br /><br />';
-# $error .= sprintf( __( "In order to see the products information, please run the %smanual updates check%s to initialize the products list or (temporarily) remove the above code.", 'installer' ), '<a href="' . admin_url( 'update-core.php' ) . '">', '</a>' );
-# 
-
-msgid "In order to see the products information, please run the %smanual updates check%s to initialize the products list or (temporarily) remove the above code."
-msgstr ""
-
-# 
-# $error = sprintf( __( "Installer cannot contact our updates server to get information about the available products and check for new versions. If you are seeing this message for the first time, you can ignore it, as it may be a temporary communication problem. If the problem persists and your WordPress admin is slowing down, you can disable automated version checks. Add the following line to your wp-config.php file:", 'installer' ), strtoupper( $id ) );
-# $error .= '<br /><br /><code>define("OTGS_DISABLE_AUTO_UPDATES", true);</code>';
-
-msgid "Installer cannot contact our updates server to get information about the available products and check for new versions. If you are seeing this message for the first time, you can ignore it, as it may be a temporary communication problem. If the problem persists and your WordPress admin is slowing down, you can disable automated version checks. Add the following line to your wp-config.php file:"
-msgstr ""
-
-# 
-# echo '<p>' . __( 'No repositories defined.', 'installer' ) . '</p>';
-# 
-
-msgid "No repositories defined."
-msgstr ""
-
-# $days    = 30;
-# $message = __( 'You will have to renew your subscription in order to continue getting the updates and support.', 'installer' );
-# 
-
-msgid "You will have to renew your subscription in order to continue getting the updates and support."
-msgstr ""
-
-# echo $this->_plugins_renew_warnings[ $plugin_file ] . ' ';
-# printf( __( '%sRenew here%s.', 'installer' ),
-# '<a href="' . $this->menu_url() . '">', '</a>' );
-
-msgid "%sRenew here%s."
-msgstr ""
-
-# $ret     = false;
-# $message = sprintf( __( 'Connection failed! Please refresh the page and try again. (%s)', 'installer' ), '<i>' . $connection_error . '</i>' );
-# } else { //subscription not valid
-
-msgid "Connection failed! Please refresh the page and try again. (%s)"
-msgstr ""
-
-# $ret     = false;
-# $message = __( 'Your subscription appears to no longer be valid. Please try to register again using a valid site key.', 'installer' );
-# }
-
-msgid "Your subscription appears to no longer be valid. Please try to register again using a valid site key."
-msgstr ""
-
-# 
-# $error_message = sprintf( __( "%s cannot update because your site's registration is not valid. Please %sregister %s%s again for this site first.", 'installer' ),
-# '<strong>' . $plugin_name . '</strong>', '<a target="_top" href="' . $this->menu_url() . '&validate_repository=' . $plugin_repository .
-
-msgid "%s cannot update because your site's registration is not valid. Please %sregister %s%s again for this site first."
-msgstr ""
-
-# echo '<div class="wrap">';
-# echo '<h2>' . __( 'Update Plugin', 'installer' ) . '</h2>';
-# echo '<a href="' . admin_url( 'plugins.php' ) . '">' . __( 'Return to the plugins page', 'installer' ) . '</a>';
-
-msgid "Update Plugin"
-msgstr ""
-
-# echo '<h2>' . __( 'Update Plugin', 'installer' ) . '</h2>';
-# echo '<a href="' . admin_url( 'plugins.php' ) . '">' . __( 'Return to the plugins page', 'installer' ) . '</a>';
-# echo '</div>';
-
-msgid "Return to the plugins page"
-msgstr ""
-
-# echo '<div><p class="installer-warn-box">' .
-# sprintf( _n( 'Your subscription expires in %d day.', 'Your subscription expires in %d days.', $days_to_expiration, 'installer' ), $days_to_expiration ) .
-# '<br />' . $message .
-
-msgid "Your subscription expires in %d day."
-msgstr ""
-
-# echo '<div><p class="installer-warn-box">' .
-# sprintf( _n( 'Your subscription expires in %d day.', 'Your subscription expires in %d days.', $days_to_expiration, 'installer' ), $days_to_expiration ) .
-# '<br />' . $message .
-
-msgid "Your subscription expires in %d days."
-msgstr ""
-
-# echo esc_attr( sprintf(
-# __( "Something went wrong and we could not install all updates from the %s channel. Click here to %stry again%s. If the errors persist, please switch back to the Production channel and contact the %s%s support%s.", 'installer' ),
-# '%CHANNEL%',
-
-msgid "Something went wrong and we could not install all updates from the %s channel. Click here to %stry again%s. If the errors persist, please switch back to the Production channel and contact the %s%s support%s."
-msgstr ""
-
-# <?php printf(
-# __("You are using a potentially less stable channel for %s. If you didn't enable this on purpose, you should switch to the 'Production' channel.", 'installer'),
-# WP_Installer()->get_generic_product_name( $repository_id )
-
-msgid "You are using a potentially less stable channel for %s. If you didn't enable this on purpose, you should switch to the 'Production' channel."
-msgstr ""
-
-# echo esc_attr( sprintf(
-# esc_attr__( "There was a problem switching to the %s channel. You can %sretry%s. If the problem continues, please %sdownload %s%s and install again manually", 'installer' ),
-# '%CHANNEL%',
-
-msgid "There was a problem switching to the %s channel. You can %sretry%s. If the problem continues, please %sdownload %s%s and install again manually"
-msgstr ""
-
-# <span class="installer-status-note" <?php if( $can_switch ): ?>style="display:none" <?php endif; ?>>
-# <?php _e("To select different update channels (beta, development) you must update your existing products to their most recent stable versions.", 'installer') ?>
-# </span>
-
-msgid "To select different update channels (beta, development) you must update your existing products to their most recent stable versions."
-msgstr ""
-
-# <span class="spinner spinner-with-text">
-# <?php _e( "Updating the plugins on your site. Please don't close this page or navigate away.", 'installer' ); ?>
-# </span>
-
-msgid "Updating the plugins on your site. Please don't close this page or navigate away."
-msgstr ""
-
-# <p class="alignright">
-# <button class="button-secondary js-cancel"><?php _e("Cancel", 'installer') ?></button>
-# <button class="button-primary js-proceed"><?php _e("Switch", 'installer') ?></button>
-
-msgid "Cancel"
-msgstr ""
-
-# <button class="button-secondary js-cancel"><?php _e("Cancel", 'installer') ?></button>
-# <button class="button-primary js-proceed"><?php _e("Switch", 'installer') ?></button>
-# </p>
-
-msgid "Switch"
-msgstr ""
-
-# <p>
-# <?php _e( 'The plugins will update to the most recent version in the channel that you selected.', 'installer') ?>
-# </p>
-
-msgid "The plugins will update to the most recent version in the channel that you selected."
-msgstr ""
-
-# <input type="checkbox" value="1" class="js-remember"/>
-# &nbsp;<?php _e( 'Remember my preference.', 'installer') ?><br />
-# </label>
-
-msgid "Remember my preference."
-msgstr ""
-
-# <label>
-# <?php esc_html_e('Updates channel:', 'installer'); ?>
-# <select class="installer-channel-selector" data-repository-id="<?php echo $repository_id ?>"<?php if( !$can_switch ): ?> disabled<?php endif ?>>
-
-msgid "Updates channel:"
-msgstr ""
-
-# <?php if( !WP_Installer()->dependencies->is_uploading_allowed() ): ?>
-# <p class="installer-error-box"><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'),
-# '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
-
-msgid "Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s."
-msgstr ""
-
-# <th>&nbsp;</th>
-# <th><?php _e('Plugin', 'installer') ?></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
-
-msgid "Plugin"
-msgstr ""
-
-# <td class="twelve">
-# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
-# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
-
-msgid "downloading..."
-msgstr ""
-
-# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
-# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
-# </td>
-
-msgid "failed!"
-msgstr ""
-
-# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
-# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
-# </td>
-
-msgid "downloaded"
-msgstr ""
-
-# <td class="twelve">
-# <div class="installer-status-activating"><?php _e('activating', 'installer') ?></div>
-# <div class="installer-status-activated"><?php _e('activated', 'installer') ?></div>
-
-msgid "activating"
-msgstr ""
-
-# <div class="installer-status-activating"><?php _e('activating', 'installer') ?></div>
-# <div class="installer-status-activated"><?php _e('activated', 'installer') ?></div>
-# </td>
-
-msgid "activated"
-msgstr ""
-
-# &nbsp;
-# <label><input name="activate" type="checkbox" value="1" disabled="disabled" />&nbsp;<?php _e('Activate after download', 'installer') ?></label>
-# 
-
-msgid "Activate after download"
-msgstr ""
-
-# <div class="installer-download-progress-status"></div>
-# <div class="installer-status-success"><?php _e('Operation complete!', 'installer') ?></div>
-# 
-
-msgid "Operation complete!"
-msgstr ""
-
-# 
-# <span class="installer-revalidate-message hidden"><?php _e("Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again.", 'installer') ?></span>
-# </form>
-
-msgid "Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again."
-msgstr ""
-
-# <th><?php _e('Plugin', 'installer') ?></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
-
-msgid "Available"
-msgstr ""
-
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
-
-msgid "Installed"
-msgstr ""
-
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
-
-msgid "Downloading"
-msgstr ""
-
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
-# </tr>
-
-msgid "Activate"
-msgstr ""
-
-# <br />
-# <input type="submit" class="button-secondary" value="<?php esc_attr_e('Download', 'installer') ?>" disabled="disabled" />
-# &nbsp;
-
-msgid "Download"
-msgstr ""
-
-# <th><?php _e('Installed', 'installer') ?></th>
-# <th><?php _e('Current', 'installer') ?></th>
-# <th><?php _e('Released', 'installer') ?></th>
-
-msgid "Current"
-msgstr ""
-
-# <th><?php _e('Current', 'installer') ?></th>
-# <th><?php _e('Released', 'installer') ?></th>
-# <th>&nbsp;</th>
-
-msgid "Released"
-msgstr ""
-
-# <span class="<?php echo $class ?>"><?php echo $v; ?></span>
-# <?php if ( $this->plugin_is_embedded_version( $download['name'], $download['slug'] ) ): ?>&nbsp;<?php _e( '(embedded)', 'installer' ); ?><?php endif; ?>
-# <?php if(
-
-msgid "(embedded)"
-msgstr ""
-
-# <td>
-# <span class="installer-status-installing"><?php _e('installing...', 'installer') ?></span>
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-
-msgid "installing..."
-msgstr ""
-
-# <span class="installer-status-installing"><?php _e('installing...', 'installer') ?></span>
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-
-msgid "updating..."
-msgstr ""
-
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-# <span class="installer-status-updated" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('updated', 'installer') ?></span>
-
-msgid "installed"
-msgstr ""
-
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-# <span class="installer-status-updated" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('updated', 'installer') ?></span>
-# </td>
-
-msgid "updated"
-msgstr ""
-
-# 
-# <span class="installer-revalidate-message hidden"><?php _e("Download failed!\n\nPlease refresh the page and try again.", 'installer') ?></span>
-# </form>
-
-msgid "Download failed!\n\nPlease refresh the page and try again."
-msgstr ""
-
-# <?php if ( !empty( $download['release-notes'] ) ): ?>
-# <a class="js-release-notes handle" href="#"><?php esc_html_e( 'Release notes', 'installer' ) ?></a></td>
-# <?php endif; ?>
-
-msgid "Release notes"
-msgstr ""
-
-# if(empty($args['repository']) || empty($args['package']) || empty($args['product'])){
-# echo __('Incorrect setup', 'installer');
-# return;
-
-msgid "Incorrect setup"
-msgstr ""
-
-# if(!$product){
-# echo __('Invalid product', 'installer');
-# return;
-
-msgid "Invalid product"
-msgstr ""
-
-# }else{
-# echo __('Unknown repository', 'installer');
-# return;
-
-msgid "Unknown repository"
-msgstr ""
-
-# if($subscription_type != $product['subscription_type'] && !$this->have_superior_subscription($subscription_type, $product) && $site_key){
-# $subscription_no_match = sprintf(__(' Your current site key (%s) does not match the selected product (%s).', 'installer'), $site_key, $product['name']);
-# }
-
-msgid " Your current site key (%s) does not match the selected product (%s)."
-msgstr ""
-
-# 
-# <a class="button-primary" href="<?php echo $this->append_parameters_to_buy_url($product['url'], $repository_id, $args) ?>"><?php printf(__('Buy %s', 'installer'), $args['product_name']) ?></a>
-# 
-
-msgid "Buy %s"
-msgstr ""
-
-# <br />
-# <?php printf(__('Already bought %s?', 'installer'), $args['product_name']) ?>
-# <a class="enter_site_key_js<?php if( WP_Installer::get_repository_hardcoded_site_key( $repository_id ) ): ?> disabled<?php endif ?>" href="#"
-
-msgid "Already bought %s?"
-msgstr ""
-
-# <li>
-# <a href="<?php echo $this->append_parameters_to_buy_url($renewal['url'], $repository_id, $args) ?>"><?php printf(__('Renew %s', 'installer'), $args['product_name']) ?></a>
-# </li>
-
-msgid "Renew %s"
-msgstr ""
-
-# >
-# <?php printf(__("Remove current site key (%s)", 'installer'), $site_key) ?>
-# </a>
-
-msgid "Remove current site key (%s)"
-msgstr ""
-
-# <?php if($support_link): ?>
-# <p><a href="<?php echo $support_link ?>" target="_blank"><?php printf(__('%s support on wpml.org', 'installer'), $args['name'] ) ?></a></p>
-# 
-
-msgid "%s support on wpml.org"
-msgstr ""
-
-# disabled="disabled"
-# title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
-# <?php endif; ?>
-
-msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register."
-msgstr ""
-
-# disabled="disabled"
-# title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
-# <?php endif; ?>
-
-msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister."
-msgstr ""
-
-# >
-# <?php _e('Enter site key', 'installer') ?>
-# </a>&nbsp;&nbsp;
-
-msgid "Enter site key"
-msgstr ""
-
-# 
-# <div><p class="installer-warn-box"><?php _e('Subscription is expired.', 'installer') ?></p></div>
-# 
-
-msgid "Subscription is expired."
-msgstr ""
-
-# <input type="text" size="10" name="site_key_<?php echo $repository_id ?>" />
-# <input class="button-secondary" type="submit" value="<?php esc_attr_e('Add', 'installer') ?>" />
-# </form>
-
-msgid "Add"
-msgstr ""
-
-# <a class="remove_site_key_js" href="#" data-repository=<?php echo $repository_id ?>
-# data-confirmation="<?php esc_attr_e('Are you sure you want to remove this site key?', 'installer') ?>"
-# data-nonce="<?php echo wp_create_nonce('remove_site_key_' . $repository_id) ?>"
-
-msgid "Are you sure you want to remove this site key?"
-msgstr ""
-
-# >
-# <?php printf(__('Register %s', 'installer'), $generic_product_name); ?>
-# </a>
-
-msgid "Register %s"
-msgstr ""
-
-# . '">'
-# . __( 'your account', 'installer' )
-# . '</a>';
-
-msgid "your account"
-msgstr ""
-
-# $steps = array(
-# 1 => sprintf( __( 'Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise, %3$s',
-# 'installer' ),
-
-msgid "Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise, %3$s"
-msgstr ""
-
-# $register_link ),
-# 2 => __( 'Insert your key and activate automatic updates:', 'installer' )
-# . '<span class="otgs-installer-register-inputs">'
-
-msgid "Insert your key and activate automatic updates:"
-msgstr ""
-
-# <?php if($expires = $this->settings['repositories'][$repository_id]['subscription']['data']->expires): ?>
-# <?php printf(__('%s is registered on this site. You will receive automatic updates until %s', 'installer'), $generic_product_name, date_i18n('F j, Y', strtotime($expires))); ?>
-# <?php else: ?>
-
-msgid "%s is registered on this site. You will receive automatic updates until %s"
-msgstr ""
-
-# <?php else: ?>
-# <?php printf(__('%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer'), $generic_product_name); ?>
-# <?php endif; ?>
-
-msgid "%s is registered on this site. Your Lifetime account gives you updates for life."
-msgstr ""
-
-# >
-# <?php printf(__("Unregister %s from this site", 'installer'), $generic_product_name) ?></a>&nbsp;
-# 
-
-msgid "Unregister %s from this site"
-msgstr ""
-
-# 
-# <p><i><?php printf(__('This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this.', 'installer'), '<a href="' . admin_url('plugins.php') . '">' , '</a>'); ?></i></p>
-# 
-
-msgid "This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this."
-msgstr ""
-
-# . '<input class="button-primary" type="submit" value="'
-# . esc_attr__( 'OK', 'installer' )
-# . '" />'
-
-msgid "OK"
-msgstr ""
-
-# . '<input class="button-secondary cancel_site_key_js" type="button" value="'
-# . esc_attr__( 'Cancel registration', 'installer' )
-# . '" />'
-
-msgid "Cancel registration"
-msgstr ""
-
-# <p class="alignright enter_site_key_wrap_js">
-# <span><?php _e('Already bought?', 'installer'); ?></span>
-# <a class="enter_site_key_js button-primary"
-
-msgid "Already bought?"
-msgstr ""
-
-# <p class="installer-warn-box">
-# <?php _e('Subscription expired. You need to either purchase a new subscription or upgrade if available.', 'installer') ?>
-# <span class="alignright">
-
-msgid "Subscription expired. You need to either purchase a new subscription or upgrade if available."
-msgstr ""
-
-# <a class="update_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?> data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>">
-# <?php  _e('Revalidate subscription', 'installer'); ?>
-# </a>
-
-msgid "Revalidate subscription"
-msgstr ""
-
-# <br />
-# <span class="details"><?php _e("If you have already purchased or renewed your subscription and you can still see this message, please revalidate your subscription", 'installer') ?></span>
-# </p>
-
-msgid "If you have already purchased or renewed your subscription and you can still see this message, please revalidate your subscription"
-msgstr ""
-
-# data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>">
-# <?php _e('Check for updates', 'installer'); ?>
-# </a>
-
-msgid "Check for updates"
-msgstr ""
-
-# <?php if($subpackages_expandable): ?>
-# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
-# <?php endif; ?>
-
-msgid "Individual components"
-msgstr ""
-
-# <a class="remove_site_key_js button-secondary" data-repository=<?php echo $repository_id ?>
-# data-confirmation="<?php esc_attr_e('Are you sure you want to unregister?', 'installer') ?>"
-# data-nonce="<?php echo wp_create_nonce('remove_site_key_' . $repository_id) ?>"
-
-msgid "Are you sure you want to unregister?"
-msgstr ""
-
-# <?php if($subpackages_expandable): ?>
-# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
-# <?php endif; ?>
-
-msgid "Click to see individual components options."
-msgstr ""
-
 # <p>
 # <?php esc_html_e( "The WPML Page Builders plugin that you're using is now part of WPML.", 'sitepress' ); ?>
 # </p>
@@ -7981,6 +6875,20 @@ msgstr ""
 msgid "Deactivate WPML Page Builders"
 msgstr ""
 
+# case 'testimonial':
+# return esc_html__( 'Testimonial content', 'sitepress' );
+# 
+
+msgid "Testimonial content"
+msgstr ""
+
+# case 'link':
+# return esc_html__( 'Icon link', 'sitepress' );
+# 
+
+msgid "Icon link"
+msgstr ""
+
 # case 'label':
 # return esc_html__( 'Accordion Item Label', 'sitepress' );
 # 
@@ -7993,6 +6901,20 @@ msgstr ""
 # 
 
 msgid "Accordion Item Content"
+msgstr ""
+
+# case 'label':
+# return esc_html__( 'Tab Item Label', 'sitepress' );
+# 
+
+msgid "Tab Item Label"
+msgstr ""
+
+# case 'content':
+# return esc_html__( 'Tab Item Content', 'sitepress' );
+# 
+
+msgid "Tab Item Content"
 msgstr ""
 
 # case 'title':
@@ -8021,13 +6943,6 @@ msgstr ""
 # 
 
 msgid "Content Slider: Slide call to action link"
-msgstr ""
-
-# case 'link':
-# return esc_html__( 'Icon link', 'sitepress' );
-# 
-
-msgid "Icon link"
 msgstr ""
 
 # case 'title':
@@ -8070,27 +6985,6 @@ msgstr ""
 # 
 
 msgid "Pricing table: Duration"
-msgstr ""
-
-# case 'label':
-# return esc_html__( 'Tab Item Label', 'sitepress' );
-# 
-
-msgid "Tab Item Label"
-msgstr ""
-
-# case 'content':
-# return esc_html__( 'Tab Item Content', 'sitepress' );
-# 
-
-msgid "Tab Item Content"
-msgstr ""
-
-# case 'testimonial':
-# return esc_html__( 'Testimonial content', 'sitepress' );
-# 
-
-msgid "Testimonial content"
 msgstr ""
 
 # 'field'       => 'text',
@@ -8401,6 +7295,20 @@ msgstr ""
 msgid "Posts Slider: More Link Text"
 msgstr ""
 
+# if ( 'tab_label_content' === $field ) {
+# return esc_html__( 'Tabs: label', 'sitepress' );
+# }
+
+msgid "Tabs: label"
+msgstr ""
+
+# if ( 'tab_content' === $field ) {
+# return esc_html__( 'Tabs: content', 'sitepress' );
+# }
+
+msgid "Tabs: content"
+msgstr ""
+
 # if ( 'accordion_item_header_content' === $field ) {
 # return esc_html__( 'Accordion: header content', 'sitepress' );
 # }
@@ -8415,18 +7323,39 @@ msgstr ""
 msgid "Accordion: content"
 msgstr ""
 
-# if ( 'tab_label_content' === $field ) {
-# return esc_html__( 'Tabs: label', 'sitepress' );
-# }
+# 'field'       => 'card_front_text_content',
+# 'type'        => __( 'Card: front text content', 'sitepress' ),
+# 'editor_type' => 'VISUAL',
 
-msgid "Tabs: label"
+msgid "Card: front text content"
 msgstr ""
 
-# if ( 'tab_content' === $field ) {
-# return esc_html__( 'Tabs: content', 'sitepress' );
-# }
+# 'field'       => 'card_back_text_content',
+# 'type'        => __( 'Card: back text content', 'sitepress' ),
+# 'editor_type' => 'VISUAL',
 
-msgid "Tabs: content"
+msgid "Card: back text content"
+msgstr ""
+
+# 'field'       => 'anchor_text_primary_content',
+# 'type'        => __( 'Card: anchor text primary content', 'sitepress' ),
+# 'editor_type' => 'VISUAL',
+
+msgid "Card: anchor text primary content"
+msgstr ""
+
+# 'field'       => 'anchor_text_secondary_content',
+# 'type'        => __( 'Card: anchor text secondary content', 'sitepress' ),
+# 'editor_type' => 'LINE',
+
+msgid "Card: anchor text secondary content"
+msgstr ""
+
+# 'field'       => 'anchor_href',
+# 'type'        => __( 'Card: anchor link', 'sitepress' ),
+# 'editor_type' => 'LINK',
+
+msgid "Card: anchor link"
 msgstr ""
 
 # 'field'       => 'alert_content',
@@ -8562,53 +7491,109 @@ msgstr ""
 msgid "Search Dropdown: placeholder"
 msgstr ""
 
-# case 'tab_title':
-# return esc_html__( 'Accordion: Title', 'sitepress' );
-# 
+# self::getStringName( $field->nodeId, $field->itemId, $field->tagKey, $settingField ),
+# sprintf( __( 'Dynamic content string: %s', 'sitepress' ), $field->tagKey ),
+# 'LINE'
 
-msgid "Accordion: Title"
+msgid "Dynamic content string: %s"
 msgstr ""
 
-# case 'tab_content':
-# return esc_html__( 'Accordion: Content', 'sitepress' );
-# 
+# public function getTitle() {
+# return __( 'WPML Language Switcher', 'sitepress' );
+# }
 
-msgid "Accordion: Content"
+msgid "WPML Language Switcher"
 msgstr ""
 
-# case 'field_label':
-# return esc_html__( 'Form: Field label', 'sitepress' );
-# 
+# [
+# 'label' => __( 'Content', 'sitepress' ),
+# 'type'  => Controls_Manager::SECTION,
 
-msgid "Form: Field label"
+msgid "Content"
 msgstr ""
 
-# case 'placeholder':
-# return esc_html__( 'Form: Field placeholder', 'sitepress' );
-# 
+# [
+# 'label'   => __('Language switcher type', 'sitepress'),
+# 'type'    => Controls_Manager::SELECT,
 
-msgid "Form: Field placeholder"
+msgid "Language switcher type"
 msgstr ""
 
-# case 'field_html':
-# return esc_html__( 'Form: Field HTML', 'sitepress' );
-# 
+# 'custom'            => __( 'Custom', 'sitepress' ),
+# 'footer'            => __( 'Footer', 'sitepress' ),
+# 'post_translations' => __( 'Post Translations', 'sitepress' ),
 
-msgid "Form: Field HTML"
+msgid "Footer"
 msgstr ""
 
-# case 'acceptance_text':
-# return esc_html__( 'Form: Acceptance Text', 'sitepress' );
-# 
+# 'footer'            => __( 'Footer', 'sitepress' ),
+# 'post_translations' => __( 'Post Translations', 'sitepress' ),
+# ],
 
-msgid "Form: Acceptance Text"
+msgid "Post Translations"
 msgstr ""
 
-# case 'field_options':
-# return esc_html__( 'Form: Checkbox Options', 'sitepress' );
-# 
+# [
+# 'label'        => __( 'Display Flag', 'sitepress' ),
+# 'type'         => Controls_Manager::SWITCHER,
 
-msgid "Form: Checkbox Options"
+msgid "Display Flag"
+msgstr ""
+
+# [
+# 'label'        => __( 'Show Active Language - has to be ON with Dropdown', 'sitepress' ),
+# 'type'         => Controls_Manager::SWITCHER,
+
+msgid "Show Active Language - has to be ON with Dropdown"
+msgstr ""
+
+# [
+# 'label' => __( 'Style', 'sitepress' ),
+# 'tab'   => Controls_Manager::TAB_STYLE,
+
+msgid "Style"
+msgstr ""
+
+# [
+# 'label'     => __( 'Text Color', 'sitepress' ),
+# 'type'      => Controls_Manager::COLOR,
+
+msgid "Text Color"
+msgstr ""
+
+# [
+# 'label'     => __( 'Background Color', 'sitepress' ),
+# 'type'      => Controls_Manager::COLOR,
+
+msgid "Background Color"
+msgstr ""
+
+# [
+# 'label'     => __( 'Language Flag', 'sitepress' ),
+# 'tab'       => Controls_Manager::TAB_STYLE,
+
+msgid "Language Flag"
+msgstr ""
+
+# [
+# 'label'      => __( 'Margin', 'sitepress' ),
+# 'type'       => Controls_Manager::DIMENSIONS,
+
+msgid "Margin"
+msgstr ""
+
+# [
+# 'label'     => __( 'Post Translation Text', 'sitepress' ),
+# 'tab'       => Controls_Manager::TAB_STYLE,
+
+msgid "Post Translation Text"
+msgstr ""
+
+# [
+# 'label'      => __( 'Padding', 'sitepress' ),
+# 'type'       => Controls_Manager::DIMENSIONS,
+
+msgid "Padding"
 msgstr ""
 
 # case 'text':
@@ -8623,6 +7608,27 @@ msgstr ""
 # 
 
 msgid "Icon List: Link URL"
+msgstr ""
+
+# case 'url':
+# return esc_html__( 'Media Carousel: link URL', 'sitepress' );
+# default:
+
+msgid "Media Carousel: link URL"
+msgstr ""
+
+# case 'tab_title':
+# return esc_html__( 'Tabs: Title', 'sitepress' );
+# 
+
+msgid "Tabs: Title"
+msgstr ""
+
+# case 'tab_content':
+# return esc_html__( 'Tabs: Content', 'sitepress' );
+# 
+
+msgid "Tabs: Content"
 msgstr ""
 
 # if ( 'title' === $field ) {
@@ -8644,13 +7650,6 @@ msgstr ""
 # }
 
 msgid "Pricing list: link"
-msgstr ""
-
-# if ( 'item_text' === $field ) {
-# return esc_html__( 'Price table: text', 'sitepress' );
-# }
-
-msgid "Price table: text"
 msgstr ""
 
 # case 'heading':
@@ -8681,18 +7680,74 @@ msgstr ""
 msgid "Slides: link URL"
 msgstr ""
 
-# case 'tab_title':
-# return esc_html__( 'Tabs: Title', 'sitepress' );
-# 
+# return wpml_collect( [
+# 'field_label'            => esc_html__( 'Form: Field label', 'sitepress' ),
+# 'placeholder'            => esc_html__( 'Form: Field placeholder', 'sitepress' ),
 
-msgid "Tabs: Title"
+msgid "Form: Field label"
 msgstr ""
 
-# case 'tab_content':
-# return esc_html__( 'Tabs: Content', 'sitepress' );
-# 
+# 'field_label'            => esc_html__( 'Form: Field label', 'sitepress' ),
+# 'placeholder'            => esc_html__( 'Form: Field placeholder', 'sitepress' ),
+# 'field_html'             => esc_html__( 'Form: Field HTML', 'sitepress' ),
 
-msgid "Tabs: Content"
+msgid "Form: Field placeholder"
+msgstr ""
+
+# 'placeholder'            => esc_html__( 'Form: Field placeholder', 'sitepress' ),
+# 'field_html'             => esc_html__( 'Form: Field HTML', 'sitepress' ),
+# 'acceptance_text'        => esc_html__( 'Form: Acceptance Text', 'sitepress' ),
+
+msgid "Form: Field HTML"
+msgstr ""
+
+# 'field_html'             => esc_html__( 'Form: Field HTML', 'sitepress' ),
+# 'acceptance_text'        => esc_html__( 'Form: Acceptance Text', 'sitepress' ),
+# 'field_options'          => esc_html__( 'Form: Checkbox Options', 'sitepress' ),
+
+msgid "Form: Acceptance Text"
+msgstr ""
+
+# 'acceptance_text'        => esc_html__( 'Form: Acceptance Text', 'sitepress' ),
+# 'field_options'          => esc_html__( 'Form: Checkbox Options', 'sitepress' ),
+# 'step_next_label'        => esc_html__( 'Form: Step Next Label', 'sitepress' ),
+
+msgid "Form: Checkbox Options"
+msgstr ""
+
+# 'field_options'          => esc_html__( 'Form: Checkbox Options', 'sitepress' ),
+# 'step_next_label'        => esc_html__( 'Form: Step Next Label', 'sitepress' ),
+# 'step_previous_label'    => esc_html__( 'Form: Step Previous Label', 'sitepress' ),
+
+msgid "Form: Step Next Label"
+msgstr ""
+
+# 'step_next_label'        => esc_html__( 'Form: Step Next Label', 'sitepress' ),
+# 'step_previous_label'    => esc_html__( 'Form: Step Previous Label', 'sitepress' ),
+# 'previous_button'        => esc_html__( 'Form: Previous Button', 'sitepress' ),
+
+msgid "Form: Step Previous Label"
+msgstr ""
+
+# 'step_previous_label'    => esc_html__( 'Form: Step Previous Label', 'sitepress' ),
+# 'previous_button'        => esc_html__( 'Form: Previous Button', 'sitepress' ),
+# 'next_button'            => esc_html__( 'Form: Next Button', 'sitepress' ),
+
+msgid "Form: Previous Button"
+msgstr ""
+
+# 'previous_button'        => esc_html__( 'Form: Previous Button', 'sitepress' ),
+# 'next_button'            => esc_html__( 'Form: Next Button', 'sitepress' ),
+# ] )->get( $field, '' );
+
+msgid "Form: Next Button"
+msgstr ""
+
+# if ( 'item_text' === $field ) {
+# return esc_html__( 'Price table: text', 'sitepress' );
+# }
+
+msgid "Price table: text"
 msgstr ""
 
 # case 'content':
@@ -8728,6 +7783,20 @@ msgstr ""
 # 
 
 msgid "Toggle: Content"
+msgstr ""
+
+# case 'tab_title':
+# return esc_html__( 'Accordion: Title', 'sitepress' );
+# 
+
+msgid "Accordion: Title"
+msgstr ""
+
+# case 'tab_content':
+# return esc_html__( 'Accordion: Content', 'sitepress' );
+# 
+
+msgid "Accordion: Content"
 msgstr ""
 
 # 'field'       => 'url',
@@ -8865,7 +7934,7 @@ msgstr ""
 
 # 'field'       => 'blockquote_content',
 # 'type'        => __( 'Blockquote: Content', 'sitepress' ),
-# 'editor_type' => 'VISUAL'
+# 'editor_type' => 'AREA',
 
 msgid "Blockquote: Content"
 msgstr ""
@@ -9318,6 +8387,62 @@ msgstr ""
 msgid "Placeholder"
 msgstr ""
 
+# 'field'       => 'text',
+# 'type'        => __( 'Divider Text', 'sitepress' ),
+# 'editor_type' => 'LINE',
+
+msgid "Divider Text"
+msgstr ""
+
+# 'field'       => 'title',
+# 'type'        => __( 'Table of Contents - Title', 'sitepress' ),
+# 'editor_type' => 'LINE',
+
+msgid "Table of Contents - Title"
+msgstr ""
+
+# 'field'       => 'url',
+# 'type'        => __( 'Lottie: Link URL', 'sitepress' ),
+# 'editor_type' => 'LINK'
+
+msgid "Lottie: Link URL"
+msgstr ""
+
+# 'field'       => 'author_name',
+# 'type'        => __( 'Author Name', 'sitepress' ),
+# 'editor_type' => 'LINE',
+
+msgid "Author Name"
+msgstr ""
+
+# 'field'       => 'author_bio',
+# 'type'        => __( 'Author Bio', 'sitepress' ),
+# 'editor_type' => 'AREA',
+
+msgid "Author Bio"
+msgstr ""
+
+# 'field_id'    => 'author_website',
+# 'type'        => __( 'Author Link', 'sitepress' ),
+# 'editor_type' => 'LINK',
+
+msgid "Author Link"
+msgstr ""
+
+# 'field'       => 'link_text',
+# 'type'        => __( 'Archive Text', 'sitepress' ),
+# 'editor_type' => 'LINE',
+
+msgid "Archive Text"
+msgstr ""
+
+# 'field_id'    => 'posts_url',
+# 'type'        => __( 'Archive Button URL', 'sitepress' ),
+# 'editor_type' => 'LINK',
+
+msgid "Archive Button URL"
+msgstr ""
+
 # 
 # $text = '<p>' . _n(
 # 'We automatically created a translation job for the reusable block:',
@@ -9360,6 +8485,13 @@ msgstr ""
 msgid "The following components are not updated:"
 msgstr ""
 
+# /* translators: %s: Version number */
+# $required_version     = __( 'required version: %s', 'sitepress' );
+# $invalid_plugins_list = '<ul class="ul-disc">';
+
+msgid "required version: %s"
+msgstr ""
+
 # private function get_invalid_plugins_report_footer() {
 # $wpml_org_url = '<a href="https://wpml.org/account/" title="WPML.org account">' . __( 'WPML.org account', 'sitepress' ) . '</a>';
 # 
@@ -9388,25 +8520,11 @@ msgstr ""
 msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
 msgstr ""
 
-# $dismissThreshold = WEEK_IN_SECONDS * 4;
-# $dismissMessage = __( 'Remind me again in 4 weeks.', 'wordpress' );
-# 
-
-msgid "Remind me again in 4 weeks."
-msgstr ""
-
 # //success
 # $ret['success'] = sprintf(__('WPML will work on your site, but you will not receive updates. WPML updates are essential for keeping your site running smoothly and secure. To receive automated updates, you need to complete the registration, in the %splugins admin%s page.', 'sitepress'),
 # '<a href="' . admin_url('plugin-install.php?tab=commercial') . '">', '</a>');
 
 msgid "WPML will work on your site, but you will not receive updates. WPML updates are essential for keeping your site running smoothly and secure. To receive automated updates, you need to complete the registration, in the %splugins admin%s page."
-msgstr ""
-
-# if(empty($_POST['installer_site_key'])){
-# $ret['error'] = __('Missing site key.');
-# }else{
-
-msgid "Missing site key."
 msgstr ""
 
 # echo '<span style="color:#FF0000;">'
@@ -9526,20 +8644,6 @@ msgstr ""
 # 'no_problems'       => __( 'No errors were found in the assignment of post types.' ),
 
 msgid " elements"
-msgstr ""
-
-# 'success_2'         => __( ' elements', 'sitepress' ),
-# 'no_problems'       => __( 'No errors were found in the assignment of post types.' ),
-# 'suffixesRemoved'   => __( 'Language suffixes were removed from the selected terms.' ),
-
-msgid "No errors were found in the assignment of post types."
-msgstr ""
-
-# 'no_problems'       => __( 'No errors were found in the assignment of post types.' ),
-# 'suffixesRemoved'   => __( 'Language suffixes were removed from the selected terms.' ),
-# 'done'              => __( 'Done', 'sitepress' ),
-
-msgid "Language suffixes were removed from the selected terms."
 msgstr ""
 
 # if ( $description == '' ) {

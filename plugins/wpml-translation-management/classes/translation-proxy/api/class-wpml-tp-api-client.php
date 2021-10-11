@@ -27,7 +27,7 @@ class WPML_TP_API_Client {
 
 	/**
 	 * @param WPML_TP_API_Request $request
-	 * @param bool $raw_json_response
+	 * @param bool                $raw_json_response
 	 *
 	 * @return array|mixed|stdClass|string
 	 * @throws WPML_TP_API_Exception
@@ -81,12 +81,14 @@ class WPML_TP_API_Client {
 	 * @return array
 	 */
 	private function filter_request_params( $params, $method ) {
-		return $this->request_filter->build_request_context( array(
-			'method'    => $method,
-			'body'      => $params,
-			'sslverify' => true,
-			'timeout'   => 60,
-		) );
+		return $this->request_filter->build_request_context(
+			array(
+				'method'    => $method,
+				'body'      => $params,
+				'sslverify' => true,
+				'timeout'   => 60,
+			)
+		);
 	}
 
 	/**

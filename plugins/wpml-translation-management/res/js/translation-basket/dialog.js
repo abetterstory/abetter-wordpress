@@ -1,13 +1,13 @@
-jQuery(document).ready(function ($) {
-	"use strict";
+jQuery(function ($) {
+    "use strict";
 
-	var dialog = $('.js-wpml-translation-basket-dialog');
+    var dialog = $('.js-wpml-translation-basket-dialog');
 
-	var openDialog = function(result) {
-		/** @namespace result.call_to_action */
-		/** @namespace result.ts_batch_link */
+    var openDialog = function (result) {
+        /** @namespace result.call_to_action */
+        /** @namespace result.ts_batch_link */
 
-		var hasAdditionalContent = typeof result.call_to_action !== 'undefined' || typeof result.ts_batch_link !== 'undefined';
+        var hasAdditionalContent = typeof result.call_to_action !== 'undefined' || typeof result.ts_batch_link !== 'undefined';
 
 		var options = {
 			dialogClass: 'wpml-dialog otgs-ui-dialog',

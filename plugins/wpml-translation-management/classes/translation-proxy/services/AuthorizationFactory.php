@@ -11,9 +11,12 @@ class AuthorizationFactory {
 	 * @throws \Auryn\InjectionException
 	 */
 	public function create() {
-		$projectManager = make( Manager::class, [
-			':projectApi' => wpml_tm_get_tp_project_api()
-		] );
+		$projectManager = make(
+			Manager::class,
+			[
+				':projectApi' => wpml_tm_get_tp_project_api(),
+			]
+		);
 
 		return make( Authorization::class, [ ':projectManager' => $projectManager ] );
 	}

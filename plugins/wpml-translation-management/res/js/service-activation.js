@@ -204,10 +204,10 @@ var ServiceActivation = function () {
         }
     };
 
-    jQuery(document).ready(
-      function () {
-          serviceActivation.init();
-      }
+    jQuery(
+        function () {
+            serviceActivation.init();
+        }
     );
 };
 

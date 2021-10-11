@@ -50,9 +50,6 @@ class ADBC_Clean_Revision_Trash_Draft extends WP_List_Table {
 		}
 
 		// Prepare additional sql args if any: per page, LIMIT, OFFSET, etc.
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-			$this->aDBc_search_sql_arg 				= aDBc_get_search_sql_arg("post_title", "post_content");
-		}
 		$this->aDBc_order_by_sql_arg 			= aDBc_get_order_by_sql_arg("ID");
 		$this->aDBc_limit_offset_sql_arg 		= aDBc_get_limit_offset_sql_args();
 
@@ -215,7 +212,7 @@ class ADBC_Clean_Revision_Trash_Draft extends WP_List_Table {
 
 	/** WP: Column cb for check box */
 	function column_cb($item) {
-		return sprintf('<input type="checkbox" name="aDBc_posts_to_clean[]" value="%s" />', $item['site_id']."|".$item['post_id']);
+		return sprintf('<input type="checkbox" name="aDBc_elements_to_process[]" value="%s" />', $item['site_id']."|".$item['post_id']);
 	}
 
 	/** WP: Get bulk actions */
@@ -239,20 +236,34 @@ class ADBC_Clean_Revision_Trash_Draft extends WP_List_Table {
             $action = 'bulk-' . $this->_args['plural'];
             if (!wp_verify_nonce( $nonce, $action))
                 wp_die('Security check failed!');
-        }
+        }else{
+			// If $_POST['_wpnonce'] is not set, return
+			return;
+		}
+
+		// Check role
+		if(!current_user_can('administrator'))
+			wp_die('Security check failed!');
+
         $action = $this->current_action();
+
         if($action == 'clean'){
 			// If the user wants to clean the elements he/she selected
-			if(isset($_POST['aDBc_posts_to_clean'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				if(function_exists('is_multisite') && is_multisite()){
 					// Prepare posts to delete
 					$posts_to_delete = array();
-					foreach($_POST['aDBc_posts_to_clean'] as $post){
-						$post_info = explode("|", $post);
-						if(empty($posts_to_delete[$post_info[0]])){
-							$posts_to_delete[$post_info[0]] = array();
+					foreach($_POST['aDBc_elements_to_process'] as $post){
+						$post_info 			= explode("|", $post);
+						$sanitized_site_id 	= sanitize_html_class($post_info[0]);
+						$sanitized_item_id 	= sanitize_html_class($post_info[1]);
+						// For security, we only proceed if both parts are clean and are numbers
+						if(is_numeric($sanitized_site_id) && is_numeric($sanitized_item_id)){
+							if(empty($posts_to_delete[$sanitized_site_id])){
+								$posts_to_delete[$sanitized_site_id] = array();
+							}
+							array_push($posts_to_delete[$sanitized_site_id], $sanitized_item_id);
 						}
-						array_push($posts_to_delete[$post_info[0]], $post_info[1]);
 					}
 					// Delete posts
 					foreach($posts_to_delete as $site_id => $posts_ids){
@@ -265,9 +276,12 @@ class ADBC_Clean_Revision_Trash_Draft extends WP_List_Table {
 					}
 				}else{
 					global $wpdb;
-					foreach($_POST['aDBc_posts_to_clean'] as $post) {
-						$post_info = explode("|", $post);
-						$wpdb->query("DELETE FROM $wpdb->posts WHERE ID = " . $post_info[1]);
+					foreach($_POST['aDBc_elements_to_process'] as $post){
+						$post_info 		= explode("|", $post);
+						$sanitized_id 	= sanitize_html_class($post_info[1]);
+						if(is_numeric($sanitized_id)){
+							$wpdb->query("DELETE FROM $wpdb->posts WHERE ID = " . $sanitized_id);
+						}
 					}
 				}
 				// Update the message to show to the user

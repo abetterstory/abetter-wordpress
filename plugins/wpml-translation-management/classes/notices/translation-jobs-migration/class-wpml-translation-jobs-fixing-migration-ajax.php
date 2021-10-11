@@ -21,7 +21,7 @@ class WPML_Translation_Jobs_Fixing_Migration_Ajax {
 		WPML_Translation_Jobs_Migration_Repository $jobs_repository,
 		WPML_TM_Jobs_Migration_State $migration_state
 	) {
-		$this->jobs_migration = $jobs_migration;
+		$this->jobs_migration  = $jobs_migration;
 		$this->jobs_repository = $jobs_repository;
 		$this->migration_state = $migration_state;
 	}

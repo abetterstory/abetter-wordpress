@@ -2,7 +2,7 @@
 
 class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 
-	const ALT_PLACEHOLDER = '{%ALT_TEXT%}';
+	const ALT_PLACEHOLDER     = '{%ALT_TEXT%}';
 	const CAPTION_PLACEHOLDER = '{%CAPTION%}';
 
 	/** @var WPML_Media_Post_With_Media_Files_Factory $post_media_factory */
@@ -33,16 +33,16 @@ class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 						$options = array(
 							'translate' => 0,
 							'data'      => true,
-							'format'    => ''
+							'format'    => '',
 						);
 					} else {
 						$options = array(
 							'translate' => 1,
 							'data'      => base64_encode( $value ),
-							'format'    => 'base64'
+							'format'    => 'base64',
 						);
 					}
-					$package['contents']['media_' . $attachment_id . '_' . $field] = $options;
+					$package['contents'][ 'media_' . $attachment_id . '_' . $field ] = $options;
 				}
 
 				if (
@@ -52,10 +52,9 @@ class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 					$package['contents'][ 'should_translate_media_image_' . $attachment_id ] = array(
 						'translate' => 0,
 						'data'      => true,
-						'format'    => ''
+						'format'    => '',
 					);
 				}
-
 			}
 
 			$package = $this->add_placeholders_for_duplicate_fields( $package, $bundled_media_data );
@@ -85,7 +84,6 @@ class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 			if ( $alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) {
 				$bundled_media_data[ $attachment_id ]['alt_text'] = $alt;
 			}
-
 		}
 
 		return $bundled_media_data;
@@ -133,8 +131,8 @@ class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 
 	private function replace_caption_with_placeholder( $caption_shortcode, WPML_Media_Caption $caption ) {
 		$caption_content     = $caption->get_content();
-		$search_pattern      = '/(>\s?)(' .  preg_quote( $caption->get_caption(), '/' ) . ')/';
-		$new_caption_content = preg_replace( $search_pattern, "$1" . self::CAPTION_PLACEHOLDER, $caption_content, 1 );
+		$search_pattern      = '/(>\s?)(' . preg_quote( $caption->get_caption(), '/' ) . ')/';
+		$new_caption_content = preg_replace( $search_pattern, '$1' . self::CAPTION_PLACEHOLDER, $caption_content, 1 );
 
 		return str_replace( $caption_content, $new_caption_content, $caption_shortcode );
 

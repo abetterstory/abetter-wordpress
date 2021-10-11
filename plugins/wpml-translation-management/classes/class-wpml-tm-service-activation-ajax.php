@@ -15,13 +15,17 @@ class WPML_TM_Service_Activation_AJAX extends WPML_TM_AJAX_Factory_Obsolete {
 	 * @param WPML_Translation_Job_Factory $job_factory
 	 */
 	public function __construct( &$wpml_wp_api, &$job_factory ) {
-		parent::__construct($wpml_wp_api);
+		parent::__construct( $wpml_wp_api );
 		$this->wpml_wp_api = &$wpml_wp_api;
 		$this->job_factory = &$job_factory;
-		$this->add_ajax_action( 'wp_ajax_wpml_cancel_open_local_translators_jobs',
-		                        array( $this, 'cancel_open_local_translators_jobs' ) );
-		$this->add_ajax_action( 'wp_ajax_wpml_keep_open_local_translators_jobs',
-		                        array( $this, 'keep_open_local_translators_jobs' ) );
+		$this->add_ajax_action(
+			'wp_ajax_wpml_cancel_open_local_translators_jobs',
+			array( $this, 'cancel_open_local_translators_jobs' )
+		);
+		$this->add_ajax_action(
+			'wp_ajax_wpml_keep_open_local_translators_jobs',
+			array( $this, 'keep_open_local_translators_jobs' )
+		);
 		$this->init();
 
 		$this->ignore_local_jobs = get_transient( $this->script_handle . '_ignore_local_jobs' );
@@ -47,10 +51,14 @@ class WPML_TM_Service_Activation_AJAX extends WPML_TM_AJAX_Factory_Obsolete {
 	}
 
 	public function cancel_open_local_translators_jobs() {
-		$translation_filter = array( 'service' => 'local', 'translator' => 0, 'status__not' => ICL_TM_COMPLETE );
+		$translation_filter = array(
+			'service'     => 'local',
+			'translator'  => 0,
+			'status__not' => ICL_TM_COMPLETE,
+		);
 		$translation_jobs   = $this->job_factory->get_translation_jobs( $translation_filter, true, true );
-		$jobs_count = count( $translation_jobs );
-		$deleted = 0;
+		$jobs_count         = count( $translation_jobs );
+		$deleted            = 0;
 		if ( $jobs_count ) {
 			foreach ( $translation_jobs as $job ) {
 				/** @var WPML_Translation_Job $job */
@@ -61,10 +69,12 @@ class WPML_TM_Service_Activation_AJAX extends WPML_TM_AJAX_Factory_Obsolete {
 		}
 		$this->set_ignore_local_jobs( false );
 
-		return $this->wpml_wp_api->wp_send_json_success( array(
-			                                                 'opens'     => $jobs_count - $deleted,
-			                                                 'cancelled' => $deleted
-		                                                 ) );
+		return $this->wpml_wp_api->wp_send_json_success(
+			array(
+				'opens'     => $jobs_count - $deleted,
+				'cancelled' => $deleted,
+			)
+		);
 	}
 
 	public function keep_open_local_translators_jobs() {

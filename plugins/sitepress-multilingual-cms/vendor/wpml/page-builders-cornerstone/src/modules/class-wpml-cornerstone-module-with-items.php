@@ -5,6 +5,8 @@
  */
 abstract class WPML_Cornerstone_Module_With_Items implements IWPML_Page_Builders_Module {
 
+	const ITEMS_FIELD = WPML_Cornerstone_Translatable_Nodes::SETTINGS_FIELD;
+
 	/**
 	 * @param string $field
 	 *
@@ -28,11 +30,8 @@ abstract class WPML_Cornerstone_Module_With_Items implements IWPML_Page_Builders
 	 * @return array
 	 */
 	protected function get_items( $settings ) {
-		return $settings[ $this->get_items_field() ];
+		return $settings[ self::ITEMS_FIELD ];
 	}
-
-	/** @return string */
-	abstract protected function get_items_field();
 
 	/**
 	 * @param string|int $node_id
@@ -78,7 +77,7 @@ abstract class WPML_Cornerstone_Module_With_Items implements IWPML_Page_Builders
 		foreach ( $this->get_items( $settings ) as $key => $item ) {
 			foreach ( $this->get_fields() as $field ) {
 				if ( $this->get_string_name( $node_id, $item[ $field ], $field ) === $string->get_name() ) {
-					$settings[ '_modules' ][ $key ][ $field ] = $string->get_value();
+					$settings[ self::ITEMS_FIELD ][ $key ][ $field ] = $string->get_value();
 				}
 			}
 		}

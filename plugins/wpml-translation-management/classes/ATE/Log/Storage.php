@@ -25,8 +25,11 @@ class Storage {
 		$entries->prepend( $entry );
 
 		$newOptionValue = $entries->forPage( 1, self::MAX_ENTRIES )
-		                          ->map( function( Entry $entry ) { return (array) $entry; } )
-		                          ->toArray();
+								->map(
+									function( Entry $entry ) {
+										return (array) $entry; }
+								)
+								  ->toArray();
 
 		$this->optionManager->set( self::OPTION_GROUP, self::OPTION_NAME, $newOptionValue, false );
 	}
@@ -36,6 +39,10 @@ class Storage {
 	 */
 	public function getAll() {
 		return wpml_collect( $this->optionManager->get( self::OPTION_GROUP, self::OPTION_NAME, [] ) )
-			->map( function( array $item ) { return new Entry( $item ); } );
+			->map(
+				function( array $item ) {
+					return new Entry( $item );
+				}
+			);
 	}
 }

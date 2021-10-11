@@ -29,31 +29,31 @@ class WPML_TM_ATE {
 	}
 
 	/**
-	 * @param int $trid
+	 * @param int    $trid
 	 * @param string $language
 	 *
 	 * @return bool
 	 */
-	public function is_translation_ready_for_post( $trid, $language ){
+	public function is_translation_ready_for_post( $trid, $language ) {
 
 		$translation_status_id = $this->get_translation_status_id_for_post( $trid, $language );
 
-		return $translation_status_id && !in_array($translation_status_id , array( WPML_TM_ATE_Job::ATE_JOB_CREATED, WPML_TM_ATE_Job::ATE_JOB_IN_PROGRESS), true );
+		return $translation_status_id && ! in_array( $translation_status_id, array( WPML_TM_ATE_Job::ATE_JOB_CREATED, WPML_TM_ATE_Job::ATE_JOB_IN_PROGRESS ), true );
 	}
 
 	/**
-	 * @param int $trid
+	 * @param int    $trid
 	 * @param string $language
 	 *
 	 * @return int|bool
 	 */
-	public function get_translation_status_id_for_post( $trid, $language ){
+	public function get_translation_status_id_for_post( $trid, $language ) {
 
 		$status_id = false;
 
 		$ate_job = $this->get_job_data_for_post( $trid, $language );
 
-		if( $ate_job && !is_wp_error( $ate_job ) ){
+		if ( $ate_job && ! is_wp_error( $ate_job ) ) {
 			$status_id = $ate_job->status_id;
 		}
 
@@ -88,10 +88,10 @@ class WPML_TM_ATE {
 	/**
 	 * @return WPML_TM_ATE_API
 	 */
-	private function get_tm_ate_api(){
+	private function get_tm_ate_api() {
 		if ( null === $this->tm_ate_api ) {
 			$ams_ate_factories = wpml_tm_ams_ate_factories();
-			$this->tm_ate_api = $ams_ate_factories->get_ate_api();
+			$this->tm_ate_api  = $ams_ate_factories->get_ate_api();
 		}
 
 		return $this->tm_ate_api;
@@ -100,10 +100,10 @@ class WPML_TM_ATE {
 	/**
 	 * @return WPML_TM_ATE_Jobs
 	 */
-	private function get_tm_ate_jobs(){
+	private function get_tm_ate_jobs() {
 
 		if ( null === $this->tm_ate_jobs ) {
-			$ate_jobs_records = wpml_tm_get_ate_job_records();
+			$ate_jobs_records  = wpml_tm_get_ate_job_records();
 			$this->tm_ate_jobs = new WPML_TM_ATE_Jobs( $ate_jobs_records );
 		}
 

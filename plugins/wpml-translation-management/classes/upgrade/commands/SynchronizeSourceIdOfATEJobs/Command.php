@@ -54,9 +54,12 @@ class Command implements \IWPML_Upgrade_Command {
 		}
 
 		$chunks       = $this->repository->getPairs()->chunk( self::CHUNK_SIZE );
-		$this->result = $this->pager->iterate( $chunks, function ( Collection $pairs ) {
+		$this->result = $this->pager->iterate(
+			$chunks,
+			function ( Collection $pairs ) {
 				return $this->api->migrate_source_id( $pairs->toArray() );
-			} ) === 0;
+			}
+		) === 0;
 
 		return $this->result;
 	}

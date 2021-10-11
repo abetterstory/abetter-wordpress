@@ -39,7 +39,7 @@ class WPML_TM_AMS_Synchronize_Users_On_Access_Denied {
 			. $wpml_job_id
 		);
 
-		wp_safe_redirect( $url );
+		wp_safe_redirect( $url, 302, 'WPML' );
 	}
 
 	/**

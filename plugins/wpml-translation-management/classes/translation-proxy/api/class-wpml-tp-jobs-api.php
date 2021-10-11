@@ -27,13 +27,15 @@ class WPML_TP_Jobs_API extends WPML_TP_API {
 
 	private function get_chunk_of_job_statuses( $tp_job_ids ) {
 		$request = new WPML_TP_API_Request( '/jobs.json' );
-		$request->set_params( array(
-			'filter'    => array(
-				'job_ids'  => array_filter( $tp_job_ids, 'is_int' ),
-				'archived' => 1,
-			),
-			'accesskey' => $this->project->get_access_key(),
-		) );
+		$request->set_params(
+			array(
+				'filter'    => array(
+					'job_ids'  => array_filter( $tp_job_ids, 'is_int' ),
+					'archived' => 1,
+				),
+				'accesskey' => $this->project->get_access_key(),
+			)
+		);
 
 		return $this->client->send_request( $request );
 	}
@@ -100,8 +102,10 @@ class WPML_TP_Jobs_API extends WPML_TP_API {
 			isset( $raw_data->batch->id ) ? $raw_data->batch->id : 0,
 			$raw_data->job_state,
 			isset( $raw_data->translation_revision ) ? $raw_data->translation_revision : 1,
-			$raw_data->ts_status ? new WPML_TM_Job_TS_Status( $raw_data->ts_status->status,
-				$raw_data->ts_status->links ) : null
+			$raw_data->ts_status ? new WPML_TM_Job_TS_Status(
+				$raw_data->ts_status->status,
+				$raw_data->ts_status->links
+			) : null
 		);
 	}
 
@@ -118,12 +122,11 @@ class WPML_TP_Jobs_API extends WPML_TP_API {
 				'filter'    => array(
 					'job_state'             => WPML_TP_Job_States::TRANSLATION_READY,
 					'archived'              => 0,
-					'revision_greater_than' => 1
+					'revision_greater_than' => 1,
 				),
 				'accesskey' => $this->project->get_access_key(),
 			)
 		);
-
 
 		$result = $this->client->send_request( $request );
 

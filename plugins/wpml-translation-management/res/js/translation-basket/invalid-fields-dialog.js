@@ -1,14 +1,14 @@
-jQuery(document).ready(function () {
-	"use strict";
+jQuery(function () {
+    "use strict";
 
-	var dialog = jQuery('.wpml-tm-invalid-fields-dialog');
+    var dialog = jQuery('.wpml-tm-invalid-fields-dialog');
 
-	jQuery('.wpml-tm-invalid-fields-open-dialog').click(function () {
-		var fields = jQuery(this).data('fields');
-		dialog.dialog({
-			dialogClass: 'wpml-dialog otgs-ui-dialog',
-			width: 'auto',
-			title: jQuery(this).data('page-title'),
+    jQuery('.wpml-tm-invalid-fields-open-dialog').click(function () {
+        var fields = jQuery(this).data('fields');
+        dialog.dialog({
+                          dialogClass: 'wpml-dialog otgs-ui-dialog',
+                          width      : 'auto',
+                          title      : jQuery(this).data('page-title'),
 			modal: true,
 			open: function () {
 				dialog.html('');

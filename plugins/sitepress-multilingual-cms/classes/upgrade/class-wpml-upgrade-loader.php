@@ -9,6 +9,9 @@ use WPML\Upgrade\Commands\AddContextIndexToStrings;
 use WPML\Upgrade\Commands\AddStatusIndexToStringTranslations;
 use WPML\Upgrade\Commands\AddStringPackageIdIndexToStrings;
 use WPML\Upgrade\Command\DisableOptionsAutoloading;
+use WPML\Upgrade\Commands\RemoveRestDisabledNotice;
+use WPML\Upgrade\Commands\DropCodeLocaleIndexFromLocaleMap;
+use WPML\Upgrade\Commands\AddPrimaryKeyToLocaleMap;
 
 /**
  * Class WPML_Upgrade_Loader
@@ -112,6 +115,9 @@ class WPML_Upgrade_Loader implements IWPML_Action {
 			$this->factory->create_command_definition( AddStatusIndexToStringTranslations::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( AddStringPackageIdIndexToStrings::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( DisableOptionsAutoloading::class, [], [ 'admin' ] ),
+			$this->factory->create_command_definition( RemoveRestDisabledNotice::class, [], [ 'admin' ] ),
+			$this->factory->create_command_definition( DropCodeLocaleIndexFromLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
+			$this->factory->create_command_definition( AddPrimaryKeyToLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 		];
 
 		$upgrade = new WPML_Upgrade( $commands, $this->sitepress, $this->factory );

@@ -6,10 +6,10 @@ class WPML_TM_ICL_Translation_Status {
 
 	private $tm_records;
 
-	private $table = 'icl_translation_status';
+	private $table          = 'icl_translation_status';
 	private $translation_id = 0;
-	private $rid = 0;
-	
+	private $rid            = 0;
+
 	private $status_result;
 
 	/**
@@ -21,13 +21,16 @@ class WPML_TM_ICL_Translation_Status {
 	 * @param string          $type
 	 */
 	public function __construct( $wpdb, &$tm_records, $id, $type = 'translation_id' ) {
-		$this->wpdb = $wpdb;
+		$this->wpdb       = $wpdb;
 		$this->tm_records = &$tm_records;
 		if ( $id > 0 && in_array(
-				$type, array(
+			$type,
+			array(
 				'translation_id',
-				'rid'
-			), true )
+				'rid',
+			),
+			true
+		)
 		) {
 			$this->{$type} = $id;
 		} else {
@@ -42,7 +45,10 @@ class WPML_TM_ICL_Translation_Status {
 	 */
 	public function update( $args ) {
 		$this->wpdb->update(
-			$this->wpdb->prefix . $this->table, $args, $this->get_args() );
+			$this->wpdb->prefix . $this->table,
+			$args,
+			$this->get_args()
+		);
 
 		$this->status_result = null;
 		return $this;
@@ -53,7 +59,9 @@ class WPML_TM_ICL_Translation_Status {
 	 */
 	public function delete() {
 		$this->wpdb->delete(
-			$this->wpdb->prefix . $this->table, $this->get_args() );
+			$this->wpdb->prefix . $this->table,
+			$this->get_args()
+		);
 	}
 
 	/**
@@ -64,7 +72,8 @@ class WPML_TM_ICL_Translation_Status {
 		return (int) $this->wpdb->get_var(
 			"SELECT rid
 		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+			. $this->get_where()
+		);
 	}
 
 	/**
@@ -80,7 +89,8 @@ class WPML_TM_ICL_Translation_Status {
 				$this->status_result = (int) $this->wpdb->get_var(
 					"SELECT status
 					 FROM {$this->wpdb->prefix}{$this->table} "
-					. $this->get_where() );
+					. $this->get_where()
+				);
 			}
 		}
 		return (int) $this->status_result;
@@ -94,7 +104,8 @@ class WPML_TM_ICL_Translation_Status {
 		return $this->wpdb->get_var(
 			"SELECT md5
 		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+			. $this->get_where()
+		);
 	}
 
 	/**
@@ -105,17 +116,18 @@ class WPML_TM_ICL_Translation_Status {
 		return (int) $this->wpdb->get_var(
 			"SELECT translation_id
 		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+			. $this->get_where()
+		);
 	}
 
 	public function trid() {
 
-		return $this->tm_records->icl_translations_by_translation_id($this->translation_id())->trid();
+		return $this->tm_records->icl_translations_by_translation_id( $this->translation_id() )->trid();
 	}
 
 	public function element_id() {
 
-		return $this->tm_records->icl_translations_by_translation_id($this->translation_id())->element_id();
+		return $this->tm_records->icl_translations_by_translation_id( $this->translation_id() )->element_id();
 	}
 
 	/**
@@ -126,7 +138,8 @@ class WPML_TM_ICL_Translation_Status {
 		return (int) $this->wpdb->get_var(
 			"SELECT translator_id
 		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+			. $this->get_where()
+		);
 	}
 
 	/**
@@ -137,14 +150,15 @@ class WPML_TM_ICL_Translation_Status {
 		return (int) $this->wpdb->get_var(
 			"SELECT translation_service
 		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+			. $this->get_where()
+		);
 	}
 
 	private function get_where() {
-		return " WHERE " .
-		       ( $this->translation_id
-			       ? $this->wpdb->prepare( " translation_id = %d ", $this->translation_id )
-			       : $this->wpdb->prepare( " rid = %d ", $this->rid ) );
+		return ' WHERE ' .
+			   ( $this->translation_id
+				   ? $this->wpdb->prepare( ' translation_id = %d ', $this->translation_id )
+				   : $this->wpdb->prepare( ' rid = %d ', $this->rid ) );
 	}
 
 	private function get_args() {

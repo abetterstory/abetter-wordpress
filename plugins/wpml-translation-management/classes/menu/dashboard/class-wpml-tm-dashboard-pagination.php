@@ -33,14 +33,16 @@ class WPML_TM_Dashboard_Pagination {
 		$total_pages     = ceil( $found_documents / $posts_per_page );
 		$paged           = array_key_exists( 'paged', $_GET ) ? filter_var( $_GET['paged'], FILTER_SANITIZE_NUMBER_INT ) : false;
 		$paged           = $paged ? $paged : 1;
-		$page_links      = paginate_links( array(
-			'base'      => add_query_arg( 'paged', '%#%' ),
-			'format'    => '',
-			'prev_text' => '&laquo;',
-			'next_text' => '&raquo;',
-			'total'     => $total_pages,
-			'current'   => $paged,
-		) );
+		$page_links      = paginate_links(
+			array(
+				'base'      => add_query_arg( 'paged', '%#%' ),
+				'format'    => '',
+				'prev_text' => '&laquo;',
+				'next_text' => '&raquo;',
+				'total'     => $total_pages,
+				'current'   => $paged,
+			)
+		);
 		if ( $page_links ) {
 			?>
 			<div class="tablenav-pages">
@@ -50,8 +52,8 @@ class WPML_TM_Dashboard_Pagination {
 				$page_total = number_format_i18n( $found_documents );
 				?>
 				<span class="displaying-num">
-                    <?php echo sprintf( esc_html__( 'Displaying %s&#8211;%s of %s', 'wpml-translation-management' ), $page_from, $page_to, $page_total ); ?>
-                </span>
+					<?php echo sprintf( esc_html__( 'Displaying %1$s&#8211;%2$s of %3$s', 'wpml-translation-management' ), $page_from, $page_to, $page_total ); ?>
+				</span>
 				<?php echo $page_links; ?>
 			</div>
 			<?php

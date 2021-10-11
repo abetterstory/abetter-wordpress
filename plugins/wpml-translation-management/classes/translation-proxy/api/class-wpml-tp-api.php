@@ -11,9 +11,9 @@ abstract class WPML_TP_API {
 	protected $logger;
 
 	public function __construct( WPML_TP_API_Client $client, WPML_TP_Project $project, WPML_TP_API_Log_Interface $logger = null ) {
-		$this->client = $client;
+		$this->client  = $client;
 		$this->project = $project;
-		$this->logger = $logger;
+		$this->logger  = $logger;
 	}
 
 	protected function log( $action, array $params = array() ) {

@@ -62,12 +62,12 @@
 
 			function wpml_media_options_form_working() {
 				wpml_update_status('');
-				submitButton.attr('disabled', 'disabled');
+				submitButton.prop('disabled', true);
 				jQuery(form).find('.progress').fadeIn();
 			}
 
 			function wpml_media_options_form_finished(status) {
-				submitButton.removeAttr('disabled');
+				submitButton.prop('disabled', false);
 				jQuery(form).find('.progress').fadeOut();
 				wpml_update_status(status);
 				window.setTimeout(
@@ -294,7 +294,7 @@
 			}
 
 			function wpml_media_set_content_defaults_finished(status) {
-				submitButton.removeAttr('disabled');
+				submitButton.prop('disabled', false);
 				jQuery(form).find('.content_default_progress').fadeOut();
 				jQuery(form).find('.content_default_status').html(status);
 				window.setTimeout(

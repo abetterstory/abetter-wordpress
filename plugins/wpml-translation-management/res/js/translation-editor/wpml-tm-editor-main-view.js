@@ -20,7 +20,11 @@ var WPML_TM = WPML_TM || {};
 
 			self.translationMemory = null;
 
-			if ( WpmlTmEditorModel.translation_memory && tmEditorStrings.translationMemoryNonce ) {
+			if (
+				WpmlTmEditorModel.translation_memory
+				&& tmEditorStrings.translationMemoryNonce
+				&& tmEditorStrings.translationMemoryEndpoint
+			) {
 				self.translationMemory = new WPML_TM.translationMemory( WpmlTmEditorModel.languages );
 			}
 

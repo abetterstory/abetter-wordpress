@@ -33,13 +33,13 @@ WPML_TM.translationRolesSelect2 = function ( elementSelector, nonce, role, onCha
 		if ( jQuery.ui && jQuery.ui.dialog && jQuery.ui.dialog.prototype._allowInteraction ) {
 			var ui_dialog_interaction = jQuery.ui.dialog.prototype._allowInteraction;
 			jQuery.ui.dialog.prototype._allowInteraction = function ( e ) {
-				if ( jQuery( e.target ).closest( '.select2-dropdown' ).length ) return true;
+				if ( jQuery( e.target ).closest( '.wpml_select2-dropdown' ).length ) return true;
 				return ui_dialog_interaction.apply( this, arguments );
 			};
 		}
 	};
 
-	elementSelector.select2( {
+	elementSelector.wpml_select2( {
 		width: '250px',
 		minimumInputLength: 2,
 		ajax: {
@@ -62,9 +62,6 @@ WPML_TM.translationRolesSelect2 = function ( elementSelector, nonce, role, onCha
 		},
 		formatResult: formatResult,
 		formatSelection: formatResult,
-		escapeMarkup: function ( m ) {
-			return m;
-		},
 		id: function ( user ) {
 			return user.ID;
 		}

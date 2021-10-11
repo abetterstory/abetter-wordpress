@@ -21,7 +21,7 @@ class WPML_Set_Attachments_Language_Factory implements IWPML_Backend_Action_Load
 			if ( count( $active_languages ) > 1 ) {
 
 				if ( $this->is_wpml_media_not_set_up() && $this->has_unprocessed_attachments() ) {
-					return new WPML_Set_Attachments_Language( $sitepress );
+					return new WPML_Set_Attachments_Language();
 				} else {
 					$this->wpml_media_settings['starting_help'] = 1;
 					update_option( self::MEDIA_OPTION_KEY, $this->wpml_media_settings );
@@ -47,12 +47,15 @@ class WPML_Set_Attachments_Language_Factory implements IWPML_Backend_Action_Load
 	private function has_unprocessed_attachments() {
 		global $wpdb;
 
-		$total_attachments_prepared = $wpdb->prepare( "
+		$total_attachments_prepared = $wpdb->prepare(
+			"
 		                SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND ID NOT IN
-		                (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s)", array(
-			'attachment',
-			'wpml_media_processed'
-		) );
+		                (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s)",
+			array(
+				'attachment',
+				'wpml_media_processed',
+			)
+		);
 
 		return (bool) $wpdb->get_var( $total_attachments_prepared );
 	}

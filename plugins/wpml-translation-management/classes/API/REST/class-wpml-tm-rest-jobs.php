@@ -5,6 +5,12 @@
  * @package wpml-translation-management
  */
 
+use WPML\FP\Obj;
+use WPML\FP\Fns;
+use function WPML\FP\pipe;
+use function WPML\FP\partial;
+use function WPML\FP\invoke;
+
 /**
  * Class WPML_TM_REST_Jobs
  */
@@ -89,7 +95,7 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_jobs' ),
 				'args'     => array(
-					'local_job_ids' => array(
+					'local_job_ids'   => array(
 						'type'              => 'string',
 						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
 					),
@@ -114,8 +120,8 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 						'type'              => 'string',
 						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'string' ),
 					),
-					'needs_update' => array(
-						'type' => 'string',
+					'needs_update'    => array(
+						'type'              => 'string',
 						'validate_callback' => array( 'WPML_TM_Jobs_Needs_Update_Param', 'is_valid' ),
 					),
 					'limit'           => array(
@@ -166,7 +172,7 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 					),
 					'type'         => array(
 						'required'          => false,
-						'validate_callback' => array( $this, 'validate_job_type' ),
+						'validate_callback' => [ WPML_TM_Job_Entity::class, 'is_type_valid' ],
 					),
 					'translatorId' => array(
 						'required'          => true,
@@ -250,22 +256,29 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	 */
 	public function cancel_jobs( WP_REST_Request $request ) {
 		try {
-			$result = array();
+			// $validateParameter :: [id, type] -> bool
+			$validateParameter = pipe( Obj::prop( 'type' ), [ \WPML_TM_Job_Entity::class, 'is_type_valid' ] );
 
-			$jobs = array_filter( $request->get_params(), array( $this, 'validate_job' ) );
-			if ( $jobs ) {
-				foreach ( $jobs as $job_id ) {
-					$job = $this->jobs_repository->get_job( $job_id['id'], $job_id['type'] );
-					if ( $job ) {
-						$job->set_status( ICL_TM_NOT_TRANSLATED );
-						$this->update_jobs->update_state( $job );
+			// $getJob :: [id, type] -> \WPML_TM_Job_Entity
+			$getJob = Fns::converge( [ $this->jobs_repository, 'get_job' ], [ Obj::prop( 'id' ), Obj::prop( 'type' ) ] );
 
-						$result[] = $job_id;
-					}
-				}
-			}
+			// $jobEntityToArray :: \WPML_TM_Job_Entity -> [id, type]
+			$jobEntityToArray = function ( \WPML_TM_Job_Entity $job ) {
+				return [
+					'id'   => $job->get_id(),
+					'type' => $job->get_type(),
+				];
+			};
 
-			return $result;
+			return \wpml_collect( $request->get_json_params() )
+				->filter( $validateParameter )
+				->map( $getJob )
+				->filter()
+				->map( Fns::tap( invoke( 'set_status' )->with( ICL_TM_NOT_TRANSLATED ) ) )
+				->map( Fns::tap( [ $this->update_jobs, 'update_state' ] ) )
+				->map( Fns::tap( partial( 'do_action', 'wpml_tm_job_cancelled' ) ) )
+				->map( $jobEntityToArray )
+				->toArray();
 		} catch ( Exception $e ) {
 			return new WP_Error( 500, $e->getMessage() );
 		}
@@ -313,27 +326,6 @@ class WPML_TM_REST_Jobs extends WPML_REST_Base {
 	 * @return bool
 	 */
 	private function validate_job( $job ) {
-		return is_array( $job ) && isset( $job['id'] ) && isset( $job['type'] ) && $this->validate_job_type( $job['type'] );
-	}
-
-	/**
-	 * Validate job type
-	 *
-	 * @param string $value Job type.
-	 *
-	 * @return bool
-	 */
-	public function validate_job_type( $value ) {
-		return
-			! $value ||
-			in_array(
-				$value,
-				array(
-					WPML_TM_Job_Entity::POST_TYPE,
-					WPML_TM_Job_Entity::STRING_TYPE,
-					WPML_TM_Job_Entity::PACKAGE_TYPE,
-				),
-				true
-			);
+		return is_array( $job ) && isset( $job['id'] ) && isset( $job['type'] ) && \WPML_TM_Job_Entity::is_type_valid( $job['type'] );
 	}
 }

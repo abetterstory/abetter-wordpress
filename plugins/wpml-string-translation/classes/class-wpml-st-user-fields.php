@@ -1,6 +1,6 @@
 <?php
 
-Class WPML_ST_User_Fields {
+class WPML_ST_User_Fields {
 
 	/**
 	 * @var string
@@ -30,13 +30,13 @@ Class WPML_ST_User_Fields {
 		}
 
 		add_action( 'profile_update', array( $this, 'profile_update_action' ), 10 );
-		add_action( 'user_register',  array( $this, 'profile_update_action' ), 10 );
+		add_action( 'user_register', array( $this, 'profile_update_action' ), 10 );
 	}
 
 	public function add_get_the_author_field_filters() {
 		$translatable_fields = $this->get_translatable_meta_fields();
 		foreach ( $translatable_fields as $field ) {
-			add_filter( "get_the_author_{$field}", array( $this, 'get_the_author_field_filter' ), 10, 2 );
+			add_filter( "get_the_author_{$field}", array( $this, 'get_the_author_field_filter' ), 10, 3 );
 		}
 	}
 
@@ -53,7 +53,7 @@ Class WPML_ST_User_Fields {
 	private function register_user_strings( $user_id ) {
 		if ( $this->is_user_role_translatable( $user_id ) ) {
 			$fields = $this->get_translatable_meta_fields();
-			foreach( $fields as $field ){
+			foreach ( $fields as $field ) {
 				$name  = $this->get_string_name( $field, $user_id );
 				$value = get_user_meta( $user_id, $field, true );
 
@@ -72,30 +72,37 @@ Class WPML_ST_User_Fields {
 
 	/**
 	 * @param string $value
-	 * @param int $user_id
+	 * @param int    $user_id
+	 * @param int    $original_user_id
 	 *
 	 * @return string
 	 */
-	public function get_the_author_field_filter( $value, $user_id ) {
+	public function get_the_author_field_filter( $value, $user_id, $original_user_id ) {
 		if ( $this->lock_get_the_author_filter ) {
 			return $value;
 		}
 
-		$field = preg_replace( '/get_the_author_/', '', current_filter(), 1);
+		$field = preg_replace( '/get_the_author_/', '', current_filter(), 1 );
 		$value = $this->translate_user_meta_field( $field, $value, $user_id );
-		return $this->apply_filters_for_the_author_field_output( $value, $field, $user_id );
+		return $this->apply_filters_for_the_author_field_output( $value, $field, $user_id, $original_user_id );
 	}
 
 	/**
 	 * @param string $value
 	 * @param string $field
-	 * @param int $user_id
+	 * @param int    $user_id
+	 * @param int    $original_user_id
 	 *
 	 * @return string
 	 */
-	private function apply_filters_for_the_author_field_output( $value, $field, $user_id ) {
+	private function apply_filters_for_the_author_field_output( $value, $field, $user_id, $original_user_id ) {
 		$this->lock_get_the_author_filter = true;
-		$value = apply_filters( "get_the_author_$field", $value, $user_id );
+		/**
+		 * WP hook described in wp-includes/author-template.php
+		 *
+		 * @see get_the_author_meta
+		 */
+		$value                            = apply_filters( "get_the_author_$field", $value, $user_id, $original_user_id );
 		$this->lock_get_the_author_filter = false;
 		return $value;
 	}
@@ -115,16 +122,16 @@ Class WPML_ST_User_Fields {
 	}
 
 	/**
-	 * @param string $field
-	 * @param string $value
+	 * @param string         $field
+	 * @param string         $value
 	 * @param mixed|int|null $user_id
 	 *
 	 * @return string
 	 */
 	private function translate_user_meta_field( $field, $value, $user_id = null ) {
-		if ( !is_admin() && $this->is_user_role_translatable( $user_id ) ) {
-			$name = $this->get_string_name( $field, $user_id );
-			$value = icl_translate( $this->context, $name, $value, true);
+		if ( ! is_admin() && $this->is_user_role_translatable( $user_id ) ) {
+			$name  = $this->get_string_name( $field, $user_id );
+			$value = icl_translate( $this->context, $name, $value, true );
 		}
 		return $value;
 	}
@@ -150,7 +157,7 @@ Class WPML_ST_User_Fields {
 	 * @return bool
 	 */
 	public function is_user_role_translatable( $user_id ) {
-		$ret = false;
+		$ret              = false;
 		$translated_roles = $this->get_translated_roles();
 		$user             = new WP_User( $user_id );
 		if ( is_array( $user->roles ) && array_intersect( $user->roles, $translated_roles ) ) {
@@ -163,14 +170,14 @@ Class WPML_ST_User_Fields {
 	 * @return array
 	 */
 	private function get_translated_roles() {
-		$st_settings      = $this->sitepress->get_setting( 'st' );
+		$st_settings = $this->sitepress->get_setting( 'st' );
 		return isset( $st_settings['translated-users'] ) && is_array( $st_settings['translated-users'] )
 			? $st_settings['translated-users'] : array();
 	}
 
 	/**
 	 * @param string $field
-	 * @param int $user_id
+	 * @param int    $user_id
 	 *
 	 * @return string
 	 */
@@ -184,16 +191,16 @@ Class WPML_ST_User_Fields {
 	public function init_register_strings() {
 		$processed_ids    = array();
 		$translated_roles = $this->get_translated_roles();
-		$blog_id = get_current_blog_id();
+		$blog_id          = get_current_blog_id();
 		foreach ( $translated_roles as $role ) {
-			$args = array(
+			$args  = array(
 				'blog_id' => $blog_id,
 				'fields'  => 'ID',
 				'exclude' => $processed_ids,
 				'role'    => $role,
 			);
 			$users = get_users( $args );
-			foreach( $users as $user_id ){
+			foreach ( $users as $user_id ) {
 				$this->register_user_strings( $user_id );
 				$processed_ids[] = $user_id;
 			}

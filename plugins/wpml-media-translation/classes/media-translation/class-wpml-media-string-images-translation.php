@@ -19,7 +19,7 @@ class WPML_Media_String_Images_Translation implements IWPML_Action {
 	 * WPML_Media_String_Images_Translation constructor.
 	 *
 	 * @param WPML_Media_Translated_Images_Update $images_updater
-	 * @param WPML_ST_String_Factory $string_factory
+	 * @param WPML_ST_String_Factory              $string_factory
 	 */
 	public function __construct( WPML_Media_Translated_Images_Update $images_updater, WPML_ST_String_Factory $string_factory ) {
 		$this->images_updater = $images_updater;
@@ -33,7 +33,7 @@ class WPML_Media_String_Images_Translation implements IWPML_Action {
 	/**
 	 * @param array  $translation_data
 	 * @param string $target_language
-	 * @param int $string_id
+	 * @param int    $string_id
 	 *
 	 * @return array
 	 */

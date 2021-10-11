@@ -15,12 +15,11 @@ abstract class WPML_Translate_Link_Targets_In_Content extends WPML_WPDB_User {
 	/** @var  WPML_Translate_Link_Target_Global_State $translate_link_target_global_state */
 	private $translate_link_target_global_state;
 
-	const MAX_TO_FIX_FOR_NEW_CONTENT = 3;
+	const MAX_TO_FIX_FOR_NEW_CONTENT = 10;
 
 	public function __construct( WPML_Translate_Link_Target_Global_State $translate_link_target_global_state,
-		&$wpdb, 
-		$pro_translation ) 
-	{
+		&$wpdb,
+		$pro_translation ) {
 		parent::__construct( $wpdb );
 		$this->pro_translation                    = $pro_translation;
 		$this->translate_link_target_global_state = $translate_link_target_global_state;
@@ -48,18 +47,18 @@ abstract class WPML_Translate_Link_Targets_In_Content extends WPML_WPDB_User {
 	public function get_number_of_links_that_were_fixed() {
 		return $this->number_of_links_fixed;
 	}
-	
-	
+
+
 	public function fix( $start = 0, $count = 0 ) {
 		$this->scanning_in_progress = true;
 		$this->get_contents_with_links_needing_fix( $start, $count );
-		$last_content_processed = 0;
+		$last_content_processed      = 0;
 		$this->number_of_links_fixed = 0;
 
-		foreach( $this->content_to_fix as $content ) {
+		foreach ( $this->content_to_fix as $content ) {
 
 			$this->number_of_links_fixed += $this->pro_translation->fix_links_to_translated_content( $content->element_id, $content->language_code, $this->get_content_type() );
-			$last_content_processed = $content->element_id;
+			$last_content_processed       = $content->element_id;
 		}
 
 		$this->scanning_in_progress = false;
@@ -70,5 +69,5 @@ abstract class WPML_Translate_Link_Targets_In_Content extends WPML_WPDB_User {
 	abstract protected function get_contents_with_links_needing_fix( $start = 0, $count = 0 );
 	abstract protected function get_content_type();
 	abstract public function get_number_to_be_fixed( $start_id = 0 );
-	
+
 }

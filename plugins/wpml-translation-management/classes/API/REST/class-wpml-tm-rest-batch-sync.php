@@ -14,7 +14,8 @@ class WPML_TM_REST_Batch_Sync extends WPML_REST_Base {
 	}
 
 	public function register_routes() {
-		parent::register_route( '/tp/batches/sync',
+		parent::register_route(
+			'/tp/batches/sync',
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
 				'callback' => array( $this, 'init' ),
@@ -23,12 +24,13 @@ class WPML_TM_REST_Batch_Sync extends WPML_REST_Base {
 						'required'          => true,
 						'validate_callback' => array( $this, 'validate_batch_ids' ),
 						'sanitize_callback' => array( $this, 'sanitize_batch_ids' ),
-					)
+					),
 				),
 			)
 		);
 
-		parent::register_route( '/tp/batches/status',
+		parent::register_route(
+			'/tp/batches/status',
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'check_progress' ),

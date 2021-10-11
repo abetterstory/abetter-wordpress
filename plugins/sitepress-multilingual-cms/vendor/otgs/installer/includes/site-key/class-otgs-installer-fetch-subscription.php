@@ -197,6 +197,8 @@ class OTGS_Installer_Fetch_Subscription {
 
 		}
 
-		return $site_url;
+		$filtered_site_url = filter_var( apply_filters( 'otgs_installer_site_url', $site_url ), FILTER_SANITIZE_URL );
+
+		return $filtered_site_url ? $filtered_site_url : $site_url;
 	}
 }

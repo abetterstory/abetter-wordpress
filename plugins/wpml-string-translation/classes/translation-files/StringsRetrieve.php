@@ -3,6 +3,7 @@
 namespace WPML\ST\TranslationFile;
 
 use WPML\Collect\Support\Collection;
+use WPML\ST\TranslateWpmlString;
 
 class StringsRetrieve {
 
@@ -30,17 +31,23 @@ class StringsRetrieve {
 	 */
 	public function get( $domain, $language, $modified_mo_only ) {
 		return $this->loadFromDb( $language, $domain, $modified_mo_only )
-		            ->filter( function ( $string ) {
-			            return (bool) $string['translation'];
-		            } )
-		            ->mapToGroups( function ( array $string ) {
-			            return $this->groupPluralFormsOfSameString( $string );
-		            } )
-		            ->map( function ( Collection $strings, $key ) {
-			            return $this->buildStringEntity( $strings, $key );
-		            } )
-		            ->values()
-		            ->toArray();
+					->filter(
+						function ( $string ) {
+							return (bool) $string['translation'];
+						}
+					)
+					->mapToGroups(
+						function ( array $string ) {
+							return $this->groupPluralFormsOfSameString( $string );
+						}
+					)
+					->map(
+						function ( Collection $strings, $key ) {
+							return $this->buildStringEntity( $strings, $key );
+						}
+					)
+					->values()
+					->toArray();
 	}
 
 	/**
@@ -53,9 +60,11 @@ class StringsRetrieve {
 	private function loadFromDb( $language, $domain, $modified_mo_only = false ) {
 		$result = \wpml_collect( $this->string_retrieve->get( $language, $domain, $modified_mo_only ) );
 
-		return $result->map( function ( $row ) {
-			return $this->parseResult( $row );
-		} );
+		return $result->map(
+			function ( $row ) {
+				return $this->parseResult( $row );
+			}
+		);
 	}
 
 	/**
@@ -97,7 +106,9 @@ class StringsRetrieve {
 	 * @return array
 	 */
 	private function groupPluralFormsOfSameString( array $string ) {
-		$pattern = '/^(.+) \[plural ([0-9]+)\]$/';
+		$groupKey = $this->getPluralGroupKey( $string );
+		$pattern  = '/^(.+) \[plural ([0-9]+)\]$/';
+
 		if ( preg_match( $pattern, $string['original'], $matches ) ) {
 			$string['original'] = $matches[1];
 			$string['index']    = $matches[2];
@@ -106,8 +117,27 @@ class StringsRetrieve {
 		}
 
 		return [
-			$string['original'] . self::KEY_JOIN . $string['context'] => $string
+			$string['original'] . self::KEY_JOIN . $string['context'] . self::KEY_JOIN . $groupKey => $string,
 		];
+	}
+
+	/**
+	 * Inside a domain, we can have several occurrences of strings
+	 * with the same original, but with different names.
+	 * In this situation, we should not try to group plurals.
+	 *
+	 * @param array $string
+	 *
+	 * @return mixed|string
+	 */
+	private function getPluralGroupKey( array $string ) {
+		$cannotBelongToPluralGroup = TranslateWpmlString::canTranslateWithMO( $string['original'], $string['name'] );
+
+		if ( $cannotBelongToPluralGroup ) {
+			return $string['name'];
+		}
+
+		return '';
 	}
 
 	/**
@@ -117,9 +147,9 @@ class StringsRetrieve {
 	 * @return StringEntity
 	 */
 	private function buildStringEntity( Collection $strings, $key ) {
-		$translations = $strings->sortBy( 'index' )->pluck( 'translation' )->toArray();
+		$translations               = $strings->sortBy( 'index' )->pluck( 'translation' )->toArray();
 		list( $original, $context ) = explode( self::KEY_JOIN, $key );
-		$stringEntity = new StringEntity( $original, $translations, $context );
+		$stringEntity               = new StringEntity( $original, $translations, $context );
 		$stringEntity->set_name( $strings->first()['name'] );
 
 		return $stringEntity;

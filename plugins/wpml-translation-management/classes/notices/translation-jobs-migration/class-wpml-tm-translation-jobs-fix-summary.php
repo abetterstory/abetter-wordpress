@@ -14,16 +14,19 @@ class WPML_TM_Translation_Jobs_Fix_Summary {
 		WPML_TM_Translation_Jobs_Fix_Summary_Notice $notice,
 		WPML_TM_Jobs_Migration_State $migration_state
 	) {
-		$this->notice = $notice;
+		$this->notice          = $notice;
 		$this->migration_state = $migration_state;
 	}
 
 	public function add_hooks() {
 		add_action( 'init', array( $this, 'display_summary' ) );
-		add_action( 'wp_ajax_' . WPML_TP_Sync_Ajax_Handler::AJAX_ACTION, array(
-			$this,
-			'mark_invalid_jobs_as_synced'
-		) );
+		add_action(
+			'wp_ajax_' . WPML_TP_Sync_Ajax_Handler::AJAX_ACTION,
+			array(
+				$this,
+				'mark_invalid_jobs_as_synced',
+			)
+		);
 	}
 
 	public function display_summary() {

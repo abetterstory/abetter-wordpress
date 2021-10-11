@@ -46,24 +46,24 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 									// Delete the old schedule and replace it with the new
 
 									// We will create the new schedule
-									$new_schedule_params['repeat'] 				= $_POST['aDBc_schedule_repeat'];
-									$new_schedule_params['start_date'] 			= $_POST['aDBc_date'];
-									$new_schedule_params['start_time'] 			= $_POST['aDBc_time'];
+									$new_schedule_params['repeat'] 				= sanitize_html_class($_POST['aDBc_schedule_repeat']);
+									$new_schedule_params['start_date'] 			= preg_replace("/[^0-9-]/", '', $_POST['aDBc_date']);
+									$new_schedule_params['start_time'] 			= preg_replace("/[^0-9:]/", '', $_POST['aDBc_time']);
 
 									// Prepare operations to perform
 									$operations = array();
 									if(!empty($_POST['aDBc_operation1']))
-										array_push($operations, $_POST['aDBc_operation1']);
+										array_push($operations, sanitize_html_class($_POST['aDBc_operation1']));
 									if(!empty($_POST['aDBc_operation2']))
-										array_push($operations, $_POST['aDBc_operation2']);
+										array_push($operations, sanitize_html_class($_POST['aDBc_operation2']));
 									$new_schedule_params['operations'] 			= $operations;
 
-									$new_schedule_params['active'] 				= $_POST['aDBc_status'];
+									$new_schedule_params['active'] 				= sanitize_html_class($_POST['aDBc_status']);
 									$optimize_schedule_setting[$_POST['aDBc_schedule_name']] = $new_schedule_params;
 									update_option('aDBc_optimize_schedule', $optimize_schedule_setting, "no");
 
-									list($year, $month, $day) = explode('-', $_POST['aDBc_date']);
-									list($hours, $minutes) = explode(':', $_POST['aDBc_time']);
+									list($year, $month, $day) 	= explode('-', preg_replace("/[^0-9-]/", '', $_POST['aDBc_date']));
+									list($hours, $minutes) 		= explode(':', preg_replace("/[^0-9:]/", '', $_POST['aDBc_time']));
 									$seconds = "0";
 									$timestamp =  mktime($hours, $minutes, $seconds, $month, $day, $year);
 
@@ -74,13 +74,12 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 										if($_POST['aDBc_schedule_repeat'] == "once"){
 											wp_schedule_single_event($timestamp, "aDBc_optimize_scheduler", array($_POST['aDBc_schedule_name']));
 										}else{
-											wp_schedule_event($timestamp, $_POST['aDBc_schedule_repeat'], "aDBc_optimize_scheduler", array($_POST['aDBc_schedule_name']));
+											wp_schedule_event($timestamp, sanitize_html_class($_POST['aDBc_schedule_repeat']), "aDBc_optimize_scheduler", array($_POST['aDBc_schedule_name']));
 										}
 										$this->aDBc_message = __('The clean-up schedule saved successfully!', 'advanced-database-cleaner');
 									}else{
 										$this->aDBc_message = __('The clean-up schedule saved successfully but it is inactive!', 'advanced-database-cleaner');
 									}
-									
 								}else{
 									$this->aDBc_class_message = "error";
 									$this->aDBc_message = __('Please choose at least one operation to perform!', 'advanced-database-cleaner');
@@ -106,9 +105,6 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 				$this->aDBc_message = __('Please give a name to your schedule!', 'advanced-database-cleaner');
 			}
 		}
-		// yyy should this $wpdb be cleaned ?
-		global $wpdb;
-
 	}
 
 	/** Print the page content */
@@ -143,28 +139,28 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 
 			if(isset($_POST['aDBc_schedule_name'])){
 
-				$hook_name 			= $_POST['aDBc_schedule_name'];
-				$schedule_repeat 	= $_POST['aDBc_schedule_repeat'];
-				$schedule_date 		= $_POST['aDBc_date'];
-				$schedule_time		= $_POST['aDBc_time'];
-				$operation1 		= $_POST['aDBc_operation1'];
-				$operation2 		= $_POST['aDBc_operation2'];
-				$schedule_status	= $_POST['aDBc_status'];
+				$hook_name 			= sanitize_html_class($_POST['aDBc_schedule_name']);
+				$schedule_repeat 	= sanitize_html_class($_POST['aDBc_schedule_repeat']);
+				$schedule_date 		= preg_replace("/[^0-9-]/", '', $_POST['aDBc_date']);
+				$schedule_time		= preg_replace("/[^0-9:]/", '', $_POST['aDBc_time']);
+				$operation1 		= isset($_POST['aDBc_operation1']) ? sanitize_html_class($_POST['aDBc_operation1']) : "";
+				$operation2 		= isset($_POST['aDBc_operation2']) ? sanitize_html_class($_POST['aDBc_operation2']) : "";
+				$schedule_status	= sanitize_html_class($_POST['aDBc_status']);
 
 			}else{
 
-				$schedule_settings = get_option('aDBc_optimize_schedule');
-				$schedule_params = $schedule_settings[$_GET['hook_name']];
+				$schedule_settings 	= get_option('aDBc_optimize_schedule');
+				$schedule_params 	= $schedule_settings[sanitize_html_class($_GET['hook_name'])];
 
-				$hook_name = $_GET['hook_name'];
-				$schedule_repeat = $schedule_params['repeat'];
-				$timestamp = wp_next_scheduled("aDBc_optimize_scheduler", array($_GET['hook_name'] . ''));
+				$hook_name 			= sanitize_html_class($_GET['hook_name']);
+				$schedule_repeat 	= $schedule_params['repeat'];
+				$timestamp 			= wp_next_scheduled("aDBc_optimize_scheduler", array(sanitize_html_class($_GET['hook_name']) . ''));
 				if($timestamp){
-					$schedule_date = date("Y-m-d", $timestamp);
-					$schedule_time = date("H:i", $timestamp);
+					$schedule_date 	= date("Y-m-d", $timestamp);
+					$schedule_time 	= date("H:i", $timestamp);
 				}else{
-					$schedule_date = date("Y-m-d");
-					$schedule_time = date("H:i", time());
+					$schedule_date 	= date("Y-m-d");
+					$schedule_time 	= date("H:i", time());
 				}
 
 				$operation1 = in_array('optimize', $schedule_params['operations']) ? 'optimize' : '';
@@ -222,9 +218,9 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 								<input type="checkbox" name="aDBc_operation2" value="repair" <?php echo $operation2 == "repair" ? 'checked' : ''; ?>>
 								<?php _e('Repair','advanced-database-cleaner');?>							
 							</div>
-							
+
 							<div style="text-align:left"><?php _e('Schedule status','advanced-database-cleaner');?></div>
-					
+
 							<div style="margin-top:2px;text-align:left;background:#fff;padding:5px;box-shadow:0 0 10px #e0e0e0;border-radius:5px">
 									<input type="radio" name="aDBc_status" value="1" checked> 
 									<span style="margin-right:20px"><?php _e('Active','advanced-database-cleaner');?></span>
@@ -232,15 +228,12 @@ class EDIT_SCHEDULE_OPTIMIZE extends WP_List_Table {
 									<input type="radio" name="aDBc_status" value="0" <?php echo $schedule_status == "0" ? 'checked' : ''; ?>>
 									<?php _e('Inactive','advanced-database-cleaner');?>
 							</div>
-							
+
 							<div style="width:100%;margin-top:20px">
 								<input class="button-primary" type="submit"  value="<?php _e('Save the schedule','advanced-database-cleaner'); ?>" style="width:100%;"/>
 							</div>
-							
-							
-						
-						</div>		
 
+						</div>
 				</div>
 			</div>
 

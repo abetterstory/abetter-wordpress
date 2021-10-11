@@ -18,15 +18,15 @@ class WPML_TP_Sync_Ajax_Handler {
 	 *
 	 * @param WPML_TP_Sync_Jobs              $tp_sync
 	 * @param WPML_TM_Sync_Installer_Wrapper $installer_wrapper
-	 * @param WPML_TM_Last_Picked_Up $wpml_tm_last_picked_up
+	 * @param WPML_TM_Last_Picked_Up         $wpml_tm_last_picked_up
 	 */
 	public function __construct(
 		WPML_TP_Sync_Jobs $tp_sync,
 		WPML_TM_Sync_Installer_Wrapper $installer_wrapper,
 		WPML_TM_Last_Picked_Up $wpml_tm_last_picked_up
 	) {
-		$this->tp_sync           = $tp_sync;
-		$this->installer_wrapper = $installer_wrapper;
+		$this->tp_sync                = $tp_sync;
+		$this->installer_wrapper      = $installer_wrapper;
 		$this->wpml_tm_last_picked_up = $wpml_tm_last_picked_up;
 	}
 
@@ -68,6 +68,7 @@ class WPML_TP_Sync_Ajax_Handler {
 			'type'                    => $job->get_type(),
 			'status'                  => $job->get_status(),
 			'hasCompletedTranslation' => $job->has_completed_translation(),
+			'needsUpdate'             => $job->does_need_update(),
 		);
 	}
 }

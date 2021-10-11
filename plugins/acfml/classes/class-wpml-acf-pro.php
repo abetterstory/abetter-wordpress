@@ -33,11 +33,11 @@ class WPML_ACF_Pro {
 	}
 
 	/**
-	 * Filter: Update clloned field names to translated version
+	 * Filter: Update cloned field names to translated version
 	 *
-	 * @param $field
+	 * @param array $field
 	 *
-	 * @return updated field
+	 * @return array Updated field
 	 */
 	public function duplicate_clone_field($field) {
 		$parent_language = apply_filters('wpml_post_language_details', null, $field['parent']);

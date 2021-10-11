@@ -41,7 +41,7 @@ class WPML_TP_Apply_Translations {
 
 		$downloaded_jobs = new WPML_TM_Jobs_Collection(
 			$jobs->filter_by_status( ICL_TM_TRANSLATION_READY_TO_DOWNLOAD )
-			     ->map( array( $this->apply_single_job, 'apply' ) )
+				 ->map( array( $this->apply_single_job, 'apply' ) )
 		);
 
 		return $downloaded_jobs->append( $cancelled_jobs );
@@ -108,10 +108,14 @@ class WPML_TP_Apply_Translations {
 	 * @return WPML_TM_Jobs_Collection
 	 */
 	private function get_all_ready_jobs() {
-		return $this->jobs_repository->get( new WPML_TM_Jobs_Search_Params( array(
-			'status' => array( ICL_TM_TRANSLATION_READY_TO_DOWNLOAD ),
-			'scope'  => WPML_TM_Jobs_Search_Params::SCOPE_REMOTE,
-		) ) );
+		return $this->jobs_repository->get(
+			new WPML_TM_Jobs_Search_Params(
+				array(
+					'status' => array( ICL_TM_TRANSLATION_READY_TO_DOWNLOAD ),
+					'scope'  => WPML_TM_Jobs_Search_Params::SCOPE_REMOTE,
+				)
+			)
+		);
 	}
 
 	/**

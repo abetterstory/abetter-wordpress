@@ -72,11 +72,12 @@ class ADBC_Tables_List extends WP_List_Table {
 				return; //get out if we didn't click the delete link
 
 			// We delete the schedule
-			wp_clear_scheduled_hook('aDBc_optimize_scheduler', array($_POST['aDBc_delete_schedule']));
+			$aDBc_sanitized_schedule_name = sanitize_html_class($_POST['aDBc_delete_schedule']);
+			wp_clear_scheduled_hook('aDBc_optimize_scheduler', array($aDBc_sanitized_schedule_name));
 
 			// We delete the item from database
 			$aDBc_schedules = get_option('aDBc_optimize_schedule');
-			unset($aDBc_schedules[$_POST['aDBc_delete_schedule']]);
+			unset($aDBc_schedules[$aDBc_sanitized_schedule_name]);
 			update_option('aDBc_optimize_schedule', $aDBc_schedules, "no");
 
 			$this->aDBc_message = __('The clean-up schedule deleted successfully!', 'advanced-database-cleaner');
@@ -241,7 +242,7 @@ class ADBC_Tables_List extends WP_List_Table {
 
 	/** WP: Column cb for check box */
 	function column_cb($item) {
-		return sprintf('<input type="checkbox" name="aDBc_tables_to_delete[]" value="%s" />', $item['table_prefix']."|".$item['table_name']);
+		return sprintf('<input type="checkbox" name="aDBc_elements_to_process[]" value="%s" />', $item['table_prefix']."|".$item['table_name']);
 	}
 
 	/** WP: Get bulk actions */
@@ -269,7 +270,15 @@ class ADBC_Tables_List extends WP_List_Table {
             $action = 'bulk-' . $this->_args['plural'];
             if (!wp_verify_nonce( $nonce, $action))
                 wp_die('Security check failed!');
-        }
+        }else{
+			// If $_POST['_wpnonce'] is not set, return
+			return;
+		}
+
+		// Check role
+		if(!current_user_can('administrator'))
+			wp_die('Security check failed!');
+
         $action = $this->current_action();
 
 		// Prepare an array containing names of tables deleted
@@ -277,16 +286,17 @@ class ADBC_Tables_List extends WP_List_Table {
 
         if($action == 'delete'){
 			// If the user wants to clean the tables he/she selected
-			if(isset($_POST['aDBc_tables_to_delete'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				global $wpdb;
-				foreach($_POST['aDBc_tables_to_delete'] as $table) {
-					$table_info = explode("|", $table);
-					$wpdb->query("DROP TABLE " . $table_info[0].$table_info[1]);
-					array_push($names_deleted, $table_info[1]);
-				}
-				// After deleting tables, delete names also from file categorization
-				if(ADBC_PLUGIN_F_TYPE == "pro"){
-					aDBc_refresh_categorization_file_after_delete($names_deleted, 'tables');
+				foreach($_POST['aDBc_elements_to_process'] as $table){
+					$table_info 	= explode("|", $table);
+					$table_prefix 	= sanitize_html_class($table_info[0]);
+					$table_name 	= sanitize_text_field($table_info[1]);
+					// We delete some characters we believe they should not appear in the name: & < > = # ( ) [ ] { } ? " ' 
+					$table_name 	= preg_replace("/[&<>=#\(\)\[\]\{\}\?\"\' ]/", '', $table_name);					
+					if($wpdb->query("DROP TABLE " . $table_prefix . $table_name)){
+						array_push($names_deleted, $table_name);
+					}
 				}
 
 				// Update the message to show to the user
@@ -294,34 +304,46 @@ class ADBC_Tables_List extends WP_List_Table {
 			}
         }else if($action == 'optimize'){
 			// If the user wants to optimize the tables he/she selected
-			if(isset($_POST['aDBc_tables_to_delete'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				global $wpdb;
-				foreach($_POST['aDBc_tables_to_delete'] as $table) {
-					$table_info = explode("|", $table); 
-					$wpdb->query("OPTIMIZE TABLE " . $table_info[0].$table_info[1]);
+				foreach($_POST['aDBc_elements_to_process'] as $table) {
+					$table_info 	= explode("|", $table);
+					$table_prefix 	= sanitize_html_class($table_info[0]);
+					$table_name 	= sanitize_text_field($table_info[1]);
+					// We delete some characters we believe they should not appear in the name: & < > = # ( ) [ ] { } ? " ' 
+					$table_name 	= preg_replace("/[&<>=#\(\)\[\]\{\}\?\"\' ]/", '', $table_name);
+					$wpdb->query("OPTIMIZE TABLE " . $table_prefix . $table_name);
 				}
 				// Update the message to show to the user
 				$this->aDBc_message = __('Selected tables optimized successfully!', 'advanced-database-cleaner');
 			}
         }else if($action == 'empty'){
 			// If the user wants to empty the tables he/she selected
-			if(isset($_POST['aDBc_tables_to_delete'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				global $wpdb;
-				foreach($_POST['aDBc_tables_to_delete'] as $table) {
-					$table_info = explode("|", $table); 
-					$wpdb->query("TRUNCATE TABLE " . $table_info[0].$table_info[1]);
+				foreach($_POST['aDBc_elements_to_process'] as $table) {
+					$table_info 	= explode("|", $table);
+					$table_prefix 	= sanitize_html_class($table_info[0]);
+					$table_name 	= sanitize_text_field($table_info[1]);
+					// We delete some characters we believe they should not appear in the name: & < > = # ( ) [ ] { } ? " ' 
+					$table_name 	= preg_replace("/[&<>=#\(\)\[\]\{\}\?\"\' ]/", '', $table_name);
+					$wpdb->query("TRUNCATE TABLE " . $table_prefix . $table_name);
 				}
 				// Update the message to show to the user
 				$this->aDBc_message = __('Selected tables emptied successfully!', 'advanced-database-cleaner');
 			}
         }else if($action == 'repair'){
 			// If the user wants to repair the tables he/she selected
-			if(isset($_POST['aDBc_tables_to_delete'])){
+			if(isset($_POST['aDBc_elements_to_process'])){
 				global $wpdb;
 				$cannot_repair = 0;
-				foreach($_POST['aDBc_tables_to_delete'] as $table) {
-					$table_info = explode("|", $table);
-					$query_result = $wpdb->get_results("REPAIR TABLE " . $table_info[0].$table_info[1]);
+				foreach($_POST['aDBc_elements_to_process'] as $table) {
+					$table_info 	= explode("|", $table);
+					$table_prefix 	= sanitize_html_class($table_info[0]);
+					$table_name 	= sanitize_text_field($table_info[1]);
+					// We delete some characters we believe they should not appear in the name: & < > = # ( ) [ ] { } ? " ' 
+					$table_name 	= preg_replace("/[&<>=#\(\)\[\]\{\}\?\"\' ]/", '', $table_name);
+					$query_result 	= $wpdb->get_results("REPAIR TABLE " . $table_prefix . $table_name);
 					foreach($query_result as $row){
 						if($row->Msg_type == 'error'){
 							if(preg_match('/corrupt/i', $row->Msg_text)){
@@ -369,17 +391,6 @@ class ADBC_Tables_List extends WP_List_Table {
 		?>
 		<div class="aDBc-content-max-width">
 
-			<!-- Print a notice/warning according to each type of tables -->
-			<?php
-			if(ADBC_PLUGIN_F_TYPE == "pro"){
-				if($_GET['aDBc_cat'] == 'o' && $this->aDBc_tables_categories_info['o']['count'] > 0){
-					echo '<div class="aDBc-box-warning-orphan">' . __('Tables below seem to be orphan! However, please delete only those you are sure to be orphan!','advanced-database-cleaner') . '</div>';
-				}else if(($_GET['aDBc_cat'] == 'all' || $_GET['aDBc_cat'] == 'u') && $this->aDBc_tables_categories_info['u']['count'] > 0){
-					echo '<div class="aDBc-box-info">' . __('Some of your tables are not categorized yet! Please click on the button below to categorize them!','advanced-database-cleaner') . '</div>';
-				}
-			}
-			?>
-		
 			<div class="aDBc-clear-both" style="margin-top:15px"></div>
 
 			<!-- Code for "run new search" button + Show loading image -->
@@ -401,21 +412,10 @@ class ADBC_Tables_List extends WP_List_Table {
 				<input type="hidden" id="aDBc_still_searching" value="<?php echo $still_searching; ?>"/>
 				<input type="hidden" id="aDBc_iteration" value="<?php echo $iteration; ?>"/>
 
-				<?php 
-				if(ADBC_PLUGIN_F_TYPE == "free"){
-				?>
 				<div class="aDBc_premium_tooltip">
 					<input id="aDBc_new_search_button" type="submit" class="aDBc-run-new-search" value="<?php echo $aDBc_search_text; ?>"  name="aDBc_new_search_button" style="opacity:0.5" disabled/>
 					<span style="width:390px" class="aDBc_premium_tooltiptext"><?php _e('Please <a href="?page=advanced_db_cleaner&aDBc_tab=premium">upgrade</a> to Pro to categorize and detect orphaned tables','advanced-database-cleaner') ?></span>
 				</div>
-				<?php
-				}else { ?>
-
-					<input id="aDBc_new_search_button" type="submit" class="aDBc-run-new-search" value="<?php echo $aDBc_search_text; ?>"  name="aDBc_new_search_button" />
-
-				<?php	
-				}
-				?>
 
 			</div>
 
@@ -432,7 +432,7 @@ class ADBC_Tables_List extends WP_List_Table {
 					<span class="<?php echo $abreviation == $_GET['aDBc_cat'] ? 'aDBc-selected-category' : ''?>" style="<?php echo $abreviation == $_GET['aDBc_cat'] ? 'border-bottom: 1px solid ' . $category_info['color'] : '' ?>">
 
 						<?php 
-						if(ADBC_PLUGIN_F_TYPE == "pro" || $abreviation == "all"|| $abreviation == "u"){ 
+						if($abreviation == "all"|| $abreviation == "u"){
 							$aDBc_link_style = "color:" . $category_info['color'];
 							$aDBc_category_info_count = "(". $category_info['count'] . ")";
 						}else{
@@ -447,7 +447,7 @@ class ADBC_Tables_List extends WP_List_Table {
 								<span><?php echo $category_info['name']; ?></span>
 								<span><?php echo $aDBc_category_info_count ;?></span>
 							</a>
-							<?php if(ADBC_PLUGIN_F_TYPE == "free" && $abreviation != "all" && $abreviation != "u"){ ?>
+							<?php if($abreviation != "all" && $abreviation != "u"){ ?>
 								<span style="width:150px" class="aDBc_premium_tooltiptext"><?php _e('Available in Pro version!','advanced-database-cleaner') ?></span>
 							<?php } ?>
 						</span>
@@ -613,29 +613,8 @@ class ADBC_Tables_List extends WP_List_Table {
 
 			<div class="aDBc-clear-both"></div>
 
-		</div>
+		</div>	
 
-		<div id="aDBc_dialog1" title="<?php _e('Cleaning...','advanced-database-cleaner'); ?>" class="aDBc-jquery-dialog">
-			<p class="aDBc-box-warning">
-				<?php echo __('You are about to delete some of your tables. This operation is irreversible!','advanced-database-cleaner')  . "<span style='color:red'> " . __('Don\'t forget to make a backup of your database first.','advanced-database-cleaner') . "</span>" ; ?>
-			</p>
-			<p>
-				<?php _e('Are you sure to continue?','advanced-database-cleaner'); ?>
-			</p>
-		</div>
-		<div id="aDBc_dialog2" title="<?php _e('Cleaning...','advanced-database-cleaner'); ?>" class="aDBc-jquery-dialog">
-			<p class="aDBc-box-warning">
-				<?php echo __('You are about to empty some of your tables. This operation is irreversible!','advanced-database-cleaner')  . "<span style='color:red'> " . __('Don\'t forget to make a backup of your database first.','advanced-database-cleaner') . "</span>" ; ?>
-			</p>
-			<p>
-				<?php _e('Are you sure to continue?','advanced-database-cleaner'); ?>
-			</p>
-		</div>		
-		<div id="aDBc_dialogx" title="<?php _e('Action required','advanced-database-cleaner'); ?>" class="aDBc-jquery-dialog">
-			<p class="aDBc-box-info">
-				<?php _e('Please choose an action!','advanced-database-cleaner'); ?>
-			</p>
-		</div>
 	<?php
 	}
 }

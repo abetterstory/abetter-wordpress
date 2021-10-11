@@ -44,7 +44,7 @@ WPML_TM.translationMemory = function ( languages ) {
 
 		for ( var key in self.strings ) {
 			if ( self.strings.hasOwnProperty( key ) ) {
-				strings.push( key );
+				strings.push( {string: key, source: self.languages['source'], target: self.languages['target']} );
 			}
 		}
 		if ( strings.length > 0 ) {
@@ -54,16 +54,18 @@ WPML_TM.translationMemory = function ( languages ) {
 					url: ajaxurl,
 					dataType: 'json',
 					data: {
-						strings: strings,
-						languages: self.languages,
-						action: 'wpml_st_fetch_translations',
-						nonce: tmEditorStrings.translationMemoryNonce
+						data: JSON.stringify({ batch: true, strings: strings }),
+						action: 'wpml_action',
+						nonce: tmEditorStrings.translationMemoryNonce,
+						endpoint: tmEditorStrings.translationMemoryEndpoint
 					},
 					success: function ( response ) {
 						if ( response.success ) {
 							var data = response.data;
 							for ( var i = 0; i < data.length; i++ ) {
-								updateViewWithTranslation( data[ i ] );
+								if ( data[i].length > 0 ) {
+									updateViewWithTranslation( data[i][0] );
+								}
 							}
 						}
 					}

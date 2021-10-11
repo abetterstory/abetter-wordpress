@@ -21,7 +21,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * The items contained in the collection.
      *
-     * @var array
+     * @var mixed[]
      */
     protected $items = [];
 
@@ -39,7 +39,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * Create a new collection instance if the value isn't one already.
      *
-     * @param  mixed  $items
+     * @param  mixed[]  $items
      * @return static
      */
     public static function make($items = [])
@@ -50,7 +50,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * Get all of the items in the collection.
      *
-     * @return array
+     * @return mixed[]
      */
     public function all()
     {
@@ -61,7 +61,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * Get the average value of a given key.
      *
      * @param  callable|string|null  $callback
-     * @return mixed
+     * @return float|void
      */
     public function avg($callback = null)
     {
@@ -74,7 +74,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * Alias for the "avg" method.
      *
      * @param  callable|string|null  $callback
-     * @return mixed
+     * @return float|void
      */
     public function average($callback = null)
     {
@@ -85,7 +85,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * Get the median of a given key.
      *
      * @param  null $key
-     * @return mixed|null
+     * @return float|void
      */
     public function median($key = null)
     {
@@ -113,7 +113,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * Get the mode of a given key.
      *
      * @param  null $key
-     * @return array
+     * @return mixed[]|void
      */
     public function mode($key = null)
     {
@@ -725,6 +725,28 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         return $this->slice(($page - 1) * $perPage, $perPage);
     }
 
+	/**
+	 * Partition the collection into two arrays using the given callback or key.
+	 *
+	 * @param  callable|string  $key
+	 * @param  mixed  $operator
+	 * @param  mixed  $value
+	 * @return static
+	 */
+	public function partition($key, $operator = null, $value = null)
+	{
+		$partitions = [new static, new static];
+
+		$callback = func_num_args() === 1
+			? $this->valueRetriever($key)
+			: $this->operatorForWhere(...func_get_args());
+
+		foreach ($this->items as $key => $item) {
+			$partitions[(int) ! $callback($item, $key)][$key] = $item;
+		}
+
+		return new static($partitions);
+	}
     /**
      * Pass the collection to the given callback and return the result.
      *
@@ -1463,5 +1485,16 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
 		return  ! empty($this->items);
 	}
 
-
+	/**
+	 * Cross join with the given lists, returning all possible permutations.
+	 *
+	 * @param  mixed  ...$lists
+	 * @return static
+	 */
+	public function crossJoin(...$lists)
+	{
+		return new static(Arr::crossJoin(
+			$this->items, ...array_map([$this, 'getArrayableItems'], $lists)
+		));
+	}
 }

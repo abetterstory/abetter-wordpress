@@ -5,6 +5,8 @@
  * @package wpml-page-builders-beaver-builder
  */
 
+use WPML\PB\BeaverBuilder\Modules\ModuleWithItemsFromConfig;
+
 /**
  * Class WPML_Beaver_Builder_Translatable_Nodes
  */
@@ -49,19 +51,12 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 						$strings[] = $string;
 					}
 				}
-				if ( isset( $node_data['integration-class'] ) ) {
+
+				foreach ( $this->get_integration_instances( $node_data ) as $node ) {
 					try {
-						/**
-						 * Node object.
-						 *
-						 * @var WPML_Beaver_Builder_Module_With_Items $node
-						 */
-						$node    = new $node_data['integration-class']();
 						$strings = $node->get( $node_id, $settings, $strings );
 						// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-					} catch ( Exception $e ) {
-						// Nothing to do with the exception, we do not handle it.
-					}
+					} catch ( Exception $e ) {}
 					// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				}
 			}
@@ -92,25 +87,43 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 						$settings->$field_key = $string->get_value();
 					}
 				}
-				if ( isset( $node_data['integration-class'] ) ) {
+
+				foreach ( $this->get_integration_instances( $node_data ) as $node ) {
 					try {
-						/**
-						 * Node object.
-						 *
-						 * @var WPML_Beaver_Builder_Module_With_Items $node
-						 */
-						$node = new $node_data['integration-class']();
 						$node->update( $node_id, $settings, $string );
 						// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-					} catch ( Exception $e ) {
-						// Nothing to do with the exception, we do not handle it.
-					}
+					} catch ( Exception $e ) {}
 					// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				}
 			}
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * @param array $node_data
+	 *
+	 * @return WPML_Beaver_Builder_Module_With_Items[]
+	 */
+	private function get_integration_instances( array $node_data ) {
+		$instances = [];
+
+		if ( isset( $node_data['integration-class'] ) ) {
+			try {
+				$instances[] = new $node_data['integration-class']();
+				// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( Exception $e ) {}
+			// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		}
+
+		if ( isset( $node_data['fields_in_item'] ) ) {
+			foreach ( $node_data['fields_in_item'] as $item_of => $config ) {
+				$instances[] = new ModuleWithItemsFromConfig( $item_of, $config );
+			}
+		}
+
+		return array_filter( $instances );
 	}
 
 	/**
@@ -163,10 +176,10 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 	}
 
 	/**
-	 * Initialize translatable nodes.
+	 * @return array
 	 */
-	public function initialize_nodes_to_translate() {
-		$this->nodes_to_translate = array(
+	public static function get_nodes_to_translate() {
+		return array(
 			'button'         => array(
 				'conditions' => array( 'type' => 'button' ),
 				'fields'     => array(
@@ -492,7 +505,12 @@ class WPML_Beaver_Builder_Translatable_Nodes implements IWPML_Page_Builders_Tran
 			),
 
 		);
+	}
 
-		$this->nodes_to_translate = apply_filters( 'wpml_beaver_builder_modules_to_translate', $this->nodes_to_translate );
+	/**
+	 * Initialize translatable nodes.
+	 */
+	public function initialize_nodes_to_translate() {
+		$this->nodes_to_translate = apply_filters( 'wpml_beaver_builder_modules_to_translate', self::get_nodes_to_translate() );
 	}
 }

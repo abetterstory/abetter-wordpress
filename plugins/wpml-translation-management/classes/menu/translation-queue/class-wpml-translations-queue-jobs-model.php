@@ -1,6 +1,7 @@
 <?php
 
 use WPML\TM\Jobs\Utils\ElementLink;
+use WPML\FP\Obj;
 
 /**
  * Created by OnTheGo Systems
@@ -104,13 +105,14 @@ class WPML_Translations_Queue_Jobs_Model {
 				case 'package':
 					$type = substr( $type, 8 );
 					break;
+
+				case 'st-batch':
+					$name = __( 'Strings', 'wpml-translation-management' );
+					break;
 			}
 
-			if ( isset( $this->post_types[ $type ] ) ) {
-				$name = $this->post_types[ $type ]->labels->singular_name;
-			}
-
-			$this->post_type_names [ $job->original_post_type ] = $name;
+			$this->post_type_names[ $job->original_post_type ] =
+				Obj::pathOr( $name, [ $type, 'labels', 'singular_name' ], $this->post_types );;
 		}
 
 		return $this->post_type_names[ $job->original_post_type ];

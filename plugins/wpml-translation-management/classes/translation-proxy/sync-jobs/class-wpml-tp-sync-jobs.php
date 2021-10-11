@@ -33,7 +33,8 @@ class WPML_TP_Sync_Jobs {
 	 * @throws WPML_TP_API_Exception
 	 */
 	public function sync() {
-		return new WPML_TM_Jobs_Collection( $this->jobs_status_sync
+		return new WPML_TM_Jobs_Collection(
+			$this->jobs_status_sync
 			->sync()
 			->append( $this->jobs_revision_sync->sync() )
 			->filter_by_status( array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ), true )

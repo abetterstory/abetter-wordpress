@@ -7,10 +7,12 @@
 
     {% if false == has_preferred_service and has_services %}
 
-        <div id="wpml-tp-services">
-            {{ services|raw }}
+        <div
+                id="wpml-tp-services"
+                data-services="{{ services|json_encode() }}"
+                data-strings="{{ strings|json_encode() }}"
+        >
         </div>
-
 
         <div class="js-bottom-section">
             <hr class="wpml-margin-top-base">

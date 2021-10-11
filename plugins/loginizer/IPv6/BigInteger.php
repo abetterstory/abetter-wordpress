@@ -1157,7 +1157,7 @@ class Math_BigInteger {
         $carry = 0;
 
         for ($j = 0; $j < $x_length; ++$j) { // ie. $i = 0
-            $temp = $x_value[$j] * $y_value[0] + $carry; // $product_value[$k] == 0
+            $temp = (!empty($x_value[$j]) ? $x_value[$j] : 0) * (!empty($y_value[0]) ? $y_value[0] : 0) + $carry; // $product_value[$k] == 0
             $carry = (int) ($temp / 0x4000000);
             $product_value[$j] = (int) ($temp - 0x4000000 * $carry);
         }
@@ -1532,7 +1532,7 @@ class Math_BigInteger {
         $result = array();
 
         for ($i = count($dividend) - 1; $i >= 0; --$i) {
-            $temp = 0x4000000 * $carry + $dividend[$i];
+            $temp = 0x4000000 * $carry + (!empty($dividend[$i]) ? $dividend[$i] : 0);
             $result[$i] = (int) ($temp / $divisor);
             $carry = (int) ($temp - $divisor * $result[$i]);
         }
@@ -3437,7 +3437,7 @@ class Math_BigInteger {
     function _trim($value)
     {
         for ($i = count($value) - 1; $i >= 0; --$i) {
-            if ( $value[$i] ) {
+            if ( !empty($value[$i]) ) {
                 break;
             }
             unset($value[$i]);

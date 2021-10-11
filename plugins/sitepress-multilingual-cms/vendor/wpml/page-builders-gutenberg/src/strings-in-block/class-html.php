@@ -2,6 +2,9 @@
 
 namespace WPML\PB\Gutenberg\StringsInBlock;
 
+use WPML\FP\Str;
+use WPML\FP\Obj;
+use WPML\PB\Gutenberg\StringsInBlock\DOMHandler\HtmlBlock;
 use WPML\PB\Gutenberg\StringsInBlock\DOMHandler\StandardBlock;
 use WPML\PB\Gutenberg\StringsInBlock\DOMHandler\ListBlock;
 use WPML\PB\Gutenberg\XPath;
@@ -9,6 +12,7 @@ use WPML\PB\Gutenberg\XPath;
 class HTML extends Base {
 
 	const LIST_BLOCK_NAME = 'core/list';
+	const HTML_BLOCK_NAME = 'core/html';
 
 	/**
 	 * @param \WP_Block_Parser_Block $block
@@ -24,14 +28,19 @@ class HTML extends Base {
 			$dom_handle = $this->get_dom_handler( $block );
 			$xpath      = $dom_handle->getDomxpath( $block->innerHTML );
 
-			foreach ( $block_queries as $query ) {
-				list( $query, $definedType ) = XPath::parse( $query );
+			foreach ( $block_queries as $blockQuery ) {
+				list( $query, $definedType, $label ) = XPath::parse( $blockQuery );
 				$elements = $xpath->query( $query );
 				foreach ( $elements as $element ) {
 					list( $text, $type ) = $dom_handle->getPartialInnerHTML( $element );
 					if ( $text ) {
 						$string_id = $this->get_string_id( $block->blockName, $text );
-						$strings[] = $this->build_string( $string_id, $block->blockName, $text, $definedType ? $definedType : $type );
+						$strings[] = $this->build_string(
+							$string_id,
+							$label ?: $this->get_block_label( $block ),
+							$text,
+							$definedType ? $definedType : $type
+						);
 					}
 				}
 			}
@@ -40,7 +49,12 @@ class HTML extends Base {
 
 			$string_id = $this->get_block_string_id( $block );
 			if ( $string_id ) {
-				$strings[] = $this->build_string( $string_id, $block->blockName, $block->innerHTML, 'VISUAL' );
+				$strings[] = $this->build_string(
+					$string_id,
+					$this->get_block_label( $block ),
+					$block->innerHTML,
+					'VISUAL'
+				);
 			}
 
 		}
@@ -69,29 +83,25 @@ class HTML extends Base {
 				$elements = $xpath->query( $query );
 				foreach ( $elements as $element ) {
 					list( $text, ) = $dom_handle->getPartialInnerHTML( $element );
-					$string_id = $this->get_string_id( $block->blockName, $text );
-					if (
-						isset( $string_translations[ $string_id ][ $lang ] ) &&
-						ICL_TM_COMPLETE == $string_translations[ $string_id ][ $lang ]['status']
-					) {
-						$translation = $string_translations[ $string_id ][ $lang ]['value'];
-						$block       = $this->update_string_in_innerContent( $block, $element, $translation );
-						$dom_handle->setElementValue( $element, $translation );
-					}
+					$block = $this->updateTranslationInBlock(
+						$text,
+						$lang,
+						$block,
+						$string_translations,
+						$element,
+						$dom_handle
+					);
 				}
 			}
 			list( $block->innerHTML, ) = $dom_handle->getFullInnerHTML( $dom->documentElement );
 
-		} else {
+		} elseif ( isset( $block->blockName, $block->innerHTML ) && '' !== trim( $block->innerHTML ) ) {
 
-			$string_id = $this->get_block_string_id( $block );
-			if (
-				isset( $string_translations[ $string_id ][ $lang ] ) &&
-				ICL_TM_COMPLETE == $string_translations[ $string_id ][ $lang ]['status']
-			) {
-				$block->innerHTML = $string_translations[ $string_id ][ $lang ]['value'];
+			$translation = $this->getTranslation( $block->innerHTML, $lang, $block, $string_translations );
+
+			if ( $translation ) {
+				$block->innerHTML = $translation;
 			}
-
 		}
 
 		return $block;
@@ -118,7 +128,7 @@ class HTML extends Base {
 	 *
 	 * @return \WP_Block_Parser_Block
 	 */
-	private function update_string_in_innerContent( \WP_Block_Parser_Block $block, \DOMNode $element, $translation ) {
+	public static function update_string_in_innerContent( \WP_Block_Parser_Block $block, \DOMNode $element, $translation ) {
 		if ( empty( $block->innerContent ) ) {
 			return $block;
 		}
@@ -133,7 +143,7 @@ class HTML extends Base {
 
 		foreach ( $block->innerContent as &$inner_content ) {
 			if ( $inner_content ) {
-				$inner_content = preg_replace( $search, '$1' . $translation . '$3', $inner_content );
+				$inner_content = preg_replace( $search, '${1}' . $translation . '${3}', $inner_content );
 			}
 		}
 
@@ -165,13 +175,64 @@ class HTML extends Base {
 	/**
 	 * @param \WP_Block_Parser_Block $block
 	 *
-	 * @return ListBlock|StandardBlock
+	 * @return ListBlock|StandardBlock|HtmlBlock
 	 */
 	private function get_dom_handler( \WP_Block_Parser_Block $block ) {
-		if ( self::LIST_BLOCK_NAME === $block->blockName ) {
-			return new ListBlock();
+		$class = wpml_collect( [
+			self::LIST_BLOCK_NAME => ListBlock::class,
+			self::HTML_BLOCK_NAME => HtmlBlock::class,
+		] )->get( $block->blockName, StandardBlock::class );
+
+		return new $class();
+	}
+
+	/**
+	 * @param                        $text
+	 * @param                        $lang
+	 * @param \WP_Block_Parser_Block $block
+	 * @param array                  $string_translations
+	 * @param                        $element
+	 * @param                        $dom_handle
+	 *
+	 * @return \WP_Block_Parser_Block
+	 */
+	private function updateTranslationInBlock( $text, $lang, \WP_Block_Parser_Block $block, array $string_translations, $element, $dom_handle ) {
+		$translation = $this->getTranslation( $text, $lang, $block, $string_translations );
+		if ( $translation ) {
+			$block = self::update_string_in_innerContent( $block, $element, $translation );
+			$dom_handle->setElementValue( $element, $translation );
 		}
 
-		return new StandardBlock();
+		return $block;
+	}
+
+	private function getTranslation( $text, $lang, \WP_Block_Parser_Block $block, array $string_translations ) {
+		$translationFromPageBuilder = apply_filters( 'wpml_pb_update_translations_in_content', $text, $lang );
+		if ( $translationFromPageBuilder === $text ) {
+			$string_id = $this->get_string_id( $block->blockName, $text );
+			if ( Obj::path( [ $string_id, $lang, 'status' ], $string_translations ) == ICL_TM_COMPLETE ) {
+				return self::preserveNewLines( $text, $string_translations[ $string_id ][ $lang ]['value'] );
+			} else {
+				return null;
+			}
+		} else {
+			return $translationFromPageBuilder;
+		}
+	}
+
+	private static function preserveNewLines( $original, $translation ) {
+		$endsWith = function ( $find, $s ) {
+			return Str::sub( - Str::len( $find ), $s ) === $find;
+		};
+
+		if ( Str::startsWith( "\n", $original ) && ! Str::startsWith( "\n", $translation ) ) {
+			$translation = "\n" . $translation;
+		}
+
+		if ( $endsWith( "\n", $original ) && ! $endsWith( "\n", $translation ) ) {
+			$translation .= "\n";
+		}
+
+		return $translation;
 	}
 }

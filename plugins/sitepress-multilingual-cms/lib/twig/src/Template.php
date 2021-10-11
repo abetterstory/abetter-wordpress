@@ -473,7 +473,7 @@ abstract class Template implements \WPML\Core\Twig_TemplateInterface
         // array
         if (self::METHOD_CALL !== $type) {
             $arrayItem = \is_bool($item) || \is_float($item) ? (int) $item : $item;
-            if ((\is_array($object) || $object instanceof \ArrayObject) && (isset($object[$arrayItem]) || \array_key_exists($arrayItem, $object)) || $object instanceof \ArrayAccess && isset($object[$arrayItem])) {
+            if ((\is_array($object) || $object instanceof \ArrayObject) && (isset($object[$arrayItem]) || \array_key_exists($arrayItem, (array) $object)) || $object instanceof \ArrayAccess && isset($object[$arrayItem])) {
                 if ($isDefinedTest) {
                     return \true;
                 }
@@ -529,7 +529,7 @@ abstract class Template implements \WPML\Core\Twig_TemplateInterface
         // object property
         if (self::METHOD_CALL !== $type && !$object instanceof self) {
             // \Twig\Template does not have public properties, and we don't want to allow access to internal ones
-            if (isset($object->{$item}) || \array_key_exists((string) $item, $object)) {
+            if (isset($object->{$item}) || \array_key_exists((string) $item, (array) $object)) {
                 if ($isDefinedTest) {
                     return \true;
                 }

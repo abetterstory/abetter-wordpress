@@ -19,7 +19,7 @@ class WPML_Update_PickUp_Method {
 			} elseif ( ICL_PRO_TRANSLATION_PICKUP_XMLRPC == $method ) {
 				$response = 'no-ts';
 			}
-		} catch ( RuntimeException $e) {
+		} catch ( RuntimeException $e ) {
 			$response = 'cant-update';
 		}
 

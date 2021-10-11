@@ -15,9 +15,11 @@ class WPML_Translation_Manager_Records extends WPML_Translation_Roles_Records {
 	protected function get_required_wp_roles() {
 
 		return wpml_collect( $this->wp_roles->role_objects )
-			->filter( function ( $role ) {
-				return $this->is_required_role( $role );
-			} )
+			->filter(
+				function ( $role ) {
+					return $this->is_required_role( $role );
+				}
+			)
 			->keys()
 			->all();
 	}

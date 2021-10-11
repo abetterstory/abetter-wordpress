@@ -2,7 +2,7 @@
 
 class WPML_Debug_Information {
 
-	/** @var WPDB $wpdb */
+	/** @var wpdb $wpdb */
 	public $wpdb;
 
 	/** @var SitePress $sitepress */
@@ -51,13 +51,14 @@ class WPML_Debug_Information {
 				'Version'            => get_bloginfo( 'version' ),
 				'PermalinkStructure' => get_option( 'permalink_structure' ),
 				'PostTypes'          => implode( ', ', get_post_types( '', 'names' ) ),
-				'PostStatus'          => implode( ', ', get_post_stati() )
+				'PostStatus'         => implode( ', ', get_post_stati() ),
+				'RestEnabled'        => wpml_is_rest_enabled() ? 'Yes' : 'No',
 			),
 			'Server'    => array(
 				'jQueryVersion'  => wp_script_is( 'jquery', 'registered' ) ? $GLOBALS['wp_scripts']->registered['jquery']->ver : __( 'n/a', 'bbpress' ),
 				'PHPVersion'     => $this->sitepress->get_wp_api()->phpversion(),
 				'MySQLVersion'   => $this->wpdb->db_version(),
-				'ServerSoftware' => $_SERVER['SERVER_SOFTWARE']
+				'ServerSoftware' => $_SERVER['SERVER_SOFTWARE'],
 			),
 			'PHP'       => array(
 				'MemoryLimit'     => ini_get( 'memory_limit' ),
@@ -102,8 +103,8 @@ class WPML_Debug_Information {
 
 	function get_theme_info() {
 
-		/** @var WP_Theme $current_theme */
 		if ( $this->sitepress->get_wp_api()->get_bloginfo( 'version' ) < '3.4' ) {
+			/** @var \WP_Theme $current_theme */
 			$current_theme = get_theme_data( get_stylesheet_directory() . '/style.css' );
 			$theme         = $current_theme;
 			unset( $theme['Description'] );

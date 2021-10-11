@@ -15,7 +15,7 @@ class Attributes extends Base {
 
 		if ( $attrs ) {
 			$keys    = $this->getKeyConfig( $block );
-			$strings = $this->findStringsRecursively( $attrs, $keys, $block->blockName );
+			$strings = $this->findStringsRecursively( $attrs, $keys, $block );
 		}
 
 		return $strings;
@@ -24,11 +24,11 @@ class Attributes extends Base {
 	/**
 	 * @param array  $attrs
 	 * @param array  $config_keys
-	 * @param string $block_name
+	 * @param \WP_Block_Parser_Block $block
 	 *
 	 * @return array
 	 */
-	private function findStringsRecursively( array $attrs, array $config_keys, $block_name ) {
+	private function findStringsRecursively( array $attrs, array $config_keys, \WP_Block_Parser_Block $block ) {
 		$strings = [];
 
 		foreach ( $attrs as $attr_key => $attr_value ) {
@@ -43,12 +43,13 @@ class Attributes extends Base {
 
 				$strings = array_merge(
 					$strings,
-					$this->findStringsRecursively( $attr_value, $children_config_keys, $block_name )
+					$this->findStringsRecursively( $attr_value, $children_config_keys, $block )
 				);
 			} elseif ( ! is_numeric( $attr_value ) ) {
 				$type      = self::get_string_type( $attr_value );
-				$string_id = $this->get_string_id( $block_name, $attr_value );
-				$strings[] = $this->build_string( $string_id, $block_name, $attr_value, $type );
+				$string_id = $this->get_string_id( $block->blockName, $attr_value );
+				$label     = isset( $config_keys[ $attr_key ]['label'] ) ? $config_keys[ $attr_key ]['label'] : $this->get_block_label( $block );
+				$strings[] = $this->build_string( $string_id, $label, $attr_value, $type );
 			}
 		}
 

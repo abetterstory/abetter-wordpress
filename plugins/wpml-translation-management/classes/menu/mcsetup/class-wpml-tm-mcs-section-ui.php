@@ -6,7 +6,7 @@ abstract class WPML_TM_MCS_Section_UI {
 	private $title;
 
 	public function __construct( $id, $title ) {
-		$this->id = $id;
+		$this->id    = $id;
 		$this->title = $title;
 	}
 

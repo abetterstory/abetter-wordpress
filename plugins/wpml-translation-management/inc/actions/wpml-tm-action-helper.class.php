@@ -2,7 +2,7 @@
 
 class WPML_TM_Action_Helper {
 
-	public function get_tm_instance(){
+	public function get_tm_instance() {
 
 		return wpml_load_core_tm();
 	}
@@ -16,7 +16,7 @@ class WPML_TM_Action_Helper {
 	public function add_translation_job( $rid, $translator_id, $translation_package, $batch_options = array() ) {
 
 		return $this->get_update_translation_action( $translation_package )
-		            ->add_translation_job( $rid, $translator_id, $translation_package, $batch_options );
+					->add_translation_job( $rid, $translator_id, $translation_package, $batch_options );
 	}
 
 	/**
@@ -30,7 +30,7 @@ class WPML_TM_Action_Helper {
 	public function post_md5( $post ) {
 		$post_key = '';
 
-		//TODO: [WPML 3.2] Make it work with PackageTranslation: this is not the right way anymore
+		// TODO: [WPML 3.2] Make it work with PackageTranslation: this is not the right way anymore
 		if ( isset( $post->external_type ) && $post->external_type ) {
 			foreach ( $post->string_data as $key => $value ) {
 				$post_key .= $key . $value;
@@ -47,6 +47,17 @@ class WPML_TM_Action_Helper {
 
 			$content = $post->post_content;
 			$content = apply_filters( 'wpml_pb_shortcode_content_for_translation', $content, $post->ID );
+
+			/**
+			 * Filters the post content used to build the post md5.
+			 *
+			 * @since 2.10.0
+			 * @internal
+			 *
+			 * @param string  $content
+			 * @param WP_Post $post
+			 */
+			$content = apply_filters( 'wpml_tm_post_md5_content', $content, $post );
 
 			$post_key = $post->post_title . ';' . $content . ';' . $post->post_excerpt . ';' . implode( ',', $post_tags ) . ';' . implode( ',', $post_categories ) . ';' . implode( ',', $custom_fields_values );
 
@@ -66,9 +77,9 @@ class WPML_TM_Action_Helper {
 	private function get_post_terms( $post, $taxonomy, $sort = false ) {
 		global $sitepress;
 
-		$terms               = array();
-		//we shouldn't adjust term by current language need get terms by post_id
-		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+		$terms = array();
+		// we shouldn't adjust term by current language need get terms by post_id
+		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
 
 		$post_taxonomy_terms = wp_get_object_terms( $post->ID, $taxonomy );
 		if ( ! is_wp_error( $post_taxonomy_terms ) ) {
@@ -118,19 +129,15 @@ class WPML_TM_Action_Helper {
 	}
 
 	private function get_post_custom_fields( $post ) {
-		global $iclTranslationManagement;
-
 		$custom_fields_values = array();
 
-		if ( isset( $iclTranslationManagement->settings['custom_fields_translation'] ) && is_array( $iclTranslationManagement->settings['custom_fields_translation'] ) ) {
-			foreach ( $iclTranslationManagement->settings['custom_fields_translation'] as $cf => $op ) {
-				if ( in_array( (int) $op, array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
-					$value = get_post_meta( $post->ID, $cf, true );
-					if ( is_scalar( $value ) ) {
-						$custom_fields_values[] = $value;
-					} else {
-						$custom_fields_values[] = wp_json_encode( $value );
-					}
+		foreach ( \WPML\TM\Settings\Repository::getCustomFields() as $cf => $op ) {
+			if ( in_array( (int) $op, array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
+				$value = get_post_meta( $post->ID, $cf, true );
+				if ( is_scalar( $value ) ) {
+					$custom_fields_values[ $cf ] = $value;
+				} else {
+					$custom_fields_values[ $cf ] = wp_json_encode( $value );
 				}
 			}
 		}

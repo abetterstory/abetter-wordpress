@@ -22,7 +22,8 @@ class WPML_TM_REST_TP_XLIFF extends WPML_REST_Base {
 	}
 
 	public function register_routes() {
-		parent::register_route( '/tp/xliff/download/(?P<job_id>\d+)/(?P<job_type>\w+)',
+		parent::register_route(
+			'/tp/xliff/download/(?P<job_id>\d+)/(?P<job_type>\w+)',
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_job_translations_from_tp' ),
@@ -38,7 +39,8 @@ class WPML_TM_REST_TP_XLIFF extends WPML_REST_Base {
 						'type' => 'boolean',
 					),
 				),
-			) );
+			)
+		);
 	}
 
 	/**
@@ -56,7 +58,6 @@ class WPML_TM_REST_TP_XLIFF extends WPML_REST_Base {
 			} else {
 				return $this->download_job_translation( $request );
 			}
-
 		} catch ( Exception $e ) {
 			return new WP_Error( 400, $e->getMessage() );
 		}
@@ -87,10 +88,13 @@ class WPML_TM_REST_TP_XLIFF extends WPML_REST_Base {
 	}
 
 	public function validate_job_type( $value ) {
-		return in_array( $value, array(
-			WPML_TM_Job_Entity::POST_TYPE,
-			WPML_TM_Job_Entity::STRING_TYPE,
-			WPML_TM_Job_Entity::PACKAGE_TYPE
-		) );
+		return in_array(
+			$value,
+			array(
+				WPML_TM_Job_Entity::POST_TYPE,
+				WPML_TM_Job_Entity::STRING_TYPE,
+				WPML_TM_Job_Entity::PACKAGE_TYPE,
+			)
+		);
 	}
 }

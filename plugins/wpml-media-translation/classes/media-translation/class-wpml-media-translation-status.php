@@ -2,9 +2,9 @@
 
 class WPML_Media_Translation_Status implements IWPML_Action {
 
-	const NOT_TRANSLATED = 'media-not-translated';
-	const IN_PROGRESS = 'in-progress';
-	const TRANSLATED = 'media-translated';
+	const NOT_TRANSLATED          = 'media-not-translated';
+	const IN_PROGRESS             = 'in-progress';
+	const TRANSLATED              = 'media-translated';
 	const NEEDS_MEDIA_TRANSLATION = 'needs-media-translation';
 
 	const STATUS_PREFIX = '_translation_status_';
@@ -23,7 +23,7 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 		add_action( 'wpml_pro_translation_completed', array( $this, 'save_bundled_media_translation' ), 10, 3 );
 	}
 
-	public function set_translation_status_in_progress( WPML_TM_Translation_Batch $batch) {
+	public function set_translation_status_in_progress( WPML_TM_Translation_Batch $batch ) {
 		foreach ( $batch->get_elements() as $item ) {
 			foreach ( $item->get_media_to_translations() as $attachment_id ) {
 				foreach ( array_keys( $item->get_target_langs() ) as $lang ) {
@@ -73,7 +73,7 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 		$media_field_regexp = '#^media_([0-9]+)_([a-z_]+)$#';
 		foreach ( $job->elements as $element ) {
 			if ( preg_match( $media_field_regexp, $element->field_type, $matches ) ) {
-				list( , $attachment_id, $media_field ) = $matches;
+				list( , $attachment_id, $media_field )   = $matches;
 				$media[ $attachment_id ][ $media_field ] = $element;
 			}
 		}
@@ -81,13 +81,13 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 		return $media;
 	}
 
-    /**
-     * @param int $attachment_id
-     * @param array $translation_data
-     * @param WPML_Element_Translation_Package $translation_package
-     * @param string $language
-     * @return bool|int|WP_Error
-     */
+	/**
+	 * @param int                              $attachment_id
+	 * @param array                            $translation_data
+	 * @param WPML_Element_Translation_Package $translation_package
+	 * @param string                           $language
+	 * @return bool|int|WP_Error
+	 */
 	private function save_attachment_translation( $attachment_id, $translation_data, $translation_package, $language ) {
 
 		$postarr  = array();
@@ -122,9 +122,7 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 				if ( $wp_post_field ) {
 					$postarr[ $wp_post_field ] = $translated_value;
 				}
-
 			}
-
 		}
 
 		$post_element              = new WPML_Post_Element( $attachment_id, $this->sitepress );
@@ -159,11 +157,14 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 		$meta_keys = array(
 			'_wp_attachment_metadata',
 			'_wp_attached_file',
-			'_wp_attachment_backup_sizes'
+			'_wp_attachment_backup_sizes',
 		);
 		foreach ( $meta_keys as $meta_key ) {
-			update_post_meta( $attachment_id, $meta_key,
-				get_post_meta( $original_attachment_id, $meta_key, true ) );
+			update_post_meta(
+				$attachment_id,
+				$meta_key,
+				get_post_meta( $original_attachment_id, $meta_key, true )
+			);
 		}
 	}
 

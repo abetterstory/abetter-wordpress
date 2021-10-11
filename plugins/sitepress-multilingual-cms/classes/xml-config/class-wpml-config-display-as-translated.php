@@ -27,11 +27,11 @@ class WPML_Config_Display_As_Translated {
 		if ( isset( $config['wpml-config'][ $key_plural ][ $key_singular ] ) ) {
 			foreach ( $config['wpml-config'][ $key_plural ][ $key_singular ] as $index => $settings ) {
 				if ( isset( $settings['attr'] ) &&
-				     array_key_exists( 'translate', $settings['attr'] ) &&
-				     array_key_exists( 'display-as-translated', $settings['attr'] )
+					 array_key_exists( 'translate', $settings['attr'] ) &&
+					 array_key_exists( 'display-as-translated', $settings['attr'] )
 				) {
 					if ( WPML_CONTENT_TYPE_TRANSLATE == $settings['attr']['translate'] &&
-					     1 == $settings['attr']['display-as-translated']
+						 1 == $settings['attr']['display-as-translated']
 					) {
 						$settings['attr']['translate'] = WPML_CONTENT_TYPE_DISPLAY_AS_IF_TRANSLATED;
 						unset( $settings['attr']['display-as-translated'] );

@@ -7,7 +7,7 @@ abstract class WPML_Media_Batch_Url_Translation {
 
 	const BATCH_SIZE = 10;
 
-	const BATCH_SIZE_FACTOR_ALL_MEDIA = 1;
+	const BATCH_SIZE_FACTOR_ALL_MEDIA      = 1;
 	const BATCH_SIZE_FACTOR_SPECIFIC_MEDIA = 10;
 
 	/**
@@ -39,10 +39,10 @@ abstract class WPML_Media_Batch_Url_Translation {
 			$number_of_elements_left = $this->process_batch_for_selected_media( $offset, $attachment_id );
 		}
 		$batch_size_factor = $all_media ? self::BATCH_SIZE_FACTOR_ALL_MEDIA : self::BATCH_SIZE_FACTOR_SPECIFIC_MEDIA;
-		$response = array(
+		$response          = array(
 			'offset'   => $offset + $this->get_batch_size( $batch_size_factor ),
 			'continue' => (int) ( $number_of_elements_left > 0 ),
-			'message'  => $this->get_response_message( $number_of_elements_left )
+			'message'  => $this->get_response_message( $number_of_elements_left ),
 		);
 
 		wp_send_json_success( $response );
@@ -80,7 +80,7 @@ abstract class WPML_Media_Batch_Url_Translation {
 	 *
 	 * @return int
 	 */
-	protected function get_batch_size( $batch_size_factor = self::BATCH_SIZE_FACTOR_ALL_MEDIA ){
+	protected function get_batch_size( $batch_size_factor = self::BATCH_SIZE_FACTOR_ALL_MEDIA ) {
 		return $batch_size_factor * self::BATCH_SIZE;
 	}
 

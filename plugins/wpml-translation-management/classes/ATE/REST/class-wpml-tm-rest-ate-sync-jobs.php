@@ -30,7 +30,8 @@ class WPML_TM_REST_ATE_Sync_Jobs extends WPML_TM_ATE_Required_Rest_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( '/ate/jobs/old-sync',
+		parent::register_route(
+			'/ate/jobs/old-sync',
 			array(
 				'methods'  => 'POST',
 				'callback' => array( $this, 'sync' ),
@@ -41,8 +42,9 @@ class WPML_TM_REST_ATE_Sync_Jobs extends WPML_TM_ATE_Required_Rest_Base {
 						'validate_callback' => array( 'WPML_REST_Arguments_Validation', 'is_array' ),
 						'sanitize_callback' => array( 'WPML_REST_Arguments_Sanitation', 'array_of_integers' ),
 					),
-				)
-			) );
+				),
+			)
+		);
 	}
 
 	public function sync( WP_REST_Request $request ) {

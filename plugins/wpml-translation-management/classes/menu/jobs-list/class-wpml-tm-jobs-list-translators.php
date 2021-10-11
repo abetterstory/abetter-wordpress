@@ -1,5 +1,11 @@
 <?php
 
+use \WPML\FP\Fns;
+use \WPML\FP\Lst;
+use \WPML\Element\API\Languages;
+use function \WPML\FP\flip;
+use function \WPML\FP\curryN;
+
 class WPML_TM_Jobs_List_Translators {
 	/** @var WPML_Translator_Records */
 	private $translator_records;
@@ -15,37 +21,45 @@ class WPML_TM_Jobs_List_Translators {
 	public function get() {
 		$translators = $this->translator_records->get_users_with_capability();
 
-		return array_map( array( $this, 'map' ), $translators );
+		return array_map( [ $this, 'getTranslatorData' ], $translators );
 	}
 
-	private function map( $translator ) {
-		$language_codes = array_keys( array_flip( icl_get_languages_codes() ) );
-		$new_pairs      = array();
-		foreach ( $translator->language_pairs as $source => $targets ) {
-			$source_language = in_array( $source, $language_codes, true ) ? $source : '';
-			if ( ! $source_language ) {
-				continue;
-			}
-
-			foreach ( $targets as $target ) {
-				$target_language = in_array( $target, $language_codes, true ) ? $target : '';
-				if ( ! $target_language ) {
-					continue;
-				}
-
-				$new_pair    = array(
-					'source' => $source_language,
-					'target' => $target_language,
-				);
-				$new_pairs[] = $new_pair;
-			}
-		};
-		$translator->language_pairs = $new_pairs;
-
-		return array(
+	private function getTranslatorData( $translator ) {
+		return [
 			'value'         => $translator->ID,
 			'label'         => $translator->display_name,
-			'languagePairs' => $translator->language_pairs,
+			'languagePairs' => $this->getLanguagePairs( $translator ),
+		];
+	}
+
+	private function getLanguagePairs( $translator ) {
+
+		$isValidLanguage       = Lst::includes( Fns::__,  Lst::pluck( 'code', Languages::getAll() ) );
+		$sourceIsValidLanguage = flip( $isValidLanguage );
+		$getValidTargets       = Fns::filter( $isValidLanguage );
+
+		$makePair = curryN(
+			2,
+			function ( $source, $target ) {
+				return [
+					'source' => $source,
+					'target' => $target,
+				];
+			}
 		);
+
+		$getAsPair = curryN(
+			3,
+			function ( $makePair, $targets, $source ) {
+				return Fns::map( $makePair( $source ), $targets );
+			}
+		);
+
+		return \wpml_collect( $translator->language_pairs )
+			->filter( $sourceIsValidLanguage )
+			->map( $getValidTargets )
+			->map( $getAsPair( $makePair ) )
+			->flatten( 1 )
+			->toArray();
 	}
 }

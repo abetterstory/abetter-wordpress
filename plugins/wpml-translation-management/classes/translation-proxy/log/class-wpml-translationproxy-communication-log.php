@@ -113,9 +113,16 @@ class WPML_TranslationProxy_Communication_Log {
 	public function add_com_log_link() {
 		$url = esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=com-log' );
 		?>
-			<p class="wpml-tm-basket-help-text">
-		  <?php printf( __( 'For retrieving debug information for communication between your%s site and the translation system, use the <a href="%s">communication log</a> page.',
-		                    'wpml-translation-management' ), '<br>', $url ); ?>
+				  <?php
+					printf(
+						__(
+							'For retrieving debug information for communication between your%1$s site and the translation system, use the <a href="%2$s">communication log</a> page.',
+							'wpml-translation-management'
+						),
+						'<br>',
+						$url
+					);
+					?>
 			</p>
 		<?php
 	}
@@ -132,7 +139,7 @@ class WPML_TranslationProxy_Communication_Log {
 
 			$string = $this->now() . ' - ' . $string;
 
-			$log = $this->get_log();
+			$log  = $this->get_log();
 			$log .= $string;
 			$log .= PHP_EOL;
 
@@ -156,5 +163,5 @@ class WPML_TranslationProxy_Communication_Log {
 	 */
 	private function is_json( $item ) {
 		return is_string( $item ) && json_decode( $item ) && json_last_error() === JSON_ERROR_NONE;
-}
+	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+use WPML\FP\Obj;
+
 /**
  * Class WPML_Elementor_Translate_IDs
  */
@@ -25,6 +27,7 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 			'translate_template_id'
 		) );
 		add_filter( 'elementor/frontend/builder_content_data', array( $this, 'translate_global_widget_ids' ), 10, 2 );
+		add_filter( 'elementor/frontend/builder_content_data', array( $this, 'translate_product_ids' ), 10, 2 );
 	}
 
 	public function translate_theme_location_template_id( $template_id ) {
@@ -42,6 +45,7 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 		 * `$sub_name` gives a context for the `$sub_id`, it can be either:
 		 * - `child_of`
 		 * - `in_{taxonomy}`
+		 * - `in_{taxonomy}_children`
 		 * - `{post_type}`
 		 * - `{taxonomy}`
 		 */
@@ -53,7 +57,7 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 			if ( 'child_of' === $sub_name ) {
 				$element_type = get_post_type( $sub_id );
 			} elseif ( 0 === strpos( $sub_name, 'in_' ) ) {
-				$element_type = preg_replace( '/^in_/', '', $sub_name );
+				$element_type = preg_replace( '/^in_|_children$/', '', $sub_name );
 			}
 
 			$sub_id = $this->translate_id( $sub_id, $element_type );
@@ -104,16 +108,41 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 	}
 
 	/**
+	 * @param array $data_array
+	 * @param int   $post_id
+	 *
+	 * @return array
+	 */
+	public function translate_product_ids( $data_array, $post_id ) {
+		foreach ( $data_array as &$data ) {
+			if ( Obj::prop( 'elType', $data ) === 'widget' && Obj::prop( 'widgetType', $data ) === 'wc-add-to-cart' ) {
+				$data['settings']['product_id'] = $this->translate_id( $data['settings']['product_id'] );
+			}
+
+			$data['elements'] = $this->translate_product_ids( $data['elements'], $post_id );
+		}
+
+		return $data_array;
+	}
+
+	/**
 	 * @param int    $element_id
 	 * @param string $element_type
 	 *
 	 * @return int
 	 */
 	private function translate_id( $element_id, $element_type = null ) {
-		if ( ! $element_type ) {
+		if ( ! $element_type || $element_type === "any_child_of" ) {
 			$element_type = get_post_type( $element_id );
 		}
 
-		return apply_filters( 'wpml_object_id', $element_id, $element_type, true );
+		$translated_id = apply_filters( 'wpml_object_id', $element_id, $element_type, true );
+
+		if ( is_string( $element_id ) ) {
+			$translated_id = (string) $translated_id;
+		}
+
+		return $translated_id;
 	}
+
 }

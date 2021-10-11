@@ -2,7 +2,7 @@
 
 class WPML_Media_2_3_0_Migration {
 
-	const FLAG = 'wpml_media_2_3_migration';
+	const FLAG       = 'wpml_media_2_3_migration';
 	const BATCH_SIZE = 200;
 
 	const MAX_BATCH_REQUEST_TIME = 5;
@@ -19,7 +19,7 @@ class WPML_Media_2_3_0_Migration {
 	/**
 	 * WPML_Media_2_3_0_Migration constructor.
 	 *
-	 * @param wpdb $wpdb
+	 * @param wpdb      $wpdb
 	 * @param SitePress $sitepress
 	 */
 	public function __construct( wpdb $wpdb, SitePress $sitepress ) {
@@ -72,23 +72,29 @@ class WPML_Media_2_3_0_Migration {
 
 	public function render_menu() {
 
-		if( $this->is_wpml_media_screen() ): ?>
+		if ( $this->is_wpml_media_screen() ) : ?>
 		<div class="wrap wrap-wpml-media-upgrade">
-			<h2><?php esc_html_e( 'Upgrade required', 'wpml-media' ) ?></h2>
+			<h2><?php esc_html_e( 'Upgrade required', 'wpml-media' ); ?></h2>
 		<?php endif; ?>
 			<div class="notice notice-warning" id="wpml-media-2-3-0-update" style="padding-bottom:8px">
 				<p>
-				<?php printf( esc_html__( 'The %sWPML Media%s database needs updating. Please run the updater and leave the tab open until it completes.', 'wpml-media' ),
-					'<strong>', '</strong>' ); ?>
+				<?php
+				printf(
+					esc_html__( 'The %1$sWPML Media%2$s database needs updating. Please run the updater and leave the tab open until it completes.', 'wpml-media' ),
+					'<strong>',
+					'</strong>'
+				);
+				?>
 				</p>
 				<input type="button" class="button-primary alignright" value="<?php echo esc_attr_x( 'Update', 'Update button label', 'wpml-media' ); ?>" />
 				<input type="hidden" name="nonce" value="<?php echo wp_create_nonce( 'wpml-media-2-3-0-update' ); ?>" />
 				<span class="spinner"></span>
 				<p class="alignleft status description"></p><br clear="all" />
 			</div>
-		<?php if( $this->is_wpml_media_screen() ): ?>
+		<?php if ( $this->is_wpml_media_screen() ) : ?>
 		</div>
-		<?php endif;
+			<?php
+		endif;
 
 	}
 
@@ -110,7 +116,7 @@ class WPML_Media_2_3_0_Migration {
 			if ( 'reset-new-content-settings' === $step ) {
 				$this->reset_new_content_settings();
 				wp_send_json_success(
-					array( 'status' => esc_html__( 'Reset new content duplication settings', 'wpml-media' ), )
+					array( 'status' => esc_html__( 'Reset new content duplication settings', 'wpml-media' ) )
 				);
 			} elseif ( 'migrate-attachments' === $step ) {
 				$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
@@ -122,9 +128,10 @@ class WPML_Media_2_3_0_Migration {
 				if ( $left ) {
 					$status   = sprintf(
 						esc_html__( 'Updating attachments translation status: %d remaining.', 'wpml-media' ),
-						$left );
+						$left
+					);
 					$continue = 1;
-					$offset   += $batch_size;
+					$offset  += $batch_size;
 				} else {
 					$this->mark_migration_complete();
 					$status   = esc_html__( 'Update complete!', 'wpml-media' );
@@ -134,17 +141,16 @@ class WPML_Media_2_3_0_Migration {
 
 				wp_send_json_success(
 					array(
-						'status'            => $status,
-						'goon'              => $continue,
-						'offset'            => $offset,
-						'timestamp'         => microtime( true )
+						'status'    => $status,
+						'goon'      => $continue,
+						'offset'    => $offset,
+						'timestamp' => microtime( true ),
 					)
 				);
 
 			} else {
 				wp_send_json_error( array( 'error' => 'Invalid step' ) );
 			}
-
 		} else {
 			wp_send_json_error( array( 'error' => 'Invalid nonce' ) );
 		}
@@ -188,7 +194,6 @@ class WPML_Media_2_3_0_Migration {
 						);
 					}
 				}
-
 			}
 		}
 
@@ -197,7 +202,7 @@ class WPML_Media_2_3_0_Migration {
 		return $left;
 	}
 
-	private function get_dynamic_batch_size( $request ){
+	private function get_dynamic_batch_size( $request ) {
 		$batch_size_factor = isset( $request['batch_size_factor'] ) ? (int) $request['batch_size_factor'] : 1;
 		if ( ! empty( $request['timestamp'] ) ) {
 			$elapsed_time = microtime( true ) - (float) $request['timestamp'];

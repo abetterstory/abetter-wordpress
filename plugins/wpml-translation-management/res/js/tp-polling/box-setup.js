@@ -1,4 +1,4 @@
-jQuery(document).ready(function () {
+jQuery(function () {
     var boxPopulation = new WpmlTpPollingPickupPopulateAction(jQuery, TranslationProxyPolling);
     boxPopulation.run();
 });

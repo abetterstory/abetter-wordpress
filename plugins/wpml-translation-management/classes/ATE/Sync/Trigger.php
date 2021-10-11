@@ -60,7 +60,9 @@ class Trigger {
 		$usersNeedSync = $this->getUsersNeedSync();
 
 		if ( $usersNeedSync->contains( $currentUserId ) ) {
-			$isCurrentUser = function( $userId ) use( $currentUserId ) { return $userId === $currentUserId; };
+			$isCurrentUser = function( $userId ) use ( $currentUserId ) {
+				return $userId === $currentUserId;
+			};
 			$this->setUsersNeedSync( $usersNeedSync->reject( $isCurrentUser ) );
 		}
 	}

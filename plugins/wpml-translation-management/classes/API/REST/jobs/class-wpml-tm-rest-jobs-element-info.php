@@ -13,20 +13,22 @@ class WPML_TM_Rest_Jobs_Element_Info {
 
 
 	/**
-	 * @param int    $id
-	 * @param string $type
+	 * @param  WPML_TM_Job_Entity $job
 	 *
 	 * @return array
 	 */
-	public function get( $id, $type ) {
-		$result = array();
+	public function get( WPML_TM_Job_Entity $job ) {
+		$type   = $job->get_type();
+		$id     = $job->get_original_element_id();
+		$result = [];
 
 		switch ( $type ) {
 			case WPML_TM_Job_Entity::POST_TYPE:
 				$result = $this->get_for_post( $id );
 				break;
 			case WPML_TM_Job_Entity::STRING_TYPE:
-				$result = $this->get_for_string( $id );
+			case WPML_TM_Job_Entity::STRING_BATCH:
+				$result = $this->get_for_title( $job->get_title() );
 				break;
 			case WPML_TM_Job_Entity::PACKAGE_TYPE:
 				$result = $this->get_for_package( $id );
@@ -95,28 +97,14 @@ class WPML_TM_Rest_Jobs_Element_Info {
 	}
 
 	/**
-	 * @param int $id
+	 * @param string $title
 	 *
 	 * @return array
 	 */
-	private function get_for_string( $id ) {
-		$result = array();
-
-		if ( ! function_exists( 'icl_get_string_by_id' ) ) {
-			return array(
-				'name' => __( 'String job', 'wpml-translation-management' ),
-				'url'  => null,
-			);
-		}
-
-		$string = icl_get_string_by_id( $id );
-		if ( $string ) {
-			$result = array(
-				'name' => $string,
-				'url'  => null,
-			);
-		}
-
-		return $result;
+	private function get_for_title( $title ) {
+		return [
+			'name' => $title,
+			'url'  => null,
+		];
 	}
 }

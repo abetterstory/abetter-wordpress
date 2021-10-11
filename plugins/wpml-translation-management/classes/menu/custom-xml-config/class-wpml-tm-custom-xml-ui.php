@@ -32,7 +32,7 @@ class WPML_TM_Custom_XML_UI {
 				'documentation' => __( 'How to write Language Configuration Files', 'wpml-translation-management' ),
 			),
 			'data'    => array(
-				'action'         => WPML_TM_Custom_XML_AJAX::AJAX_ACTION_BASE,
+				'action'        => WPML_TM_Custom_XML_AJAX::AJAX_ACTION_BASE,
 				'nonceValidate' => wp_create_nonce( WPML_TM_Custom_XML_AJAX::AJAX_ACTION_BASE . '-validate' ),
 				'nonceSave'     => wp_create_nonce( WPML_TM_Custom_XML_AJAX::AJAX_ACTION_BASE . '-save' ),
 			),

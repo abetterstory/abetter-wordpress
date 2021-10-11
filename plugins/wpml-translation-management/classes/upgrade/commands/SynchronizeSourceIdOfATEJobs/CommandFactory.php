@@ -2,7 +2,6 @@
 
 namespace WPML\TM\Upgrade\Commands\SynchronizeSourceIdOfATEJobs;
 
-
 use WPML\Utils\Pager;
 use function WPML\Container\make;
 

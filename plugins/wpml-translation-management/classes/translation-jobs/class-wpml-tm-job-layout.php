@@ -1,13 +1,15 @@
 <?php
 
+use \WPML\TM\Jobs\FieldId;
+
 class WPML_TM_Job_Layout {
 
-	private $layout = array();
-	private $custom_fields = array();
+	private $layout                = array();
+	private $custom_fields         = array();
 	private $grouped_custom_fields = array();
-	private $terms = array();
+	private $terms                 = array();
 	private $wp_api;
-	public  $wpdb;
+	public $wpdb;
 
 	public function __construct( wpdb $wpdb, WPML_WP_API $wp_api ) {
 		$this->wpdb   = $wpdb;
@@ -51,7 +53,7 @@ class WPML_TM_Job_Layout {
 	private function extract_custom_fields( $tm_instance ) {
 
 		foreach ( $this->layout as $key => $field ) {
-			if ( $this->is_a_custom_field( $field ) ) {
+			if ( FieldId::is_a_custom_field( $field ) ) {
 				$group = $this->get_group_custom_field_belongs_to( $field, $tm_instance );
 				if ( $group ) {
 					if ( ! isset( $this->grouped_custom_fields[ $group ] ) ) {
@@ -69,9 +71,8 @@ class WPML_TM_Job_Layout {
 	private function get_group_custom_field_belongs_to( $field, $tm_instance ) {
 		$group = '';
 		if ( $tm_instance ) {
-			$unfiltered_type = WPML_TM_Field_Type_Sanitizer::sanitize( $field );
-			$settings        = new WPML_Custom_Field_Editor_Settings( $unfiltered_type, $tm_instance );
-			$group           = $settings->get_group();
+			$settings = new WPML_Custom_Field_Editor_Settings( new WPML_Custom_Field_Setting_Factory( $tm_instance ) );
+			$group    = $settings->get_group( WPML_TM_Field_Type_Sanitizer::sanitize( $field ) );
 		}
 
 		return $group;
@@ -80,7 +81,7 @@ class WPML_TM_Job_Layout {
 	private function extract_terms() {
 
 		foreach ( $this->layout as $key => $field ) {
-			if ( $this->is_a_term( $field ) ) {
+			if ( FieldId::is_any_term_field( $field ) ) {
 				$this->terms[] = $field;
 				unset( $this->layout[ $key ] );
 			}
@@ -96,7 +97,7 @@ class WPML_TM_Job_Layout {
 				'fields'        => $fields,
 				'empty'         => false,
 				'empty_message' => '',
-				'sub_title'     => ''
+				'sub_title'     => '',
 			);
 			$this->layout[] = $data;
 		}
@@ -111,7 +112,7 @@ class WPML_TM_Job_Layout {
 				'fields'        => $this->custom_fields,
 				'empty'         => false,
 				'empty_message' => '',
-				'sub_title'     => ''
+				'sub_title'     => '',
 			);
 			$this->layout[] = $data;
 		}
@@ -120,14 +121,14 @@ class WPML_TM_Job_Layout {
 	private function append_terms() {
 
 		if ( count( $this->terms ) ) {
-			$taxonomy_fields = array();
+			$taxonomy_fields = [];
 
 			foreach ( $this->terms as $term ) {
-				$term_id  = substr( $term, 2 );
+				$term_id  = FieldId::get_term_id( $term );
 				$query    = $this->wpdb->prepare( "SELECT taxonomy FROM {$this->wpdb->term_taxonomy} WHERE term_taxonomy_id = %d", $term_id );
 				$taxonomy = $this->wpdb->get_var( $query );
 				if ( ! isset( $taxonomy_fields[ $taxonomy ] ) ) {
-					$taxonomy_fields[ $taxonomy ] = array();
+					$taxonomy_fields[ $taxonomy ] = [];
 				}
 				$taxonomy_fields[ $taxonomy ][] = $term;
 			}
@@ -140,19 +141,10 @@ class WPML_TM_Job_Layout {
 					'fields'        => $fields,
 					'empty'         => false,
 					'empty_message' => '',
-					'sub_title'     => __( 'Changes in these translations will affect terms in general! (Not only for this post)', 'wpml-translation-management' )
+					'sub_title'     => __( 'Changes in these translations will affect terms in general! (Not only for this post)', 'wpml-translation-management' ),
 				);
 				$this->layout[] = $data;
 			}
 		}
 	}
-
-	private function is_a_custom_field( $field ) {
-		return 0 === strpos( $field, 'field-' );
-	}
-
-	private function is_a_term( $field ) {
-		return 0 === strpos( $field, 't_' );
-	}
-
 }

@@ -1,5 +1,8 @@
 <?php
 
+use WPML\FP\Fns;
+use WPML\FP\Str;
+
 /**
  * Class WPML_Gutenberg_Integration
  */
@@ -61,13 +64,13 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 */
 	function register_strings( WP_Post $post, $package_data ) {
 
-		if ( ! $this->is_gutenberg_post( $post ) ) {
-			return;
-		}
-
-		if ( self::PACKAGE_ID === $package_data['kind'] ) {
+		if ( $this->is_gutenberg_post( $post ) && self::PACKAGE_ID === $package_data['kind'] ) {
 			$this->strings_registration->register_strings( $post, $package_data );
 		}
+	}
+
+	public function register_strings_from_widget( array $blocks, array $package_data ) {
+		$this->strings_registration->register_strings_from_widget( $blocks, $package_data );
 	}
 
 	/**
@@ -104,18 +107,24 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	) {
 
 		if ( self::PACKAGE_ID === $package_kind ) {
-			$blocks = self::parse_blocks( $original_post->post_content );
-
-			$blocks = $this->update_block_translations( $blocks, $string_translations, $lang );
-
-			$content = '';
-			foreach ( $blocks as $block ) {
-				$content .= $this->render_block( $block );
-			}
-
+			$content = $this->replace_strings_in_blocks( $original_post->post_content, $string_translations, $lang );
 			wpml_update_escaped_post( [ 'ID' => $translated_post_id, 'post_content' => $content ], $lang );
 		}
 
+	}
+
+	/**
+	 * @param string $content
+	 * @param array  $string_translations
+	 * @param string $lang
+	 *
+	 * @return string
+	 */
+	public function replace_strings_in_blocks( $content, $string_translations, $lang ) {
+		$blocks = self::parse_blocks( $content );
+		$blocks = $this->update_block_translations( $blocks, $string_translations, $lang );
+
+		return Fns::reduce( Str::concat(), '', Fns::map( [ $this, 'render_block' ], $blocks ) );
 	}
 
 	/**
@@ -148,23 +157,26 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 *
 	 * @return string
 	 */
-	private function render_block( $block ) {
+	public static function render_block( $block ) {
 		$content = '';
 
 		$block = self::sanitize_block( $block );
 
 		if ( self::CLASSIC_BLOCK_NAME !== $block->blockName ) {
-			$block_type = preg_replace( '/^core\//', '', $block->blockName );
+			$block_content = self::render_inner_HTML( $block );
+			$block_type    = preg_replace( '/^core\//', '', $block->blockName );
 
 			$block_attributes = '';
-			if ( $this->has_non_empty_attributes( $block ) ) {
-				$block_attributes = ' ' . json_encode( $block->attrs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE );
+			if ( self::has_non_empty_attributes( $block ) ) {
+				$block_attributes = ' ' . json_encode( $block->attrs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 			}
-			$content .= self::GUTENBERG_OPENING_START . $block_type . $block_attributes . ' -->';
+			$content .= self::GUTENBERG_OPENING_START . $block_type . $block_attributes . ' ';
 
-			$content .= $this->render_inner_HTML( $block );
-
-			$content .= self::GUTENBERG_CLOSING_START . $block_type . ' -->';
+			if ( $block_content ) {
+				$content .= '-->' . $block_content . self::GUTENBERG_CLOSING_START . $block_type . ' -->';
+			} else {
+				$content .= '/-->';
+			}
 		} else {
 			$content = wpautop( $block->innerHTML );
 		}
@@ -173,7 +185,7 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 
 	}
 
-	private function has_non_empty_attributes( WP_Block_Parser_Block $block ) {
+	public static function has_non_empty_attributes( WP_Block_Parser_Block $block ) {
 		return (bool) ( (array) $block->attrs );
 	}
 
@@ -182,14 +194,14 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 *
 	 * @return string
 	 */
-	private function render_inner_HTML( $block ) {
+	private static function render_inner_HTML( $block ) {
 
 		if ( isset ( $block->innerBlocks ) && count( $block->innerBlocks ) ) {
 
 			if ( isset( $block->innerContent ) ) {
-				$content = $this->render_inner_HTML_with_innerContent( $block );
+				$content = self::render_inner_HTML_with_innerContent( $block );
 			} else {
-				$content = $this->render_inner_HTML_with_guess_parts( $block );
+				$content = self::render_inner_HTML_with_guess_parts( $block );
 			}
 
 		} else {
@@ -207,12 +219,12 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 * strings or null if it's an inner block.
 	 *
 	 * @see WP_Block_Parser_Block::$innerContent
-	 * 
+	 *
 	 * @param WP_Block_Parser_Block $block
 	 *
 	 * @return string
 	 */
-	private function render_inner_HTML_with_innerContent( $block ) {
+	private static function render_inner_HTML_with_innerContent( $block ) {
 		$content           = '';
 		$inner_block_index = 0;
 
@@ -220,7 +232,7 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 			if ( is_string( $inner_content ) ) {
 				$content .= $inner_content;
 			} else {
-				$content .= $this->render_block( $block->innerBlocks[ $inner_block_index ] );
+				$content .= self::render_block( $block->innerBlocks[ $inner_block_index ] );
 				$inner_block_index++;
 			}
 		}
@@ -233,13 +245,13 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 *
 	 * @return string
 	 */
-	private function render_inner_HTML_with_guess_parts( $block ) {
-		$inner_html_parts = $this->guess_inner_HTML_parts( $block );
+	private static function render_inner_HTML_with_guess_parts( $block ) {
+		$inner_html_parts = self::guess_inner_HTML_parts( $block );
 
 		$content = $inner_html_parts[0];
 
 		foreach ( $block->innerBlocks as $inner_block ) {
-			$content .= $this->render_block( $inner_block );
+			$content .= self::render_block( $inner_block );
 		}
 
 		$content .= $inner_html_parts[1];
@@ -260,7 +272,7 @@ class WPML_Gutenberg_Integration implements \WPML\PB\Gutenberg\Integration {
 	 *
 	 * @return array
 	 */
-	private function guess_inner_HTML_parts( $block ) {
+	private static function guess_inner_HTML_parts( $block ) {
 		$inner_HTML = $block->innerHTML;
 
 		$parts = array( $inner_HTML, '' );

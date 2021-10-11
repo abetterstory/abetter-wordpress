@@ -21,7 +21,7 @@ class WPML_TM_MCS_Pagination_Render_Factory {
 	/**
 	 * @param $items_per_page
 	 * @param $total_items
-	 * @param int $current_page
+	 * @param int            $current_page
 	 *
 	 * @return WPML_TM_MCS_Pagination_Render
 	 */
@@ -30,7 +30,6 @@ class WPML_TM_MCS_Pagination_Render_Factory {
 		$pagination->set_items_per_page( $this->items_per_page );
 		$pagination->set_total_items( $total_items );
 		$pagination->set_current_page( $current_page );
-
 
 		$template = new WPML_Twig_Template_Loader(
 			array(

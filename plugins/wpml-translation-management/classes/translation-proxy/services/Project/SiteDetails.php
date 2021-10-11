@@ -2,7 +2,6 @@
 
 namespace WPML\TM\TranslationProxy\Services\Project;
 
-
 class SiteDetails {
 	/** @var \SitePress */
 	private $sitepress;
@@ -19,8 +18,8 @@ class SiteDetails {
 	 */
 	public function getDeliveryMethod() {
 		return (int) $this->sitepress->get_setting( 'translation_pickup_method' ) === ICL_PRO_TRANSLATION_PICKUP_XMLRPC
-			? "xmlrpc"
-			: "polling";
+			? 'xmlrpc'
+			: 'polling';
 	}
 
 	/**

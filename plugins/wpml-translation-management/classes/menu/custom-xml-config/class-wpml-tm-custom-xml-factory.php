@@ -16,7 +16,7 @@ class WPML_TM_Custom_XML_Factory {
 			WPML_TM_PATH . '/templates/custom-xml/',
 		);
 
-		$template_loader  = new WPML_Twig_Template_Loader( $template_paths );
+		$template_loader = new WPML_Twig_Template_Loader( $template_paths );
 
 		return new WPML_TM_Custom_XML_UI( $this->custom_xml, $template_loader->get_template() );
 	}

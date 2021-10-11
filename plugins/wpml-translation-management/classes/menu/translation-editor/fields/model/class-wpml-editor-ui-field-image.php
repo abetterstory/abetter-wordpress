@@ -25,7 +25,7 @@ class WPML_Editor_UI_Field_Image extends WPML_Editor_UI_Fields {
 		$data  = array(
 			'field_type' => 'wcml-image',
 			'divider'    => $this->divider,
-			'image_src'  => $image[0],
+			'image_src'  => isset( $image[0] ) ? $image[0] : '',
 		);
 
 		$data['fields'] = parent::get_layout();

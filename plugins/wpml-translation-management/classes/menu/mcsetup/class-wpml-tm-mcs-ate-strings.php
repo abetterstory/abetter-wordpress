@@ -31,37 +31,39 @@ class WPML_TM_MCS_ATE_Strings {
 
 		$this->statuses = array(
 			WPML_TM_ATE_Authentication::AMS_STATUS_NON_ACTIVE => array(
-				'type'   => 'error',
-				'message'   => array(
+				'type'    => 'error',
+				'message' => array(
 					'status' => __( 'Advanced Translation Editor is not active yet', 'wpml-translation-management' ),
-					'text'   => __( 'Request activation to receive an email with directions to activate the service.',
-					                'wpml-translation-management' ),
+					'text'   => __(
+						'Request activation to receive an email with directions to activate the service.',
+						'wpml-translation-management'
+					),
 				),
-				'button' => __( 'Request activation', 'wpml-translation-management' ),
+				'button'  => __( 'Request activation', 'wpml-translation-management' ),
 			),
 			WPML_TM_ATE_Authentication::AMS_STATUS_ENABLED => array(
-				'type'   => 'info',
-				'message'   => array(
+				'type'    => 'info',
+				'message' => array(
 					'status' => __( 'Advanced Translation Editor is being activated', 'wpml-translation-management' ),
 					'text'   => '',
 				),
-				'button' => '',
+				'button'  => '',
 			),
 			WPML_TM_ATE_Authentication::AMS_STATUS_ACTIVE  => array(
-				'type'   => 'success',
-				'message'   => array(
+				'type'    => 'success',
+				'message' => array(
 					'status' => __( 'Advanced Translation Editor is enabled and active', 'wpml-translation-management' ),
 					'text'   => '',
 				),
-				'button' => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
+				'button'  => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
 			),
 			self::AMS_STATUS_ACTIVE_NOT_ALL_SUBSCRIBED     => array(
-				'type'   => 'success',
-				'message'   => array(
+				'type'    => 'success',
+				'message' => array(
 					'status' => __( "WPML's Advanced Translation Editor is enabled, but not all your translators can use it.", 'wpml-translation-management' ),
 					'text'   => '',
 				),
-				'button' => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
+				'button'  => __( 'Advanced Translation Editor is active', 'wpml-translation-management' ),
 			),
 		);
 	}
@@ -83,12 +85,12 @@ class WPML_TM_MCS_ATE_Strings {
 
 			$user_email = $user->user_email;
 
-			return $this->authentication->get_signed_url(
+			return $this->authentication->get_signed_url_with_parameters(
 				'GET',
 				$url,
 				array(
 					'translation_manager' => $user_email,
-					'return_url' => WPML_TM_Page::get_translators_url( array( 'refresh_subscriptions' => '1' ) ),
+					'return_url'          => WPML_TM_Page::get_translators_url( array( 'refresh_subscriptions' => '1' ) ),
 				)
 			);
 		}
@@ -128,8 +130,8 @@ class WPML_TM_MCS_ATE_Strings {
 	}
 
 	/**
-	 * @param string $status
-	 * @param string $attribute
+	 * @param string     $status
+	 * @param string     $attribute
 	 * @param null|mixed $default
 	 *
 	 * @return mixed

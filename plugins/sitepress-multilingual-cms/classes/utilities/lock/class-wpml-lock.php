@@ -13,7 +13,7 @@ class Lock implements ILock {
 	/**
 	 * Lock constructor.
 	 *
-	 * @param \wpdb $wpdb
+	 * @param \wpdb  $wpdb
 	 * @param string $name
 	 */
 	public function __construct( \wpdb $wpdb, $name ) {
@@ -24,8 +24,8 @@ class Lock implements ILock {
 	/**
 	 * Creates a lock using WordPress options ( Based on WP class WP_Upgrader ).
 	 *
-	 * @param int    $release_timeout Optional. The duration in seconds to respect an existing lock.
-	 *                                Default: 1 hour.
+	 * @param int $release_timeout Optional. The duration in seconds to respect an existing lock.
+	 *                             Default: 1 hour.
 	 * @return bool False if a lock couldn't be created or if the lock is still valid. True otherwise.
 	 */
 	public function create( $release_timeout = null ) {

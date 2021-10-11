@@ -1,5 +1,7 @@
 <?php
 
+use WPML\LIB\WP\Gutenberg;
+
 class WPML_PB_Update_Shortcodes_In_Content {
 
 	const LONG_STRING_THRESHOLD = 5000;
@@ -19,6 +21,10 @@ class WPML_PB_Update_Shortcodes_In_Content {
 	}
 
 	public function update( $translated_post_id, $original_post, $string_translations, $lang ) {
+		if ( Gutenberg::hasBlock( $original_post->post_content ) ) {
+			return;
+		}
+
 		$original_content = $original_post->post_content;
 		$original_content = apply_filters( 'wpml_pb_shortcode_content_for_translation', $original_content, $original_post->ID );
 
@@ -43,6 +49,7 @@ class WPML_PB_Update_Shortcodes_In_Content {
 	}
 
 	public function update_content( $original_content, $string_translations, $lang ) {
+		$original_content          = WPML_PB_Shortcode_Content_Wrapper::maybeWrap( $original_content, $this->strategy->get_shortcodes() );
 		$this->new_content         = $original_content;
 		$this->string_translations = $string_translations;
 		$this->lang                = $lang;
@@ -55,7 +62,7 @@ class WPML_PB_Update_Shortcodes_In_Content {
 			$this->update_shortcode_attributes( $shortcode );
 		}
 
-		return $this->new_content;
+		return WPML_PB_Shortcode_Content_Wrapper::unwrap( $this->new_content );
 	}
 
 	private function update_shortcodes( $shortcode_data ) {
@@ -90,7 +97,7 @@ class WPML_PB_Update_Shortcodes_In_Content {
 		if ( $translation ) {
 
 			if ( $this->is_string_too_long_for_regex( $original ) ) {
-				$block             = $this->remove_wrappers( $block );
+				$block             = WPML_PB_Shortcode_Content_Wrapper::unwrap( $block );
 				$new_block         = str_replace( $original, $translation, $block );
 				$this->new_content = str_replace( $block, $new_block, $this->new_content );
 			} else {
@@ -104,8 +111,8 @@ class WPML_PB_Update_Shortcodes_In_Content {
 				}
 
 				$new_block   = preg_replace( $pattern, $replacement, $block );
-				$block       = $this->remove_wrappers( $block );
-				$new_block   = $this->remove_wrappers( $new_block );
+				$block       = WPML_PB_Shortcode_Content_Wrapper::unwrap( $block );
+				$new_block   = WPML_PB_Shortcode_Content_Wrapper::unwrap( $new_block );
 				$replacement = $this->escape_backward_reference_on_replacement_string( $new_block );
 
 				if ( $used_wrapper ) {
@@ -129,20 +136,6 @@ class WPML_PB_Update_Shortcodes_In_Content {
 	 */
 	private function escape_backward_reference_on_replacement_string( $string ) {
 		return preg_replace( '/\$([\d]{1,2})/', '\\\$' . '${1}', $string );
-	}
-
-	/**
-	 * @param string $block
-	 *
-	 * @return string
-	 */
-	private function remove_wrappers( $block ) {
-		$wrappers_to_remove = array(
-			'[' . WPML_PB_Shortcode_Content_Wrapper::WRAPPER_SHORTCODE_NAME . ']',
-			'[/' . WPML_PB_Shortcode_Content_Wrapper::WRAPPER_SHORTCODE_NAME . ']',
-		);
-
-		return str_replace( $wrappers_to_remove, '', $block );
 	}
 
 	private function replace_content_without_delimiters( $block, $replacement ) {
@@ -202,7 +195,7 @@ class WPML_PB_Update_Shortcodes_In_Content {
 	 */
 	private function filter_attribute_translation( $translation, $encoding ) {
 		if ( 'allow_html_tags' !== $encoding ) {
-			$translation = htmlspecialchars( $translation );
+			$translation = htmlspecialchars( htmlspecialchars_decode( $translation ) );
 		}
 
 		$translation = str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $translation );

@@ -13,18 +13,25 @@ class WPML_TM_Blog_Translators {
 	/** @var WPML_Translator_Records $translator_records */
 	private $translator_records;
 
-	/** @var stdClass[] $all_translators */
-	private $all_translators;
+	/** @var  WPML_Cache_Factory */
+	private $cache_factory;
 
 	/**
 	 * @param SitePress               $sitepress
 	 * @param WPML_TM_Records         $tm_records
 	 * @param WPML_Translator_Records $translator_records
+	 * @param WPML_Cache_Factory      $cache_factory
 	 */
-	public function __construct( SitePress $sitepress, WPML_TM_Records $tm_records, WPML_Translator_Records $translator_records ) {
+	public function __construct(
+		SitePress $sitepress,
+		WPML_TM_Records $tm_records,
+		WPML_Translator_Records $translator_records,
+		WPML_Cache_Factory $cache_factory
+	) {
 		$this->sitepress          = $sitepress;
 		$this->tm_records         = $tm_records;
 		$this->translator_records = $translator_records;
+		$this->cache_factory      = $cache_factory;
 	}
 
 	/**
@@ -33,7 +40,14 @@ class WPML_TM_Blog_Translators {
 	 * @return bool
 	 */
 	public function has_translators() {
-		return (bool) $this->get_raw_blog_translators();
+		$cache = $this->cache_factory->get( 'WPML_TM_Blog_Translators::has_translators' );
+
+		return $cache->execute_and_cache(
+			'has-translators',
+			function () {
+				return $this->translator_records->has_users_with_capability();
+			}
+		);
 	}
 
 	/**
@@ -60,7 +74,7 @@ class WPML_TM_Blog_Translators {
 	}
 
 	/**
-	 * @param int $translator_id
+	 * @param int    $translator_id
 	 * @param string $from
 	 * @param string $to
 	 *
@@ -80,11 +94,14 @@ class WPML_TM_Blog_Translators {
 	 * @return array
 	 */
 	public function get_raw_blog_translators() {
-		if ( null === $this->all_translators ) {
-			$this->all_translators = $this->translator_records->get_users_with_capability();
-		}
+		$cache = $this->cache_factory->get( 'WPML_TM_Blog_Translators::get_raw_blog_translators' );
 
-		return $this->all_translators;
+		return $cache->execute_and_cache(
+			'has-translators',
+			function () {
+				return $this->translator_records->get_users_with_capability();
+			}
+		);
 	}
 
 	/**
@@ -94,19 +111,31 @@ class WPML_TM_Blog_Translators {
 	 * @return bool
 	 */
 	function is_translator( $user_id, $args = array() ) {
-		$admin_override = true;
-		extract( $args, EXTR_OVERWRITE );
+		$defaults = [
+			'lang_from'      => null,
+			'lang_to'        => null,
+			'job_id'         => null,
+			'post_id'        => null,
+			'admin_override' => true,
+		];
+		$args     = array_merge( $defaults, $args );
+
+		$lang_from      = $args['lang_from'];
+		$lang_to        = $args['lang_to'];
+		$job_id         = $args['job_id'];
+		$admin_override = $args['admin_override'];
+
 		$is_translator = $this->sitepress->get_wp_api()
-		                                 ->user_can( $user_id, 'translate' );
+										 ->user_can( $user_id, 'translate' );
 		// check if user is administrator and return true if he is
 		if ( $admin_override && $this->sitepress->get_wp_api()
-		                                        ->user_can( $user_id, 'manage_options' )
+												->user_can( $user_id, 'manage_options' )
 		) {
 			$is_translator = true;
 			do_action( 'wpml_tm_ate_enable_subscription', $user_id );
 		} else {
-			if ( isset( $lang_from ) && isset( $lang_to ) ) {
-				$user_language_pairs            = $this->get_language_pairs( $user_id );
+			if ( $lang_from && $lang_to ) {
+				$user_language_pairs = $this->get_language_pairs( $user_id );
 				if ( ! empty( $user_language_pairs ) ) {
 					foreach ( $user_language_pairs as $user_lang_from => $user_lang_to ) {
 						if ( array_key_exists( $lang_to, $user_lang_to ) ) {
@@ -119,16 +148,18 @@ class WPML_TM_Blog_Translators {
 				} else {
 					$is_translator = false;
 				}
-
 			}
-			if ( isset( $job_id ) ) {
+			if ( $job_id ) {
 				$job_record    = $this->tm_records->icl_translate_job_by_job_id( $job_id );
-				$translator_id = in_array( $job_record->service(), array(
-					'local',
-					0,
-				) ) ? $job_record->translator_id() : - 1;
+				$translator_id = in_array(
+					$job_record->service(),
+					array(
+						'local',
+						0,
+					)
+				) ? $job_record->translator_id() : - 1;
 				$is_translator = $translator_id == $user_id
-				                 || ( $is_translator && empty( $translator_id ) );
+								 || ( $is_translator && empty( $translator_id ) );
 			}
 		}
 
@@ -143,9 +174,10 @@ class WPML_TM_Blog_Translators {
 	public function get_language_pairs( $user_id ) {
 
 		return $this->sitepress->get_wp_api()
-		                       ->get_user_meta(
-			                       $user_id,
-			                       $this->sitepress->wpdb()->prefix . 'language_pairs',
-			                       true );
+							->get_user_meta(
+								$user_id,
+								$this->sitepress->wpdb()->prefix . 'language_pairs',
+								true
+							);
 	}
 }

@@ -3,46 +3,53 @@
  * @package wpml-core
  */
 
-function icl_reset_language_data(){
-    global $wpdb, $sitepress;
+function icl_reset_language_data() {
+	global $wpdb, $sitepress;
 
-    $active = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
+	$active = $wpdb->get_col( "SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1" );
 
-    $wpdb->query("TRUNCATE TABLE `{$wpdb->prefix}icl_languages`");
-    SitePress_Setup::fill_languages();
-    $wpdb->query("TRUNCATE TABLE `{$wpdb->prefix}icl_languages_translations`");
-    SitePress_Setup::fill_languages_translations();
-    $wpdb->query("TRUNCATE TABLE `{$wpdb->prefix}icl_flags`");
-    SitePress_Setup::fill_flags();
+	$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}icl_languages`" );
+	SitePress_Setup::fill_languages();
+	$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}icl_languages_translations`" );
+	SitePress_Setup::fill_languages_translations();
+	$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}icl_flags`" );
+	SitePress_Setup::fill_flags();
 
-    //restore active
-    $wpdb->query("UPDATE {$wpdb->prefix}icl_languages SET active=1 WHERE code IN(" . wpml_prepare_in($active) . ")");
+	// restore active
+	$wpdb->query( "UPDATE {$wpdb->prefix}icl_languages SET active=1 WHERE code IN(" . wpml_prepare_in( $active ) . ')' );
 
-    $wpdb->update($wpdb->prefix.'icl_flags', array('from_template'=>0),null);
+	$wpdb->update( $wpdb->prefix . 'icl_flags', array( 'from_template' => 0 ), null );
 
-    $codes = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages");
-    foreach($codes as $code){
-        if ( !$code || $wpdb->get_var(
-                $wpdb->prepare( "SELECT lang_code FROM {$wpdb->prefix}icl_flags WHERE lang_code = %s", $code )
-            )
-        ) {
-            continue;
-        }
-        if(!file_exists(WPML_PLUGIN_PATH.'/res/flags/'.$code.'.png')){
-            $file = 'nil.png';
-        }else{
-            $file = $code.'.png';
-        }
-        $wpdb->insert($wpdb->prefix.'icl_flags', array('lang_code'=>$code, 'flag'=>$file, 'from_template'=>0));
-    }
+	$codes = $wpdb->get_col( "SELECT code FROM {$wpdb->prefix}icl_languages" );
+	foreach ( $codes as $code ) {
+		if ( ! $code || $wpdb->get_var(
+			$wpdb->prepare( "SELECT lang_code FROM {$wpdb->prefix}icl_flags WHERE lang_code = %s", $code )
+		)
+		) {
+			continue;
+		}
+		if ( ! file_exists( WPML_PLUGIN_PATH . '/res/flags/' . $code . '.png' ) ) {
+			$file = 'nil.png';
+		} else {
+			$file = $code . '.png';
+		}
+		$wpdb->insert(
+			$wpdb->prefix . 'icl_flags',
+			array(
+				'lang_code'     => $code,
+				'flag'          => $file,
+				'from_template' => 0,
+			)
+		);
+	}
 
-    $last_default_language = $sitepress !== null ? $sitepress->get_default_language () : 'en';
-    if ( !in_array ( $last_default_language, $codes ) ) {
-        $allowed_langs = array_intersect ( array_keys ( $sitepress->get_active_languages () ), $codes );
-        $sitepress->set_default_language ( array_pop ( $allowed_langs ) );
-    }
+	$last_default_language = $sitepress !== null ? $sitepress->get_default_language() : 'en';
+	if ( ! in_array( $last_default_language, $codes ) ) {
+		$allowed_langs = array_intersect( array_keys( $sitepress->get_active_languages() ), $codes );
+		$sitepress->set_default_language( array_pop( $allowed_langs ) );
+	}
 
-    icl_cache_clear();
+	icl_cache_clear();
 
 	do_action( 'wpml_translation_update', array( 'type' => 'reset' ) );
 }
@@ -54,8 +61,8 @@ function icl_sitepress_activate() {
 
 	try {
 		SitePress_Setup::fill_languages();
-        SitePress_Setup::fill_languages_translations();
-        SitePress_Setup::fill_flags();
+		SitePress_Setup::fill_languages_translations();
+		SitePress_Setup::fill_flags();
 
 		// translations
 		$table_name = $wpdb->prefix . 'icl_translations';
@@ -182,7 +189,7 @@ function icl_sitepress_activate() {
                  CREATE TABLE IF NOT EXISTS `{$table_name}` (
                     `code` VARCHAR( 7 ) NOT NULL ,
                     `locale` VARCHAR( 35 ) NOT NULL ,
-                    UNIQUE (`code` ,`locale`)
+                    PRIMARY KEY (`code` ,`locale`)
                 ) {$charset_collate}";
 			if ( $wpdb->query( $sql ) === false ) {
 				throw new Exception( $wpdb->last_error );
@@ -191,14 +198,14 @@ function icl_sitepress_activate() {
 
 		/* general string translation */
 		$translation_priority_default = __( 'Optional', 'sitepress' );
-		$table_name = $wpdb->prefix . 'icl_strings';
+		$table_name                   = $wpdb->prefix . 'icl_strings';
 		if ( 0 !== strcasecmp( $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" ), $table_name ) ) {
 			$sql = "
                  CREATE TABLE IF NOT EXISTS `{$table_name}` (
                   `id` bigint(20) unsigned NOT NULL auto_increment,
                   `language` varchar(7) NOT NULL,
-                  `context` varchar(" . WPML_STRING_TABLE_NAME_CONTEXT_LENGTH . ") NOT NULL,
-                  `name` varchar(" . WPML_STRING_TABLE_NAME_CONTEXT_LENGTH . ") NOT NULL,
+                  `context` varchar(" . WPML_STRING_TABLE_NAME_CONTEXT_LENGTH . ') NOT NULL,
+                  `name` varchar(' . WPML_STRING_TABLE_NAME_CONTEXT_LENGTH . ") NOT NULL,
                   `value` longtext NOT NULL,
                   `string_package_id` BIGINT unsigned NULL,
                   `location` BIGINT unsigned NULL,
@@ -357,7 +364,6 @@ function icl_sitepress_activate() {
 		if ( $wpdb->query( $icl_translation_sql ) === false ) {
 			throw new Exception( $wpdb->last_error );
 		}
-
 	} catch ( Exception $e ) {
 		trigger_error( $e->getMessage(), E_USER_ERROR );
 		exit;
@@ -369,36 +375,35 @@ function icl_sitepress_activate() {
 		add_option( 'icl_sitepress_version', ICL_SITEPRESS_VERSION, '', true );
 	}
 
-
 	$iclsettings = get_option( 'icl_sitepress_settings' );
 	if ( $iclsettings === false ) {
 		$short_v  = implode( '.', array_slice( explode( '.', ICL_SITEPRESS_VERSION ), 0, 3 ) );
 		$settings = array(
-			'hide_upgrade_notice' => $short_v
+			'hide_upgrade_notice' => $short_v,
 		);
 		add_option( 'icl_sitepress_settings', $settings, '', true );
 	} else {
 		// reset ajx_health_flag
-		$iclsettings[ 'ajx_health_checked' ] = 0;
-		$iclsettings[ 'just_reactivated' ]   = 1;
+		$iclsettings['ajx_health_checked'] = 0;
+		$iclsettings['just_reactivated']   = 1;
 		update_option( 'icl_sitepress_settings', $iclsettings );
 	}
 
-	//Set new caps for all administrator role
+	// Set new caps for all administrator role
 	wpml_enable_capabilities();
 
 	repair_el_type_collate();
 
 	WPML_Media_Duplication_Setup::initialize_settings();
 
-	do_action('wpml_activated');
+	do_action( 'wpml_activated' );
 }
 
 function icl_sitepress_deactivate() {
 	wp_clear_scheduled_hook( 'update_wpml_config_index' );
 	require_once WPML_PLUGIN_PATH . '/inc/cache.php';
 	icl_cache_clear();
-	do_action('wpml_deactivated');
+	do_action( 'wpml_deactivated' );
 }
 
 function icl_enable_capabilities() {
@@ -411,30 +416,31 @@ function icl_enable_capabilities() {
 	$iclsettings      = get_option( 'icl_sitepress_settings' );
 	$icl_capabilities = icl_sitepress_get_capabilities();
 
-	//Set WPML capabilities to all roles with cap:"".
+	// Set WPML capabilities to all roles with cap:"".
 	$roles = $wp_roles->get_names();
 	foreach ( $roles as $current_role => $role_name ) {
-		if ( isset( $wp_roles->roles[ $current_role ][ 'capabilities' ][ 'manage_options' ] ) ) {
+		if ( isset( $wp_roles->roles[ $current_role ]['capabilities']['manage_options'] ) ) {
 			$role = get_role( $current_role );
 			if ( isset( $role ) && is_object( $role ) ) {
 				for ( $i = 0, $caps_limit = count( $icl_capabilities ); $i < $caps_limit; $i ++ ) {
-					if ( ! isset( $wp_roles->roles[ $current_role ][ 'capabilities' ][ $icl_capabilities[ $i ] ] ) ) {
+					if ( ! isset( $wp_roles->roles[ $current_role ]['capabilities'][ $icl_capabilities[ $i ] ] ) ) {
 						$role->add_cap( $icl_capabilities[ $i ] );
 					}
 				}
 			}
-
 		}
 	}
 
-	$user_admins = get_users( array(
-		'role' => 'administrator'
-	) );
+	$user_admins = get_users(
+		array(
+			'role' => 'administrator',
+		)
+	);
 
 	if ( is_multisite() ) {
 		$super_admins = get_super_admins();
 
-		foreach( $super_admins as $admin ) {
+		foreach ( $super_admins as $admin ) {
 			$super_admin = new WP_User( $admin );
 
 			if ( ! in_array( $super_admin, $user_admins, true ) ) {
@@ -451,7 +457,7 @@ function icl_enable_capabilities() {
 		}
 	}
 
-	$iclsettings[ 'icl_capabilities_verified' ] = true;
+	$iclsettings['icl_capabilities_verified'] = true;
 	update_option( 'icl_sitepress_settings', $iclsettings );
 }
 
@@ -473,7 +479,7 @@ function wpml_enable_capabilities() {
 		add_action( 'plugins_loaded', 'wpml_enable_capabilities' );
 	} else {
 		if ( ! function_exists( 'get_user_by' ) ) {
-			require( ABSPATH . WPINC . '/pluggable.php' );
+			require ABSPATH . WPINC . '/pluggable.php';
 		}
 		icl_enable_capabilities();
 		$sitepress_settings = get_option( 'icl_sitepress_settings' );

@@ -164,7 +164,7 @@ class WPML_TM_XLIFF {
 	private function appendData( $type, $trans_unit, $trans_unit_element ) {
 		if ( array_key_exists( $type, $trans_unit ) ) {
 			$source       = $this->dom->createElement( $type );
-			$datatype = isset( $trans_unit['attributes']['datatype'] ) ? $trans_unit['attributes']['datatype'] : '';
+			$datatype     = isset( $trans_unit['attributes']['datatype'] ) ? $trans_unit['attributes']['datatype'] : '';
 			$source_cdata = $this->dom->createCDATASection(
 				$this->validate( $datatype, $trans_unit[ $type ]['content'] )
 			);
@@ -238,9 +238,11 @@ class WPML_TM_XLIFF {
 		if ( $version === '1.0' ) {
 			$implementation = new DOMImplementation();
 
-			$this->dtd = $implementation->createDocumentType( 'xliff',
-			                                                  '-//XLIFF//DTD XLIFF//EN',
-			                                                  'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd' );
+			$this->dtd = $implementation->createDocumentType(
+				'xliff',
+				'-//XLIFF//DTD XLIFF//EN',
+				'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd'
+			);
 		}
 		$this->root->setAttribute( 'version', $version );
 		$this->root->setAttribute( 'xmlns', 'urn:oasis:names:tc:xliff:document:' . $version );

@@ -1,129 +1,141 @@
 jQuery(document).ready(function(){
 
-	var aDBc_item_type = jQuery("#aDBc_item_type").attr('value');
-
-	if(aDBc_item_type == "tables" || aDBc_item_type == "options" || aDBc_item_type == "tasks"){
-
-		var still_searching = jQuery("#aDBc_still_searching").attr('value');
-		var iteration = jQuery("#aDBc_iteration").attr('value');
-
-		// When we load a page, test if ajax is still processing in background. If so, disable button
-		if(still_searching == "yes"){
-			jQuery('#aDBc_new_search_button').attr("value", aDBc_ajax_obj.sentence_scanning);
-			jQuery('#aDBc_new_search_button').css('background-image', 'url(' + aDBc_ajax_obj.images_path + 'loading20px.svg)');
-			jQuery('#aDBc_new_search_button').attr("disabled", true);
+	// Prevent submitting forms via Enter key to prevent any unexpected form submission
+	jQuery(window).keydown(function(event){
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			return false;
 		}
-
-		// After reload page, check if we should call ajax processing, if so, proceed even before clicking the button to continue after timeout
-		if(still_searching == "" && iteration != ""){
-
-			jQuery('#aDBc_new_search_button').attr("value", aDBc_ajax_obj.sentence_scanning);
-			jQuery('#aDBc_new_search_button').css('background-image', 'url(' + aDBc_ajax_obj.images_path + 'loading20px.svg)');
-			jQuery('#aDBc_new_search_button').attr("disabled", true);
-			jQuery('#aDBc_progress_container').show();
-
-			jQuery.ajax({
-				type : "post",
-				url: aDBc_ajax_obj.ajaxurl,
-				cache: false,
-				data: {
-					'action': 'aDBc_new_run_search_for_items',
-					'aDBc_item_type': aDBc_item_type
-				},
-				success: function(result) {
-
-				},
-				complete: function(){
-					// wait for 1 sec then reload the page.
-					setTimeout(function(){ 
-					   location.reload();
-					}, 1000);				
-				}
-			});
-			setTimeout(getProgress, 500);
-		}
-
-	}
-
-	jQuery('#aDBc_new_search_button').on('click', function(e){
-
-		var me = jQuery(this);
-        e.preventDefault();
-
-		me.attr("value", aDBc_ajax_obj.sentence_scanning);
-		me.css('background-image', 'url(' + aDBc_ajax_obj.images_path + 'loading20px.svg)');
-		me.attr("disabled", true);
-		jQuery('#aDBc-progress-bar').html("0%");
-		jQuery('#aDBc_progress_container').show();
-
-		var aDBc_item_type = jQuery("#aDBc_item_type").attr('value');
-
-		jQuery.ajax({
-			type : "post",
-			url: aDBc_ajax_obj.ajaxurl,
-			cache: false,
-			data: {
-				'action': 'aDBc_new_run_search_for_items',
-				'aDBc_item_type': aDBc_item_type
-			},
-			success: function(result) {
-
-				jQuery('#aDBc-progress-bar').html("100 %");
-				jQuery('#aDBc-progress-bar').css("width", "100%");
-
-			},
-			complete: function(){
-				// wait for 1 sec then reload the page.
-				setTimeout(function(){ 
-				   location.reload();
-				}, 1000);				
-				
-			}
-		});
-		setTimeout(getProgress, 500);
-		return false;
 	});
 
-	function getProgress(){
+	// x10: After upgrading to WP 5.5, the button of #doaction2 at the button does not work anymore
+	// This is because when submitting the form below via 'jQuery("#aDBc_form").submit()', the form is sent without the action selected at bottom
+	// We make sure that both dropdowns have the same values so that the form is sent without issues
+	jQuery('#bulk-action-selector-bottom').on("change", function(e) {
+		var abdc_action = jQuery('#bulk-action-selector-bottom').val();
+		jQuery('#bulk-action-selector-top').val(abdc_action);
+	});
+	jQuery('#bulk-action-selector-top').on("change", function(e) {
+		var abdc_action = jQuery('#bulk-action-selector-top').val();
+		jQuery('#bulk-action-selector-bottom').val(abdc_action);
+	});
 
-		var aDBc_item_type = jQuery("#aDBc_item_type").attr('value');
+	// When a user clicks on doaction or doaction2 button
+	jQuery('#doaction, #doaction2').on('click', function(e){
 
-		jQuery.ajax({
-			type : "post",
-			url: aDBc_ajax_obj.ajaxurl,
-			data: {
-				'action': 'aDBc_get_progress_bar_width',
-				'aDBc_item_type': aDBc_item_type
-			},
-			dataType : 'json',
-			success: function(result) {
-				var current = result['aDBc_progress'];
-				var total 	= result['aDBc_total_items'];
-				var stop 	= result['aDBc_stop'];
-				if(stop == false){
-					// xxx to delete console log
-					// console.log(result);
-					if(current > 0 && total > 0){
-						jQuery('#aDBc-progress-bar').html(parseInt(current * (100/total)) + "%");
-						jQuery('#aDBc-progress-bar').css("width", parseInt(current * (100/total)) + "%");
-					}
-					setTimeout(getProgress, 1000);
+		// Get action from the clicked button
+		if(this.id == 'doaction'){
+		  var aDBc_action = jQuery("#bulk-action-selector-top").val();
+		}else if(this.id == 'doaction2'){
+		  var aDBc_action = jQuery('#bulk-action-selector-bottom').val();
+		}
+
+		// Get values of top_action and bottom action
+		var abdc_top_action 	= jQuery('#bulk-action-selector-top').val();
+		var abdc_bottom_action 	= jQuery('#bulk-action-selector-bottom').val();
+
+		// Before performing any action, test first if #bulk-action-selector-top and #bulk-action-selector-bottom have the same value as in x10 above
+		if(abdc_top_action != abdc_bottom_action){
+
+			// Prevent doaction button from its default behaviour
+			e.preventDefault();
+
+			// If values are different, show an error msg
+			Swal.fire({
+			  icon					: 'error',
+			  confirmButtonColor	: '#0085ba',
+			  showCloseButton		: true,
+			  text					: aDBc_ajax_obj.unexpected_error
+			})
+
+		// If no action selected
+		}else if(aDBc_action == "-1"){
+
+			// Prevent doaction button from its default behaviour
+			e.preventDefault();
+
+			// If no actions selected, show an error message
+			Swal.fire({
+			  icon					: 'error',
+			  confirmButtonColor	: '#0085ba',
+			  showCloseButton		: true,
+			  text					: aDBc_ajax_obj.select_action
+			})
+
+		}else{
+
+			// Test if the user has checked some items
+			var aDBc_elements_to_process = [];
+
+			// Get all selected items
+			jQuery('input[name="aDBc_elements_to_process[]"]:checked').each(function(){aDBc_elements_to_process.push(this.value);});
+
+			// If no items selected, show error message
+			if(aDBc_elements_to_process.length === 0) {
+
+				// Prevent doaction button from its default behaviour
+				e.preventDefault();
+
+				Swal.fire({
+				  icon					: 'error',
+				  confirmButtonColor	: '#0085ba',
+				  showCloseButton		: true,
+				  text					: aDBc_ajax_obj.no_items_selected
+				})
+
+			}else{
+
+				// The default warning msg to show is
+				var message_to_show = aDBc_ajax_obj.clean_items_warning;
+
+				// If 'empty' action is selected for tables, override the warning msg
+				if(aDBc_action == 'empty'){
+					var message_to_show = aDBc_ajax_obj.empty_tables_warning;
+				}
+
+				// We show the warning box msg only when actions such as: delete, clean, empty... are selected
+				if(aDBc_action == 'delete' || aDBc_action == 'clean' || aDBc_action == 'empty'){
+
+					// Prevent doaction button from its default behaviour
+					e.preventDefault();
+
+					Swal.fire({
+						title				: '<font size="4px">' + aDBc_ajax_obj.are_you_sure + '</font>',
+						text				: message_to_show,
+						footer				: '<font size="3px" color="red"><b>' + aDBc_ajax_obj.make_db_backup_first + '</b></font>',
+						imageUrl			: aDBc_ajax_obj.images_path + 'alert_delete.svg',
+						imageWidth			: 60,
+						imageHeight			: 60,
+						showCancelButton	: true,
+						showCloseButton		: true,
+						cancelButtonText	: aDBc_ajax_obj.cancel,
+						cancelButtonColor	: '#555',
+						confirmButtonText	: aDBc_ajax_obj.Continue,
+						confirmButtonColor	: '#0085ba',
+						focusCancel 		: true,
+					}).then((result) => {
+						// If the user clicked on "confirm", submit the form
+						if(result.value){
+							jQuery("#aDBc_form").submit();
+						}
+					})
 				}
 			}
-		});
-	}
+		}
+	});
 
+	// Actions to do when the user clicks on 'Edit' link to change the 'Keep last' value
 	jQuery('.aDBc_keep_link').click(function(event){
 
-		var idelement = (event.target.id).split("_");
-		var itemname = idelement[idelement.length-1];
+		var idelement 	= (event.target.id).split("_");
+		var itemname 	= idelement[idelement.length-1];
 
-		jQuery("#aDBc_edit_keep_"+itemname).hide();
-		jQuery("#aDBc_keep_label_"+itemname).hide();
+		jQuery("#aDBc_edit_keep_" 	+ itemname).hide();
+		jQuery("#aDBc_keep_label_" 	+ itemname).hide();
 
-		jQuery('#aDBc_keep_input_'+itemname).show();
-		jQuery('#aDBc_keep_button_'+itemname).show();
-		jQuery('#aDBc_keep_cancel_'+itemname).show();
+		jQuery('#aDBc_keep_input_' 	+ itemname).show();
+		jQuery('#aDBc_keep_button_' + itemname).show();
+		jQuery('#aDBc_keep_cancel_' + itemname).show();
 
 		jQuery('.aDBc_keep_link').css("pointer-events", "none");
 		jQuery('.aDBc_keep_link').css("cursor", "default");
@@ -133,101 +145,20 @@ jQuery(document).ready(function(){
 
 	jQuery('.aDBc_keep_cancel_link').click(function(event){
 
-		var idelement = (event.target.id).split("_");
-		var itemname = idelement[idelement.length-1];
+		var idelement 	= (event.target.id).split("_");
+		var itemname 	= idelement[idelement.length-1];
 
-		jQuery('#aDBc_keep_input_'+itemname).hide();
-		jQuery('#aDBc_keep_button_'+itemname).hide();
-		jQuery('#aDBc_keep_cancel_'+itemname).hide();
+		jQuery('#aDBc_keep_input_'	+ itemname).hide();
+		jQuery('#aDBc_keep_button_'	+ itemname).hide();
+		jQuery('#aDBc_keep_cancel_'	+ itemname).hide();
 
-		jQuery("#aDBc_edit_keep_"+itemname).show();
-		jQuery("#aDBc_keep_label_"+itemname).show();
+		jQuery("#aDBc_edit_keep_"	+ itemname).show();
+		jQuery("#aDBc_keep_label_"	+ itemname).show();
 
 		jQuery('.aDBc_keep_link').css("pointer-events", "");
 		jQuery('.aDBc_keep_link').css("cursor", "pointer");
 		jQuery('.aDBc_keep_link').css("color", "");
 
-	});
-
-});
-
-
-jQuery(function($) {
-
-	var $delete_warning = $("#aDBc_dialog1");
-	$delete_warning.dialog({
-		'dialogClass'   : 'wp-dialog',
-		'modal'         : true,
-		'width'			: 500,
-		'autoOpen'      : false,
-		'closeOnEscape' : true,
-		'buttons'       : {
-			"Close": function() {
-				$(this).dialog('close');
-			},
-			"Continue": function() {
-				$('form[id="aDBc_form"]').submit();
-			}
-		}
-	});
-
-	var $empty_warning = $("#aDBc_dialog2");
-	$empty_warning.dialog({
-		'dialogClass'   : 'wp-dialog',
-		'modal'         : true,
-		'width'			: 500,
-		'autoOpen'      : false,
-		'closeOnEscape' : true,
-		'buttons'       : {
-			"Close": function() {
-				$(this).dialog('close');
-			},
-			"Continue": function() {
-				$('form[id="aDBc_form"]').submit();
-			}
-		}
-	});
-
-	var $select_action = $("#aDBc_dialogx");
-	$select_action.dialog({
-		'dialogClass'   : 'wp-dialog',
-		'modal'         : true,
-		'width'			: 300,
-		'autoOpen'      : false,
-		'closeOnEscape' : true,
-		'buttons'       : {
-			"Close": function() {
-				$(this).dialog('close');
-			}
-		}
-	});
-
-	$("#doaction").click(function(event) {
-		var $bulk_action = $('#bulk-action-selector-top').val();
-		if($bulk_action == 'delete' || $bulk_action == 'clean'){
-			event.preventDefault();
-			$delete_warning.dialog('open');
-		}else if($bulk_action == 'empty'){
-			event.preventDefault();
-			$empty_warning.dialog('open');
-		}else if($bulk_action == '-1'){
-			event.preventDefault();
-			$select_action.dialog('open');
-		}
-	});
-
-	$("#doaction2").click(function(event) {
-		var $bulk_action = $('#bulk-action-selector-bottom').val();
-		if($bulk_action == 'delete' || $bulk_action == 'clean'){
-			event.preventDefault();
-			$delete_warning.dialog('open');
-		}else if($bulk_action == 'empty'){
-			event.preventDefault();
-			$empty_warning.dialog('open');
-		}else if($bulk_action == '-1'){
-			event.preventDefault();
-			$select_action.dialog('open');
-		}
 	});
 
 });

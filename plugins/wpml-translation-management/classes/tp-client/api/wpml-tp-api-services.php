@@ -1,5 +1,7 @@
 <?php
 
+use WPML\FP\Fns;
+
 /**
  * Class WPML_TP_API_Services
  *
@@ -37,16 +39,8 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @return array
 	 */
 	public function get_all( $reload = false ) {
-		$this->endpoint = self::ENDPOINT_SERVICES;
+		$this->endpoint       = self::ENDPOINT_SERVICES;
 		$translation_services = $reload ? null : $this->get_cached_services();
-
-		if ( ! $translation_services ) {
-			$translation_services = get_transient( self::CACHED_SERVICES_TRANSIENT_KEY );
-
-			if ( $translation_services ) {
-				$translation_services = $this->convert_to_tp_services( $translation_services );
-			}
-		}
 
 		if ( ! $translation_services || $this->has_cache_services_expired() ) {
 			$fresh_translation_services = parent::get();
@@ -103,19 +97,7 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @return array
 	 */
 	private function convert_to_tp_services( $translation_services ) {
-		$converted_services = array();
-
-		foreach ( $translation_services as $translation_service ) {
-			$ts = $translation_service;
-
-			if ( $translation_service instanceof stdClass ) {
-				$ts = new WPML_TP_Service( $translation_service );
-			}
-
-			$converted_services[] = $ts;
-		}
-
-		return $converted_services;
+		return Fns::map( Fns::constructN( 1, \WPML_TP_Service::class ), $translation_services );
 	}
 
 	/**
@@ -123,7 +105,15 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @return array
 	 */
 	public function get_translation_services( $partner = true ) {
-		return array_values( wp_list_filter( $this->get_all(), array( self::TRANSLATION_MANAGEMENT_SYSTEM => false, self::PARTNER => $partner ) ) );
+		return array_values(
+			wp_list_filter(
+				$this->get_all(),
+				array(
+					self::TRANSLATION_MANAGEMENT_SYSTEM => false,
+					self::PARTNER                       => $partner,
+				)
+			)
+		);
 	}
 
 	/**

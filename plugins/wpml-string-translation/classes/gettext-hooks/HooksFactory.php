@@ -15,7 +15,7 @@ class HooksFactory implements \IWPML_Backend_Action_Loader, \IWPML_Frontend_Acti
 
 	/**
 	 * @return \IWPML_Action|Hooks|null
-	 * @throws \Auryn\InjectionException
+	 * @throws \WPML\Auryn\InjectionException
 	 */
 	public function create() {
 		/**
@@ -50,7 +50,7 @@ class HooksFactory implements \IWPML_Backend_Action_Loader, \IWPML_Frontend_Acti
 
 	/**
 	 * @return Filters\IFilter[]
-	 * @throws \Auryn\InjectionException
+	 * @throws \WPML\Auryn\InjectionException
 	 */
 	private function getFilters() {
 		$filters = [];
@@ -80,8 +80,8 @@ class HooksFactory implements \IWPML_Backend_Action_Loader, \IWPML_Frontend_Acti
 	 */
 	private function isTrackingStrings( Settings $settings ) {
 		return $settings->isTrackStringsEnabled()
-		       && current_user_can( 'edit_others_posts' )
-		       && ! is_admin();
+			   && current_user_can( 'edit_others_posts' )
+			   && ! is_admin();
 	}
 
 	/**

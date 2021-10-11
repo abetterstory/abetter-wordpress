@@ -5,7 +5,7 @@ class WPML_Ajax_Update_Link_Targets_In_Strings extends WPML_Ajax_Update_Link_Tar
 	private $wp_api;
 	private $pro_translation;
 	public function __construct( WPML_Translate_Link_Target_Global_State $translate_link_target_global_state, &$wpdb, $wp_api, $pro_translation, $post_data ) {
-		$this->wp_api = $wp_api;
+		$this->wp_api          = $wp_api;
 		$this->pro_translation = $pro_translation;
 		parent::__construct( $translate_link_target_global_state, $wpdb, $post_data );
 	}

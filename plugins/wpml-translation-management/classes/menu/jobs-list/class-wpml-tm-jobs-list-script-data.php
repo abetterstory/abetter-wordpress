@@ -134,7 +134,7 @@ class WPML_TM_Jobs_List_Script_Data {
 					'downloadingXliff'     => __( 'XLIFF file downloaded', 'wpml-translation-management' ),
 				],
 				'jobActions'             => [
-					'checkStatus' => [
+					'checkStatus'     => [
 						'active'          => __( 'Check status', 'wpml-translation-management' ),
 						'completed'       => __( 'Translation is ready, no need to check its status', 'wpml-translation-management' ),
 						'cancelled'       => __( 'Translation is cancelled, no need to check its status', 'wpml-translation-management' ),
@@ -143,7 +143,7 @@ class WPML_TM_Jobs_List_Script_Data {
 						'local'           => __( 'This is a local job, no need to check its status', 'wpml-translation-management' ),
 					],
 
-					'downloadXLIFF' => [
+					'downloadXLIFF'   => [
 						'activeIconText' => __( 'Download the translated XLIFF file', 'wpml-translation-management' ),
 						'localJob'       => __(
 							'This is a local job so it does not have an XLIFF file to download',
@@ -159,7 +159,7 @@ class WPML_TM_Jobs_List_Script_Data {
 						),
 					],
 
-					'cancel' => [
+					'cancel'          => [
 						'activeIconText'  => __( 'Cancel job', 'wpml-translation-management' ),
 						// translators: "%s" is replaced with the name of the translation service associated with the job.
 						'notLocalJob'     => sprintf( __( 'Contact %s for cancellation', 'wpml-translation-management' ), $translation_service['name'] ),

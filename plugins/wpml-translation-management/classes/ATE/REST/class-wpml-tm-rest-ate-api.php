@@ -24,17 +24,21 @@ class WPML_TM_REST_ATE_API extends WPML_TM_ATE_Required_Rest_Base {
 	}
 
 	function register_routes() {
-		parent::register_route( '/ate/jobs',
-		                        array(
-			                        'methods'  => 'POST',
-			                        'callback' => array( $this, 'create_jobs' ),
-		                        ) );
+		parent::register_route(
+			'/ate/jobs',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'create_jobs' ),
+			)
+		);
 
-		parent::register_route( '/ate/jobs/(?P<ateJobId>\d+)',
-		                        array(
-			                        'methods'  => 'GET',
-			                        'callback' => array( $this, 'get_job' ),
-		                        ) );
+		parent::register_route(
+			'/ate/jobs/(?P<ateJobId>\d+)',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( $this, 'get_job' ),
+			)
+		);
 	}
 
 	/**

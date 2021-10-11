@@ -1,5 +1,7 @@
 <?php
 
+use function WPML\FP\invoke;
+
 class WPML_TM_ATE_Job_Repository {
 
 	/** @var WPML_TM_Jobs_Repository */
@@ -16,13 +18,15 @@ class WPML_TM_ATE_Job_Repository {
 		$search_params = new WPML_TM_Jobs_Search_Params();
 		$search_params->set_scope( WPML_TM_Jobs_Search_Params::SCOPE_LOCAL );
 		$search_params->set_status( self::get_in_progress_statuses() );
-		$search_params->set_job_types( array( WPML_TM_Job_Entity::POST_TYPE, WPML_TM_Job_Entity::PACKAGE_TYPE ) );
+		$search_params->set_job_types( [
+			WPML_TM_Job_Entity::POST_TYPE,
+			WPML_TM_Job_Entity::PACKAGE_TYPE,
+			WPML_TM_Job_Entity::STRING_BATCH,
+		] );
 
 		return $this->job_repository
 			->get( $search_params )
-			->filter( function( WPML_TM_Post_Job_Entity $job ) {
-				return $job->is_ate_job();
-			} );
+			->filter( invoke( 'is_ate_job' ) );
 	}
 
 	/** @return array */

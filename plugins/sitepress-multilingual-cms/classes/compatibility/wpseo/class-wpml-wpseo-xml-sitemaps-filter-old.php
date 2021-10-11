@@ -152,14 +152,16 @@ class WPML_WPSEO_XML_Sitemaps_Filter_Old {
 				echo 'href="' . esc_url( $url ) . '" ';
 				echo 'target="_blank" ';
 				echo 'class="button-secondary" ';
-				echo sprintf( "style=\"
+				echo sprintf(
+					"style=\"
 					background-image:url('%s');
 					background-repeat: no-repeat;
 					background-position: 2px center;
 					background-size: 16px;
 					padding-left: 20px;
 					width: 100%%;
-					\"", esc_url( $lang['country_flag_url'] )
+					\"",
+					esc_url( $lang['country_flag_url'] )
 				);
 				echo '>';
 				echo esc_html( $lang['translated_name'] );
@@ -210,8 +212,6 @@ class WPML_WPSEO_XML_Sitemaps_Filter_Old {
 		if ( ! $this->is_per_domain() ) {
 			remove_filter( 'terms_clauses', array( $this->sitepress, 'terms_clauses' ) );
 		}
-
-		remove_filter( 'category_link', array( $this->sitepress, 'category_link_adjust_id' ), 1 );
 
 		return $type;
 	}

@@ -1,5 +1,8 @@
 <?php
 
+use \WPML\FP\Wrapper;
+use function \WPML\FP\invoke;
+
 class WPML_PB_Update_Post {
 
 	private $package_data;
@@ -35,6 +38,23 @@ class WPML_PB_Update_Post {
 				$this->update_post( $post_translations[ $lang ]->element_id, $post, $string_translations, $lang );
 			}
 		}
+	}
+
+	/**
+	 * @param string $content
+	 * @param string $lang
+	 *
+	 * @return string
+	 */
+	public function update_content( $content, $lang ) {
+		return Wrapper::of( $this->strategy )
+		              ->map( invoke( 'get_content_updater' ) )
+		              ->map( invoke( 'update_content' )->with(
+			              $content,
+			              $this->package_data['package']->get_translated_strings( [] ),
+			              $lang
+		              ) )
+		              ->get();
 	}
 
 	private function update_post( $translated_post_id, $original_post, $string_translations, $lang ) {

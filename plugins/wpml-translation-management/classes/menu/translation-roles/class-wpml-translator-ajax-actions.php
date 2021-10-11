@@ -35,9 +35,9 @@ class WPML_Translator_Ajax extends WPML_Translation_Roles_Ajax {
 	}
 
 	public function on_user_created( WP_User $user ) {
-		$language_pairs = $this->post_vars->post('languagePairs' );
+		$language_pairs = $this->post_vars->post( 'languagePairs' );
 		$this->language_pair_records->store( $user->ID, $language_pairs );
-		$user->data->language_pairs = $this->post_vars->post('languagePairs' );
+		$user->data->language_pairs = $this->post_vars->post( 'languagePairs' );
 	}
 
 	public function on_remove_role( WP_User $user ) {

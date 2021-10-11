@@ -2,7 +2,7 @@
 
 class WPML_TM_Requirements {
 
-    const INVALID_PHP_EXTENSIONS_OPTION = 'wpml-invalid-php-extensions';
+	const INVALID_PHP_EXTENSIONS_OPTION = 'wpml-invalid-php-extensions';
 
 	private $missing;
 	private $missing_one;
@@ -23,7 +23,10 @@ class WPML_TM_Requirements {
 				 || ICL_PLUGIN_INACTIVE
 				 || version_compare( ICL_SITEPRESS_VERSION, '2.0.5', '<' )
 		) {
-			$this->missing['WPML'] = array( 'url' => 'http://wpml.org', 'slug' => 'sitepress-multilingual-cms' );
+			$this->missing['WPML'] = array(
+				'url'  => 'http://wpml.org',
+				'slug' => 'sitepress-multilingual-cms',
+			);
 			$this->missing_one     = true;
 		}
 	}
@@ -40,10 +43,10 @@ class WPML_TM_Requirements {
 		$extensions = $this->get_current_php_extensions();
 
 		if ( ! defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || ! ICL_HIDE_TRANSLATION_SERVICES ) {
-			
+
 			$wpml_wp_api_check = new WPML_WP_API();
-			
-			if ( count($extensions) > 0 && $wpml_wp_api_check->is_tm_page() ) {
+
+			if ( count( $extensions ) > 0 && $wpml_wp_api_check->is_tm_page() ) {
 				$already_saved_invalid_extensions = get_option( self::INVALID_PHP_EXTENSIONS_OPTION );
 				if ( ! $already_saved_invalid_extensions || $already_saved_invalid_extensions !== $extensions ) {
 					ICL_AdminNotifier::add_message( $this->build_invalid_php_extensions_message_args( $extensions ) );
@@ -51,13 +54,13 @@ class WPML_TM_Requirements {
 					update_option( self::INVALID_PHP_EXTENSIONS_OPTION, $extensions );
 				}
 			} else {
-				ICL_AdminNotifier::remove_message_group('wpml-tm-requirements');
+				ICL_AdminNotifier::remove_message_group( 'wpml-tm-requirements' );
 			}
 		}
 	}
 
 	private function build_invalid_php_extensions_message_args( array $extensions ) {
-		$message = '';
+		$message  = '';
 		$message .= '<p>';
 		$message .= __( 'WPML Translation Management requires the following PHP extensions and settings:', 'wpml-translation-management' );
 		$message .= '</p>';
@@ -84,7 +87,7 @@ class WPML_TM_Requirements {
 			'hide'         => true,
 
 		);
-    }
+	}
 
 	private function get_current_php_extensions() {
 		$extensions = array();
@@ -104,7 +107,7 @@ class WPML_TM_Requirements {
 		}
 
 		return $extensions;
-    }
+	}
 
 
 	/**
@@ -112,11 +115,11 @@ class WPML_TM_Requirements {
 	 */
 	public function missing_plugins_warning() {
 		if ( $this->missing ) {
-			$missing = '';
+			$missing       = '';
 			$missing_slugs = array();
-			$counter = 0;
+			$counter       = 0;
 			foreach ( $this->missing as $title => $data ) {
-				$url = $data['url'];
+				$url             = $data['url'];
 				$missing_slugs[] = 'wpml-missing-' . sanitize_title_with_dashes( $data['slug'] );
 				$counter ++;
 				$sep = ', ';

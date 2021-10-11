@@ -32,35 +32,40 @@ class ADBC_Clean_DB_List extends WP_List_Table {
 				return; //get out if we didn't click the delete link
 
 			// We delete the schedule
-			wp_clear_scheduled_hook('aDBc_clean_scheduler', array($_POST['aDBc_delete_schedule']));
+			$aDBc_sanitized_schedule_name = sanitize_html_class($_POST['aDBc_delete_schedule']);
+			wp_clear_scheduled_hook('aDBc_clean_scheduler', array($aDBc_sanitized_schedule_name));
 
 			// We delete the item from database
 			$aDBc_schedules = get_option('aDBc_clean_schedule');
-			unset($aDBc_schedules[$_POST['aDBc_delete_schedule']]);
+			unset($aDBc_schedules[$aDBc_sanitized_schedule_name]);
 			update_option('aDBc_clean_schedule', $aDBc_schedules, "no");
 
 			$this->aDBc_message = __('The clean-up schedule deleted successfully!', 'advanced-database-cleaner');
-		}	
+		}
 
 		// Test if user wants to edit keep_last column for an item
 		if(isset($_POST['aDBc_keep_input'])){
-			$settings = get_option('aDBc_settings');
+
+			$sanitized_keep_input 			= sanitize_html_class($_POST['aDBc_keep_input']);
+			$sanitized_item_keep_to_edit 	= sanitize_html_class($_POST['aDBc_item_keep_to_edit']);
+			$settings 						= get_option('aDBc_settings');
+
 			if(empty($settings['keep_last'])){
-				$keep_value = array($_POST['aDBc_item_keep_to_edit'] => intval($_POST['aDBc_keep_input']));
+				$keep_value = array($sanitized_item_keep_to_edit => intval($sanitized_keep_input));
 			}else{
 				$keep_value = $settings['keep_last'];
-				$keep_value[$_POST['aDBc_item_keep_to_edit']] = intval($_POST['aDBc_keep_input']);
+				$keep_value[$sanitized_item_keep_to_edit] = intval($sanitized_keep_input);
 			}
 			$settings['keep_last'] = $keep_value;	
 			update_option('aDBc_settings', $settings, "no");
-			
+
 			// Test if the items belongs to a scheduled task. If so, show msg differently
 			$aDBc_schedules = get_option('aDBc_clean_schedule');
 			$aDBc_schedules = is_array($aDBc_schedules) ? $aDBc_schedules : array();			
 			$msg_keep_last = __("The 'keep last' value saved successfully!", "advanced-database-cleaner");
 			foreach($aDBc_schedules as $hook_name => $hook_params){
 				$lits_of_elements = $hook_params['elements_to_clean'];
-				if(in_array ($_POST['aDBc_item_keep_to_edit'], $lits_of_elements)){
+				if(in_array($sanitized_item_keep_to_edit, $lits_of_elements)){
 					$msg_keep_last = __("The 'keep last' value saved successfully!", "advanced-database-cleaner") . " <span style='color:orange'>" .  __("Please keep in mind that this will change the value of 'keep last' of your corresponding scheduled tasks as well!", "advanced-database-cleaner") . "</span>";
 					break;
 				}
@@ -68,8 +73,6 @@ class ADBC_Clean_DB_List extends WP_List_Table {
 
 			$this->aDBc_message = $msg_keep_last;
 		}
-		// yyy should this $wpdb be cleaned?
-		global $wpdb;
 
 		// Process bulk action if any before preparing elements to clean
 		$this->process_bulk_action();
@@ -238,7 +241,7 @@ class ADBC_Clean_DB_List extends WP_List_Table {
 
 	/** WP: Column cb for check box */
 	function column_cb($item) {
-		return sprintf('<input id="checkbox_%s" type="checkbox" name="aDBc_elements_to_clean[]" value="%s" />', $item['type'], $item['type']);
+		return sprintf('<input id="checkbox_%s" type="checkbox" name="aDBc_elements_to_process[]" value="%s" />', $item['type'], $item['type']);
 	}
 
 	/** WP: Get bulk actions */
@@ -262,16 +265,32 @@ class ADBC_Clean_DB_List extends WP_List_Table {
             $action = 'bulk-' . $this->_args['plural'];
             if (!wp_verify_nonce( $nonce, $action))
                 wp_die('Security check failed!');
-        }
+        }else{
+			// If $_POST['_wpnonce'] is not set, return
+			return;
+		}
+
+		// Check role
+		if(!current_user_can('administrator'))
+			wp_die('Security check failed!');
+
         $action = $this->current_action();
+
         if($action == 'clean'){
+
 			// If the user wants to clean the elements he/she selected
-			if(isset($_POST['aDBc_elements_to_clean'])){
-				// yyy should this $wpdb be cleaned?
-				global $wpdb;
-				foreach($_POST['aDBc_elements_to_clean'] as $element) {
-					aDBc_clean_all_elements_type($element);
+			if(isset($_POST['aDBc_elements_to_process'])){
+
+				// Create an array containing allowed elements_types to clean for security
+				$aDBc_allowed_types = array("revision", "auto-draft", "trash-posts", "moderated-comments", "spam-comments", "trash-comments", "pingbacks", "trackbacks", "orphan-postmeta", "orphan-commentmeta", "orphan-relationships", "orphan-usermeta", "orphan-termmeta", "expired-transients");
+
+				foreach($_POST['aDBc_elements_to_process'] as $element){
+					$aDBc_sanitized_element = sanitize_html_class($element);
+					if(in_array($aDBc_sanitized_element, $aDBc_allowed_types)){
+						aDBc_clean_all_elements_type($aDBc_sanitized_element);
+					}
 				}
+
 				// Update the message to show to the user
 				$this->aDBc_message = __('Selected elements successfully cleaned!', 'advanced-database-cleaner');
 			}
@@ -395,19 +414,6 @@ class ADBC_Clean_DB_List extends WP_List_Table {
 			</div>		
 			<div class="aDBc-clear-both"></div>
 		</div>
-		<div id="aDBc_dialog1" title="<?php _e('Cleaning...','advanced-database-cleaner'); ?>" class="aDBc-jquery-dialog">
-			<p class="aDBc-box-warning">
-				<?php echo __('You are about to clean some of your unused data. This operation is irreversible!','advanced-database-cleaner')  . "<span style='color:red'> " . __('Don\'t forget to make a backup of your database first.','advanced-database-cleaner') . "</span>" ; ?>
-			</p>
-			<p>
-				<?php _e('Are you sure to continue?','advanced-database-cleaner'); ?>
-			</p>
-		</div>		
-		<div id="aDBc_dialogx" title="<?php _e('Action required','advanced-database-cleaner'); ?>" class="aDBc-jquery-dialog">
-			<p class="aDBc-box-info">
-				<?php _e('Please select an action!','advanced-database-cleaner'); ?>
-			</p>
-		</div>	
 
 	<?php
 	}

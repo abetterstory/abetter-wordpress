@@ -11,7 +11,7 @@ class WPML_TP_Services {
 
 	/**
 	 * @param      $service_id
-	 * @param bool $custom_fields
+	 * @param bool       $custom_fields
 	 *
 	 * @throws WPMLTranslationProxyApiException
 	 */

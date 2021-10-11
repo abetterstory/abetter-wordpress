@@ -48,7 +48,7 @@ class WPML_Compatibility_Wordpress_Seo_Categories_Old implements IWPML_Action {
 	}
 
 	/**
-	 * @param $term_id
+	 * @param string|int $term_id
 	 *
 	 * @return false|WP_Term
 	 */

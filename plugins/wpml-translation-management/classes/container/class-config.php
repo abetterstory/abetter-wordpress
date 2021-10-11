@@ -2,16 +2,21 @@
 
 namespace WPML\TM\Container;
 
+use WPML\TM\ATE\ClonedSites\ApiCommunication;
+use WPML\TM\ATE\ClonedSites\Lock;
+use WPML\TM\ATE\Log\Storage;
+use WPML\TM\Notices\AteLockNotice;
+
 class Config {
 
-	static public function getDelegated() {
+	public static function getDelegated() {
 		return [
 			'\WPML_Translation_Job_Factory'    => 'wpml_tm_load_job_factory',
 			\WPML_TM_ATE_Job_Repository::class => 'wpml_tm_get_ate_jobs_repository',
 		];
 	}
 
-	static public function getSharedClasses() {
+	public static function getSharedClasses() {
 		return [
 			'\WPML_TM_AMS_API',
 			'\WPML_TM_ATE_API',
@@ -28,7 +33,11 @@ class Config {
 			'\WPML_TM_REST_AMS_Clients',
 			'\WPML_TM_AMS_Check_Website_ID',
 			'\WPML_Translation_Job_Factory',
-			\WPML\TM\ATE\Log\Storage::class,
+			\WPML_TM_Translation_Status::class,
+			Storage::class,
+			ApiCommunication::class,
+			Lock::class,
+			AteLockNotice::class,
 		];
 	}
 }

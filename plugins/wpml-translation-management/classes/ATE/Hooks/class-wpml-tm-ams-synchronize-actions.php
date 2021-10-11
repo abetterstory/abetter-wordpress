@@ -42,7 +42,7 @@ class WPML_TM_AMS_Synchronize_Actions implements IWPML_Action {
 		add_action( 'wpml_tm_ate_synchronize_managers', array( $this, 'synchronize_managers' ) );
 		add_action( 'wpml_tm_ate_enable_subscription', array( $this, 'enable_subscription' ) );
 		add_action( 'deleted_user', array( $this, 'user_changed' ) );
-		add_action( 'profile_update', array( $this,'user_changed' ) );
+		add_action( 'profile_update', array( $this, 'user_changed' ) );
 	}
 
 	/**
@@ -50,7 +50,7 @@ class WPML_TM_AMS_Synchronize_Actions implements IWPML_Action {
 	 */
 	public function synchronize_translators() {
 		$result = $this->ams_api->synchronize_translators( $this->ams_user_records->get_translators() );
-		if( ! is_wp_error( $result ) ) {
+		if ( ! is_wp_error( $result ) ) {
 			$this->translator_activation_records->update( isset( $result['translators'] ) ? $result['translators'] : array() );
 		}
 	}

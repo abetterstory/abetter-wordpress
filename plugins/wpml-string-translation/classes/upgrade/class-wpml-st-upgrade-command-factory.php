@@ -7,6 +7,7 @@
 
 use function WPML\Container\make;
 use WPML\ST\Upgrade\Command\RegenerateMoFilesWithStringNames;
+use WPML\ST\Upgrade\Command\MigrateMultilingualWidgets;
 
 /**
  * Class WPML_ST_Upgrade_Command_Factory
@@ -81,6 +82,9 @@ class WPML_ST_Upgrade_Command_Factory {
 					\WPML\ST\MO\Generate\Process\ProcessFactory::createStatus( $isBackground ),
 					\WPML\ST\MO\Generate\Process\ProcessFactory::createSingle( $isBackground )
 				);
+				break;
+			case MigrateMultilingualWidgets::class:
+				$result = new MigrateMultilingualWidgets();
 				break;
 			default:
 				throw new WPML_ST_Upgrade_Command_Not_Found_Exception( $class_name );

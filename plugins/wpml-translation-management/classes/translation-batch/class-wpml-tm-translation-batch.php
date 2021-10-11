@@ -106,12 +106,15 @@ class WPML_TM_Translation_Batch {
 	 * @return array
 	 */
 	public function get_remote_target_languages() {
-		return array_values( array_filter(
-			$this->get_target_languages(),
-			array(
-				$this,
-				'is_remote_target_language'
-			) ) );
+		return array_values(
+			array_filter(
+				$this->get_target_languages(),
+				array(
+					$this,
+					'is_remote_target_language',
+				)
+			)
+		);
 	}
 
 	private function is_remote_target_language( $lang ) {
@@ -124,7 +127,7 @@ class WPML_TM_Translation_Batch {
 	public function get_batch_options() {
 		return array(
 			'basket_name'   => $this->get_basket_name(),
-			'deadline_date' => $this->get_deadline() ? $this->get_deadline()->format( 'Y-m-d' ) : ''
+			'deadline_date' => $this->get_deadline() ? $this->get_deadline()->format( 'Y-m-d' ) : '',
 		);
 	}
 }

@@ -7,7 +7,7 @@ class WPML_Translator_Settings extends WPML_TM_Translators_View implements WPML_
 	}
 
 	public function get_template_paths() {
-		return array ();
+		return array();
 	}
 
 }

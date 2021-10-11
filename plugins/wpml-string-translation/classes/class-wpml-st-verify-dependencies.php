@@ -13,10 +13,13 @@ class WPML_ST_Verify_Dependencies {
 	 */
 	function verify_wpml( $wpml_core_version ) {
 		if ( false === $wpml_core_version ) {
-			add_action( 'admin_notices', array(
-				$this,
-				'notice_no_wpml',
-			) );
+			add_action(
+				'admin_notices',
+				array(
+					$this,
+					'notice_no_wpml',
+				)
+			);
 		} elseif ( version_compare( $wpml_core_version, '3.5', '<' ) ) {
 			add_action( 'admin_notices', array( $this, 'wpml_is_outdated' ) );
 		} else {

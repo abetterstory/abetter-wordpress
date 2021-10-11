@@ -23,8 +23,8 @@ class WPML_Media_Menus {
 	 * WPML_Media_Menus constructor.
 	 *
 	 * @param WPML_Twig_Template_Loader $template_service
-	 * @param SitePress $sitepress
-	 * @param wpdb $wpdb
+	 * @param SitePress                 $sitepress
+	 * @param wpdb                      $wpdb
 	 */
 	public function __construct( WPML_Twig_Template_Loader $template_service, SitePress $sitepress, wpdb $wpdb, WPML_Admin_Pagination $pagination = null ) {
 		$this->template_service = $template_service;
@@ -55,15 +55,21 @@ class WPML_Media_Menus {
 		wp_enqueue_style( OTGS_Assets_Handles::POPOVER_TOOLTIP );
 		wp_enqueue_script( OTGS_Assets_Handles::POPOVER_TOOLTIP );
 		wp_enqueue_style( 'wpml-media', $wpml_media_url . '/res/css/media-translation.css', array(), $wpml_media_version );
-		wp_enqueue_script( 'wpml-media', $wpml_media_url . '/res/js/media-translation-popup.js', array(
-			'jquery',
-			'jquery-ui-dialog'
-		), $wpml_media_version, true );
+		wp_enqueue_script(
+			'wpml-media',
+			$wpml_media_url . '/res/js/media-translation-popup.js',
+			array(
+				'jquery',
+				'jquery-ui-dialog',
+			),
+			$wpml_media_version,
+			true
+		);
 		$wpml_media_popup_strings = array(
 			'title'         => esc_js( __( 'Media Translation', 'wpml-media' ) ),
 			'cancel'        => esc_js( __( 'Cancel', 'wpml-media' ) ),
 			'save'          => esc_js( __( 'Save media translation', 'wpml-media' ) ),
-			'status_labels' => WPML_Media_Translations_UI::get_translation_status_labels()
+			'status_labels' => WPML_Media_Translations_UI::get_translation_status_labels(),
 		);
 		wp_localize_script( 'wpml-media', 'wpml_media_popup', $wpml_media_popup_strings );
 		wp_enqueue_script( 'wpml-media-batch-url-translation', $wpml_media_url . '/res/js/batch-url-translation.js', array( 'jquery' ), $wpml_media_version, true );

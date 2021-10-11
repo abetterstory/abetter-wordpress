@@ -78,7 +78,7 @@ class WPML_TM_ICL20_Migration_Status {
 	private function get_preferred_service() {
 		$installer_settings = $this->get_installer_settings();
 		if ( isset( $installer_settings['repositories']['wpml']['ts_info']['preferred'] )
-		     && 'clear' !== $installer_settings['repositories']['wpml']['ts_info']['preferred'] ) {
+			 && 'clear' !== $installer_settings['repositories']['wpml']['ts_info']['preferred'] ) {
 			return $installer_settings['repositories']['wpml']['ts_info']['preferred'];
 		}
 
@@ -93,7 +93,7 @@ class WPML_TM_ICL20_Migration_Status {
 			$raw_settings = get_option( 'wp_installer_settings', null );
 
 			if ( $raw_settings ) {
-				if ( is_array( $raw_settings ) || empty( $raw_settings ) ) { //backward compatibility 1.1
+				if ( is_array( $raw_settings ) || empty( $raw_settings ) ) { // backward compatibility 1.1
 					$this->installer_settings = $raw_settings;
 				} else {
 					$has_gz_support = function_exists( 'gzuncompress' ) && function_exists( 'gzcompress' );

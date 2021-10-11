@@ -11,6 +11,6 @@ interface WPML_Log {
 	public function save( array $data );
 
 	public function clear();
-	
+
 	public function is_empty();
 }

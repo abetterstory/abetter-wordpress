@@ -1,64 +1,22 @@
 <div class="wpml-wizard-step wpml-translation-editor-step js-wpml-translation-editor-step">
+    <div class="wpml-translation-editor-step__ate">
+        <h2>An Advanced Translation Editor</h2>
 
-    <h2 class="text-center translation-editor-title">{{ strings.title }}</h2>
+        <p>WPML’s Advanced Translation Editor allows you and your translators to translate faster, easier and more accurately. The editor includes key features like:</p>
+        <ul>
+            <li>Convenient translation for page-builder designs</li>
+            <li>Automatic translation</li>
+            <li>Translation memory and glossary</li>
+            <li>A modern translation interface</li>
+        </ul>
 
-    <table class="translation-editor-table">
-        <thead>
-        <tr>
-            <td class="translation-editor-hidden-cell"></td>
-            {% for option,data in strings.options %}
-                <th>
-                    {{ data.heading }}
-                </th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for feature in strings.features %}
-            <tr>
-                <th scope="row"><span>{{ feature.label }}</span></th>
-                {% for option in strings.options|keys %}
-                    <td>
-                        {% set optionValue = (feature[option] is defined) ? feature[option] : false %}
-                        {% include 'feature-option.twig' with {'value': optionValue} %}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-
-        <tr class="translation-editor-select-row">
-            <td class="translation-editor-hidden-cell"></td>
-
-            {% for option,data in strings.options %}
-                <td>
-                    <span class="spinner" />
-                    <span>
-                        <input type="radio"
-                               name="editor-type"
-                               id="editor-type-{{ option }}"
-                               value="{{ editor_types[option] }}"
-                               class="js-{{ option }}-editor"
-                               {% if editor_types[option] is same as(current_mode) %} checked {% endif %}
-                        />
-                        <label for="editor-type-{{ option }}">{{ strings.select }}</label>
-                    </span>
-                    {% if data.extra_template is defined %}
-                        {% include data.extra_template.template with data.extra_template.model %}
-                    {% endif %}
-                </td>
-            {% endfor %}
-
-
-        </tr>
-        </tbody>
-    </table>
-
-    <div class="wpml-wizard-buttons-container">
-        <button class="button button-secondary alignleft js-go-back">&laquo; {{ strings.go_back }}</button>
-        <button class="button wpml-button button-lg alignright js-continue" disabled="disabled">{{ strings.continue }}
-            &raquo;
-        </button>
+        <div class="wpml-translation-editor-step__ate-cta">
+            <button>Continue</button>
+            <span class="spinner" ></span>
+            <span class="error"></span>
+        </div>
     </div>
-
+    <div class="wpml-translation-editor-step__classic">
+        <p>Prefer the old translation editor? <a href="#">Switch to WPML’s Classic Translation Editor</a><span class="spinner" ></span></p>
+    </div>
 </div>

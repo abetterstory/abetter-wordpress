@@ -9,8 +9,8 @@ use WPML\Core\Twig_Environment;
 class WPML_TM_Unsent_Jobs_Notice {
 
 	const OPT_JOBS_NOT_NOTIFIED = '_wpml_jobs_not_notified';
-	const NOTICE_ID = 'job-not-notified';
-	const NOTICE_GROUP_ID = 'tm-jobs-notification';
+	const NOTICE_ID             = 'job-not-notified';
+	const NOTICE_GROUP_ID       = 'tm-jobs-notification';
 
 	/**
 	 * @var string
@@ -30,7 +30,7 @@ class WPML_TM_Unsent_Jobs_Notice {
 	/**
 	 * WPML_TM_Unsent_Jobs_Notice constructor.
 	 *
-	 * @param WPML_WP_API $wp_api
+	 * @param WPML_WP_API                              $wp_api
 	 * @param WPML_TM_Unsent_Jobs_Notice_Template|null $notice_template
 	 */
 	public function __construct( WPML_WP_API $wp_api, WPML_TM_Unsent_Jobs_Notice_Template $notice_template = null ) {
@@ -58,7 +58,7 @@ class WPML_TM_Unsent_Jobs_Notice {
 			$twig         = new Twig_Environment( $twig_loader, $environment_args );
 			$twig_service = new WPML_Twig_Template( $twig );
 
-			$this->notice_template = new WPML_TM_Unsent_Jobs_Notice_Template( $twig_service, $this->get_jobs() );
+			$this->notice_template = new WPML_TM_Unsent_Jobs_Notice_Template( $twig_service );
 		}
 
 		return $this->notice_template;
@@ -110,15 +110,15 @@ class WPML_TM_Unsent_Jobs_Notice {
 	 * @param array $args
 	 */
 	public function add_job( $args ) {
-		$job_id = $args['job']->get_id();
+		$job_id    = $args['job']->get_id();
 		$lang_from = $args['job']->get_source_language_code( true );
-		$lang_to = $args['job']->get_language_code( true );
+		$lang_to   = $args['job']->get_language_code( true );
 
 		$jobs = $this->get_jobs();
 
 		if ( ! wp_filter_object_list( $jobs, array( 'job_id' => $job_id ) ) ) {
 			$jobs[] = array(
-				'job_id'       => $job_id,
+				'job_id'    => $job_id,
 				'lang_from' => $lang_from,
 				'lang_to'   => $lang_to,
 			);
@@ -131,13 +131,13 @@ class WPML_TM_Unsent_Jobs_Notice {
 	 * @param array $args
 	 */
 	public function remove_job( $args ) {
-		$job_id = $args['job']->get_id();
+		$job_id      = $args['job']->get_id();
 		$unsent_jobs = $this->get_jobs();
 
 		if ( $unsent_jobs ) {
 			foreach ( $unsent_jobs as $key => $unsent_job ) {
 				if ( $unsent_job['job_id'] === $job_id ) {
-					unset( $unsent_jobs[$key] );
+					unset( $unsent_jobs[ $key ] );
 				}
 			}
 		}

@@ -10,9 +10,7 @@
 		{%- for code, language in languages -%}
 			<li class="{{ language.css_classes }} wpml-ls-item-legacy-list-horizontal">
 				<a href="{{ language.url }}" class="{{ css_classes_link }}">
-					{%- if language.flag_url -%}
-						<img class="{{ css_classes_flag }}" src="{{ language.flag_url }}" alt="{{ language.flag_alt }}">
-					{%- endif -%}
+                    {% include 'flag.twig' %}
 
 					{%- if language.is_current and (language.native_name or language.display_name)  -%}
 

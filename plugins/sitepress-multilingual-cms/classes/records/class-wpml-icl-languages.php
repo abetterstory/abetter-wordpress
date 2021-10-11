@@ -28,20 +28,26 @@ class WPML_ICL_Languages extends WPML_WPDB_User {
 	public function exists() {
 
 		return (bool) $this->wpdb->get_var(
-			$this->wpdb->prepare( " SELECT code
+			$this->wpdb->prepare(
+				" SELECT code
 									FROM {$this->wpdb->prefix}{$this->table}
 									WHERE code= %s LIMIT 1",
-				$this->code() ) );
+				$this->code()
+			)
+		);
 	}
 
 	public function code() {
 		if ( ! $this->code ) {
 			$this->code = $this->wpdb->get_var(
-				$this->wpdb->prepare( " SELECT code
+				$this->wpdb->prepare(
+					" SELECT code
 										FROM {$this->wpdb->prefix}{$this->table}
 										WHERE default_locale=%s
 										LIMIT 1",
-					$this->default_locale ) );
+					$this->default_locale
+				)
+			);
 		}
 
 		return $this->code;

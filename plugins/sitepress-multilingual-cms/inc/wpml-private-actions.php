@@ -16,10 +16,10 @@ function new_duplicated_terms_filter( $post_ids, $duplicates_only = true ) {
 
 		foreach ( $taxonomies as $taxonomy ) {
 			$text .= '<p><a href="admin.php?page='
-			         . WPML_PLUGIN_FOLDER . '/menu/taxonomy-translation.php&taxonomy='
-			         . $taxonomy . '&sync=1">' . get_taxonomy_labels(
-				         get_taxonomy( $taxonomy )
-			         )->name . '</a></p>';
+					 . WPML_PLUGIN_FOLDER . '/menu/taxonomy-translation.php&taxonomy='
+					. $taxonomy . '&sync=1">' . get_taxonomy_labels(
+						get_taxonomy( $taxonomy )
+					)->name . '</a></p>';
 		}
 
 		$text .= '<p align="right"><a target="_blank" href="https://wpml.org/documentation/getting-started-guide/translating-post-categories-and-custom-taxonomies/#synchronizing-hierarchical-taxonomies">Help about translating taxonomy >></a></p>';
@@ -68,9 +68,13 @@ function wpml_get_admin_notices() {
 
 function wpml_validate_language_domain_action() {
 
-	if ( wp_verify_nonce( filter_input( INPUT_POST, 'nonce' ),
-		filter_input( INPUT_POST,
-			'action' ) ) ) {
+	if ( wp_verify_nonce(
+		filter_input( INPUT_POST, 'nonce' ),
+		filter_input(
+			INPUT_POST,
+			'action'
+		)
+	) ) {
 		global $sitepress;
 		$http                    = new WP_Http();
 		$wp_api                  = $sitepress->get_wp_api();

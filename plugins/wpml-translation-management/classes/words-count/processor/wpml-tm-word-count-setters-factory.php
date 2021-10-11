@@ -13,15 +13,11 @@ class WPML_TM_Word_Count_Setters_Factory {
 
 		$calculator = new WPML_TM_Word_Calculator( new WPML_PHP_Functions() );
 
-		$tm_settings = $sitepress->get_setting( 'translation-management', array() );
-		$cf_settings = isset( $tm_settings['custom_fields_translation'] )
-			? $tm_settings['custom_fields_translation'] : array();
-
 		$active_langs = array_keys( $sitepress->get_active_languages() );
 
 		$post_calculators = array(
 			new WPML_TM_Word_Calculator_Post_Object( $calculator, new WPML_TM_Word_Calculator_Post_Packages( $records ) ),
-			new WPML_TM_Word_Calculator_Post_Custom_Fields( $calculator, $cf_settings ),
+			new WPML_TM_Word_Calculator_Post_Custom_Fields( $calculator, \WPML\TM\Settings\Repository::getCustomFields() ),
 		);
 
 		$setters = array(
@@ -29,7 +25,7 @@ class WPML_TM_Word_Count_Setters_Factory {
 		);
 
 		if ( class_exists( 'WPML_ST_Package_Factory' ) ) {
-			$setters['string'] = new WPML_TM_Word_Count_Set_String( $records, $calculator );
+			$setters['string']  = new WPML_TM_Word_Count_Set_String( $records, $calculator );
 			$setters['package'] = new WPML_TM_Word_Count_Set_Package( new WPML_ST_Package_Factory(), $records, $active_langs );
 		}
 

@@ -6,7 +6,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 class WPML_TM_Translate_Independently {
 
-	/**	@var TranslationManagement $translation_management */
+	/** @var TranslationManagement $translation_management */
 	private $translation_management;
 
 	/** @var WPML_Translation_Basket $translation_basket */

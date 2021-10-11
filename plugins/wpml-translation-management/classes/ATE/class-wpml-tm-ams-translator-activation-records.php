@@ -15,11 +15,11 @@ class WPML_TM_AMS_Translator_Activation_Records {
 		return $this->is_user_activated( $this->user_factory->create_by_email( $user_email ) );
 	}
 
-	public function  is_current_user_activated() {
+	public function is_current_user_activated() {
 		return $this->is_user_activated( $this->user_factory->create_current() );
 	}
 
-	public function  is_user_activated( WPML_User $user ) {
+	public function is_user_activated( WPML_User $user ) {
 		return (bool) $user->get_option( self::USER_META );
 	}
 

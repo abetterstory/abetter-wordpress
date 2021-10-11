@@ -83,7 +83,7 @@ class WPML_TM_Rest_Jobs_View_Model {
 			'sent_date'              => $job->get_sent_date()->format( 'Y-m-d' ),
 			'deadline'               => $job->get_deadline() ? $job->get_deadline()->format( 'Y-m-d' ) : '',
 			'ts_status'              => (string) $job->get_ts_status(),
-			'element'                => $this->element_info->get( $job->get_original_element_id(), $job->get_type() ),
+			'element'                => $this->element_info->get( $job ),
 			'translator_name'        => $job->get_translator_id() ? $this->translator_name->get( $job->get_translator_id() ) : '',
 			'progress'               => $this->progress->get( $job ),
 			'batch' => array(

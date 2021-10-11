@@ -2,7 +2,7 @@
 
 class WPML_Translation_Jobs_Migration {
 
-	const MIGRATION_FIX_LOG_KEY       = 'wpml_fixing_migration_log';
+	const MIGRATION_FIX_LOG_KEY = 'wpml_fixing_migration_log';
 
 	private $jobs_repository;
 	private $cms_id_builder;
@@ -34,7 +34,7 @@ class WPML_Translation_Jobs_Migration {
 			$tp_jobs = $this->get_tp_jobs( $mapped_jobs );
 
 			foreach ( $jobs as $job ) {
-				$cms_id = array_key_exists( $job->get_id(), $mapped_jobs ) ? $mapped_jobs[ $job->get_id() ] : '';
+				$cms_id                      = array_key_exists( $job->get_id(), $mapped_jobs ) ? $mapped_jobs[ $job->get_id() ] : '';
 				list( $tp_id, $revision_id ) = $this->get_tp_id_revision_id( $cms_id, $tp_jobs );
 
 				if ( $recover_status ) {
@@ -60,8 +60,8 @@ class WPML_Translation_Jobs_Migration {
 
 	/**
 	 * @param WPML_TM_Post_Job_Entity $job
-	 * @param int                        $tp_id
-	 * @param int                        $revision_id
+	 * @param int                     $tp_id
+	 * @param int                     $revision_id
 	 */
 	private function recovery_mode( WPML_TM_Post_Job_Entity $job, $tp_id, $revision_id ) {
 		if ( $tp_id !== $job->get_tp_id() ) {
@@ -74,8 +74,8 @@ class WPML_Translation_Jobs_Migration {
 
 	/**
 	 * @param WPML_TM_Post_Job_Entity $job
-	 * @param int                        $tp_id
-	 * @param int                        $revision_id
+	 * @param int                     $tp_id
+	 * @param int                     $revision_id
 	 */
 	private function first_migration_mode( WPML_TM_Post_Job_Entity $job, $tp_id, $revision_id ) {
 		$this->fix_job_fields( $tp_id, $revision_id, false, $job->get_id() );
@@ -102,7 +102,7 @@ class WPML_Translation_Jobs_Migration {
 
 	/**
 	 * @param WPML_TM_Post_Job_Entity $job
-	 * @param int $new_tp_id
+	 * @param int                     $new_tp_id
 	 *
 	 * @return bool
 	 */
@@ -128,17 +128,17 @@ class WPML_Translation_Jobs_Migration {
 	}
 
 	/**
-	 * @param int $cms_id
+	 * @param int   $cms_id
 	 * @param array $tp_jobs
 	 *
 	 * @return array
 	 */
 	private function get_tp_id_revision_id( $cms_id, $tp_jobs ) {
 		$result = array( 0, 0 );
-		if ( isset ( $tp_jobs[ $cms_id ] ) ) {
+		if ( isset( $tp_jobs[ $cms_id ] ) ) {
 			$result = array(
 				$tp_jobs[ $cms_id ]->id,
-				$tp_jobs[ $cms_id ]->translation_revision
+				$tp_jobs[ $cms_id ]->translation_revision,
 			);
 		}
 
@@ -146,13 +146,16 @@ class WPML_Translation_Jobs_Migration {
 	}
 
 	/**
-	 * @param int $tp_id
-	 * @param int $revision_id
+	 * @param int       $tp_id
+	 * @param int       $revision_id
 	 * @param int|false $status
-	 * @param int $job_id
+	 * @param int       $job_id
 	 */
 	private function fix_job_fields( $tp_id, $revision_id, $status, $job_id ) {
-		$new_data = array( 'tp_id' => $tp_id, 'tp_revision' => $revision_id );
+		$new_data = array(
+			'tp_id'       => $tp_id,
+			'tp_revision' => $revision_id,
+		);
 
 		if ( $status ) {
 			$new_data['status'] = $status;

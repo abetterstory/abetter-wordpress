@@ -40,13 +40,12 @@ class Utility {
 
 				return $lang;
 			};
-			$targetLanguages       = wpml_collect( $this->sitepress->get_active_languages() )
+			$targetLanguages        = wpml_collect( $this->sitepress->get_active_languages() )
 				->reject( $notBasketLanguage )
 				->reject( $isBasketSourceLanguage )
 				->map( $addFlag )
 				->toArray();
 		}
-
 
 		return $targetLanguages;
 	}
@@ -61,7 +60,7 @@ class Utility {
 			return false;
 		}
 
-		$translators        = $this->translatorRecords->get_users_with_languages(
+		$translators = $this->translatorRecords->get_users_with_languages(
 			\TranslationProxy_Basket::get_source_language(),
 			array_keys( $targetLanguages ),
 			false

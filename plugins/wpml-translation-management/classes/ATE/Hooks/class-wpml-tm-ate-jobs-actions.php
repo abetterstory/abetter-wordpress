@@ -1,16 +1,18 @@
 <?php
 
 use WPML\TM\ATE\JobRecords;
+use WPML\FP\Fns;
+use WPML\FP\Obj;
 
 /**
  * @author OnTheGo Systems
  */
 class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
-	const RESPONSE_ATE_NOT_ACTIVE_ERROR = 403;
+	const RESPONSE_ATE_NOT_ACTIVE_ERROR     = 403;
 	const RESPONSE_ATE_DUPLICATED_SOURCE_ID = 417;
-	const RESPONSE_ATE_UNEXPECTED_ERROR = 500;
+	const RESPONSE_ATE_UNEXPECTED_ERROR     = 500;
 
-	const RESPONSE_ATE_ERROR_NOTICE_ID = 'ate-update-error';
+	const RESPONSE_ATE_ERROR_NOTICE_ID    = 'ate-update-error';
 	const RESPONSE_ATE_ERROR_NOTICE_GROUP = 'default';
 
 	/**
@@ -83,7 +85,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	}
 
 	public function handle_messages() {
-		if ( $this->current_screen->id_ends_with( WPML_TM_FOLDER . '/menu/translations-queue') ) {
+		if ( $this->current_screen->id_ends_with( WPML_TM_FOLDER . '/menu/translations-queue' ) ) {
 
 			if ( array_key_exists( 'message', $_GET ) ) {
 				if ( array_key_exists( 'ate_job_id', $_GET ) ) {
@@ -104,7 +106,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	}
 
 	/**
-	 * @param int $job_id
+	 * @param int    $job_id
 	 * @param string $translation_service
 	 *
 	 * @throws \InvalidArgumentException
@@ -122,12 +124,13 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 * @throws \RuntimeException
 	 */
 	public function added_translation_jobs( array $jobs ) {
-		if ( ! $jobs || ! array_key_exists( 'local', $jobs ) || ! $jobs['local'] ) {
+		$oldEditor = wpml_tm_load_old_jobs_editor();
+		$job_ids   = Fns::reject( [ $oldEditor, 'shouldStickToWPMLEditor' ], Obj::propOr( [], 'local', $jobs ) );
+
+		if ( ! $job_ids ) {
 			return;
 		}
 
-		/** @var array $job_ids */
-		$job_ids        = $jobs['local'];
 		$jobs           = [];
 		$rid_to_job_map = [];
 		foreach ( $job_ids as $job_id ) {
@@ -153,7 +156,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 		if ( $response_jobs ) {
 			if ( is_object( $response_jobs ) ) {
-				$response_jobs = json_decode( wp_json_encode( $response_jobs, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ), true );
+				$response_jobs = json_decode( wp_json_encode( $response_jobs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), true );
 			}
 
 			$response_jobs = $this->map_response_jobs( $response_jobs, $rid_to_job_map );
@@ -162,7 +165,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 			foreach ( $response_jobs as $wpml_job_id => $ate_job_id ) {
 				$this->ate_jobs->store( $wpml_job_id, array( JobRecords::FIELD_ATE_JOB_ID => $ate_job_id ) );
-				wpml_tm_load_old_jobs_editor()->set( $wpml_job_id, WPML_TM_Editors::ATE );
+				$oldEditor->set( $wpml_job_id, WPML_TM_Editors::ATE );
 			}
 
 			$message = __( '%1$s jobs added to the Advanced Translation Editor.', 'wpml-translation-management' );
@@ -170,8 +173,12 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 		} else {
 			$this->add_message(
 				'error',
-				__( 'Jobs could not be created in Advanced Translation Editor. Please try again or contact the WPML support for help.',
-					'wpml-translation-management' ), 'wpml_tm_ate_create_job' );
+				__(
+					'Jobs could not be created in Advanced Translation Editor. Please try again or contact the WPML support for help.',
+					'wpml-translation-management'
+				),
+				'wpml_tm_ate_create_job'
+			);
 		}
 	}
 
@@ -252,8 +259,8 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	}
 
 	/**
-	 * @param string $default_url
-	 * @param int $job_id
+	 * @param string      $default_url
+	 * @param int         $job_id
 	 * @param null|string $return_url
 	 *
 	 * @return string
@@ -269,7 +276,8 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 							'page'           => WPML_TM_FOLDER . '/menu/translations-queue.php',
 							'ate-return-job' => $job_id,
 						),
-						admin_url( '/admin.php' ) );
+						admin_url( '/admin.php' )
+					);
 				}
 				$ate_job_url = $this->ate_api->get_editor_url( $ate_job_id, $return_url );
 				if ( $ate_job_url && ! is_wp_error( $ate_job_url ) ) {
@@ -283,7 +291,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 	/**
 	 * @param $ignore
-	 * @param array $translation_jobs
+	 * @param array  $translation_jobs
 	 *
 	 * @return array
 	 */
@@ -297,9 +305,9 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 	public function update_jobs_on_current_screen() {
 		$load_ate_jobs_synchronization = $this->is_edit_list_page_of_a_translatable_type() ||
-		                                 $this->is_edit_page_of_a_translatable_type() ||
-		                                 WPML_TM_Page::is_dashboard() ||
-		                                 WPML_TM_Page::is_translation_queue();
+										 $this->is_edit_page_of_a_translatable_type() ||
+										 WPML_TM_Page::is_dashboard() ||
+										 WPML_TM_Page::is_translation_queue();
 
 		if ( apply_filters( 'wpml_tm_load_ate_jobs_synchronization', $load_ate_jobs_synchronization ) ) {
 			$this->job_sync_script_loader->load();
@@ -366,7 +374,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 				try {
 					$this->check_response_error( $response );
-				} catch( RuntimeException $e ){
+				} catch ( RuntimeException $e ) {
 					$this->add_update_error_notice( $e->getMessage() );
 				}
 
@@ -466,7 +474,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 			return true;
 		} catch ( Exception $ex ) {
 			if ( ! $ignore_errors ) {
-				throw new $ex;
+				throw new $ex();
 			}
 
 			return false;
@@ -489,32 +497,35 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 					switch ( (int) $code ) {
 						case self::RESPONSE_ATE_NOT_ACTIVE_ERROR:
-							$wp_admin_url = admin_url( 'admin.php' );
-							$mcsetup_page = add_query_arg( array(
-								'page' => WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_SETTINGS,
-								'sm'   => 'mcsetup',
-							), $wp_admin_url );
+							$wp_admin_url  = admin_url( 'admin.php' );
+							$mcsetup_page  = add_query_arg(
+								array(
+									'page' => WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_SETTINGS,
+									'sm'   => 'mcsetup',
+								),
+								$wp_admin_url
+							);
 							$mcsetup_page .= '#ml-content-setup-sec-1';
 
 							$resend_link = '<a href="' . $mcsetup_page . '">'
-							               . esc_html__( 'Resend that email', 'wpml-translation-management' )
-							               . '</a>';
-							$message     .= '<p>'
-							                . esc_html__( 'WPML cannot send these documents to translation because the Advanced Translation Editor is not fully set-up yet.', 'wpml-translation-management' )
-							                . '</p><p>'
-							                . esc_html__( 'Please open the confirmation email that you received and click on the link inside it to confirm your email.', 'wpml-translation-management' )
-							                . '</p><p>'
-							                . $resend_link
-							                . '</p>';
+										   . esc_html__( 'Resend that email', 'wpml-translation-management' )
+										   . '</a>';
+							$message    .= '<p>'
+											. esc_html__( 'WPML cannot send these documents to translation because the Advanced Translation Editor is not fully set-up yet.', 'wpml-translation-management' )
+											. '</p><p>'
+											. esc_html__( 'Please open the confirmation email that you received and click on the link inside it to confirm your email.', 'wpml-translation-management' )
+											. '</p><p>'
+											. $resend_link
+											. '</p>';
 							break;
 						case self::RESPONSE_ATE_DUPLICATED_SOURCE_ID:
 						case self::RESPONSE_ATE_UNEXPECTED_ERROR:
 						default:
 							$message = '<p>'
-							           . __( 'Advanced Translation Editor error:', 'wpml-translation-management' )
-							           . '</p><p>'
-							           . $error_data[0]['message']
-							           . '</p>';
+									   . __( 'Advanced Translation Editor error:', 'wpml-translation-management' )
+									   . '</p><p>'
+									   . $error_data[0]['message']
+									   . '</p>';
 					}
 
 					$message = '<p>' . $message . '</p>';
@@ -567,7 +578,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 */
 	private function is_edit_list_page_of_a_translatable_type() {
 		return $this->current_screen->is_edit_posts_list()
-		       && $this->sitepress->is_translated_post_type( $this->current_screen->get_post_type() );
+			   && $this->sitepress->is_translated_post_type( $this->current_screen->get_post_type() );
 	}
 
 	/**
@@ -575,7 +586,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 */
 	private function is_edit_page_of_a_translatable_type() {
 		return $this->current_screen->is_edit_post()
-		       && $this->sitepress->is_translated_post_type( $this->current_screen->get_post_type() );
+			   && $this->sitepress->is_translated_post_type( $this->current_screen->get_post_type() );
 	}
 
 	/**

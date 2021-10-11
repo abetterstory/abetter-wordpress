@@ -2,7 +2,7 @@
 
 class WPML_TM_Translation_Status_Display {
 
-	private $statuses = array();
+	private $statuses        = array();
 	private $stats_preloaded = false;
 
 	/**
@@ -30,17 +30,21 @@ class WPML_TM_Translation_Status_Display {
 	 */
 	protected $sitepress;
 
-	private $original_links = array();
+	private $original_links  = array();
 	private $tm_editor_links = array();
+	/**
+	 * @var \wpdb
+	 */
+	private $wpdb;
 
 	/**
 	 * WPML_TM_Translation_Status_Display constructor.
 	 *
-	 * @param wpdb $wpdb
-	 * @param SitePress $sitepress
-	 * @param WPML_Post_Status $status_helper
+	 * @param wpdb                         $wpdb
+	 * @param SitePress                    $sitepress
+	 * @param WPML_Post_Status             $status_helper
 	 * @param WPML_Translation_Job_Factory $job_factory
-	 * @param WPML_TM_API $tm_api
+	 * @param WPML_TM_API                  $tm_api
 	 */
 	public function __construct(
 		wpdb $wpdb,
@@ -59,18 +63,33 @@ class WPML_TM_Translation_Status_Display {
 
 	public function init() {
 		add_action( 'wpml_cache_clear', array( $this, 'init' ), 11, 0 );
-		add_filter( 'wpml_css_class_to_translation', array(
-			$this,
-			'filter_status_css_class'
-		), 10, 4 );
-		add_filter( 'wpml_link_to_translation', array(
-			$this,
-			'filter_status_link'
-		), 10, 4 );
-		add_filter( 'wpml_text_to_translation', array(
-			$this,
-			'filter_status_text'
-		), 10, 4 );
+		add_filter(
+			'wpml_css_class_to_translation',
+			array(
+				$this,
+				'filter_status_css_class',
+			),
+			10,
+			4
+		);
+		add_filter(
+			'wpml_link_to_translation',
+			array(
+				$this,
+				'filter_status_link',
+			),
+			10,
+			4
+		);
+		add_filter(
+			'wpml_text_to_translation',
+			array(
+				$this,
+				'filter_status_text',
+			),
+			10,
+			4
+		);
 
 		add_filter( 'wpml_post_status_display_html', array( $this, 'add_links_data_attributes' ), 10, 4 );
 
@@ -122,7 +141,7 @@ class WPML_TM_Translation_Status_Display {
 		if ( $this->is_in_progress( $trid, $lang ) ) {
 			$css_class = 'otgs-ico-in-progress';
 		} elseif ( $this->is_in_basket( $trid, $lang )
-		           || ( ! $this->is_lang_pair_allowed( $lang, $source_lang, $post_id ) && $element_id )
+				   || ( ! $this->is_lang_pair_allowed( $lang, $source_lang, $post_id ) && $element_id )
 		) {
 			$css_class .= ' otgs-ico-edit-disabled';
 		} elseif ( ! $this->is_lang_pair_allowed( $lang, $source_lang, $post_id ) && ! $element_id ) {
@@ -169,9 +188,9 @@ class WPML_TM_Translation_Status_Display {
 
 	/**
 	 * @param string $link
-	 * @param int $post_id
+	 * @param int    $post_id
 	 * @param string $lang
-	 * @param int $trid
+	 * @param int    $trid
 	 *
 	 * @return string
 	 */
@@ -212,6 +231,12 @@ class WPML_TM_Translation_Status_Display {
 
 			if ( $is_local_job_in_progress || $translation_exists ) {
 				$job_id = $this->job_factory->job_id_by_trid_and_lang( $trid, $lang );
+				if ( $job_id && ! is_admin() ) {
+					$job_object = $this->job_factory->get_translation_job( $job_id, false, 0, true );
+					if ( $job_object && ! $job_object->user_can_translate( wp_get_current_user() ) ) {
+						return $link;
+					}
+				}
 			}
 
 			if ( $job_id ) {
@@ -238,29 +263,29 @@ class WPML_TM_Translation_Status_Display {
 	 *
 	 * @return string
 	 */
-	public function add_links_data_attributes( $html, $post_id, $lang, $trid  ) {
+	public function add_links_data_attributes( $html, $post_id, $lang, $trid ) {
 		if ( ! isset(
-				$this->original_links[ $post_id ][ $lang ][ $trid ],
-				$this->tm_editor_links[ $post_id ][ $lang ][ $trid ]
-			)
+			$this->original_links[ $post_id ][ $lang ][ $trid ],
+			$this->tm_editor_links[ $post_id ][ $lang ][ $trid ]
+		)
 		) {
 			return $html;
 		}
 
-		$data_attributes = 'data-original-link="' . $this->original_links[ $post_id ][ $lang ][ $trid ] . '"';
+		$data_attributes  = 'data-original-link="' . $this->original_links[ $post_id ][ $lang ][ $trid ] . '"';
 		$data_attributes .= ' data-tm-editor-link="' . $this->tm_editor_links[ $post_id ][ $lang ][ $trid ] . '"';
 		if ( isset( $this->statuses[ $trid ][ $lang ]['job_id'] ) ) {
 			$data_attributes .= ' data-tm-job-id="' . esc_attr( $this->statuses[ $trid ][ $lang ]['job_id'] ) . '"';
 		}
 
-		return str_replace( '<a ', '<a ' . $data_attributes . ' ', $html  );
+		return str_replace( '<a ', '<a ' . $data_attributes . ' ', $html );
 	}
 
 	private function get_link_for_new_job( $trid, $lang, $source_lang_code ) {
 		$args = array(
 			'trid'                 => $trid,
 			'language_code'        => $lang,
-			'source_language_code' => $source_lang_code
+			'source_language_code' => $source_lang_code,
 		);
 
 		return add_query_arg( $args, $this->get_tm_editor_base_url() );
@@ -275,7 +300,7 @@ class WPML_TM_Translation_Status_Display {
 	private function get_tm_editor_base_url() {
 		$args = array(
 			'page'       => WPML_TM_FOLDER . '/menu/translations-queue.php',
-			'return_url' => rawurlencode( esc_url_raw( stripslashes( $this->get_return_url() ) ) )
+			'return_url' => rawurlencode( esc_url_raw( stripslashes( $this->get_return_url() ) ) ),
 		);
 
 		return add_query_arg( $args, 'admin.php' );
@@ -284,7 +309,7 @@ class WPML_TM_Translation_Status_Display {
 	private function get_return_url() {
 		$args = array( 'wpml_tm_saved', 'wpml_tm_cancel' );
 
-		if ( wpml_is_ajax() ) {
+		if ( wpml_is_ajax() || ! is_admin() ) {
 			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				return remove_query_arg( $args, $_SERVER['HTTP_REFERER'] );
 			}
@@ -319,7 +344,7 @@ class WPML_TM_Translation_Status_Display {
 	protected function is_current_user_admin() {
 
 		return $this->sitepress->get_wp_api()
-		                       ->current_user_can( 'manage_options' );
+							   ->current_user_can( 'manage_options' );
 	}
 
 	/**
@@ -341,23 +366,23 @@ class WPML_TM_Translation_Status_Display {
 	private function is_remote( $trid, $lang ) {
 
 		return isset( $this->statuses[ $trid ][ $lang ]['translation_service'] )
-		       && (bool) $this->statuses[ $trid ][ $lang ]['translation_service'] !== false
-		       && $this->statuses[ $trid ][ $lang ]['translation_service'] !== 'local';
+			   && (bool) $this->statuses[ $trid ][ $lang ]['translation_service'] !== false
+			   && $this->statuses[ $trid ][ $lang ]['translation_service'] !== 'local';
 	}
 
 	private function is_in_progress( $trid, $lang ) {
 
 		return isset( $this->statuses[ $trid ][ $lang ]['status'] ) &&
-		       in_array(
-			       (int) $this->statuses[ $trid ][ $lang ]['status'],
-			       array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ),
-			       true
-		       );
+			in_array(
+				(int) $this->statuses[ $trid ][ $lang ]['status'],
+				array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ),
+				true
+			);
 	}
 
 	private function is_in_basket( $trid, $lang ) {
 
 		return $this->status_helper
-			       ->get_status( false, $trid, $lang ) === ICL_TM_IN_BASKET;
+				   ->get_status( false, $trid, $lang ) === ICL_TM_IN_BASKET;
 	}
 }

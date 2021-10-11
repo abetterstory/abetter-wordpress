@@ -2,6 +2,8 @@
 
 namespace WPML\PB\Gutenberg\ReusableBlocks;
 
+use WPML\FP\Obj;
+
 class Blocks {
 
 	/**
@@ -13,6 +15,15 @@ class Blocks {
 		return 'core/block' === $block['blockName']
 		       && isset( $block['attrs']['ref'] )
 		       && is_numeric( $block['attrs']['ref'] );
+	}
+
+	/**
+	 * @param array $block
+	 *
+	 * @return int
+	 */
+	public static function getReusableId( array $block ) {
+		return (int) Obj::path( [ 'attrs', 'ref' ], $block );
 	}
 
 	/**
@@ -28,14 +39,12 @@ class Blocks {
 
 		if ( $post ) {
 			$blocks = \wpml_collect( \WPML_Gutenberg_Integration::parse_blocks( $post->post_content ) );
-			return $blocks->filter( function( $block ) {
-				return 'core/block' === $block['blockName']
-				       && isset( $block['attrs']['ref'] )
-				       && is_numeric( $block['attrs']['ref'] );
-			})->map( function( $block ) {
-				$block_id = (int) $block['attrs']['ref'];
-				return array_merge( [ $block_id ], $this->getChildrenIdsFromPost( $block_id ) );
-			})->flatten()->toArray();
+			return $blocks
+				->filter( [ self::class, 'isReusable' ] )
+				->map( function( $block ) {
+					$block_id = self::getReusableId( $block );
+					return array_merge( [ $block_id ], $this->getChildrenIdsFromPost( $block_id ) );
+				})->flatten()->toArray();
 		}
 
 		return [];

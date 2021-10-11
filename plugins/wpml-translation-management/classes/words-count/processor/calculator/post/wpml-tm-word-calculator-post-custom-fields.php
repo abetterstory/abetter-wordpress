@@ -11,6 +11,26 @@ class WPML_TM_Word_Calculator_Post_Custom_Fields implements IWPML_TM_Word_Calcul
 	/** @var array $fields_to_count */
 	private $fields_to_count = array();
 
+	/**
+	 * WPML_TM_Word_Calculator_Post_Custom_Fields constructor.
+	 *
+	 * $cf_settings:
+	 *
+	 * <code>
+	 * $array = [
+	 *   'custom-field-1'      =>  WPML_TRANSLATE_CUSTOM_FIELD,
+	 *   'custom-field-2'      =>  WPML_COPY_CUSTOM_FIELD,
+	 *   'custom-field-3'      =>  WPML_IGNORE_CUSTOM_FIELD,
+	 *   'custom-field-4'      =>  WPML_IGNORE_CUSTOM_FIELD,
+	 *   'custom-field-5'      =>  WPML_COPY_ONCE_CUSTOM_FIELD,
+	 * ]
+	 * </code>
+	 *
+	 * @param \WPML_TM_Word_Calculator $calculator  An instance of WPML_TM_Word_Calculator.
+	 * @param array|null               $cf_settings An associative array where they key is the name of the custom field and the value is an integer representing the translation method.
+	 *
+	 * @see inc/constants.php for the values of the constsnts
+	 */
 	public function __construct( WPML_TM_Word_Calculator $calculator, array $cf_settings = null ) {
 		$this->calculator  = $calculator;
 		$this->cf_settings = $cf_settings;
@@ -27,7 +47,7 @@ class WPML_TM_Word_Calculator_Post_Custom_Fields implements IWPML_TM_Word_Calcul
 			return $words;
 		}
 
-		$cf_to_count = $this->get_translatable_fields_to_count();
+		$cf_to_count = $this->get_translatable_fields_to_count( $post_id );
 
 		foreach ( $cf_to_count as $cf ) {
 			$custom_fields_value = get_post_meta( $post_id, $cf );
@@ -61,15 +81,23 @@ class WPML_TM_Word_Calculator_Post_Custom_Fields implements IWPML_TM_Word_Calcul
 	}
 
 	/** @return array */
-	private function get_translatable_fields_to_count() {
+	private function get_translatable_fields_to_count( $post_id ) {
 		if ( ! $this->fields_to_count ) {
 			foreach ( $this->cf_settings as $cf => $mode ) {
-				if ( in_array( (int) $mode, array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
+				if ( (int) $mode === WPML_TRANSLATE_CUSTOM_FIELD ) {
 					$this->fields_to_count[] = $cf;
 				}
 			}
 		}
 
-		return $this->fields_to_count;
+		/**
+		 * Allow to modify the custom fields whose words will be counted.
+		 *
+		 * @param array $fields_to_count The fields to include when counting the words.
+		 * @param int   $post_id         The ID of the post for which we are counting the words.
+		 *
+		 * @see \WPML_TM_Word_Calculator_Post_Custom_Fields::__construct
+		 */
+		return apply_filters( 'wpml_words_count_custom_fields_to_count', $this->fields_to_count, $post_id );
 	}
 }

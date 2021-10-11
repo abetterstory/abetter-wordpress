@@ -19,7 +19,7 @@ var WPML_TP_API = WPML_TP_API || {};
 					action: 'wpml-tp-refresh-language-pairs',
 					nonce:  jQuery(self).data('nonce')
 				},
-				success:  function (response) {
+				success              :  function (response) {
 					var response_text = jQuery( '.refresh-language-pairs-section .wpml_ajax_response' );
 
 					response_text.html( response.msg );
@@ -30,17 +30,17 @@ var WPML_TP_API = WPML_TP_API || {};
 						response_text.fadeOut( 'slow' );
 					}, 3000);
 				},
-				complete: function () {
-					spinner.remove();
-				}
-			});
-		};
+                             complete: function () {
+                                 spinner.remove();
+                             }
+                         });
+        };
 
-		jQuery('.js-refresh-language-pairs').on('click', refreshLanguagePairs);
+        jQuery('.js-refresh-language-pairs').on('click', refreshLanguagePairs);
 
-	};
+    };
 
-	jQuery(document).ready(function () {
-		WPML_TP_API.refreshLanguagePairs();
-	});
+    jQuery(function () {
+        WPML_TP_API.refreshLanguagePairs();
+    });
 }());

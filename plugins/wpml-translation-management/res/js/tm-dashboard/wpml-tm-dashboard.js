@@ -66,9 +66,9 @@ WPML_TM.Dashboard = Backbone.View.extend({
         if (self.$el.find(':checkbox:checked').length > 0) {
             var checked_items = self.$el.find('td.check-column :checkbox');
             if (self.$el.find('td[scope="row"] :checkbox:checked').length === self.$el.find('td[scope="row"] :checkbox').length) {
-                checked_items.attr('checked', 'checked');
+                checked_items.prop('checked', true);
             } else {
-                checked_items.removeAttr('checked');
+                checked_items.prop('checked', false);
             }
         }
     },
@@ -93,7 +93,7 @@ WPML_TM.Dashboard = Backbone.View.extend({
         bulk_select_radio = bulk_select_val !== false
             ? self.$el.find('[name="radio-action-all"]').filter('[value=' + bulk_select_val + ']')
             : self.$el.find('[name="radio-action-all"]');
-        bulk_select_radio.attr('checked', !!bulk_select_val);
+        bulk_select_radio.prop('checked', !!bulk_select_val);
     },
     update_td: function () {
         var self = this;
@@ -102,7 +102,7 @@ WPML_TM.Dashboard = Backbone.View.extend({
     },
     icl_tm_select_all_documents: function (e) {
         var self = this;
-        self.$el.find('#icl-tm-translation-dashboard').find(':checkbox').attr('checked', !!jQuery(e.target).attr('checked'));
+        self.$el.find('#icl-tm-translation-dashboard').find(':checkbox').prop('checked', !!jQuery(e.target).prop('checked'));
         self.icl_tm_update_word_count_estimate();
         self.icl_tm_update_doc_count();
         self.icl_tm_enable_submit();
@@ -115,7 +115,7 @@ WPML_TM.Dashboard = Backbone.View.extend({
         var icl_tm_estimated_words_count = jQuery('#icl-tm-estimated-words-count');
         jQuery.each(element_rows, function () {
             var row = jQuery(this);
-            if (row.find(':checkbox').attr('checked')) {
+            if (row.find(':checkbox').prop('checked')) {
                 var item_word_count = row.data('word_count');
                 var val = parseInt(item_word_count);
                 val = isNaN(val) ? 0 : val;
@@ -236,19 +236,16 @@ WPML_TM.Dashboard = Backbone.View.extend({
         var self = this;
         var element = jQuery(e.target);
         var value = element.val();
-        element.attr('checked', 'checked');
-        self.$el.find('#icl_tm_languages').find('tbody input:radio[value=' + value + ']').attr('checked', 'checked');
+        element.prop('checked', true);
+        self.$el.find('#icl_tm_languages').find('tbody input:radio[value=' + value + ']').prop('checked', true);
         self.change_radio();
         return self;
     },
     icl_tm_enable_submit: function () {
         var self = this;
-        if ((self.counts.duplicate > 0 || self.counts.translate > 0)
-            && jQuery('#icl-tm-translation-dashboard').find('td :checkbox:checked').length > 0) {
-            jQuery('#icl_tm_jobs_submit').removeAttr('disabled');
-        } else {
-            jQuery('#icl_tm_jobs_submit').attr('disabled', 'disabled');
-        }
+		var hasSelection = (self.counts.duplicate > 0 || self.counts.translate > 0)
+			&& jQuery('#icl-tm-translation-dashboard').find('td :checkbox:checked').length > 0;
+		jQuery('#icl_tm_jobs_submit').prop('disabled', !hasSelection);
     },
     icl_tm_update_doc_count: function () {
         var self = this;
@@ -316,7 +313,7 @@ var PostDuplication = Backbone.View.extend({
 														self.sendBatch();
 													} else {
 														self.ui.complete(wpml_tm_strings.duplication_complete, false);
-														jQuery('#icl_tm_languages').find('tbody').find(':radio:checked').filter('[value=2]').attr('checked', false);
+														jQuery('#icl_tm_languages').find('tbody').find(':radio:checked').filter('[value=2]').prop('checked', false);
 														self.setHierarchyNoticeAndSubmit();
 													}
 												}
@@ -344,9 +341,9 @@ var PostDuplication = Backbone.View.extend({
     }
 });
 
-jQuery( document ).ready( function () {
-	var tmDashboard = new WPML_TM.Dashboard();
-	tmDashboard.init( jQuery );
-} );
+jQuery(function () {
+    var tmDashboard = new WPML_TM.Dashboard();
+    tmDashboard.init(jQuery);
+});
 
 }());

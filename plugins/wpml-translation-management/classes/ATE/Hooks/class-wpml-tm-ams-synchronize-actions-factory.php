@@ -10,10 +10,7 @@ class WPML_TM_AMS_Synchronize_Actions_Factory implements IWPML_Backend_Action_Lo
 	 */
 	public function create() {
 		if ( WPML_TM_ATE_Status::is_enabled_and_activated() ) {
-			$endpoints = WPML\Container\make( 'WPML_TM_ATE_AMS_Endpoints' );
-			$http      = new WP_Http();
-			$auth      = new WPML_TM_ATE_Authentication();
-			$ams_api   = new WPML_TM_AMS_API( $http, $auth, $endpoints );
+			$ams_api = WPML\Container\make( WPML_TM_AMS_API::class );
 
 			global $wpdb;
 			$user_query_factory = new WPML_WP_User_Query_Factory();

@@ -38,7 +38,7 @@ class WPML_TM_Translators_Dropdown {
 		/** @var $default_name bool|string */
 		/** @var $local_only bool */
 
-		//set default value for variables
+		// set default value for variables
 		$from         = false;
 		$to           = false;
 		$id           = 'translator_id';
@@ -64,12 +64,12 @@ class WPML_TM_Translators_Dropdown {
 			$translation_service_name = TranslationProxy::get_current_service_name();
 			$is_service_authenticated = TranslationProxy::is_service_authenticated();
 
-			//if translation service does not support translators choice, always shows first available
+			// if translation service does not support translators choice, always shows first available
 			if ( isset( $translation_service->id ) && ! TranslationProxy::translator_selection_available() && $is_service_authenticated ) {
 				$translators[] = (object) array(
 					'ID'           => TranslationProxy_Service::get_wpml_translator_id( $translation_service->id ),
 					'display_name' => __( 'First available', 'wpml-translation-management' ),
-					'service'      => $translation_service_name
+					'service'      => $translation_service_name,
 				);
 			} elseif ( in_array( $translation_service_id, $services ) && $is_service_authenticated ) {
 				$lang_status = TranslationProxy_Translator::get_language_pairs();
@@ -89,7 +89,7 @@ class WPML_TM_Translators_Dropdown {
 							$translators[] = (object) array(
 								'ID'           => TranslationProxy_Service::get_wpml_translator_id( $translation_service->id ),
 								'display_name' => __( 'First available', 'wpml-translation-management' ),
-								'service'      => $translation_service_name
+								'service'      => $translation_service_name,
 							);
 						}
 						foreach ( $language_pair['translators'] as $tr ) {
@@ -97,7 +97,7 @@ class WPML_TM_Translators_Dropdown {
 								$translators[] = $_icl_translators[ $tr['id'] ] = (object) array(
 									'ID'           => TranslationProxy_Service::get_wpml_translator_id( $translation_service->id, $tr['id'] ),
 									'display_name' => $tr['nickname'],
-									'service'      => $translation_service_name
+									'service'      => $translation_service_name,
 								);
 							}
 						}
@@ -110,10 +110,15 @@ class WPML_TM_Translators_Dropdown {
 					'ID'           => 0,
 					'display_name' => __( 'First available', 'wpml-translation-management' ),
 				);
-				$translators   = array_merge( $translators, $this->blog_translators->get_blog_translators( array(
-					'from' => $from,
-					'to'   => $to
-				) ) );
+				$translators   = array_merge(
+					$translators,
+					$this->blog_translators->get_blog_translators(
+						array(
+							'from' => $from,
+							'to'   => $to,
+						)
+					)
+				);
 			}
 			$translators = apply_filters( 'wpml_tm_translators_list', $translators );
 
@@ -122,9 +127,9 @@ class WPML_TM_Translators_Dropdown {
 
 			if ( $default_name ) {
 				$dropdown_selected = selected( $selected, false, false );
-				$dropdown .= '<option value="" ' . $dropdown_selected . '>';
-				$dropdown .= esc_html( $default_name );
-				$dropdown .= '</option>';
+				$dropdown         .= '<option value="" ' . $dropdown_selected . '>';
+				$dropdown         .= esc_html( $default_name );
+				$dropdown         .= '</option>';
 			}
 
 			foreach ( $translators as $t ) {
@@ -134,9 +139,9 @@ class WPML_TM_Translators_Dropdown {
 				$current_translator = $t->ID;
 
 				$dropdown_selected = selected( $selected, $current_translator, false );
-				$dropdown .= '<option value="' . $current_translator . '" ' . $dropdown_selected . '>';
-				$dropdown .= isset( $t->service ) ? $t->service : esc_html( $t->display_name );
-				$dropdown .= '</option>';
+				$dropdown         .= '<option value="' . $current_translator . '" ' . $dropdown_selected . '>';
+				$dropdown         .= isset( $t->service ) ? $t->service : esc_html( $t->display_name );
+				$dropdown         .= '</option>';
 			}
 			$dropdown .= '</select>';
 		} catch ( WPMLTranslationProxyApiException $ex ) {

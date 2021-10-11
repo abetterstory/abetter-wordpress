@@ -28,6 +28,7 @@ class WPML_TP_Apply_Translation_Strategies {
 				return $this->get_string_strategy();
 			case WPML_TM_Job_Entity::POST_TYPE:
 			case WPML_TM_Job_Entity::PACKAGE_TYPE:
+			case WPML_TM_Job_Entity::STRING_BATCH:
 				return $this->get_post_strategy();
 			default:
 				throw new InvalidArgumentException( 'Job type: ' . $job->get_type() . ' is not supported' );

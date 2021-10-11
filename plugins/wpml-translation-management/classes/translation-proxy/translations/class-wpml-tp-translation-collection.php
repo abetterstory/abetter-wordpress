@@ -1,5 +1,8 @@
 <?php
 
+use WPML\FP\Fns;
+use function WPML\FP\invoke;
+
 class WPML_TP_Translation_Collection implements IteratorAggregate {
 	/** @var WPML_TP_Translation[] */
 	private $translations;
@@ -43,15 +46,10 @@ class WPML_TP_Translation_Collection implements IteratorAggregate {
 	 * @return array
 	 */
 	public function to_array() {
-		$translations = array();
-		foreach ( $this->translations as $translation ) {
-			$translations[] = $translation->to_array();
-		}
-
-		return array(
+		return [
 			'source_language' => $this->source_language,
 			'target_language' => $this->target_language,
-			'translations'    => $translations,
-		);
+			'translations'    => Fns::map( invoke( 'to_array' ), $this->translations ),
+		];
 	}
 }

@@ -36,9 +36,9 @@ class Sync extends Base {
 						'ateToken'      => self::getStringType(),
 						'page'          => self::getIntType(),
 						'numberOfPages' => self::getIntType(),
-					]
-				]
-			]
+					],
+				],
+			],
 		];
 	}
 
@@ -51,7 +51,7 @@ class Sync extends Base {
 		return [
 			'manage_options',
 			'manage_translations',
-			'translate'
+			'translate',
 		];
 	}
 

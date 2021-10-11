@@ -35,7 +35,26 @@ if ( ! $is_cron_request && ! $is_wp_cli_request && ! is_admin() && ! otgs_is_res
 		/**
 		 * Stub function to short-circuit Installer when it should not run.
 		 */
-		function WP_Installer_Setup() {
+		function WP_Installer_Setup( $wp_installer_instance, $args = [] ) {
+			if ( isset( $args['site_key_nags'][0]['repository_id'] ) ) {
+
+				require_once __DIR__ . '/includes/class-otgs-installer-settings.php';
+
+				$repository_id = $args['site_key_nags'][0]['repository_id'];
+				$getSiteKey    = function () use ( $repository_id ) {
+					$settings = OTGS\Installer\Settings::load();
+
+					if ( in_array( $repository_id, [ 'wpml', 'toolset' ] )
+					     && isset( $settings['repositories'][ $repository_id ]['subscription']['key'] )
+					) {
+						return $settings['repositories'][ $repository_id ]['subscription']['key'];
+					}
+
+					return null;
+				};
+
+				add_filter( 'otgs_installer_get_sitekey_'.$repository_id, $getSiteKey );
+			}
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	}
@@ -46,13 +65,12 @@ if ( ! $is_cron_request && ! $is_wp_cli_request && ! is_admin() && ! otgs_is_res
 
 $wp_installer_instance = dirname( __FILE__ ) . '/installer.php';
 
-
 // Global stack of instances.
 global $wp_installer_instances;
-$wp_installer_instances[ $wp_installer_instance ] = array(
+$wp_installer_instances[ $wp_installer_instance ] = [
 	'bootfile' => $wp_installer_instance,
-	'version'  => '2.2.2'
-);
+	'version'  => '2.6.2'
+];
 
 
 /**
@@ -124,16 +142,18 @@ if ( ! function_exists( 'wpml_installer_instance_delegator' ) ) {
 	function wpml_installer_instance_delegator() {
 		global $wp_installer_instances;
 
+		$delegated_instance_key = null;
 		// version based election.
 		foreach ( $wp_installer_instances as $instance_key => $instance ) {
 			$wp_installer_instances[ $instance_key ]['delegated'] = false;
 
 			if ( ! isset( $delegate ) || version_compare( $instance['version'], $delegate['version'], '>' ) ) {
-				$delegate = $instance;
-
-				$wp_installer_instances[ $instance_key ]['delegated'] = true;
+				$delegate               = $instance;
+				$delegated_instance_key = $instance_key;
 			}
 		}
+
+		$wp_installer_instances[ $delegated_instance_key ]['delegated'] = true;
 
 		// priority based election.
 		$highest_priority = null;
@@ -162,6 +182,9 @@ if ( ! function_exists( 'wpml_installer_instance_delegator' ) ) {
 		}
 
 		include_once $delegate['bootfile'];
+
+		require_once dirname( __FILE__ ) . '/includes/loader/Config.php';
+		$delegate = OTGS\Installer\Loader\Config::merge( $delegate, $wp_installer_instances );
 
 		// set configuration.
 		$template_path = realpath( get_template_directory() );

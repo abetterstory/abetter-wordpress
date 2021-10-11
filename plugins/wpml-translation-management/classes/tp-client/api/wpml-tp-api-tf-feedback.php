@@ -37,7 +37,7 @@ class WPML_TP_API_TF_Feedback extends WPML_TP_Abstract_API {
 		}
 
 		$this->endpoint_uri = self::URI_SEND;
-		$ret = false;
+		$ret                = false;
 
 		$feedback_parameters = array(
 			'message' => $feedback->get_content(),
@@ -53,7 +53,7 @@ class WPML_TP_API_TF_Feedback extends WPML_TP_Abstract_API {
 				$feedback->get_job_id(),
 				$feedback->get_document_information()->get_source_id()
 			),
-			'feedback' => $feedback_parameters,
+			'feedback'         => $feedback_parameters,
 		);
 
 		$response = $this->post( $params );
@@ -72,7 +72,7 @@ class WPML_TP_API_TF_Feedback extends WPML_TP_Abstract_API {
 	 */
 	public function status( WPML_TF_Feedback $feedback ) {
 		$this->endpoint_uri = self::URI_GET_STATUS;
-		$status = false;
+		$status             = false;
 
 		$params = array(
 			'feedback_id' => $feedback->get_tp_responses()->get_feedback_id(),

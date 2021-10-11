@@ -46,7 +46,7 @@ class WPML_TM_MCS_Term_Custom_Field_Settings_Menu extends WPML_TM_MCS_Custom_Fie
 	 */
 	public function get_column_header( $id ) {
 		$header = $id;
-		if('name' === $id) {
+		if ( 'name' === $id ) {
 			$header = __( 'Term Meta', 'wpml-translation-management' );
 		}
 		return $header;

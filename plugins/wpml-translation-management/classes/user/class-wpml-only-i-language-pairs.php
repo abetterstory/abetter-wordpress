@@ -18,7 +18,8 @@ class WPML_TM_Only_I_language_Pairs implements IWPML_Action {
 	}
 
 	public function update_language_pairs() {
-		$users = get_users( array(
+		$users = get_users(
+			array(
 				'meta_key'   => WPML_TM_Wizard_Options::ONLY_I_USER_META,
 				'meta_value' => true,
 			)

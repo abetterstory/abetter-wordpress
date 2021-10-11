@@ -34,58 +34,58 @@ class WPML_TM_Emails_Settings {
 
 	private function get_model() {
 		return array(
-			'strings' => array(
+			'strings'  => array(
 				'section_title_translator' => __( 'Notification emails to translators', 'wpml-translation-management' ),
-				'label_new_job' => __( 'Notify translators when new jobs are waiting for them', 'wpml-translation-management' ),
-				'label_include_xliff' => __( 'Include XLIFF files in the notification emails', 'wpml-translation-management' ),
-				'label_resigned_job' => __( 'Notify translators when they are removed from jobs', 'wpml-translation-management' ),
-				'section_title_manager' => __( 'Notification emails to the translation manager', 'wpml-translation-management' ),
-				'label_completed_job' => esc_html__( 'Notify the translation manager when jobs are completed %s', 'wpml-translation-management' ),
-				'label_overdue_job' => esc_html__( 'Notify the translation manager when jobs are late by %s days', 'wpml-translation-management' ),
+				'label_new_job'            => __( 'Notify translators when new jobs are waiting for them', 'wpml-translation-management' ),
+				'label_include_xliff'      => __( 'Include XLIFF files in the notification emails', 'wpml-translation-management' ),
+				'label_resigned_job'       => __( 'Notify translators when they are removed from jobs', 'wpml-translation-management' ),
+				'section_title_manager'    => __( 'Notification emails to the translation manager', 'wpml-translation-management' ),
+				'label_completed_job'      => esc_html__( 'Notify the translation manager when jobs are completed %s', 'wpml-translation-management' ),
+				'label_overdue_job'        => esc_html__( 'Notify the translation manager when jobs are late by %s days', 'wpml-translation-management' ),
 			),
 			'settings' => array(
-				'new_job' => array(
+				'new_job'             => array(
 					'value'   => self::NOTIFY_IMMEDIATELY,
 					'checked' => checked( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification']['new-job'], false ),
 				),
-				'include_xliff' => array(
+				'include_xliff'       => array(
 					'value'    => 1,
 					'checked'  => checked( 1, $this->tm->settings['notification']['include_xliff'], false ),
 					'disabled' => disabled( 0, $this->tm->settings['notification']['new-job'], false ),
 				),
-				'resigned' => array(
+				'resigned'            => array(
 					'value'   => self::NOTIFY_IMMEDIATELY,
 					'checked' => checked( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification']['resigned'], false ),
 				),
-				'completed' => array(
+				'completed'           => array(
 					'value'   => 1,
 					'checked' => checked( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification']['completed'], false ),
 				),
 				'completed_frequency' => array(
-					'options' => array(
+					'options'  => array(
 						array(
 							'label'   => __( 'immediately', 'wpml-translation-management' ),
 							'value'   => self::NOTIFY_IMMEDIATELY,
-							'checked' => selected( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false )
+							'checked' => selected( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false ),
 						),
 						array(
 							'label'   => __( 'once a day', 'wpml-translation-management' ),
 							'value'   => self::NOTIFY_DAILY,
-							'checked' => selected( self::NOTIFY_DAILY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false )
+							'checked' => selected( self::NOTIFY_DAILY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false ),
 						),
 						array(
 							'label'   => __( 'once a week', 'wpml-translation-management' ),
 							'value'   => self::NOTIFY_WEEKLY,
-							'checked' => selected( self::NOTIFY_WEEKLY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false )
+							'checked' => selected( self::NOTIFY_WEEKLY, $this->tm->settings['notification'][ self::COMPLETED_JOB_FREQUENCY ], false ),
 						),
 					),
 					'disabled' => disabled( 0, $this->tm->settings['notification']['completed'], false ),
 				),
-				'overdue' => array(
+				'overdue'             => array(
 					'value'   => 1,
 					'checked' => checked( self::NOTIFY_IMMEDIATELY, $this->tm->settings['notification']['overdue'], false ),
 				),
-				'overdue_offset' => array(
+				'overdue_offset'      => array(
 					'value'    => $this->tm->settings['notification']['overdue_offset'],
 					'disabled' => disabled( 0, $this->tm->settings['notification']['overdue'], false ),
 				),

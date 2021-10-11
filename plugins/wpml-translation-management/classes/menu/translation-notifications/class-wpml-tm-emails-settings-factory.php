@@ -12,7 +12,7 @@ class WPML_TM_Emails_Settings_Factory implements IWPML_Backend_Action_Loader {
 
 		if ( $this->is_tm_settings_page() ) {
 			$template_service = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/settings' ) );
-			$hooks = new WPML_TM_Emails_Settings( $template_service->get_template(), $iclTranslationManagement );
+			$hooks            = new WPML_TM_Emails_Settings( $template_service->get_template(), $iclTranslationManagement );
 		}
 
 		return $hooks;

@@ -75,11 +75,29 @@ function lz_valid_ip($ip){
 	}
 	
 	// IPv4
-	if(!ip2long($ip)){
+	if(!ip2long($ip) || !lz_valid_ipv4($ip)){
 		return false;
 	}
 	
 	return true;
+}
+
+function lz_valid_ipv4($ip){
+	if(!preg_match('/^(\d){1,3}\.(\d){1,3}\.(\d){1,3}\.(\d){1,3}$/is', $ip) || substr_count($ip, '.') != 3){			
+		return false;
+	}
+	
+	$r = explode('.', $ip);
+	
+	foreach($r as $v){
+		$v = (int) $v;
+		if($v > 255 || $v < 0){
+			return false;
+		}
+	}
+	
+	return true;
+	
 }
 
 function lz_valid_ipv6($ip){
@@ -131,9 +149,15 @@ function lz_POSTval($name, $default = ''){
 
 }
 
-function lz_POSTchecked($name, $default = false){
+function lz_POSTchecked($name, $default = false, $submit_name = ''){
 	
-	return (!empty($_POST) ? (isset($_POST[$name]) ? 'checked="checked"' : '') : (!empty($default) ? 'checked="checked"' : ''));
+	if(!empty($submit_name)){
+		$post_to_check = isset($_POST[$submit_name]) ? $_POST[$submit_name] : '';
+	}else{
+		$post_to_check = $_POST;
+	}
+	
+	return (!empty($post_to_check) ? (isset($_POST[$name]) ? 'checked="checked"' : '') : (!empty($default) ? 'checked="checked"' : ''));
 
 }
 

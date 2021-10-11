@@ -20,13 +20,13 @@ class WPML_Media_Screen_Options_Factory implements IWPML_Backend_Action_Loader {
 				'args' => array(
 					'label'   => __( 'Number of items per page:', 'wpml-media' ),
 					'default' => get_option( $option_name, 20 ),
-					'option'  => $option_name
-				)
+					'option'  => $option_name,
+				),
 			);
 
 		}
 
-		if( $options ){
+		if ( $options ) {
 			return new WPML_Media_Screen_Options( $options );
 		}
 

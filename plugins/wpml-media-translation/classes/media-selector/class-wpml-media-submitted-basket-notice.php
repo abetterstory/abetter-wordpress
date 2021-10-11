@@ -20,7 +20,10 @@ class WPML_Media_Submitted_Basket_Notice implements IWPML_Action {
 		wp_enqueue_script(
 			$script_handle,
 			WPML_MEDIA_URL . '/res/js/submitted-basket-notice.js',
-			array( 'jquery-ui-dialog' ), WPML_MEDIA_VERSION, false );
+			array( 'jquery-ui-dialog' ),
+			WPML_MEDIA_VERSION,
+			false
+		);
 
 		$wpml_media_basket_notice_data = array(
 			'button_label' => __( 'Continue', 'wpml_media' ),
@@ -45,26 +48,29 @@ class WPML_Media_Submitted_Basket_Notice implements IWPML_Action {
 
 		/* translators: media file string used in "if you want to use a different media file for each language..." */
 		$media_file_string = __( 'media file', 'wpml-media' );
-		$redirect_url = '#';
+		$redirect_url      = '#';
 
 		if ( defined( 'WPML_TM_FOLDER' ) ) {
 			$redirect_url = add_query_arg( 'page', WPML_TM_FOLDER . '/menu/main.php', admin_url( 'admin.php' ) );
 		}
 
 		$model = array(
-			'strings' => array(
+			'strings'        => array(
 				'dialog_title'            => __( 'Media sent to translation', 'wpml-media' ),
 				'content_with_media_sent' => __( 'You have sent content which contains media attachments for translation.', 'wpml-media' ),
-				'media_texts_translated'  => sprintf( __( 'Translators will translate all your %smedia texts%s.', 'wpml-media' ), '<strong>', '</strong>' ),
-				'use_different_media'     => sprintf( __( 'If you want to use a different %s for each language, you can set them in: %s.', 'wpml-media' ),
-					'<strong>' . $media_file_string . '</strong>', $media_translation_link ),
+				'media_texts_translated'  => sprintf( __( 'Translators will translate all your %1$smedia texts%2$s.', 'wpml-media' ), '<strong>', '</strong>' ),
+				'use_different_media'     => sprintf(
+					__( 'If you want to use a different %1$s for each language, you can set them in: %2$s.', 'wpml-media' ),
+					'<strong>' . $media_file_string . '</strong>',
+					$media_translation_link
+				),
 				'learn_more'              => __( 'Learn more about Media Translation', 'wpml-media' ),
 				'wpml'                    => _x( 'WPML', 'plugin name', 'wpml-media' ),
-				'media_translation'       => _x( 'Media Translation', 'wpml addon name', 'wpml-media' )
+				'media_translation'       => _x( 'Media Translation', 'wpml addon name', 'wpml-media' ),
 			),
 
 			'learn_more_url' => 'https://wpml.org/?page_id=113610',
-			'redirect_url' => $redirect_url,
+			'redirect_url'   => $redirect_url,
 		);
 
 		echo $this->template_loader->get_template()->show( $model, 'submitted-basket-notice.twig' );

@@ -24,7 +24,7 @@ class WPML_TM_MCS_Search_Render {
 	 * WPML_TM_MCS_Search_Render constructor.
 	 *
 	 * @param IWPML_Template_Service $template Twig template service.
-	 * @param string $search_string Search string.
+	 * @param string                 $search_string Search string.
 	 */
 	public function __construct( IWPML_Template_Service $template, $search_string ) {
 		$this->template      = $template;

@@ -46,8 +46,8 @@ class WPML_TP_Jobs_Collection {
 
 		foreach ( $this->get_all() as $tp_job ) {
 			if ( (int) $batch->get_batch_tp_id() === $tp_job->get_batch()->id
-			     && (int) $job->get_original_element_id() === $tp_job->get_original_element_id()
-			     && WPML_TP_Job::CANCELLED === $tp_job->get_job_state()
+				 && (int) $job->get_original_element_id() === $tp_job->get_original_element_id()
+				 && WPML_TP_Job::CANCELLED === $tp_job->get_job_state()
 			) {
 				$canceled = true;
 			}

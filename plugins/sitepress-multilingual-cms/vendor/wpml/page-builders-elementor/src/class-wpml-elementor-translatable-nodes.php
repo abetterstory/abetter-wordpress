@@ -1,5 +1,9 @@
 <?php
 
+use WPML\FP\Obj;
+use WPML\PB\Elementor\DynamicContent\Strings as DynamicContentStrings;
+use WPML\PB\Elementor\Modules\ModuleWithItemsFromConfig;
+
 /**
  * Class WPML_Elementor_Translatable_Nodes
  */
@@ -31,13 +35,13 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 		foreach ( $this->nodes_to_translate as $node_type => $node_data ) {
 			if ( $this->conditions_ok( $node_data, $element ) ) {
 				foreach ( $node_data['fields'] as $key => $field ) {
-					$field_key    = $field['field'];
-					$string_value = null;
+					$field_key       = $field['field'];
+					$pathInFlatField = array_merge( [ self::SETTINGS_FIELD ], self::get_partial_path( $field_key ) );
+					$string_value    = Obj::path( $pathInFlatField, $element );
 
-					if ( $this->is_flat_field( $element, $field_key ) ) {
-						$string_value = $element[ self::SETTINGS_FIELD ][ $field_key ];
-					} elseif ( $this->is_array_field( $element, $key, $field_key ) ) {
-						$string_value =	$element[ self::SETTINGS_FIELD ][ $key ][ $field_key ];
+					if ( ! is_string( $string_value ) ) {
+						$pathInArrayField = array_merge( [ self::SETTINGS_FIELD, $key ], self::get_partial_path( $field_key ) );
+						$string_value     = Obj::path( $pathInArrayField, $element );
 					}
 
 					if ( $string_value ) {
@@ -51,23 +55,15 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					}
 				}
 
-				if ( isset( $node_data['integration-class'] ) ) {
-					foreach ( $this->get_integration_classes( $node_data ) as $class ) {
-						try {
-							if ( $class instanceof \WPML_Elementor_Module_With_Items ) {
-								$node = $class;
-							} else {
-								$node = new $class();
-							}
-							$strings = $node->get( $node_id, $element, $strings );
-						} catch ( Exception $e ) {
-						}
-					}
+				foreach ( $this->get_integration_instances( $node_data ) as $instance ) {
+					try {
+						$strings = $instance->get( $node_id, $element, $strings );
+					} catch ( Exception $e ) {}
 				}
 			}
 		}
 
-		return $strings;
+		return DynamicContentStrings::filter( $strings, $node_id, $element );
 	}
 
 	/**
@@ -90,73 +86,76 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					$field_key = $field['field'];
 
 					if ( $this->get_string_name( $node_id, $field, $element ) === $string->get_name() ) {
-						if ( $this->is_flat_field( $element, $field_key ) ) {
-							$element[ self::SETTINGS_FIELD ][ $field_key ] = $string->get_value();
-						} elseif ( $this->is_array_field( $element, $key, $field_key )) {
-							$element[ self::SETTINGS_FIELD ][ $key ][ $field_key ] = $string->get_value();
+						$pathInFlatField    = array_merge( [ self::SETTINGS_FIELD ], self::get_partial_path( $field_key ) );
+						$stringInFlatField  = Obj::path( $pathInFlatField, $element );
+						$pathInArrayField   = array_merge( [ self::SETTINGS_FIELD, $key ], self::get_partial_path( $field_key ) );
+						$stringInArrayField = Obj::path( $pathInArrayField, $element );
+
+						if ( is_string( $stringInFlatField ) ) {
+							$element = Obj::assocPath( $pathInFlatField, $string->get_value(), $element );
+						} elseif ( is_string( $stringInArrayField ) ) {
+							$element = Obj::assocPath( $pathInArrayField, $string->get_value(), $element );
 						}
 					}
 				}
-				if ( isset( $node_data['integration-class'] ) ) {
-					foreach ( $this->get_integration_classes( $node_data ) as $class ) {
-						try {
-							if ( $class instanceof \WPML_Elementor_Module_With_Items ) {
-								$node = $class;
-							} else {
-								$node = new $class();
-							}
-							$item = $node->update( $node_id, $element, $string );
-							if ( $item ) {
-								$element[ self::SETTINGS_FIELD ][ $node->get_items_field() ][ $item['index'] ] = $item;
-							}
-						} catch ( Exception $e ) {
 
+				foreach ( $this->get_integration_instances( $node_data ) as $instance ) {
+					try {
+						$item = $instance->update( $node_id, $element, $string );
+						if ( $item ) {
+							$element[ self::SETTINGS_FIELD ][ $instance->get_items_field() ][ $item['index'] ] = $item;
 						}
-					}
+					} catch ( Exception $e ) {}
 				}
 			}
 		}
 
-		return $element;
+		return DynamicContentStrings::updateNode( $element, $string );
 	}
 
 	/**
-	 * @param array  $element
-	 * @param string $field_key
+	 * @param string $field
 	 *
-	 * @return bool
+	 * @return string[]
 	 */
-	private function is_flat_field( $element, $field_key ) {
-		return isset( $element[ self::SETTINGS_FIELD ][ $field_key ] )
-		       && is_string( $element[ self::SETTINGS_FIELD ][ $field_key ] )
-		       && trim( $element[ self::SETTINGS_FIELD ][ $field_key ] );
-	}
-
-	/**
-	 * @param array      $element
-	 * @param string|int $field_wrapper
-	 * @param string     $field_key
-	 *
-	 * @return bool
-	 */
-	private function is_array_field( $element, $field_wrapper, $field_key ) {
-		return isset( $element[ self::SETTINGS_FIELD ][ $field_wrapper ][ $field_key ] )
-		       && trim( $element[ self::SETTINGS_FIELD ][ $field_wrapper ][ $field_key ] );
+	private static function get_partial_path( $field ) {
+		return explode( '>', $field );
 	}
 
 	/**
 	 * @param array $node_data
 	 *
-	 * @return array
+	 * @return WPML_Elementor_Module_With_Items[]
 	 */
-	private function get_integration_classes( $node_data ) {
-		$integration_classes = $node_data['integration-class'];
+	private function get_integration_instances( $node_data ) {
+		$instances = [];
 
-		if ( ! is_array( $node_data['integration-class'] ) ) {
-			$integration_classes = array( $node_data['integration-class'] );
+		if ( isset( $node_data['integration-class'] ) ) {
+			$integration_classes = $node_data['integration-class'];
+
+			if ( ! is_array( $integration_classes ) ) {
+				$integration_classes = [ $integration_classes ];
+			}
+
+			foreach ( $integration_classes as $class_or_instance ) {
+				if ( $class_or_instance instanceof \WPML_Elementor_Module_With_Items ) {
+					$instances[] = $class_or_instance;
+				} elseif ( class_exists( $class_or_instance ) ) {
+					try {
+						$instances[] = new $class_or_instance();
+					} catch ( Exception $e ) {
+					}
+				}
+			}
 		}
 
-		return $integration_classes;
+		if ( isset( $node_data['fields_in_item'] ) ) {
+			foreach ( $node_data['fields_in_item'] as $item_of => $config ) {
+				$instances[] = new ModuleWithItemsFromConfig( $item_of, $config );
+			}
+		}
+
+		return array_filter( $instances );
 	}
 
 	/**
@@ -273,6 +272,16 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'type'        => __( 'Video: DailyMotion URL', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
+					'hosted_url'=> array(
+						'field'       => 'url',
+						'type'        => __( 'Video: Self hosted', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					'external_url'=> array(
+						'field'       => 'url',
+						'type'        => __( 'Video: External hosted', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
 				),
 			),
 			'login'       => array(
@@ -366,7 +375,7 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'blockquote_content',
 						'type'        => __( 'Blockquote: Content', 'sitepress' ),
-						'editor_type' => 'VISUAL'
+						'editor_type' => 'AREA',
 					),
 					array(
 						'field'       => 'tweet_button_label',
@@ -421,6 +430,16 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 					array(
 						'field'       => 'title',
 						'type'        => __( 'Title', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'prefix',
+						'type'        => __( 'Prefix', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					array(
+						'field'       => 'suffix',
+						'type'        => __( 'Suffix', 'sitepress' ),
 						'editor_type' => 'LINE'
 					),
 				),
@@ -831,6 +850,100 @@ class WPML_Elementor_Translatable_Nodes implements IWPML_Page_Builders_Translata
 						'editor_type' => 'LINE',
 					),
 				),
+			),
+			'divider' => array(
+				'conditions' => array( self::TYPE => 'divider' ),
+				'fields'     => array(
+					array(
+						'field'       => 'text',
+						'type'        => __( 'Divider Text', 'sitepress' ),
+						'editor_type' => 'LINE',
+					),
+				),
+			),
+			'table-of-contents' => array(
+				'conditions' => array( self::TYPE => 'table-of-contents' ),
+				'fields'     => array(
+					array(
+						'field'       => 'title',
+						'type'        => __( 'Table of Contents - Title', 'sitepress' ),
+						'editor_type' => 'LINE',
+					),
+				),
+			),
+			'media-carousel' => [
+				'conditions' => [ self::TYPE => 'media-carousel' ],
+				'fields'     => [],
+				'integration-class' => [
+					'\WPML\PB\Elementor\Modules\MediaCarousel',
+				]
+			],
+			'lottie'     => [
+				'conditions' => [ self::TYPE => 'lottie' ],
+				'fields'     => [
+					'custom_link' => [
+						'field'       => 'url',
+						'type'        => __( 'Lottie: Link URL', 'sitepress' ),
+						'editor_type' => 'LINK'
+					],
+				],
+			],
+			'author-box'           => array(
+				'conditions' => array( self::TYPE => 'author-box' ),
+				'fields'     => array(
+					array(
+						'field'       => 'author_name',
+						'type'        => __( 'Author Name', 'sitepress' ),
+						'editor_type' => 'LINE',
+					),
+					array(
+						'field'       => 'author_bio',
+						'type'        => __( 'Author Bio', 'sitepress' ),
+						'editor_type' => 'AREA',
+					),
+					'author_website' => array(
+						'field'       => 'url',
+						'field_id'    => 'author_website',
+						'type'        => __( 'Author Link', 'sitepress' ),
+						'editor_type' => 'LINK',
+					),
+					array(
+						'field'       => 'link_text',
+						'type'        => __( 'Archive Text', 'sitepress' ),
+						'editor_type' => 'LINE',
+					),
+					'posts_url'      => array(
+						'field'       => 'url',
+						'field_id'    => 'posts_url',
+						'type'        => __( 'Archive Button URL', 'sitepress' ),
+						'editor_type' => 'LINK',
+					),
+				),
+			),
+			'reviews' => array(
+				'conditions'        => array( self::TYPE => 'reviews' ),
+				'fields'     => [],
+				'integration-class' => [
+					'\WPML\PB\Elementor\Modules\Reviews',
+				]
+			),
+			'galleries' => array(
+				'conditions'        => array( self::TYPE => 'gallery' ),
+				'fields'            => array(
+					array(
+						'field'       => 'show_all_galleries_label',
+						'type'        => __( 'All Gallery Label', 'sitepress' ),
+						'editor_type' => 'LINE'
+					),
+					'url' => array(
+						'field'       => 'url',
+						'type'        => __( 'Gallery custom link', 'sitepress' ),
+						'editor_type' => 'LINK'
+					),
+				),
+				'integration-class' => [
+					'\WPML\PB\Elementor\Modules\MulitpleGallery',
+				]
 			),
 		);
 	}

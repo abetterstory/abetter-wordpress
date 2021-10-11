@@ -2,7 +2,7 @@
 	<div class="otgs-notice otgs-notice__status inline">
 		<p> </p>
 		<span class="spinner"> </span>
-		<button class="js-synchronize-with-ams button-secondary">
+		<button class="js-synchronize-with-ams button-secondary" {{ is_ate_communication_locked ? 'disabled' : ''}} >
             {{ synchronize_button_text }}
 		</button>
 	</div>

@@ -5,7 +5,7 @@ if (!is_main_site()) return;
 Plugin Name: Advanced Database Cleaner
 Plugin URI: https://sigmaplugin.com/downloads/wordpress-advanced-database-cleaner
 Description: Clean database by deleting unused data such as 'old revisions', 'old drafts', 'orphan options', etc. Optimize database and more.
-Version: 3.0.1
+Version: 3.0.3
 Author: Younes JFR.
 Author URI: https://www.sigmaplugin.com
 Contributors: symptote
@@ -29,8 +29,7 @@ class ADBC_Advanced_DB_Cleaner {
 	public function __construct(){
 
 		// Define common constants that should be modified in each version
-		if(!defined("ADBC_PLUGIN_F_TYPE")) 		define("ADBC_PLUGIN_F_TYPE", "free");
-		if(!defined("ADBC_PLUGIN_VERSION")) 	define("ADBC_PLUGIN_VERSION", "3.0.1");
+		if(!defined("ADBC_PLUGIN_VERSION")) 	define("ADBC_PLUGIN_VERSION", "3.0.3");
 
 		// Prevent conflicts between free and pro, load text-domain and check if should update settings after upgrade
 		add_action('plugins_loaded', array($this, 'plugins_loaded'));
@@ -84,22 +83,7 @@ class ADBC_Advanced_DB_Cleaner {
 		* Include functions and specific elements for pro version
 		********************************************************************/
 		include_once 'includes/functions.php';
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
 
-			// Include pro functions
-			include_once 'includes/functions_pro.php';
-
-			// In pro, register as well function for timeout
-			register_shutdown_function('aDBc_shutdown_due_to_timeout');	
-
-			// Load license (Load only in pro version)
-			include_once 'includes/license/adbc-edd-sample-plugin.php';
-
-			// Add actions for searching and progress bar in pro
-			add_action('wp_ajax_aDBc_new_run_search_for_items', 'aDBc_new_run_search_for_items');
-			add_action('wp_ajax_aDBc_get_progress_bar_width', 'aDBc_get_progress_bar_width');
-
-		}
 
 		/**************************************************************************************************************
 		* 
@@ -131,55 +115,8 @@ class ADBC_Advanced_DB_Cleaner {
 		$aDBc_upload_dir = wp_upload_dir();
 		if(!defined("ADBC_UPLOAD_DIR_PATH")) 					define("ADBC_UPLOAD_DIR_PATH", str_replace('\\' ,'/', $aDBc_upload_dir['basedir']));
 
-		/**************************************************************************************************************
-		*
-		* Define & create adbc upload folder or rename existing one by adding security code for versions < 3.1.0
-		* In version >= 3.0.0 of ADBC, we will use files to store data instead of database
-		* In version >= 3.1.0, we've added a unique security code to the end of the folder to prevent third parties accesssing files directly via URL
-		*
-		**************************************************************************************************************/
-
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-
-			$aDBc_security_folder_code = get_option('aDBc_security_folder_code');
-
-			// If the security code does not exist, generate a new one and add it to the DB
-			if(empty($aDBc_security_folder_code)){
-
-				$permitted_chars = '00112233445566778899abcdefghijklmnopqrstuvwxyz';
-				$aDBc_security_folder_code = substr(str_shuffle($permitted_chars), 0, 12);
-				update_option('aDBc_security_folder_code', $aDBc_security_folder_code, "no");
-			}
-
-			// Define ADBC upload folder name with the security code
-			if(!defined("ADBC_UPLOAD_DIR_PATH_TO_ADBC")) 			define("ADBC_UPLOAD_DIR_PATH_TO_ADBC", ADBC_UPLOAD_DIR_PATH . '/adbc_uploads_' . $aDBc_security_folder_code);
-
-			// First, test of the old folder "/adbc_uploads" exists. If so, rename it by adding new security code
-			if(file_exists(ADBC_UPLOAD_DIR_PATH . '/adbc_uploads')){
-
-				rename(ADBC_UPLOAD_DIR_PATH . '/adbc_uploads', ADBC_UPLOAD_DIR_PATH . '/adbc_uploads_' . $aDBc_security_folder_code);
-
-			}else {
-				// If the old folder does not exist, then add the folder with security code
-				if(!file_exists(ADBC_UPLOAD_DIR_PATH_TO_ADBC)){
-					aDBc_create_folder_plus_index_file(ADBC_UPLOAD_DIR_PATH_TO_ADBC);
-				}
-			}
-
-		}
-
-		/**************************************************************************************************************
-		* 
-		* Try to increase the timeout of the server to 300 to prevent timeout errors and multiple loads while searching
-		*
-		**************************************************************************************************************/
-
+		// Max execution time
 		if(!defined("ADBC_ORIGINAL_TIMEOUT"))					define("ADBC_ORIGINAL_TIMEOUT", ini_get('max_execution_time'));
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-			if(function_exists('set_time_limit') && ADBC_ORIGINAL_TIMEOUT < 300){
-				@set_time_limit(300);
-			}
-		}
 
 		// Add 'Database Cleaner' to Wordpress menu
 		add_action('admin_menu', array($this, 'aDBc_add_admin_menu'));
@@ -235,11 +172,25 @@ class ADBC_Advanced_DB_Cleaner {
 		wp_enqueue_style('aDBc_css', ADBC_PLUGIN_DIR_PATH . '/css/admin.css');
 		wp_enqueue_script('aDBc_js', ADBC_PLUGIN_DIR_PATH . '/js/admin.js');
 
+		wp_enqueue_style('sweet2_css', ADBC_PLUGIN_DIR_PATH . '/css/sweetalert2.min.css');
+		wp_enqueue_script('sweet2_js', ADBC_PLUGIN_DIR_PATH . '/js/sweetalert2.min.js');
+
 		// The wp_localize_script allows us to output the ajax_url path for our script to use.
 		wp_localize_script('aDBc_js', 'aDBc_ajax_obj', array(
-														'ajaxurl' 						=> admin_url('admin-ajax.php'),
-														'images_path'					=> ADBC_PLUGIN_DIR_PATH . "/images/",
-														'sentence_scanning' 			=> __('Scanning ...', 'advanced-database-cleaner')
+
+		'ajaxurl' 				=> admin_url('admin-ajax.php'),
+		'images_path'			=> ADBC_PLUGIN_DIR_PATH . "/images/",
+		'sentence_scanning' 	=> __('Scanning ...', 'advanced-database-cleaner'),
+		'unexpected_error' 		=> __('Unexpected error! Please refresh the page and try again!', 'advanced-database-cleaner'),
+		'select_action' 		=> __('Please select an action!', 'advanced-database-cleaner'),
+		'no_items_selected' 	=> __('No items selected!', 'advanced-database-cleaner'),
+		'clean_items_warning' 	=> __('You are about to clean some of your unused data. This operation is irreversible!', 'advanced-database-cleaner'),
+		'empty_tables_warning' 	=> __('You are about to empty some of your tables. This operation is irreversible!', 'advanced-database-cleaner'),
+		'are_you_sure' 			=> __('Are you sure?', 'advanced-database-cleaner'),
+		'make_db_backup_first' 	=> __('Don\'t forget to make a backup of your database first!', 'advanced-database-cleaner'),
+		'cancel' 				=> __('Cancel', 'advanced-database-cleaner'),
+		'Continue' 				=> __('Continue', 'advanced-database-cleaner')
+
 														));
 		//wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-dialog');
@@ -315,62 +266,6 @@ class ADBC_Advanced_DB_Cleaner {
 		delete_option('aDBc_options_status');
 		delete_option('aDBc_tables_status');
 		delete_option('aDBc_tasks_status');
-
-		// These options are temp and should not exist after finishing the search of oprhans. We make sure to clean them just in case
-		//$array_items = array('options','tables','tasks');
-		//foreach($array_items as $item){
-			//delete_option('aDBc_temp_last_iteration_' 	. $item);
-			//delete_option('aDBc_temp_still_searching_' 	. $item);
-			//delete_option('aDBc_temp_last_item_line_' 	. $item);
-			//delete_option('aDBc_temp_last_file_line_' 	. $item);
-			//delete_option('aDBc_last_search_ok_' 		. $item);
-		//}
-
-		// if we are in pro version, clean these ones
-		if(ADBC_PLUGIN_F_TYPE == "pro"){
-
-			// Get security code
-			$aDBc_security_folder_code = get_option('aDBc_security_folder_code');
-
-			// Delete folder containing search results having the security code
-			$aDBc_upload_dir = wp_upload_dir();
-			$aDBc_upload_dir = str_replace('\\' ,'/', $aDBc_upload_dir['basedir']) . '/adbc_uploads_' . $aDBc_security_folder_code;			
-			if(file_exists($aDBc_upload_dir)){
-				$dir = opendir($aDBc_upload_dir);
-				while(($file = readdir($dir)) !== false){
-					if ($file != '.' && $file != '..'){
-						unlink($aDBc_upload_dir . "/" . $file);
-					}
-				}
-				closedir($dir);
-				rmdir($aDBc_upload_dir);
-			}
-
-			// Just in case the old folder (in versions < 3.1.0) have not been cleaned for any reason, try to clean it
-			$aDBc_upload_dir = wp_upload_dir();
-			$aDBc_upload_dir = str_replace('\\' ,'/', $aDBc_upload_dir['basedir']) . '/adbc_uploads';			
-			if(file_exists($aDBc_upload_dir)){
-				$dir = opendir($aDBc_upload_dir);
-				while(($file = readdir($dir)) !== false){
-					if ($file != '.' && $file != '..'){
-						unlink($aDBc_upload_dir . "/" . $file);
-					}
-				}
-				closedir($dir);
-				rmdir($aDBc_upload_dir);
-			}
-
-			// Delete security code option
-			delete_option('aDBc_security_folder_code');
-			// Delete license options
-			delete_option('aDBc_edd_license_key');
-			delete_option('aDBc_edd_license_status');
-			// Uninstall the license key? Maybe no need for deactivating the license!
-			// if(!function_exists('aDBc_edd_deactivate_license_after_uninstall')){
-				// include_once 'includes/license/adbc-edd-sample-plugin.php';
-			// }
-			// aDBc_edd_deactivate_license_after_uninstall();
-		}
 
 		// Options below are used by both free and pro version
 		// Test if both version are installed to prevent deleting options
@@ -547,9 +442,9 @@ class ADBC_Advanced_DB_Cleaner {
 			if(!isset($_POST['aDBc_left_menu']) && !isset($_POST['aDBc_menu_under_tools'])){
 				$aDBc_settings['left_menu'] 	= "1";
 			}
-			if(ADBC_PLUGIN_F_TYPE == "free"){
-				$aDBc_settings['hide_premium_tab'] 		= isset($_POST['aDBc_hide_premium_tab']) ? "1" : "0";
-			}
+
+			$aDBc_settings['hide_premium_tab'] 		= isset($_POST['aDBc_hide_premium_tab']) ? "1" : "0";
+
 			// Update settings in DB
 			update_option('aDBc_settings', $aDBc_settings, "no");
 		}
@@ -577,13 +472,9 @@ class ADBC_Advanced_DB_Cleaner {
 
 						<td width="100%">
 							<div style="background:#fff;padding:10px;margin-bottom:10px;">
-								<?php
-								if(ADBC_PLUGIN_F_TYPE == 'free'){
-									$aDBc_plugin_title = "Advanced DB Cleaner '" . ADBC_PLUGIN_VERSION . "'";
-								}else{
-									$aDBc_plugin_title = "Advanced DB Cleaner <b>PRO</b> '" . ADBC_PLUGIN_VERSION . "'";
-								}
-								?>
+
+								<?php $aDBc_plugin_title = "Advanced DB Cleaner '" . ADBC_PLUGIN_VERSION . "'"; ?>
+
 								<div style="font-size: 20px;font-weight: 400;margin-bottom:10px"><?php echo $aDBc_plugin_title; ?></div>
 								<div style="border-top:1px dashed #eee;padding-top:4px">
 									<span class="aDBc-row-text"><?php _e('By', 'advanced-database-cleaner'); ?></span>
@@ -611,18 +502,18 @@ class ADBC_Advanced_DB_Cleaner {
 			<h1 style="font-size:10px"></h1>
 
 			<?php
-			if(ADBC_PLUGIN_F_TYPE == 'pro' && !aDBc_edd_is_license_activated()){
-				echo '<div class="aDBc-please-activate-msg notice is-dismissible"><p>' . __('Please activate your license key to get lifetime automatic updates and support.', 'advanced-database-cleaner') . " <a href='?page=advanced_db_cleaner&aDBc_tab=license'>" . __('Activate now', 'advanced-database-cleaner') . "</a>" . '</p></div>';
-			}
+			// zzz
+			$activate_license = __('Please activate your license key to get lifetime automatic updates and support.', 'advanced-database-cleaner');
+			$activate_now = __('Activate now', 'advanced-database-cleaner');
+
 			global $aDBc_settings;
 
 			// This is a notice for premium users who will lose pro version when upgrading to 3.0.0 from an old version
-			if(ADBC_PLUGIN_F_TYPE == 'free' && !empty($aDBc_settings['ignore_premium']) && $aDBc_settings['ignore_premium'] == "no"){
+			if(!empty($aDBc_settings['ignore_premium']) && $aDBc_settings['ignore_premium'] == "no"){
 
 				$aDBc_new_URI = $_SERVER['REQUEST_URI'];
-				$aDBc_new_URI = add_query_arg('ignore-premium-notice', 'yes', $aDBc_new_URI);
+				$aDBc_new_URI = add_query_arg('ignore-premium-notice', 'yes', $aDBc_new_URI); ?>
 
-			?>
 				<div id="aDBc_main_msg" class="aDBc-premium-lost-msg">
 					<span style="float:left;margin-bottom:20px"><?php _e('Important notice to premium users!', 'advanced-database-cleaner'); ?></span>
 					<a style="text-decoration:none;float:right" href="<?php echo $aDBc_new_URI ?>">
@@ -636,15 +527,9 @@ class ADBC_Advanced_DB_Cleaner {
 				</div>
 			<?php 
 			}
-
-			if(ADBC_PLUGIN_F_TYPE == 'free'){
-				$aDBc_margin_class = "aDBc-margin-r-300";
-			}else{
-				$aDBc_margin_class = "";
-			}
-
 			?>
-			<div class="<?php echo $aDBc_margin_class; ?>">
+
+			<div class="aDBc-margin-r-300">
 				<div class="aDBc-tab-box">
 					<?php
 					$aDBc_tabs = array('general'  => __('General clean-up', 'advanced-database-cleaner'),
@@ -652,28 +537,20 @@ class ADBC_Advanced_DB_Cleaner {
 									   'options'  => __('Options', 'advanced-database-cleaner'),
 									   'cron'  	  => __('Cron jobs', 'advanced-database-cleaner'),
 									   'overview' => __('Overview & settings', 'advanced-database-cleaner'),
-									   'premium'  => __('Premium', 'advanced-database-cleaner'),
-									   'license'  => __('License', 'advanced-database-cleaner')
+									   'premium'  => __('Premium', 'advanced-database-cleaner')
 									);
 
-					// If we are in free version or if the user choosed to hide the premium tab, then hide it
-					// Also hide license tab
-					if(ADBC_PLUGIN_F_TYPE == "pro" || (!empty($aDBc_settings['hide_premium_tab']) && $aDBc_settings['hide_premium_tab'] == "1")){
+					// if the user choosed to hide the premium tab, then hide it
+					if(!empty($aDBc_settings['hide_premium_tab']) && $aDBc_settings['hide_premium_tab'] == "1"){
 						unset($aDBc_tabs['premium']);
-					}
-
-					// If we are in free version, hide license tab							
-					if(ADBC_PLUGIN_F_TYPE == "free"){
-						unset($aDBc_tabs['license']);
-					}				
+					}			
 
 					$aDBc_dashicons_css = array('general' => 'dashicons-format-aside dashicons',
 											   'tables'   => 'dashicons-grid-view dashicons',
 											   'options'  => 'dashicons-forms dashicons',
 											   'cron'  	  => 'dashicons-backup dashicons',
 											   'overview' => 'dashicons-admin-settings dashicons',
-											   'premium'  => 'dashicons-awards dashicons',
-											   'license'  => 'dashicons-admin-network dashicons',
+											   'premium'  => 'dashicons-awards dashicons'
 											);			
 
 					$current_tab = isset($_GET['aDBc_tab']) ? $_GET['aDBc_tab'] : 'general';
@@ -708,19 +585,14 @@ class ADBC_Advanced_DB_Cleaner {
 							break;
 						case 'premium' :
 							include_once 'includes/premium_page.php';
-							break;							
-						case 'license' :
-							aDBc_edd_license_page();
 							break;
 					}
 					echo '</div>';
 					?>
 				</div>
 
-				<!-- In pro version, don't show sidebar -->
-				<?php if(ADBC_PLUGIN_F_TYPE == "free"){ ?>
-						<div class="aDBc-sidebar"><?php include_once 'includes/sidebar.php'; ?></div>
-				<?php } ?>
+				<!-- sidebar -->
+				<div class="aDBc-sidebar"><?php include_once 'includes/sidebar.php'; ?></div>
 
 			</div>
 		</div>

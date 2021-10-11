@@ -36,19 +36,19 @@ var ClearPreferredTS = function () {
 					}
 				},
 				error:    function (jqXHR, status, error) {
-					var parsedResponse = jqXHR.statusText || status || error;
-					alert(parsedResponse);
-				},
-				complete: function () {
-					spinner.removeClass('is-active');
-				}
-			});
-		});
-	};
+                    var parsedResponse = jqXHR.statusText || status || error;
+                    alert(parsedResponse);
+                },
+                            complete: function () {
+                                spinner.removeClass('is-active');
+                            }
+                        });
+        });
+    };
 
-	jQuery(document).ready(function () {
-		clearPreferredTS.init();
-	});
+    jQuery(function () {
+        clearPreferredTS.init();
+    });
 };
 
 var clearPreferredTS = new ClearPreferredTS();

@@ -9,15 +9,15 @@ class WPML_Media implements IWPML_Action {
 
 	private static $settings;
 	private static $settings_option_key = '_wpml_media';
-	private static $default_settings = array(
+	private static $default_settings    = array(
 		'version'                  => false,
 		'media_files_localization' => array(
 			'posts'         => true,
 			'custom_fields' => true,
-			'strings'       => true
+			'strings'       => true,
 		),
 		'wpml_media_2_3_migration' => true,
-		self::SETUP_RUN            => false
+		self::SETUP_RUN            => false,
 	);
 
 	public $languages;
@@ -97,7 +97,6 @@ class WPML_Media implements IWPML_Action {
 
 				add_action( 'wp_ajax_find_posts', array( $this, 'find_posts_filter' ), 0 );
 			}
-
 		} else {
 			if ( WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN === (int) $sitepress_settings['language_negotiation_type'] ) {
 				// Translate media url when in front-end and only when using custom domain
@@ -226,7 +225,6 @@ class WPML_Media implements IWPML_Action {
 			$lang_links .= ' | <a href="' . admin_url( 'media.php?attachment_id=' . $id . '&action=edit' ) . '">' . $active_languages[ $lang ]['native_name'] . '</a>';
 		}
 
-
 		echo '<div id="icl_lang_options" style="display:none">' . $lang_links . '</div>';
 	}
 
@@ -256,8 +254,8 @@ class WPML_Media implements IWPML_Action {
 	}
 
 	/**
-	 *Add a filter to fix the links for attachments in the language switcher so
-	 *they point to the corresponding pages in different languages.
+	 * Add a filter to fix the links for attachments in the language switcher so
+	 * they point to the corresponding pages in different languages.
 	 */
 	function filter_link( $url, $lang_info ) {
 		return $url;
@@ -287,10 +285,13 @@ class WPML_Media implements IWPML_Action {
 
 			global $wpdb;
 
-			$thumbnail_prepared = $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s", array(
-				$object_id,
-				$meta_key
-			) );
+			$thumbnail_prepared = $wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s",
+				array(
+					$object_id,
+					$meta_key,
+				)
+			);
 			$thumbnail          = $wpdb->get_var( $thumbnail_prepared );
 
 			if ( $thumbnail == null ) {
@@ -298,10 +299,13 @@ class WPML_Media implements IWPML_Action {
 
 				$post_type_prepared = $wpdb->prepare( "SELECT post_type FROM {$wpdb->posts} WHERE ID = %d", array( $object_id ) );
 				$post_type          = $wpdb->get_var( $post_type_prepared );
-				$trid_prepared      = $wpdb->prepare( "SELECT trid, source_language_code FROM {$wpdb->prefix}icl_translations WHERE element_id=%d AND element_type = %s", array(
-					$object_id,
-					'post_' . $post_type
-				) );
+				$trid_prepared      = $wpdb->prepare(
+					"SELECT trid, source_language_code FROM {$wpdb->prefix}icl_translations WHERE element_id=%d AND element_type = %s",
+					array(
+						$object_id,
+						'post_' . $post_type,
+					)
+				);
 				$trid               = $wpdb->get_row( $trid_prepared );
 				if ( $trid ) {
 
@@ -311,10 +315,13 @@ class WPML_Media implements IWPML_Action {
 					if ( isset( $translations[ $trid->source_language_code ] ) ) {
 						$translation = $translations[ $trid->source_language_code ];
 						// see if the original has a thumbnail.
-						$thumbnail_prepared = $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s", array(
-							$translation->element_id,
-							$meta_key
-						) );
+						$thumbnail_prepared = $wpdb->prepare(
+							"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s",
+							array(
+								$translation->element_id,
+								$meta_key,
+							)
+						);
 						$thumbnail          = $wpdb->get_var( $thumbnail_prepared );
 						if ( $thumbnail ) {
 							$value = $thumbnail;
@@ -324,7 +331,6 @@ class WPML_Media implements IWPML_Action {
 			} else {
 				$value = $thumbnail;
 			}
-
 		}
 
 		return $value;
@@ -372,10 +378,10 @@ class WPML_Media implements IWPML_Action {
 		$translated_ids = array();
 		if ( ! empty( $attachment_ids ) ) {
 			foreach ( $attachment_ids as $attachment_id ) {
-				//Fallback to the original ID
+				// Fallback to the original ID
 				$translated_id = $attachment_id;
 
-				//Find the ID translation
+				// Find the ID translation
 				$trid = $sitepress->get_element_trid( $attachment_id, 'post_attachment' );
 				if ( $trid ) {
 					$id_translations = $sitepress->get_element_translations( $trid, 'post_attachment', false, true );

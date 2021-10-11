@@ -54,7 +54,7 @@ class WPML_ST_Translations_File_Registration {
 	 * @return bool
 	 */
 	public function cached_save_mo_file_info( $override, $domain, $mo_file_path ) {
-		if ( !isset( $this->cache[ $mo_file_path ] ) ) {
+		if ( ! isset( $this->cache[ $mo_file_path ] ) ) {
 			$this->cache[ $mo_file_path ] = $this->save_file_info( $domain, $domain, $mo_file_path );
 		}
 
@@ -111,7 +111,7 @@ class WPML_ST_Translations_File_Registration {
 		$pathinfo  = pathinfo( $file_path );
 		$file_type = isset( $pathinfo['extension'] ) ? $pathinfo['extension'] : null;
 
-		switch( $file_type ) {
+		switch ( $file_type ) {
 			case 'mo':
 				return preg_replace( self::PATH_PATTERN_SEARCH_MO, self::PATH_PATTERN_REPLACE_MO, $file_path );
 
@@ -133,7 +133,7 @@ class WPML_ST_Translations_File_Registration {
 			! $this->wpml_file->file_exists( $file_path ) ||
 			$this->isGeneratedFile( $file_path )
 		) {
-			return ;
+			return;
 		}
 
 		$relative_path = $this->wpml_file->get_relative_path( $file_path );
@@ -164,9 +164,9 @@ class WPML_ST_Translations_File_Registration {
 
 	private function isGeneratedFile( $path ) {
 		return strpos(
-			       $this->wpml_file->fix_dir_separator( $path ),
-			       $this->wpml_file->fix_dir_separator( WPML\ST\TranslationFile\Manager::getSubdir() )
-		       ) === 0;
+			$this->wpml_file->fix_dir_separator( $path ),
+			$this->wpml_file->fix_dir_separator( WPML\ST\TranslationFile\Manager::getSubdir() )
+		) === 0;
 	}
 
 }

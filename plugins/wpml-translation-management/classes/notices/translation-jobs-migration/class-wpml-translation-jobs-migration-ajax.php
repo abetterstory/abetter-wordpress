@@ -20,7 +20,7 @@ class WPML_Translation_Jobs_Migration_Ajax {
 		WPML_Translation_Jobs_Migration_Repository $jobs_repository,
 		WPML_TM_Jobs_Migration_State $migration_state
 	) {
-		$this->jobs_migration = $jobs_migration;
+		$this->jobs_migration  = $jobs_migration;
 		$this->jobs_repository = $jobs_repository;
 		$this->migration_state = $migration_state;
 	}
@@ -33,7 +33,7 @@ class WPML_Translation_Jobs_Migration_Ajax {
 
 		$jobs = $this->jobs_repository->get();
 
-		$jobs_chunk    = array_slice( $jobs, 0, self::JOBS_MIGRATED_PER_REQUEST );
+		$jobs_chunk = array_slice( $jobs, 0, self::JOBS_MIGRATED_PER_REQUEST );
 		try {
 			$this->jobs_migration->migrate_jobs( $jobs_chunk );
 		} catch ( Exception $e ) {
@@ -42,8 +42,8 @@ class WPML_Translation_Jobs_Migration_Ajax {
 			return;
 		}
 
-		$done = count( $jobs ) === count( $jobs_chunk );
-		$total_jobs = count( $jobs );
+		$done             = count( $jobs ) === count( $jobs_chunk );
+		$total_jobs       = count( $jobs );
 		$jobs_chunk_total = count( $jobs_chunk );
 
 		$result = array(

@@ -40,6 +40,6 @@ class WPML_TM_Rest_Job_Progress {
 
 		$percentage = (int) ( count( $translated ) / count( $elements ) * 100 );
 
-		return sprintf( __( '%s completed', 'Translation jobs list', 'wpml-transation-manager' ), $percentage . '%' );
+		return sprintf( _x( '%s completed', 'Translation jobs list', 'wpml-transation-manager' ), $percentage . '%' );
 	}
 }

@@ -1,5 +1,8 @@
 <?php
 
+use WPML\FP\Fns;
+use WPML\LIB\WP\Post;
+
 class WPML_Media_Post_With_Media_Files {
 
 	/**
@@ -76,7 +79,7 @@ class WPML_Media_Post_With_Media_Files {
 
 		}
 
-		return apply_filters( 'wpml_ids_of_media_used_in_post', $media_ids, $this->post_id );
+		return Fns::filter( Post::get(), apply_filters( 'wpml_ids_of_media_used_in_post', $media_ids, $this->post_id ) );
 	}
 
 	/**
@@ -113,9 +116,11 @@ class WPML_Media_Post_With_Media_Files {
 		if ( preg_match_all( $gallery_shortcode_regex, $post_content, $matches ) ) {
 			foreach ( $matches[1] as $gallery_ids_string ) {
 				$media_ids_array = explode( ',', $gallery_ids_string );
+				$media_ids_array = Fns::map( Fns::unary( 'intval' ), $media_ids_array );
+
 				foreach ( $media_ids_array as $media_id ) {
 					if ( 'attachment' === get_post_type ( $media_id ) ) {
-						$galleries_media_ids[] = (int) $media_id;
+						$galleries_media_ids[] = $media_id;
 					}
 
 				}
@@ -162,14 +167,15 @@ class WPML_Media_Post_With_Media_Files {
 
 		$post_meta = get_metadata( 'post', $this->post_id );
 
-		foreach ( $post_meta as $meta_key => $meta_value ) {
-			$setting         = $this->cf_settings_factory->post_meta_setting( $meta_key );
-			$is_translatable = $this->sitepress->get_wp_api()
-			                                   ->constant( 'WPML_TRANSLATE_CUSTOM_FIELD' ) === $setting->status();
-			if ( is_string( $meta_value[0] ) && $is_translatable ) {
-				$content .= $meta_value[0];
+		if ( is_array( $post_meta ) ) {
+			foreach ( $post_meta as $meta_key => $meta_value ) {
+				$setting         = $this->cf_settings_factory->post_meta_setting( $meta_key );
+				$is_translatable = $this->sitepress->get_wp_api()
+				                                   ->constant( 'WPML_TRANSLATE_CUSTOM_FIELD' ) === $setting->status();
+				if ( is_string( $meta_value[0] ) && $is_translatable ) {
+					$content .= $meta_value[0];
+				}
 			}
-
 		}
 
 		return $content;

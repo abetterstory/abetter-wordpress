@@ -1,5 +1,10 @@
 <?php
 
+use WPML\FP\Obj;
+use \WPML\FP\Relation;
+use WPML\FP\Lst;
+use function WPML\FP\pipe;
+
 class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 
 	/** @var  int $job_id */
@@ -38,7 +43,8 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 		} catch ( Exception $e ) {
 			throw new RuntimeException(
 				'Could not retrieve field contents for job_id: ' . $this->job_id,
-				0, $e
+				0,
+				$e
 			);
 		}
 	}
@@ -59,12 +65,10 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 
 		$elements                  = $job->elements;
 		$previous_version_elements = isset( $job->prev_version ) ? $job->prev_version->elements : array();
-		$data = array();
+		$data                      = array();
 		foreach ( $elements as $index => $element ) {
-			$previous_element = null;
-			if ( array_key_exists( $index, $previous_version_elements ) ) {
-				$previous_element = $previous_version_elements[ $index ];
-			}
+			$previous_element = $this->find_previous_version_element( $element, $previous_version_elements, $index );
+
 			$data[] = array(
 				'field_type'            => sanitize_title( str_replace( WPML_TM_Field_Type_Encoding::CUSTOM_FIELD_KEY_SEPARATOR, '-', $element->field_type ) ),
 				'tid'                   => $element->tid,
@@ -78,6 +82,13 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 		}
 
 		return $data;
+	}
+
+	private function find_previous_version_element( $element, $previous_version_elements, $index ) {
+		$findByMatchingFieldType = Lst::find( pipe( Obj::prop( 'field_type' ), Relation::equals( $element->field_type ) ) );
+		$findByIndex             = Obj::prop( $index );
+
+		return $findByMatchingFieldType( $previous_version_elements ) ?: $findByIndex( $previous_version_elements );
 	}
 
 	private function has_diff( $element, $previous_element ) {

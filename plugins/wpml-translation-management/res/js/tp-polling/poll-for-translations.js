@@ -18,13 +18,13 @@ var TranslationProxyPolling = {
     error_data: [],
     showSpinner: function () {
         if (!TranslationProxyPolling.spinner) {
-            TranslationProxyPolling.button.attr('disabled', 'disabled');
+            TranslationProxyPolling.button.prop('disabled', true);
             TranslationProxyPolling.icl_ajxloaderimg.show();
             TranslationProxyPolling.spinner = true;
         }
     },
     hideSpinner: function () {
-        TranslationProxyPolling.button.removeAttr('disabled');
+        TranslationProxyPolling.button.prop('disabled', false);
         TranslationProxyPolling.icl_ajxloaderimg.hide();
         TranslationProxyPolling.spinner = false;
     },

@@ -9,7 +9,8 @@ class WPML_ST_DB_Troubleshooting extends WPML_Templates_Factory {
 
 	public function add_required_js() {
 		wp_register_script(
-			'wpml-st-db-troubleshooting', WPML_ST_URL . '/res/js/troubleshooting.js',
+			'wpml-st-db-troubleshooting',
+			WPML_ST_URL . '/res/js/troubleshooting.js',
 			array( 'jquery', 'wp-util', 'jquery-ui-sortable', 'jquery-ui-dialog' )
 		);
 		wp_enqueue_script( 'wpml-st-db-troubleshooting' );

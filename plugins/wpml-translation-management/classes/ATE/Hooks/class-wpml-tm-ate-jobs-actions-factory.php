@@ -1,6 +1,7 @@
 <?php
 
 use function WPML\Container\make;
+use WPML\TM\ATE\ReturnedJobsQueue;
 
 /**
  * Factory class for \WPML_TM_ATE_Jobs_Actions.

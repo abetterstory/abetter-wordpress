@@ -1,5 +1,8 @@
 <?php
 
+use WPML\FP\Fns;
+use WPML\FP\Obj;
+
 /**
  * It handles the TM section responsible for displaying the AMS/ATE console.
  *
@@ -20,37 +23,37 @@ class WPML_TM_AMS_ATE_Console_Section implements IWPML_TM_Admin_Section {
 	/**
 	 * An instance of \SitePress.
 	 *
-	 * @var \SitePress The instance of \SitePress.
+	 * @var SitePress The instance of \SitePress.
 	 */
 	private $sitepress;
 	/**
 	 * Instance of WPML_TM_ATE_AMS_Endpoints.
 	 *
-	 * @var \WPML_TM_ATE_AMS_Endpoints
+	 * @var WPML_TM_ATE_AMS_Endpoints
 	 */
 	private $endpoints;
 
 	/**
 	 * Instance of WPML_TM_ATE_Authentication.
 	 *
-	 * @var \WPML_TM_ATE_Authentication
+	 * @var WPML_TM_ATE_Authentication
 	 */
 	private $auth;
 
 	/**
 	 * Instance of WPML_TM_AMS_API.
 	 *
-	 * @var \WPML_TM_AMS_API
+	 * @var WPML_TM_AMS_API
 	 */
 	private $ams_api;
 
 	/**
 	 * WPML_TM_AMS_ATE_Console_Section constructor.
 	 *
-	 * @param \SitePress                  $sitepress The instance of \SitePress.
-	 * @param \WPML_TM_ATE_AMS_Endpoints  $endpoints The instance of WPML_TM_ATE_AMS_Endpoints.
-	 * @param \WPML_TM_ATE_Authentication $auth      The instance of WPML_TM_ATE_Authentication.
-	 * @param \WPML_TM_AMS_API            $ams_api   The instance of WPML_TM_AMS_API.
+	 * @param SitePress                  $sitepress The instance of \SitePress.
+	 * @param WPML_TM_ATE_AMS_Endpoints  $endpoints The instance of WPML_TM_ATE_AMS_Endpoints.
+	 * @param WPML_TM_ATE_Authentication $auth      The instance of WPML_TM_ATE_Authentication.
+	 * @param WPML_TM_AMS_API            $ams_api   The instance of WPML_TM_AMS_API.
 	 */
 	public function __construct( SitePress $sitepress, WPML_TM_ATE_AMS_Endpoints $endpoints, WPML_TM_ATE_Authentication $auth, WPML_TM_AMS_API $ams_api ) {
 		$this->sitepress = $sitepress;
@@ -130,8 +133,14 @@ class WPML_TM_AMS_ATE_Console_Section implements IWPML_TM_Admin_Section {
 			return;
 		}
 
-		wp_enqueue_script( self::ATE_APP_ID, $this->endpoints->get_base_url( WPML_TM_ATE_AMS_Endpoints::SERVICE_AMS ) . '/mini_app/main.js', [] );
-		$this->add_initialization_script();
+		$script_url = \add_query_arg(
+			[
+				\WPML\ATE\Proxies\Widget::QUERY_VAR_ATE_WIDGET_SCRIPT => \WPML\ATE\Proxies\Widget::SCRIPT_NAME,
+			],
+			\site_url()
+		);
+
+		\wp_enqueue_script( self::ATE_APP_ID, $script_url, [], WPML_TM_VERSION, true );
 	}
 
 	/**
@@ -140,9 +149,10 @@ class WPML_TM_AMS_ATE_Console_Section implements IWPML_TM_Admin_Section {
 	 * @return bool
 	 */
 	private function is_ate_console_tab() {
-		return array_key_exists( 'sm', $_GET ) && array_key_exists( 'page', $_GET )
-			   && filter_var( $_GET['sm'], FILTER_SANITIZE_STRING ) === self::SLUG
-			   && filter_var( $_GET['page'], FILTER_SANITIZE_STRING ) === WPML_TM_FOLDER . '/menu/main.php';
+		$sm   = filter_input( INPUT_GET, 'sm', FILTER_SANITIZE_STRING );
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
+		return $sm && $page && self::SLUG === $sm && WPML_TM_FOLDER . '/menu/main.php' === $page;
 	}
 
 	/**
@@ -179,11 +189,15 @@ class WPML_TM_AMS_ATE_Console_Section implements IWPML_TM_Admin_Section {
 	}
 
 	/**
-	 * Initializes the React APP.
+	 * @return array<string,mixed>
 	 */
-	private function add_initialization_script() {
+	public function get_widget_constructor() {
 		$registration_data = $this->ams_api->get_registration_data();
-		$app_constructor   = [
+
+		$fields    = [ 'code', 'english_name', 'native_name', 'default_locale', 'encode_url', 'tag' ];
+		$languages = Fns::map( Obj::pick( $fields ), $this->sitepress->get_active_languages() );
+
+		$app_constructor = [
 			'host'         => esc_js( $this->endpoints->get_base_url( WPML_TM_ATE_AMS_Endpoints::SERVICE_AMS ) ),
 			'wpml_host'    => esc_js( get_site_url() ),
 			'wpml_home'    => esc_js( get_home_url() ),
@@ -192,13 +206,26 @@ class WPML_TM_AMS_ATE_Console_Section implements IWPML_TM_Admin_Section {
 			'status'       => esc_js( $registration_data['status'] ),
 			'tm_email'     => esc_js( wp_get_current_user()->user_email ),
 			'website_uuid' => esc_js( $this->auth->get_site_id() ),
+			'site_key'     => esc_js( apply_filters( 'otgs_installer_get_sitekey_wpml', null ) ),
 			'tab'          => self::TAB_SELECTOR,
 			'container'    => self::CONTAINER_SELECTOR,
 			'post_types'   => $this->get_post_types_data(),
 			'ui_language'  => esc_js( $this->get_user_admin_language() ),
-			'restNonce' => wp_create_nonce( 'wp_rest' ),
+			'restNonce'    => wp_create_nonce( 'wp_rest' ),
+			'authCookie'   => [
+				'name'  => LOGGED_IN_COOKIE,
+				'value' => $_COOKIE[ LOGGED_IN_COOKIE ],
+			],
+			'languages'    => $languages,
 		];
 
-		wp_add_inline_script( self::ATE_APP_ID, 'LoadEateWidget(' . wp_json_encode( $app_constructor, JSON_PRETTY_PRINT ) . ');', 'after' );
+		return $app_constructor;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getWidgetScriptUrl() {
+		return $this->endpoints->get_base_url( WPML_TM_ATE_AMS_Endpoints::SERVICE_AMS ) . '/mini_app/main.js';
 	}
 }

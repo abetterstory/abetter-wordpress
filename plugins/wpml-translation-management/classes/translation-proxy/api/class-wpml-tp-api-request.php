@@ -116,15 +116,16 @@ class WPML_TP_API_Request {
 	 */
 	private function add_query_parameters( $params_used_in_path, $url ) {
 		$url .= '?' . preg_replace(
-				'/\%5B\d+\%5D/', '%5B%5D',
-				wpml_http_build_query(
-					array_diff_key(
-						$this->get_params(),
-						array_fill_keys( $params_used_in_path, 1 )
-					)
+			'/\%5B\d+\%5D/',
+			'%5B%5D',
+			wpml_http_build_query(
+				array_diff_key(
+					$this->get_params(),
+					array_fill_keys( $params_used_in_path, 1 )
 				)
-			);
+			)
+		);
 
 		return $url;
-}
+	}
 }

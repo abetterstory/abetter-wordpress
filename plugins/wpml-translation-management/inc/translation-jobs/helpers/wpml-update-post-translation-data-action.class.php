@@ -17,7 +17,6 @@ class WPML_TM_Update_Post_Translation_Data_Action extends WPML_TM_Update_Transla
 						$element = $this->get_previous_element( $prev_job, $field_name );
 						if ( $element ) {
 							$prev_translation[ $field_name ] = new WPML_TM_Translated_Field(
-								$field_name,
 								$element->field_data,
 								$element->field_data_translated,
 								$element->field_finished
@@ -37,10 +36,10 @@ class WPML_TM_Update_Post_Translation_Data_Action extends WPML_TM_Update_Transla
 					     && array_key_exists( $field_name, $translated_contents )
 					     && array_key_exists( 'data', $translated_contents[ $field_name ] )
 					) {
-						$prev_translation[ $field_name ] = new WPML_TM_Translated_Field( $field_name,
-						                                                                 '',
-						                                                                 $translated_contents[ $field_name ]['data'],
-						                                                                 false );
+						$prev_translation[ $field_name ] = new WPML_TM_Translated_Field(
+							'',
+							$translated_contents[ $field_name ]['data'],
+							false );
 					}
 				}
 			}

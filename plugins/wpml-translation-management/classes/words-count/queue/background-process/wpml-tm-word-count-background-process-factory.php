@@ -9,8 +9,8 @@ class WPML_TM_Word_Count_Background_Process_Factory {
 	 * @return WPML_TM_Word_Count_Background_Process_Requested_Types
 	 */
 	public function create_requested_types() {
-		$records_factory   = new WPML_TM_Word_Count_Records_Factory();
-		$records           = $records_factory->create();
+		$records_factory = new WPML_TM_Word_Count_Records_Factory();
+		$records         = $records_factory->create();
 
 		$setters_factory = new WPML_TM_Word_Count_Setters_Factory();
 		$setters         = $setters_factory->create();

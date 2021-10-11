@@ -53,14 +53,14 @@ class WPML_Set_Attachments_Language implements IWPML_Action {
 		?>
 		<div class="error message otgs-is-dismissible">
 			<p>
-				<?php esc_html_e( 'WPML needs to set languages to existing media in your site.', 'sitepress' ) ?>
-				<a href="<?php echo $settings_page ?>"
-				   class="button-secondary"><?php esc_html_e( 'Set media languages', 'sitepress' ) ?></a>
+				<?php esc_html_e( 'WPML needs to set languages to existing media in your site.', 'sitepress' ); ?>
+				<a href="<?php echo $settings_page; ?>"
+				   class="button-secondary"><?php esc_html_e( 'Set media languages', 'sitepress' ); ?></a>
 
 				<span
 						id="wpml_media_dismiss_1" class="notice-dismiss"
 						onclick="<?php echo $onclick_js; ?> ">
-					<span class="screen-reader-text"><?php esc_html_e( "Dismiss", 'sitepress' ) ?></span>
+					<span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'sitepress' ); ?></span>
 				</span>
 			</p>
 		</div>

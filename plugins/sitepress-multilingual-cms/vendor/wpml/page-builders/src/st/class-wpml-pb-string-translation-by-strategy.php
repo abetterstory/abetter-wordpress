@@ -1,5 +1,7 @@
 <?php
 
+use WPML\PB\ShortCodesInGutenbergBlocks;
+
 class WPML_PB_String_Translation_By_Strategy extends WPML_PB_String_Translation {
 
 	/** @var WPML_PB_Factory $factory */
@@ -22,19 +24,45 @@ class WPML_PB_String_Translation_By_Strategy extends WPML_PB_String_Translation 
 		list( $package_id, $string_id, $language ) = $this->get_package_for_translated_string( $translated_string_id );
 		if ( $package_id ) {
 			$package = $this->factory->get_wpml_package( $package_id );
-			if ( $package->post_id && $this->strategy->get_package_kind() === $package->kind ) {
-				$this->add_package_to_update_list( $package, $language );
+			if ( $package->post_id ) {
+				$strategyKind = $this->strategy->get_package_kind();
+				if ( $strategyKind === $package->kind ) {
+					$this->add_package_to_update_list( $package, $language );
+				}
+				ShortCodesInGutenbergBlocks::recordPackage(
+					$this,
+					$strategyKind,
+					$package,
+					$language
+				);
 			}
 		}
 	}
 
 	public function save_translations_to_post() {
 		foreach ( $this->packages_to_update as $package_data ) {
+			$package_data = ShortCodesInGutenbergBlocks::fixupPackage( $package_data );
 			if ( $package_data['package']->kind == $this->strategy->get_package_kind() ) {
 				$update_post = $this->strategy->get_update_post( $package_data );
 				$update_post->update();
 			}
 		}
+	}
+
+	/**
+	 * @param string $content
+	 * @param string $lang
+	 *
+	 * @return string
+	 */
+	public function update_translations_in_content( $content, $lang ) {
+		foreach ( $this->packages_to_update as $package_data ) {
+			if ( $package_data['package']->kind == $this->strategy->get_package_kind() ) {
+				$update_post = $this->strategy->get_update_post( $package_data );
+				$content = $update_post->update_content( $content, $lang );
+			}
+		}
+		return $content;
 	}
 
 	/**
@@ -72,5 +100,7 @@ class WPML_PB_String_Translation_By_Strategy extends WPML_PB_String_Translation 
 				$this->packages_to_update[ $package->ID ]['languages'][] = $language;
 			}
 		}
+
+		$this->packages_to_update = ShortCodesInGutenbergBlocks::normalizePackages( $this->packages_to_update );
 	}
 }

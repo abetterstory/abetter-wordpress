@@ -25,6 +25,7 @@ class Generator {
 		$mo = $this->moFactory->createNewInstance();
 		wpml_collect( $entries )
 			->reduce( [ $this, 'createMOFormatEntities' ], wpml_collect( [] ) )
+			->filter( function( array $entry ) { return ! empty($entry['singular']); } )
 			->each( [ $mo, 'add_entry' ] );
 
 		$mem_file = fopen( 'php://memory', 'r+' );

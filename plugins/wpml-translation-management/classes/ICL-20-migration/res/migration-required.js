@@ -1,15 +1,15 @@
 /*globals jQuery, ajaxurl */
-jQuery(document).ready(function () {
-	'use strict';
+jQuery(function () {
+    'use strict';
 
-	var notice = jQuery('[data-id="icl-20-migration"][data-group="icl-20-migration"]');
-	var confirm;
-	var startButton;
+    var notice = jQuery('[data-id="icl-20-migration"][data-group="icl-20-migration"]');
+    var confirm;
+    var startButton;
 
-	var updateButton = function () {
-		if (confirm.prop('checked')) {
-			startButton.removeClass('disabled');
-			startButton.on('click', userConfirms);
+    var updateButton = function () {
+        if (confirm.prop('checked')) {
+            startButton.removeClass('disabled');
+            startButton.on('click', userConfirms);
 		} else {
 			startButton.addClass('disabled');
 			startButton.off('click');

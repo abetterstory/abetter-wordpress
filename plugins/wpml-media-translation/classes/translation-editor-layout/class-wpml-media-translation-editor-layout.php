@@ -27,7 +27,7 @@ class WPML_Media_Translation_Editor_Layout implements IWPML_Action {
 				'fields'        => array(),
 				'empty'         => false,
 				'empty_message' => '',
-				'sub_title'     => ''
+				'sub_title'     => '',
 			);
 
 			foreach ( $media_fields as $attachment_id => $media_field ) {
@@ -54,7 +54,6 @@ class WPML_Media_Translation_Editor_Layout implements IWPML_Action {
 			$fields[] = $media_section_field;
 		}
 
-
 		return array_values( $fields );
 	}
 
@@ -63,7 +62,7 @@ class WPML_Media_Translation_Editor_Layout implements IWPML_Action {
 		if ( is_string( $field ) && preg_match( '/^media_([0-9]+)_([a-z_]+)/', $field, $match ) ) {
 			$media_field = array(
 				'attachment_id' => (int) $match[1],
-				'label'         => $match[2]
+				'label'         => $match[2],
 			);
 		}
 

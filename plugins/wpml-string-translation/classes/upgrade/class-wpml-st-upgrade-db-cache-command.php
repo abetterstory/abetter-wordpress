@@ -1,7 +1,7 @@
 <?php
 
 class WPML_ST_Upgrade_Db_Cache_Command implements IWPML_St_Upgrade_Command {
-	/** @var WPDB $wpdb */
+	/** @var wpdb $wpdb */
 	private $wpdb;
 
 	/**
@@ -32,7 +32,7 @@ class WPML_ST_Upgrade_Db_Cache_Command implements IWPML_St_Upgrade_Command {
 	';
 
 	/**
-	 * @param WPDB $wpdb
+	 * @param wpdb $wpdb
 	 */
 	public function __construct( $wpdb ) {
 		$this->wpdb = $wpdb;
@@ -43,18 +43,18 @@ class WPML_ST_Upgrade_Db_Cache_Command implements IWPML_St_Upgrade_Command {
 		$this->wpdb->query( "DROP TABLE IF EXISTS `{$this->wpdb->prefix}icl_string_pages`" );
 		$this->wpdb->query( "DROP TABLE IF EXISTS `{$this->wpdb->prefix}icl_string_urls`" );
 
-		$charset_collate = $this->get_charset_collate();
-		$language_charset_and_collation   = $this->get_language_charset_and_collation();
+		$charset_collate                = $this->get_charset_collate();
+		$language_charset_and_collation = $this->get_language_charset_and_collation();
 
-		$icl_string_urls_sql = sprintf( $this->icl_string_urls_sql_prototype, $this->wpdb->prefix, $language_charset_and_collation );
+		$icl_string_urls_sql  = sprintf( $this->icl_string_urls_sql_prototype, $this->wpdb->prefix, $language_charset_and_collation );
 		$icl_string_urls_sql .= $charset_collate;
 
 		$result = $this->wpdb->query( $icl_string_urls_sql );
 
 		if ( $result ) {
-			$icl_string_pages_sql = sprintf( $this->icl_string_pages_sql_prototype, $this->wpdb->prefix );
+			$icl_string_pages_sql  = sprintf( $this->icl_string_pages_sql_prototype, $this->wpdb->prefix );
 			$icl_string_pages_sql .= $charset_collate;
-			$result = $this->wpdb->query( $icl_string_pages_sql );
+			$result                = $this->wpdb->query( $icl_string_pages_sql );
 		}
 
 		return false !== $result;

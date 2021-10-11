@@ -19,7 +19,7 @@ class WPML_User_Jobs_Notification_Settings {
 	public function save_new_job_notifications_setting( $user_id ) {
 		$val = 1;
 		if ( array_key_exists( self::BLOCK_NEW_NOTIFICATION_FIELD, $_POST ) ) {
-			$val = filter_var( $_POST[self::BLOCK_NEW_NOTIFICATION_FIELD], FILTER_SANITIZE_NUMBER_INT );
+			$val = filter_var( $_POST[ self::BLOCK_NEW_NOTIFICATION_FIELD ], FILTER_SANITIZE_NUMBER_INT );
 		}
 		update_user_meta( $user_id, self::BLOCK_NEW_NOTIFICATION_FIELD, $val );
 	}

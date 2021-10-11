@@ -62,7 +62,7 @@ class AutoRegisterSettings {
 	public function getTimeToAutoDisable() {
 		$setting = $this->getSetting( self::KEY_ENABLED, [ 'enabled' => false ] );
 
-		if ( isset( $setting['time' ] ) ) {
+		if ( isset( $setting['time'] ) ) {
 			$elapsed_time         = time() - $setting['time'];
 			$time_to_auto_disable = self::RESET_AUTOLOAD_TIMEOUT - $elapsed_time;
 
@@ -90,7 +90,7 @@ class AutoRegisterSettings {
 	 */
 	public function getExcludedDomains() {
 		if ( ! $this->excluded_domains ) {
-			$excluded = $this->getSetting( self::KEY_EXCLUDED_DOMAINS, [] );
+			$excluded               = $this->getSetting( self::KEY_EXCLUDED_DOMAINS, [] );
 			$this->excluded_domains = wpml_collect( $excluded )
 				->reject( [ $this, 'isAdminOrPackageDomain' ] )
 				->toArray();
@@ -139,7 +139,7 @@ class AutoRegisterSettings {
 	 */
 	public function isAdminOrPackageDomain( $domain ) {
 		return 0 === strpos( $domain, \WPML_Admin_Texts::DOMAIN_NAME_PREFIX )
-		       || $this->package_domains->isPackage( $domain );
+			   || $this->package_domains->isPackage( $domain );
 	}
 
 	/**

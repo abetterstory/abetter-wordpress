@@ -18,7 +18,8 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 		$who_will_translate_mode,
 		WPML_TP_Service $active_translation_service = null
 	) {
-		parent::__construct( array(
+		parent::__construct(
+			array(
 				WPML_TM_PATH . '/templates/wizard',
 			)
 		);
@@ -44,8 +45,8 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 			'local_translators'   => __( 'Your translators', 'wpml-translation-management' ),
 			'local_summary'       => __( 'WPML created the accounts for your translators and sent them instructions.', 'wpml-translation-management' ),
 			'instructions'        => $this->get_instructions(),
-			'go_back'             => __( "Go back", 'wpml-translation-management' ),
-			'done'                => __( "Done!", 'wpml-translation-management' ),
+			'go_back'             => __( 'Go back', 'wpml-translation-management' ),
+			'done'                => __( 'Done!', 'wpml-translation-management' ),
 		);
 	}
 
@@ -103,70 +104,70 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 	private function get_placeholder_value( $key ) {
 		$strings_definitions = array(
 
-			'plus' => array(
+			'plus'                              => array(
 				'open'  => '<strong>',
 				/* translators: The word "plus" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'plus', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'pencil' => array(
+			'pencil'                            => array(
 				'open'  => '<strong>',
 				/* translators: The word "pencil" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'pencil', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'language' => array(
+			'language'                          => array(
 				'open'  => '<strong>',
 				/* translators: The word "Language" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'Language', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'getting_started' => array(
+			'getting_started'                   => array(
 				'open'  => '<a href="https://wpml.org/documentation/getting-started-guide/#how-to-translate-different-kinds-of-content" target="_blank" rel="noopener">',
 				/* translators: "Getting Started Guide" will be used in other strings and wrapped with HTML tags to make it a link to external documentation */
 				'text'  => esc_html__( 'Getting Started Guide', 'wpml-translation-management' ),
 				'close' => '</a>',
 			),
 
-			'wpml_tm_management' => array(
+			'wpml_tm_management'                => array(
 				'open'  => '<strong>',
 				/* translators: "WPML > Translation Management" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'WPML > Translation Management', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'translators' => array(
+			'translators'                       => array(
 				'open'  => '<strong>',
 				/* translators: "Translators" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'Translators', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'translation_roles' => array(
+			'translation_roles'                 => array(
 				'open'  => '<strong>',
 				/* translators: "Translation Roles" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'Translation Roles', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'wpml_tm_translators' => array(
+			'wpml_tm_translators'               => array(
 				'open'  => '<strong>',
 				/* translators: "WPML > Translations" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'WPML > Translations', 'wpml-translation-management' ),
 				'close' => '</strong>',
 			),
 
-			'translating_your_content' => array(
+			'translating_your_content'          => array(
 				'open'  => '<a href="https://wpml.org/documentation/translating-your-contents/" target="_blank" rel="noopener">',
 				/* translators: "Translation Management" will be used in other strings and wrapped with HTML tags to make it a link to external documentation */
 				'text'  => esc_html__( 'Translation Management', 'wpml-translation-management' ),
 				'close' => '</a>',
 			),
 
-			'check_status' => array(
+			'check_status'                      => array(
 				'open'  => '<strong>',
 				/* translators: "Check status and get translations" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'Check status and get translations', 'wpml-translation-management' ),
@@ -180,7 +181,7 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 				'close' => '</a>',
 			),
 
-			'translation_basket' => array(
+			'translation_basket'                => array(
 				'open'  => '<strong>',
 				/* translators: "Translation Basket" will be used in other strings and wrapped with HTML tags to make it more prominent */
 				'text'  => esc_html__( 'Translation Basket', 'wpml-translation-management' ),
@@ -342,7 +343,7 @@ class WPML_TM_Wizard_Summary_Step extends WPML_Twig_Template_Loader {
 		}
 		$results = array_filter( $results );
 
-		if (  $results ) {
+		if ( $results ) {
 			return '<ol><li>' . implode( '</li><li>', $results ) . '</li></ol>';
 		}
 

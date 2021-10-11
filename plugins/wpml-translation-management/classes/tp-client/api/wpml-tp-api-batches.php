@@ -30,13 +30,13 @@ class WPML_TP_API_Batches extends WPML_TP_Abstract_API {
 	 * @link https://git.onthegosystems.com/tp/translation-proxy/wikis/create_batch_job
 	 */
 	public function create( array $batch_data, $extra_fields ) {
-		$batch           = false;
+		$batch              = false;
 		$this->endpoint_uri = self::CREATE_BATCH_ENDPOINT;
 
 		$params = array(
-			'api_version'  => self::API_VERSION,
-			'project_id'   => $this->tp_client->get_project()->get_id(),
-			'batch'        => $batch_data,
+			'api_version' => self::API_VERSION,
+			'project_id'  => $this->tp_client->get_project()->get_id(),
+			'batch'       => $batch_data,
 		);
 
 		if ( $extra_fields ) {

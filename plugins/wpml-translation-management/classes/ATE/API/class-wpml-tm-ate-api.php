@@ -1,7 +1,9 @@
 <?php
 
+use WPML\TM\ATE\ClonedSites\FingerprintGenerator;
 use WPML\TM\ATE\Log\Entry;
 use WPML\TM\ATE\Log\ErrorEvents;
+use WPML\TM\ATE\ClonedSites\ApiCommunication as ClonedSitesHandler;
 
 /**
  * @author OnTheGo Systems
@@ -10,6 +12,16 @@ class WPML_TM_ATE_API {
 	private $wp_http;
 	private $auth;
 	private $endpoints;
+
+	/**
+	 * @var ClonedSitesHandler
+	 */
+	private $clonedSitesHandler;
+
+	/**
+	 * @var FingerprintGenerator
+	 */
+	private $fingerprintGenerator;
 
 	/**
 	 * WPML_TM_ATE_API constructor.
@@ -21,11 +33,15 @@ class WPML_TM_ATE_API {
 	public function __construct(
 		WP_Http $wp_http,
 		WPML_TM_ATE_Authentication $auth,
-		WPML_TM_ATE_AMS_Endpoints $endpoints
+		WPML_TM_ATE_AMS_Endpoints $endpoints,
+		ClonedSitesHandler $clonedSitesHandler,
+		FingerprintGenerator $fingerprintGenerator
 	) {
-		$this->wp_http   = $wp_http;
-		$this->auth      = $auth;
-		$this->endpoints = $endpoints;
+		$this->wp_http              = $wp_http;
+		$this->auth                 = $auth;
+		$this->endpoints            = $endpoints;
+		$this->clonedSitesHandler   = $clonedSitesHandler;
+		$this->fingerprintGenerator = $fingerprintGenerator;
 	}
 
 	/**
@@ -64,20 +80,64 @@ class WPML_TM_ATE_API {
 	 * @throws \InvalidArgumentException
 	 */
 	public function get_editor_url( $job_id, $return_url ) {
-		$url = $this->endpoints->get_ate_editor();
-		$url = str_replace( array(
-			                    '{job_id}',
-			                    '{translator_email}',
-			                    '{return_url}'
-		                    ),
-		                    array(
-			                    $job_id,
-			                    urlencode( filter_var( wp_get_current_user()->user_email, FILTER_SANITIZE_URL ) ),
-			                    urlencode( filter_var( $return_url, FILTER_SANITIZE_URL ) ),
-		                    ),
-		                    $url );
+		$lock = $this->clonedSitesHandler->checkCloneSiteLock();
+		if ( $lock ) {
+			return new WP_Error( 'communication_error', 'ATE communication is locked, please update configuration' );
+		}
 
-		return $this->auth->get_signed_url( 'GET', $url, null );
+		$url = $this->endpoints->get_ate_editor();
+		$url = str_replace(
+			[
+				'{job_id}',
+				'{translator_email}',
+				'{return_url}',
+			],
+			[
+				$job_id,
+				urlencode( filter_var( wp_get_current_user()->user_email, FILTER_SANITIZE_URL ) ),
+				urlencode( filter_var( $return_url, FILTER_SANITIZE_URL ) ),
+			],
+			$url
+		);
+
+		return $this->auth->get_signed_url_with_parameters( 'GET', $url, null );
+	}
+
+	/**
+	 * @param int                          $ate_job_id
+	 * @param WPML_Element_Translation_Job $job_object
+	 *
+	 * @return array
+	 */
+	public function clone_job( $ate_job_id, WPML_Element_Translation_Job $job_object ) {
+		$url    = $this->endpoints->get_clone_job( $ate_job_id );
+		$result = $this->requestWithLog(
+			$url,
+			[
+				'method' => 'POST',
+				'body'   => [
+					'id'                  => $ate_job_id,
+					'notify_url'          =>
+						WPML_TM_REST_ATE_Public::get_receive_ate_job_url( $job_object->get_id() ),
+					'site_identifier'     => wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE ),
+					'source_id'           => wpml_tm_get_records()
+						->icl_translate_job_by_job_id( $job_object->get_id() )
+						->rid(),
+					'permalink'           => $job_object->get_url( true ),
+					'ate_ams_console_url' => wpml_tm_get_ams_ate_console_url(),
+				],
+			]
+		);
+
+		if ( $result && ! is_wp_error( $result ) ) {
+			return [
+				'id'         => $result->job_id,
+				'ate_status' =>
+					isset( $result->status ) ? $result->status : WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_CREATED,
+			];
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -125,20 +185,31 @@ class WPML_TM_ATE_API {
 	 * @return bool
 	 */
 	public function migrate_source_id( array $pairs ) {
+		$lock = $this->clonedSitesHandler->checkCloneSiteLock();
+		if ( $lock ) {
+			return false;
+		}
+
 		$verb = 'POST';
 
-		$url = $this->auth->get_signed_url( $verb, $this->endpoints->get_source_id_migration(), $pairs );
+		$url = $this->auth->get_signed_url_with_parameters( $verb, $this->endpoints->get_source_id_migration(), $pairs );
 		if ( is_wp_error( $url ) ) {
 			return $url;
 		}
 
-		$result = $this->wp_http->request( $url,
-		                                   array(
-			                                   'timeout' => 60,
-			                                   'method'  => $verb,
-			                                   'headers' => $this->json_headers(),
-			                                   'body'    => wp_json_encode( $pairs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
-		                                   ) );
+		$result = $this->wp_http->request(
+			$url,
+			array(
+				'timeout' => 60,
+				'method'  => $verb,
+				'headers' => $this->json_headers(),
+				'body'    => wp_json_encode( $pairs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+			)
+		);
+
+		if ( ! is_wp_error( $result ) ) {
+			$result = $this->clonedSitesHandler->handleClonedSiteError( $result );
+		}
 
 		return $this->get_response_errors( $result ) === null;
 	}
@@ -189,10 +260,11 @@ class WPML_TM_ATE_API {
 	 * @return array
 	 */
 	private function json_headers() {
-		return array(
-			'Accept'       => 'application/json',
-			'Content-Type' => 'application/json',
-		);
+		return [
+			'Accept'                                      => 'application/json',
+			'Content-Type'                                => 'application/json',
+			FingerprintGenerator::SITE_FINGERPRINT_HEADER => $this->fingerprintGenerator->getSiteFingerprint(),
+		];
 	}
 
 	/**
@@ -201,7 +273,7 @@ class WPML_TM_ATE_API {
 	 * @return string
 	 */
 	private function encode_body_args( array $args ) {
-		return wp_json_encode( $args, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES );
+		return wp_json_encode( $args, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 
 	/**
@@ -225,16 +297,29 @@ class WPML_TM_ATE_API {
 	}
 
 	public function override_site_id( $site_id ) {
-		$this->auth->override_site_id( $site_id);
+		$this->auth->override_site_id( $site_id );
 	}
 
 	public function get_website_id( $site_url ) {
-		$signed_url = $this->auth->get_signed_url( 'GET', $this->endpoints->get_websites() );
+		$lock = $this->clonedSitesHandler->checkCloneSiteLock();
+		if ( $lock ) {
+			return null;
+		}
+
+		$signed_url = $this->auth->get_signed_url_with_parameters( 'GET', $this->endpoints->get_websites() );
 		if ( is_wp_error( $signed_url ) ) {
 			return null;
 		}
 
-		$sites = $this->get_response( $this->wp_http->request( $signed_url ) );
+		$requestArguments = [ 'headers' => $this->json_headers() ];
+
+		$response = $this->wp_http->request( $signed_url, $requestArguments );
+
+		if ( ! is_wp_error( $response ) ) {
+			$response = $this->clonedSitesHandler->handleClonedSiteError( $response );
+		}
+
+		$sites = $this->get_response( $response );
 
 		foreach ( $sites as $site ) {
 			if ( $site->url === $site_url ) {
@@ -283,6 +368,11 @@ class WPML_TM_ATE_API {
 	 * @return array|mixed|object|string|WP_Error|null
 	 */
 	private function request( $url, array $requestArgs = [] ) {
+		$lock = $this->clonedSitesHandler->checkCloneSiteLock();
+		if ( $lock ) {
+			return $lock;
+		}
+
 		$requestArgs = array_merge(
 			[
 				'timeout' => 60,
@@ -295,7 +385,7 @@ class WPML_TM_ATE_API {
 		$bodyArgs = isset( $requestArgs['body'] ) && is_array( $requestArgs['body'] )
 			? $requestArgs['body'] : null;
 
-		$signedUrl = $this->auth->get_signed_url( $requestArgs['method'], $url, $bodyArgs );
+		$signedUrl = $this->auth->get_signed_url_with_parameters( $requestArgs['method'], $url, $bodyArgs );
 
 		if ( is_wp_error( $signedUrl ) ) {
 			return $signedUrl;
@@ -306,6 +396,10 @@ class WPML_TM_ATE_API {
 		}
 
 		$result = $this->wp_http->request( $signedUrl, $requestArgs );
+
+		if ( ! is_wp_error( $result ) ) {
+			$result = $this->clonedSitesHandler->handleClonedSiteError( $result );
+		}
 
 		return $this->get_response( $result );
 	}

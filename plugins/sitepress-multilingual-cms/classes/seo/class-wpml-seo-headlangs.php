@@ -139,32 +139,28 @@ class WPML_SEO_HeadLangs {
 		$wpml_queried_object = $this->queried_object_factory->create();
 
 		$has_languages = is_array( $languages ) && count( $languages ) > 0;
-		if (
-			$wpml_queried_object->has_object()
-			&& $has_languages
-			&& ! $this->sitepress->get_wp_api()->is_paged()
-		) {
+		if ( $has_languages && ! $this->sitepress->get_wp_api()->is_paged() ) {
+			if ( $wpml_queried_object->has_object() ) {
+				if ( $wpml_queried_object->is_instance_of_post() ) {
+					$post_id = $wpml_queried_object->get_id();
 
-			if ( $wpml_queried_object->is_instance_of_post() ) {
-				/** @var WP_Post $queried_object */
-				$post_id = $wpml_queried_object->get_id();
+					$is_single_or_page = $this->sitepress->get_wp_api()->is_single() || $this->sitepress->get_wp_api()->is_page();
+					$is_published      = $is_single_or_page
+										 && $post_id
+										 && $this->sitepress->get_wp_api()->get_post_status( $post_id ) === 'publish';
 
-				$is_single_or_page = $this->sitepress->get_wp_api()->is_single() || $this->sitepress->get_wp_api()->is_page();
-				$is_published      = $is_single_or_page
-									 && $post_id
-									 && $this->sitepress->get_wp_api()->get_post_status( $post_id ) === 'publish';
+					$must_render = $this->sitepress->is_translated_post_type( $wpml_queried_object->get_post_type() )
+								   && ( $is_published || $this->is_home_front_or_archive_page() );
+				}
 
-				$must_render = $this->sitepress->is_translated_post_type( $wpml_queried_object->get_post_type() )
-							   && ( $is_published || $this->is_home_front_or_archive_page() );
-			}
-
-			if ( $wpml_queried_object->is_instance_of_taxonomy() ) {
-				/** @var WP_Term $queried_object */
-				$must_render = $this->sitepress->is_translated_taxonomy( $wpml_queried_object->get_taxonomy() );
-			}
-			if ( $wpml_queried_object->is_instance_of_post_type() ) {
-				/** @var WP_Post_Type $queried_object */
-				$must_render = $this->sitepress->is_translated_post_type( $wpml_queried_object->get_post_type_name() );
+				if ( $wpml_queried_object->is_instance_of_taxonomy() ) {
+					$must_render = $this->sitepress->is_translated_taxonomy( $wpml_queried_object->get_taxonomy() );
+				}
+				if ( $wpml_queried_object->is_instance_of_post_type() ) {
+					$must_render = $this->sitepress->is_translated_post_type( $wpml_queried_object->get_post_type_name() );
+				}
+			} elseif ( $this->is_home_front_or_archive_page() ) {
+				$must_render = true;
 			}
 		}
 

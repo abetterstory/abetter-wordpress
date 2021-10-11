@@ -8,7 +8,7 @@ class WPML_TM_AMS_ATE_Console_Section_Factory implements IWPML_TM_Admin_Section_
 	 * @return \IWPML_TM_Admin_Section
 	 */
 	public function create() {
-		if ( WPML_TM_ATE_Status::is_enabled() && wpml_tm_ams_ate_factories()->is_ate_active() ) {
+		if ( wpml_tm_ams_ate_factories()->is_ate_active() ) {
 			return WPML\Container\make( 'WPML_TM_AMS_ATE_Console_Section' );
 		}
 

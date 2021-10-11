@@ -15,10 +15,15 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 
 	public function init_hooks() {
 		add_action( 'wpml_cache_clear', array( $this, 'reload' ) );
-		add_filter( 'wpml_tm_translation_status', array(
-			$this,
-			'get_translation_status_filter'
-		), 10, 2 );
+		add_filter(
+			'wpml_tm_translation_status',
+			array(
+				$this,
+				'get_translation_status_filter',
+			),
+			10,
+			2
+		);
 	}
 
 	public function reload() {
@@ -56,10 +61,10 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 	}
 
 	public function get_translation_status_filter( $empty, $args ) {
-		$trid = $args['trid'];
+		$trid          = $args['trid'];
 		$language_code = $args['language_code'];
 
-		return $this->get_translation_status($trid, $language_code);
+		return $this->get_translation_status( $trid, $language_code );
 	}
 	/**
 	 * @param int    $trid
@@ -83,7 +88,9 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 		global $wpdb, $wpml_language_resolution;
 
 		if ( ! isset( $this->job_id_cache[ $trid ][ $target_lang_code ] ) ) {
-			$jobs         = $wpdb->get_results( $wpdb->prepare( "
+			$jobs         = $wpdb->get_results(
+				$wpdb->prepare(
+					"
 														SELECT
 															tj.job_id,
 															ts.status,
@@ -98,7 +105,9 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 															ON ts.translation_id = t.translation_id
 														WHERE t.trid = %d
 												",
-																$trid ) );
+					$trid
+				)
+			);
 			$active_langs = $wpml_language_resolution->get_active_language_codes();
 
 			foreach ( $active_langs as $lang_code ) {
@@ -108,9 +117,9 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 	}
 
 	/**
-	 * @param object[]   $jobs
-	 * @param string     $lang
-	 * @param     string $trid
+	 * @param object[] $jobs
+	 * @param string   $lang
+	 * @param     string   $trid
 	 *
 	 * @return false|object
 	 */
@@ -132,7 +141,7 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 			$job_id              = - 1;
 			$status              = 0;
 			$needs_update        = false;
-			$element_type_prefix = $this->fallback_type_prefix($trid);
+			$element_type_prefix = $this->fallback_type_prefix( $trid );
 		}
 
 		$this->cache_job( $trid, $lang, $job_id, $status, $needs_update, $element_type_prefix );
@@ -145,7 +154,7 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 
 		if ( isset( $this->element_type_prefix_cache[ $trid ] ) && (bool) $this->element_type_prefix_cache[ $trid ] === true ) {
 			$prefix = $this->element_type_prefix_cache[ $trid ];
-		} else if ( (bool) $this->tm_records->get_post_translations()->get_element_translations( null, $trid ) ) {
+		} elseif ( (bool) $this->tm_records->get_post_translations()->get_element_translations( null, $trid ) ) {
 			$prefix = 'post';
 		} else {
 			$prefix = $wpdb->get_var(
@@ -154,7 +163,8 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 					FROM {$wpdb->prefix}icl_translations
 					WHERE trid = %d
 					LIMIT 1",
-					$trid )
+					$trid
+				)
 			);
 		}
 
@@ -187,7 +197,7 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 				&$this->job_id_cache,
 				&$this->trid_cache,
 				&$this->translation_status_cache,
-				&$this->update_status_cache
+				&$this->update_status_cache,
 			) as $cache
 		) {
 			$cache[ $trid ] = isset( $cache[ $trid ] ) ? $cache[ $trid ] : array();

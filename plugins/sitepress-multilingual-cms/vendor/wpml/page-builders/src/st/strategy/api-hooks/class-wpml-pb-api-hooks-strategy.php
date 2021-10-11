@@ -18,6 +18,15 @@ class WPML_PB_API_Hooks_Strategy implements IWPML_PB_Strategy {
 		do_action( 'wpml_page_builder_register_strings', $post, $this->get_package_key( $post->ID ) );
 	}
 
+	/**
+	 * @param string|int $post_id
+	 * @param string $content
+	 * @param WPML\PB\Shortcode\StringCleanUp $stringCleanUp
+	 *
+	 * @return bool
+	 */
+	public function register_strings_in_content( $post_id, $content, WPML\PB\Shortcode\StringCleanUp $stringCleanUp ) {}
+
 	public function set_factory( $factory ) {
 		$this->factory = $factory;
 	}

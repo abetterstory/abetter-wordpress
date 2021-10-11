@@ -12,7 +12,7 @@ class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
 	/** @var  SitePress $sitepress */
 	private $sitepress;
 
-	public function __construct(  $title, $wpdb, $sitepress, $pro_translation ) {
+	public function __construct( $title, $wpdb, $sitepress, $pro_translation ) {
 		parent::__construct( self::ID, $title );
 		$this->wpdb            = $wpdb;
 		$this->pro_translation = $pro_translation;
@@ -25,17 +25,17 @@ class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
 	protected function render_content() {
 		$output = '';
 
-		$main_message = __( 'Adjust links in posts so they point to the translated content', 'wpml-translation-management' );
+		$main_message     = __( 'Adjust links in posts so they point to the translated content', 'wpml-translation-management' );
 		$complete_message = __( 'All posts have been processed. %s links were changed to point to the translated content.', 'wpml-translation-management' );
-		$string_count = 0;
+		$string_count     = 0;
 
-		$posts        = new WPML_Translate_Link_Targets_In_Posts_Global( new WPML_Translate_Link_Target_Global_State( $this->sitepress ), $this->wpdb, $this->pro_translation );
-		$post_count   = $posts->get_number_to_be_fixed();
+		$posts      = new WPML_Translate_Link_Targets_In_Posts_Global( new WPML_Translate_Link_Target_Global_State( $this->sitepress ), $this->wpdb, $this->pro_translation );
+		$post_count = $posts->get_number_to_be_fixed();
 
-		if ( defined( 'WPML_ST_VERSION') ) {
-			$strings      = new WPML_Translate_Link_Targets_In_Strings_Global(  new WPML_Translate_Link_Target_Global_State( $this->sitepress ), $this->wpdb, $this->wp_api, $this->pro_translation );
-			$string_count = $strings->get_number_to_be_fixed();
-			$main_message = __( 'Adjust links in posts and strings so they point to the translated content', 'wpml-translation-management' );
+		if ( defined( 'WPML_ST_VERSION' ) ) {
+			$strings          = new WPML_Translate_Link_Targets_In_Strings_Global( new WPML_Translate_Link_Target_Global_State( $this->sitepress ), $this->wpdb, $this->wp_api, $this->pro_translation );
+			$string_count     = $strings->get_number_to_be_fixed();
+			$main_message     = __( 'Adjust links in posts and strings so they point to the translated content', 'wpml-translation-management' );
 			$complete_message = __( 'All posts and strings have been processed. %s links were changed to point to the translated content.', 'wpml-translation-management' );
 		}
 

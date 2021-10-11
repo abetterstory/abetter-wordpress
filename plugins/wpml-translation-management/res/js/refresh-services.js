@@ -1,16 +1,16 @@
 /*globals jQuery, ajaxurl*/
 
-jQuery(document).ready(function () {
-	"use strict";
+jQuery(function () {
+    "use strict";
 
-	jQuery( '#wpml-tm-refresh-services' ).click(function(){
-		var button = jQuery(this);
+    jQuery('#wpml-tm-refresh-services').click(function () {
+        var button = jQuery(this);
 
-		button.prop( 'disabled', true );
+        button.prop('disabled', true);
 
-		jQuery.ajax({
-			type: "POST",
-			url: ajaxurl,
+        jQuery.ajax({
+                        type: "POST",
+                        url : ajaxurl,
 			data: {
 				'nonce': jQuery(this).data('nonce'),
 				'action': 'wpml_tm_refresh_services'

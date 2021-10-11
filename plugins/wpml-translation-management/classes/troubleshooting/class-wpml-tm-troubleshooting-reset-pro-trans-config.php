@@ -116,7 +116,7 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 		$action      = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 		$nonce       = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
 		$valid_nonce = wp_verify_nonce( $nonce, $action );
-		if ( $valid_nonce && isset( $_POST ) && $_POST ) {
+		if ( $valid_nonce && $_POST ) {
 			return $this->wpml_wp_api->wp_send_json_success( $this->reset_pro_translation_configuration() );
 		} else {
 			return $this->wpml_wp_api->wp_send_json_error( __( "You can't do that!", 'wpml-translation-management' ) );

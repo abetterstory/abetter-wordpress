@@ -1,5 +1,7 @@
 <?php
 
+use WPML\TM\Menu\TranslationServices\SectionFactory;
+
 class WPML_TM_Wizard_Steps implements IWPML_Action {
 
 	const STORE_MODE_ACTION = 'wpml_tm_wizard_store_who_mode';
@@ -11,7 +13,7 @@ class WPML_TM_Wizard_Steps implements IWPML_Action {
 	/** @var WPML_Translator_Records $translator_records */
 	private $translator_records;
 
-	/** @var WPML_TM_Translation_Services_Admin_Section_Factory $translation_services_factory */
+	/** @var SectionFactory $translation_services_factory */
 	private $translation_services_factory;
 
 	/** @var SitePress $sitepress */
@@ -22,7 +24,7 @@ class WPML_TM_Wizard_Steps implements IWPML_Action {
 	public function __construct(
 		WPML_Translation_Manager_Records $translation_manager_records,
 		WPML_Translator_Records $translator_records,
-		WPML_TM_Translation_Services_Admin_Section_Factory $translation_services_factory,
+		SectionFactory $translation_services_factory,
 		WPML_Language_Pair_Records $language_pair_records,
 		SitePress $sitepress
 	) {
@@ -123,8 +125,8 @@ class WPML_TM_Wizard_Steps implements IWPML_Action {
 
 		if ( 'false' === $who_will_translate_mode['leaveChoice'] ) {
 			$translation_managers = $this->translation_manager_records->get_users_with_capability();
-			foreach( $translation_managers as $translation_manager ) {
-				if ( ! user_can( $translation_manager->ID, 'manage_options') ) {
+			foreach ( $translation_managers as $translation_manager ) {
+				if ( ! user_can( $translation_manager->ID, 'manage_options' ) ) {
 					$this->translation_manager_records->delete( $translation_manager->ID );
 				}
 			}
@@ -140,7 +142,6 @@ class WPML_TM_Wizard_Steps implements IWPML_Action {
 		if ( 'true' === $who_will_translate_mode['onlyI'] ) {
 			$this->set_current_user_to_translate_all_langs();
 		}
-
 
 		delete_option( WPML_TM_Wizard_Options::CURRENT_STEP );
 		delete_option( WPML_TM_Wizard_Options::WHO_WILL_TRANSLATE_MODE );

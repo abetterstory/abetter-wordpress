@@ -93,10 +93,12 @@ class WPML_TM_ICL20_Migration_Factory {
 	 * @return WPML_TM_ICL20_Migrate_Local
 	 */
 	private function get_local_migration() {
-		return new WPML_TM_ICL20_Migrate_Local( $this->get_tp_services(),
-		                                        $this->create_status(),
-		                                        $this->create_progress(),
-		                                        $this->get_sitepress() );
+		return new WPML_TM_ICL20_Migrate_Local(
+			$this->get_tp_services(),
+			$this->create_status(),
+			$this->create_progress(),
+			$this->get_sitepress()
+		);
 	}
 
 	/**
@@ -160,9 +162,9 @@ class WPML_TM_ICL20_Migration_Factory {
 	 */
 	public function can_rollback() {
 		return defined( 'WP_DEBUG' )
-		       && defined( 'WPML_TP_ICL_20_ENABLE_ROLLBACK' )
-		       && WP_DEBUG
-		       && WPML_TP_ICL_20_ENABLE_ROLLBACK;
+			   && defined( 'WPML_TP_ICL_20_ENABLE_ROLLBACK' )
+			   && WP_DEBUG
+			   && WPML_TP_ICL_20_ENABLE_ROLLBACK;
 	}
 
 }

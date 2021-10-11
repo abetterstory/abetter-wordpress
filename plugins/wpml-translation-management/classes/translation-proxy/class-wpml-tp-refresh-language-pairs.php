@@ -26,18 +26,24 @@ class WPML_TP_Refresh_Language_Pairs {
 		if ( $this->is_valid_request() ) {
 			try {
 				$this->tp_api->refresh_language_pairs();
-				wp_send_json_success( array(
-					'msg' => __( 'Language pairs refreshed', 'wpml-translation-management' )
-				) );
+				wp_send_json_success(
+					array(
+						'msg' => __( 'Language pairs refreshed', 'wpml-translation-management' ),
+					)
+				);
 			} catch ( Exception $e ) {
-				wp_send_json_error( array(
-					'msg' => __( 'Language pairs not refreshed, please try again', 'wpml-translation-management' ),
-				) );
+				wp_send_json_error(
+					array(
+						'msg' => __( 'Language pairs not refreshed, please try again', 'wpml-translation-management' ),
+					)
+				);
 			}
 		} else {
-			wp_send_json_error( array(
-				'msg' => __( 'Invalid Request', 'wpml-translation-management' ),
-			) );
+			wp_send_json_error(
+				array(
+					'msg' => __( 'Invalid Request', 'wpml-translation-management' ),
+				)
+			);
 		}
 	}
 
@@ -46,6 +52,6 @@ class WPML_TP_Refresh_Language_Pairs {
 	 */
 	private function is_valid_request() {
 		return array_key_exists( 'nonce', $_POST ) &&
-		       wp_verify_nonce( filter_var( $_POST['nonce'], FILTER_SANITIZE_FULL_SPECIAL_CHARS ), self::AJAX_ACTION );
+			   wp_verify_nonce( filter_var( $_POST['nonce'], FILTER_SANITIZE_FULL_SPECIAL_CHARS ), self::AJAX_ACTION );
 	}
 }

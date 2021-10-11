@@ -38,11 +38,17 @@ class WPML_TM_Setup_Wizard extends WPML_Wizard {
 
 	protected function enqueue_scripts() {
 
-		wp_register_script( 'wpml-tm-wizard', WPML_TM_URL . '/dist/js/wizard/app.js', array(
-			'wpml-wizard',
-			//Real dependency - wpml-tm-wizard uses otgsPopoverTooltip.initialize() from OTGS-UI
-			OTGS_Assets_Handles::POPOVER_TOOLTIP
-			), WPML_TM_VERSION, true );
+		wp_register_script(
+			'wpml-tm-wizard',
+			WPML_TM_URL . '/dist/js/wizard/app.js',
+			array(
+				'wpml-wizard',
+				// Real dependency - wpml-tm-wizard uses otgsPopoverTooltip.initialize() from OTGS-UI
+				OTGS_Assets_Handles::POPOVER_TOOLTIP,
+			),
+			WPML_TM_VERSION,
+			true
+		);
 
 		wp_localize_script(
 			'wpml-tm-wizard',
@@ -52,28 +58,38 @@ class WPML_TM_Setup_Wizard extends WPML_Wizard {
 					array(
 						'deactivate'    => __( 'Deactivate', 'wpml-translation-management' ),
 						'documentation' => __( 'Documentation', 'wpml-translation-management' ),
-					)
+					),
 			)
+		);
+		wp_localize_script(
+			'wpml-tm-wizard',
+			'WPML_Translation_Services',
+			[
+				'logoPlaceholder' => WPML_TM_URL . '/res/img/lsp-logo-placeholder.png',
+			]
 		);
 
 		$this->scripts_factory->localize_script( 'wpml-tm-wizard' );
 		$this->scripts_factory->register_otgs_notices();
 
-
 		wp_enqueue_script( 'wpml-tm-wizard' );
-		wp_enqueue_style(  OTGS_Assets_Handles::POPOVER_TOOLTIP  );
+		wp_enqueue_style( OTGS_Assets_Handles::POPOVER_TOOLTIP );
 
 		wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
 
-		wp_enqueue_script( 'wpml-tm-translation-roles-select2',
+		wp_enqueue_script(
+			'wpml-tm-translation-roles-select2',
 			WPML_TM_URL . '/res/js/translation-roles-select2.js',
 			array(),
-			WPML_TM_VERSION );
+			WPML_TM_VERSION
+		);
 
-		wp_enqueue_script( 'wpml-tm-set-translation-roles',
+		wp_enqueue_script(
+			'wpml-tm-set-translation-roles',
 			WPML_TM_URL . '/res/js/set-translation-role.js',
 			array( 'underscore' ),
-			WPML_TM_VERSION );
+			WPML_TM_VERSION
+		);
 
 		wp_register_style( 'wpml-tm-wizard', WPML_TM_URL . '/res/css/wpml-tm-wizard.css' );
 		wp_enqueue_style( 'wpml-tm-wizard' );
@@ -91,7 +107,6 @@ class WPML_TM_Setup_Wizard extends WPML_Wizard {
 			array(),
 			WPML_TM_VERSION
 		);
-
 
 	}
 

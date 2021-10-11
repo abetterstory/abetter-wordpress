@@ -29,8 +29,8 @@ class WPML_Translation_Basket_Validation {
 	}
 
 	/**
-	 * @param array $invalid_documents
-	 * @param array $basket
+	 * @param array  $invalid_documents
+	 * @param array  $basket
 	 * @param string $kind
 	 *
 	 * @return array
@@ -46,8 +46,8 @@ class WPML_Translation_Basket_Validation {
 				$package = $this->package_helper->create_translation_package( $id );
 				foreach ( $package['contents'] as $slug => $field ) {
 					if ( array_key_exists( 'format', $field )
-					     && 'base64' === $field['format']
-					     && $this->encoding_validation->is_base64( base64_decode( $field['data'] ) )
+						 && 'base64' === $field['format']
+						 && $this->encoding_validation->is_base64( base64_decode( $field['data'] ) )
 					) {
 						if ( ! array_key_exists( $id, $invalid_documents ) ) {
 							$invalid_documents[ $id ] = array(

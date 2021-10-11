@@ -2,7 +2,6 @@
 
 namespace WPML\TM\TranslationProxy\Services\Project;
 
-
 class Project {
 	/** @var int */
 	public $id;
@@ -28,7 +27,7 @@ class Project {
 			'access_key'    => $this->accessKey,
 			'ts_id'         => $this->tsId,
 			'ts_access_key' => $this->tsAccessKey,
-			'extra_fields'  => $this->extraFields
+			'extra_fields'  => $this->extraFields,
 		];
 	}
 

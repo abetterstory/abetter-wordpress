@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WPML\\Media\\Widgets\\Block\\DisplayTranslation' => $baseDir . '/classes/Widgets/Block/DisplayTranslation.php',
     'WPML_Cache_Directory' => $vendorDir . '/wpml-shared/wpml-lib-cache/src/cache/class-wpml-cache-directory.php',
     'WPML_Core_Version_Check' => $vendorDir . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-core-version-check.php',
     'WPML_Dependencies' => $vendorDir . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-dependencies.php',
@@ -80,6 +81,5 @@ return array(
     'WPML_Media_Upgrade' => $baseDir . '/inc/wpml-media-upgrade.class.php',
     'WPML_Media_Usage' => $baseDir . '/classes/media-usage/class-wpml-media-usage.php',
     'WPML_Media_Usage_Factory' => $baseDir . '/classes/media-usage/class-wpml-media-usage-factory.php',
-    'WPML_Media_Welcome_Notice' => $baseDir . '/classes/menus/wpml-media-welcome-notice.php',
-    'WPML_Media_Welcome_Notice_Factory' => $baseDir . '/classes/menus/wpml-media-welcome-notice-factory.php',
+    'WPML_PHP_Version_Check' => $vendorDir . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-php-version-check.php',
 );

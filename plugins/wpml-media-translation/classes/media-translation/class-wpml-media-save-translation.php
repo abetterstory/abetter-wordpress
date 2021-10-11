@@ -27,9 +27,9 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 	/**
 	 * WPML_Media_Save_Translation constructor.
 	 *
-	 * @param SitePress $sitepress
-	 * @param wpdb $wpdb
-	 * @param WPML_Media_File_Factory $media_file_factory
+	 * @param SitePress                        $sitepress
+	 * @param wpdb                             $wpdb
+	 * @param WPML_Media_File_Factory          $media_file_factory
 	 * @param WPML_Translation_Element_Factory $translation_element_factory
 	 */
 	public function __construct( SitePress $sitepress, wpdb $wpdb, WPML_Media_File_Factory $media_file_factory, WPML_Translation_Element_Factory $translation_element_factory ) {
@@ -66,7 +66,6 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 				if ( $this->should_restore_media() ) {
 					$this->restore_media_file( $attachment_id, $original_attachment_id, $translated_language );
 				}
-
 			} else {
 
 				$post_array['post_type']      = 'attachment';
@@ -106,12 +105,12 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 			}
 
 			if ( 0 === strpos( get_post_field( 'post_mime_type', $original_attachment_id ), 'image/' ) ) {
-				$translated_thumb = wp_get_attachment_thumb_url( $attachment_id );
-				$original_thumb   = wp_get_attachment_thumb_url( $original_attachment_id );
+				$translated_thumb         = wp_get_attachment_thumb_url( $attachment_id );
+				$original_thumb           = wp_get_attachment_thumb_url( $original_attachment_id );
 				$media_file_is_translated = $translated_thumb !== $original_thumb;
 			} else {
 				$media_file_is_translated = get_attached_file( $attachment_id ) !== get_attached_file( $original_attachment_id );
-				$translated_thumb = wp_mime_type_icon( $original_attachment_id );
+				$translated_thumb         = wp_mime_type_icon( $original_attachment_id );
 			}
 
 			$media_usage = get_post_meta( $original_attachment_id, WPML_Media_Usage::FIELD_NAME, true );
@@ -123,7 +122,7 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 					if ( $post_translation ) {
 						$posts_list[] = array(
 							'url'   => get_edit_post_link( $post_translation->get_id() ),
-							'title' => get_post_field( 'post_title', $post_translation->get_id() )
+							'title' => get_post_field( 'post_title', $post_translation->get_id() ),
 						);
 					}
 				}
@@ -137,7 +136,7 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 				'attachment_id' => $attachment_id,
 				'thumb'         => $media_file_is_translated ? $translated_thumb : false,
 				'status'        => $translation_status,
-				'usage'         => $posts_list
+				'usage'         => $posts_list,
 			);
 
 			wp_send_json_success( $response );
@@ -147,7 +146,7 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 	}
 
 	private function has_media_upload() {
-		return ! empty ( $_POST['update-media-file'] );
+		return ! empty( $_POST['update-media-file'] );
 	}
 
 	private function should_restore_media() {
@@ -155,7 +154,7 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 	}
 
 	/**
-	 * @param int $original_attachment_id
+	 * @param int   $original_attachment_id
 	 * @param array $post_array
 	 *
 	 * @return int
@@ -206,11 +205,14 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 		$meta_keys = array(
 			'_wp_attachment_metadata',
 			'_wp_attached_file',
-			'_wp_attachment_backup_sizes'
+			'_wp_attachment_backup_sizes',
 		);
 		foreach ( $meta_keys as $meta_key ) {
-			update_post_meta( $attachment_id, $meta_key,
-				get_post_meta( $original_attachment_id, $meta_key, true ) );
+			update_post_meta(
+				$attachment_id,
+				$meta_key,
+				get_post_meta( $original_attachment_id, $meta_key, true )
+			);
 		}
 
 		/**
@@ -242,7 +244,7 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 			'post_mime_type'    => $file['type'],
 			'guid'              => $file['url'],
 			'post_modified'     => current_time( 'mysql' ),
-			'post_modified_gmt' => current_time( 'mysql', 1 )
+			'post_modified_gmt' => current_time( 'mysql', 1 ),
 		);
 
 		return $postarr;

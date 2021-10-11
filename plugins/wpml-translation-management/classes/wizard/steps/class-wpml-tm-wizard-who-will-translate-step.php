@@ -13,7 +13,7 @@ class WPML_TM_Wizard_Who_Will_Translate_Step extends WPML_Twig_Template_Loader {
 	/** @var WPML_TM_Wizard_Translators_Step $translator_settings */
 	private $translator_settings;
 
-	/** @var WPML_TM_Translation_Services_Admin_Section_Factory $translation_services_factory */
+	/** @var \WPML\TM\Menu\TranslationServices\SectionFactory $translation_services_factory */
 	private $translation_services_factory;
 
 	/** @var array $who_will_translate_mode */
@@ -23,12 +23,13 @@ class WPML_TM_Wizard_Who_Will_Translate_Step extends WPML_Twig_Template_Loader {
 		WP_User $user,
 		WPML_Translation_Manager_Settings $translation_manager_settings,
 		WPML_Translator_Settings $translator_settings,
-		WPML_TM_Translation_Services_Admin_Section_Factory $translation_services_factory,
+		\WPML\TM\Menu\TranslationServices\SectionFactory $translation_services_factory,
 		$who_will_translate_mode
 	) {
-		parent::__construct( array(
+		parent::__construct(
+			array(
 				WPML_TM_PATH . '/templates/wizard',
-				WPML_PLUGIN_PATH . '/templates/widgets'
+				WPML_PLUGIN_PATH . '/templates/widgets',
 			)
 		);
 		$this->user                         = $user;
@@ -53,7 +54,6 @@ class WPML_TM_Wizard_Who_Will_Translate_Step extends WPML_Twig_Template_Loader {
 	}
 
 	public function add_strings() {
-
 
 		$this->model['strings'] =
 			array(
@@ -105,7 +105,7 @@ class WPML_TM_Wizard_Who_Will_Translate_Step extends WPML_Twig_Template_Loader {
 				/* translators: Translation Management wizard - Shown after selecting a translation service */
 				'title'               => __( 'Connect this site to your %s account', 'wpml-translation-management' ),
 				/* translators: Translation Management wizard - Shown after selecting a translation service. "%s" is replaced with the name of the selected translation service */
-				'connect_desc'        => __( 'Inside your %s account, you will find an "API token". This token allows WPML to connect to your account at %s to send and receive jobs.', 'wpml-translation-management' ),
+				'connect_desc'        => __( 'Inside your %1$s account, you will find an "API token". This token allows WPML to connect to your account at %2$s to send and receive jobs.', 'wpml-translation-management' ),
 				/* translators: Translation Management wizard - Shown after selecting a translation service. "%s" is replaced with the name of the selected translation service */
 				'connect_how_to_find' => __( 'How to find API token in %s', 'wpml-translation-management' ),
 				/* translators: Translation Management wizard - Shown after selecting a translation service. */
@@ -148,7 +148,7 @@ class WPML_TM_Wizard_Who_Will_Translate_Step extends WPML_Twig_Template_Loader {
 	}
 
 	private function add_user_capability() {
-		$this->model['is_administrator'] = $this->user->has_cap( 'manage_options');
+		$this->model['is_administrator'] = $this->user->has_cap( 'manage_options' );
 	}
 
 	private function handle_translation_service_params() {

@@ -20,7 +20,7 @@ class WPML_TP_Translations_Repository {
 	/**
 	 * @param int  $job_id
 	 * @param int  $job_type
-	 * @param bool $parse
+	 * @param bool $parse When true, it returns the parsed translation, otherwise, it returns the raw XLIFF.
 	 *
 	 * @return WPML_TP_Translation_Collection|string
 	 * @throws WPML_TP_API_Exception|InvalidArgumentException
@@ -37,7 +37,7 @@ class WPML_TP_Translations_Repository {
 
 	/**
 	 * @param WPML_TM_Job_Entity $job
-	 * @param bool               $parse
+	 * @param bool               $parse When true, it returns the parsed translation, otherwise, it returns the raw XLIFF.
 	 *
 	 * @return WPML_TP_Translation_Collection|string
 	 * @throws WPML_TP_API_Exception
@@ -52,6 +52,18 @@ class WPML_TP_Translations_Repository {
 			throw new InvalidArgumentException( 'This is only a local job.' );
 		}
 
-		return $this->xliff_api->get_remote_translations( $job->get_tp_id(), $parse );
+		$translations = $this->xliff_api->get_remote_translations( $job->get_tp_id(), $parse );
+
+		if ( $parse ) {
+			/**
+			 * It filters translations coming from the Translation Proxy.
+			 *
+			 * @param  \WPML_TP_Translation_Collection  $translations
+			 * @param  \WPML_TM_Job_Entity  $job
+			 */
+			$translations = apply_filters( 'wpml_tm_proxy_translations', $translations, $job );
+		}
+
+		return $translations;
 	}
 }

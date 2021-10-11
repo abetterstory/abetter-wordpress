@@ -23,8 +23,8 @@ class WPML_Media_Custom_Field_Images_Translation implements IWPML_Action {
 	 * WPML_Media_Custom_Field_Images_Translation constructor.
 	 *
 	 * @param WPML_Media_Translated_Images_Update $images_updater
-	 * @param SitePress $sitepress
-	 * @param TranslationManagement $iclTranslationManagement
+	 * @param SitePress                           $sitepress
+	 * @param TranslationManagement               $iclTranslationManagement
 	 */
 	public function __construct(
 		WPML_Media_Translated_Images_Update $images_updater,
@@ -43,8 +43,8 @@ class WPML_Media_Custom_Field_Images_Translation implements IWPML_Action {
 	}
 
 	/**
-	 * @param int $meta_id
-	 * @param int $object_id
+	 * @param int    $meta_id
+	 * @param int    $object_id
 	 * @param string $meta_key
 	 * @param string $meta_value
 	 */
@@ -54,7 +54,7 @@ class WPML_Media_Custom_Field_Images_Translation implements IWPML_Action {
 		$setting          = $settings_factory->post_meta_setting( $meta_key );
 
 		$is_custom_field_translatable = $this->sitepress->get_wp_api()
-		                                                ->constant( 'WPML_TRANSLATE_CUSTOM_FIELD' ) === $setting->status();
+														->constant( 'WPML_TRANSLATE_CUSTOM_FIELD' ) === $setting->status();
 		$post_type                    = get_post_type( $object_id );
 		$is_post_translatable         = $this->sitepress->is_translated_post_type( $post_type );
 
@@ -72,7 +72,7 @@ class WPML_Media_Custom_Field_Images_Translation implements IWPML_Action {
 			} else {
 				foreach ( array_keys( $this->sitepress->get_active_languages() ) as $language ) {
 					$translation = $post_element->get_translation( $language );
-					if( $translation ) {
+					if ( $translation ) {
 						$this->filter_meta_value_and_update(
 							$meta_value,
 							$meta_key,
@@ -103,7 +103,7 @@ class WPML_Media_Custom_Field_Images_Translation implements IWPML_Action {
 		);
 
 		if ( $meta_value_filtered !== $meta_value ) {
-			remove_action( 'updated_post_meta', array( $this, 'translate_images' ), PHP_INT_MAX, 4 );
+			remove_action( 'updated_post_meta', array( $this, 'translate_images' ), PHP_INT_MAX );
 			update_post_meta( $post_id, $meta_key, wp_slash( $meta_value_filtered ), $meta_value );
 			add_action( 'updated_post_meta', array( $this, 'translate_images' ), PHP_INT_MAX, 4 );
 		}

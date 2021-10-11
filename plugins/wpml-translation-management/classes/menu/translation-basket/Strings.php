@@ -2,7 +2,6 @@
 
 namespace WPML\TM\Menu\TranslationBasket;
 
-
 use WPML\Notices\DismissNotices;
 
 class Strings {
@@ -34,8 +33,10 @@ class Strings {
 			'jobs_committed'                 => $isCurrentUserOnlyTranslator ? $this->jobsSentToCurrentUserWhoIsTheOnlyTranslator() : $this->jobsSentDefaultMessage(),
 			'jobs_committing'                => __( 'Working...', 'wpml-translation-management' ),
 			'error_occurred'                 => __( 'An error occurred:', 'wpml-translation-management' ),
-			'error_not_allowed'              => __( 'You are not allowed to run this action.',
-				'wpml-translation-management' ),
+			'error_not_allowed'              => __(
+				'You are not allowed to run this action.',
+				'wpml-translation-management'
+			),
 			'batch'                          => __( 'Batch', 'wpml-translation-management' ),
 			'error_no_translators'           => __( 'No selected translators!', 'wpml-translation-management' ),
 			'rollbacks'                      => __( 'Rollback jobs...', 'wpml-translation-management' ),
@@ -44,7 +45,7 @@ class Strings {
 			'sending_batch'                  => $isCurrentUserOnlyTranslator ?
 				__( 'Preparing your content for translation', 'wpml-translation-management' )
 				: __( 'Sending your jobs to translation', 'wpml-translation-management' ),
-			'sending_batch_to_ts' => __(
+			'sending_batch_to_ts'            => __(
 				'Sending your jobs to professional translation',
 				'wpml-translation-management'
 			),
@@ -107,7 +108,7 @@ class Strings {
 			),
 			sprintf(
 				esc_html__(
-					'Your translators should log-in to their accounts in this site and go to %sWPML->Translations%s. There, they will see the jobs that are waiting for them.',
+					'Your translators should log-in to their accounts in this site and go to %1$sWPML->Translations%2$s. There, they will see the jobs that are waiting for them.',
 					'wpml-translation-management'
 				),
 				'<strong>',
@@ -115,7 +116,7 @@ class Strings {
 			),
 			sprintf(
 				esc_html__(
-					'You can always follow the progress of translation in the %s. For a more detailed view and to cancel jobs, visit the %s list.',
+					'You can always follow the progress of translation in the %1$s. For a more detailed view and to cancel jobs, visit the %2$s list.',
 					'wpml-translation-management'
 				),
 				$translation_dashboard_link,
@@ -135,13 +136,14 @@ class Strings {
 	 * @return string
 	 */
 	public function jobsSentToCurrentUserWhoIsTheOnlyTranslator() {
-		return sprintf( '<p>%s</p><p>%s <a href="%s">%s</a></p>',
-				__( 'Ready!', 'wpml-translation-management' ),
-				/* translators: This text is followed by 'Translation Queue'. eg To translate those jobs, go to the Translation Queue */
+		return sprintf(
+			'<p>%s</p><p>%s <a href="%s">%s</a></p>',
+			__( 'Ready!', 'wpml-translation-management' ),
+			/* translators: This text is followed by 'Translation Queue'. eg To translate those jobs, go to the Translation Queue */
 				__( 'To translate those jobs, go to ', 'wpml-translation-management' ),
-				admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php' ),
-				__( 'WPML->Translation Queue', 'wpml-translation-management' )
-		       ) . $this->automaticTranslationTip();
+			admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php' ),
+			__( 'WPML->Translation Queue', 'wpml-translation-management' )
+		) . $this->automaticTranslationTip();
 	}
 
 	/**
@@ -184,13 +186,14 @@ class Strings {
 	 * @return string
 	 */
 	public function jobsSentDefaultMessage() {
-		$message = '<p>' . esc_html__( 'Ready!', 'wpml-translation-management' ) . '</p>';
+		$message  = '<p>' . esc_html__( 'Ready!', 'wpml-translation-management' ) . '</p>';
 		$message .= '<p>';
 		$message .= sprintf(
 			esc_html__(
 				'You can check the status of these jobs in %s.',
 				'wpml-translation-management'
-			), $this->getJobsLink()
+			),
+			$this->getJobsLink()
 		);
 		$message .= '</p>';
 
@@ -220,7 +223,9 @@ class Strings {
 	 * @return string
 	 */
 	public function emailNotSentError() {
-		return '<li><strong>' . esc_html__( 'WPML could not send notification emails to the translators, telling them about the new work from you.',
-				'wpml-translation-management' ) . '</strong></li>';
+		return '<li><strong>' . esc_html__(
+			'WPML could not send notification emails to the translators, telling them about the new work from you.',
+			'wpml-translation-management'
+		) . '</strong></li>';
 	}
 }

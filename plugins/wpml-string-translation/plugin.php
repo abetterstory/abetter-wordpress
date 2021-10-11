@@ -2,10 +2,10 @@
 /**
  * Plugin Name: WPML String Translation
  * Plugin URI: https://wpml.org/
- * Description: Adds theme and plugins localization capabilities to WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/string-translation-3-0-4/">WPML String Translation 3.0.4 release notes</a>
+ * Description: Adds theme and plugins localization capabilities to WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/string-translation-3-1-10/">WPML String Translation 3.1.10 release notes</a>
  * Author: OnTheGoSystems
  * Author URI: http://www.onthegosystems.com/
- * Version: 3.0.4
+ * Version: 3.1.10
  * Plugin Slug: wpml-string-translation
  *
  * @package WPML\ST
@@ -15,11 +15,11 @@ if ( defined( 'WPML_ST_VERSION' ) || get_option( '_wpml_inactive' ) ) {
 	return;
 }
 
-define( 'WPML_ST_VERSION', '3.0.4' );
+define( 'WPML_ST_VERSION', '3.1.10' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
-//define( 'WPML_PT_VERSION_DEV', '2.2.3-dev' );
+// define( 'WPML_PT_VERSION_DEV', '2.2.3-dev' );
 define( 'WPML_ST_PATH', dirname( __FILE__ ) );
 
 require_once WPML_ST_PATH . '/classes/class-wpml-st-initialize.php';
@@ -40,7 +40,7 @@ function wpml_st_verify_wpml() {
 /**
  * WPML ST Core loaded hook.
  *
- * @throws \Auryn\InjectionException Auryn Exception.
+ * @throws \WPML\Auryn\InjectionException Auryn Exception.
  */
 function wpml_st_core_loaded() {
 	global $sitepress, $wpdb, $wpml_admin_notices;
@@ -54,7 +54,7 @@ function wpml_st_core_loaded() {
 	if ( isset( $wpml_admin_notices ) && $is_admin && $setup_complete ) {
 		global $wpml_st_admin_notices;
 		$themes_and_plugins_settings = new WPML_ST_Themes_And_Plugins_Settings();
-		$wpml_st_admin_notices = new WPML_ST_Themes_And_Plugins_Updates( $wpml_admin_notices, $themes_and_plugins_settings );
+		$wpml_st_admin_notices       = new WPML_ST_Themes_And_Plugins_Updates( $wpml_admin_notices, $themes_and_plugins_settings );
 		$wpml_st_admin_notices->init_hooks();
 	}
 
@@ -71,16 +71,19 @@ function wpml_st_core_loaded() {
 
 	$action_filter_loader = new WPML_Action_Filter_Loader();
 	$action_filter_loader->load( WPML\ST\Actions::get() );
+
+	\WPML\ST\Batch\Translation\Module::init();
 }
 
+/**
+ * @throws \WPML\Auryn\InjectionException
+ */
 function load_wpml_st_basics() {
 	if ( ! WPML_Core_Version_Check::is_ok( dirname( __FILE__ ) . '/wpml-dependencies.json' ) ) {
 		return;
 	}
 
-	global $WPML_String_Translation, $wpml_st_string_factory, $sitepress;
-
-	$wpml_st_string_factory = WPML\Container\make( WPML_ST_String_Factory::class );
+	global $WPML_String_Translation, $sitepress;
 
 	require WPML_ST_PATH . '/inc/functions-load.php';
 	require WPML_ST_PATH . '/inc/constants.php';

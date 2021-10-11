@@ -24,6 +24,14 @@ class WPML_TM_ATE_AMS_Endpoints {
 	const ENDPOINTS_SUBSCRIPTION        = '/api/wpml/websites/translators/{translator_email}/enable';
 	const ENDPOINTS_SUBSCRIPTION_STATUS = '/api/wpml/websites/{WEBSITE_UUID}/translators/{translator_email}';
 	const ENDPOINTS_WEBSITES            = '/api/wpml/websites';
+
+	/**
+	 * AMS CLONED SITES
+	 */
+	const ENDPOINTS_SITE_COPY = '/api/wpml/websites/copy';
+	const ENDPOINTS_SITE_MOVE = '/api/wpml/websites/move';
+	const ENDPOINTS_SITE_CONFIRM = '/api/wpml/websites/confirm';
+
 	/**
 	 * ATE
 	 */
@@ -37,6 +45,7 @@ class WPML_TM_ATE_AMS_Endpoints {
 	const ENDPOINT_SOURCE_ID_MIGRATION  = '/api/wpml/migration';
 	const ENDPOINTS_SYNC_ALL            = '/api/wpml/sync/all';
 	const ENDPOINTS_SYNC_PAGE           = '/api/wpml/sync/page';
+	const ENDPOINTS_CLONE_JOB           = '/api/wpml/jobs/%s/clone';
 	const SERVICE_AMS                   = 'ams';
 	const SERVICE_ATE                   = 'ate';
 
@@ -179,6 +188,30 @@ class WPML_TM_ATE_AMS_Endpoints {
 	 * @return string
 	 * @throws \InvalidArgumentException
 	 */
+	public function get_ams_site_copy() {
+		return $this->get_endpoint_url( self::SERVICE_AMS, self::ENDPOINTS_SITE_COPY );
+	}
+
+	/**
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	public function get_ams_site_move() {
+		return $this->get_endpoint_url( self::SERVICE_AMS, self::ENDPOINTS_SITE_MOVE );
+	}
+
+	/**
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	public function get_ams_site_confirm() {
+		return $this->get_endpoint_url( self::SERVICE_AMS, self::ENDPOINTS_SITE_CONFIRM );
+	}
+
+	/**
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
 	public function get_enable_subscription() {
 		return $this->get_endpoint_url( self::SERVICE_AMS, self::ENDPOINTS_SUBSCRIPTION );
 	}
@@ -296,6 +329,18 @@ class WPML_TM_ATE_AMS_Endpoints {
 				'pagination_token' => $paginationToken,
 				'page'             => $page,
 			]
+		);
+	}
+
+	/**
+	 * @param int $job_id
+	 *
+	 * @return string
+	 */
+	public function get_clone_job( $job_id ) {
+		return $this->get_endpoint_url(
+			self::SERVICE_ATE,
+			sprintf( self::ENDPOINTS_CLONE_JOB, $job_id )
 		);
 	}
 }

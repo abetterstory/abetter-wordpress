@@ -6,7 +6,12 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 
 	function get_original_document() {
 
-		return  apply_filters( 'wpml_get_translatable_item', null, $this->get_original_element_id() );
+		return apply_filters(
+			'wpml_get_translatable_item',
+			null,
+			$this->get_original_element_id(),
+			isset( $this->basic_data->original_post_type ) ? $this->basic_data->original_post_type : null
+		);
 	}
 
 	/**
@@ -52,7 +57,7 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 		return $original_element->kind;
 	}
 
-	protected function load_resultant_element_id(){
+	protected function load_resultant_element_id() {
 
 		return 0;
 	}
@@ -60,7 +65,9 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 	private function title_from_job_fields() {
 		global $wpdb;
 
-		$title_and_name = $wpdb->get_row( $wpdb->prepare( "
+		$title_and_name = $wpdb->get_row(
+			$wpdb->prepare(
+				"
 													 SELECT n.field_data AS name, t.field_data AS title
 													 FROM {$wpdb->prefix}icl_translate AS n
 													 JOIN {$wpdb->prefix}icl_translate AS t
@@ -70,7 +77,9 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 													  AND t.field_type = 'title'
 													  LIMIT 1
 													  ",
-			$this->get_id() ) );
+				$this->get_id()
+			)
+		);
 
 		return $title_and_name !== null ? ( $title_and_name->name ?
 			base64_decode( $title_and_name->name )

@@ -16,6 +16,6 @@ abstract class WPML_TM_Resources_Factory {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_resources' ), 20 );
 	}
 
-	public abstract function enqueue_resources( $hook_suffix );
-	public abstract function register_resources( $hook_suffix );
+	abstract public function enqueue_resources( $hook_suffix );
+	abstract public function register_resources( $hook_suffix );
 }
