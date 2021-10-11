@@ -87,9 +87,9 @@ class Controller extends BaseController {
 		return $this->language;
 	}
 
-	public function getRequestSlug() {
+	public function getRequestSlug($localized=TRUE) {
 		$slug = (!empty($this->args)) ? $this->args[count($this->args)-1] : '';
-		if ($this->language != $this->language_default) {
+		if (!$localized && ($this->language != $this->language_default)) {
 			$slug = preg_replace('/^'.$this->language.'\//','/',$slug);
 		}
 		return $slug;
