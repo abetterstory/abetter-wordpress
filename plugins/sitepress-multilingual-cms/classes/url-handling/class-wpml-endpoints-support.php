@@ -92,7 +92,7 @@ class WPML_Endpoints_Support {
 		$endpoint_translation = apply_filters( 'wpml_translate_single_string', $endpoint, self::STRING_CONTEXT, $key, $language ? $language : $this->current_language );
 
 		if ( ! empty( $endpoint_translation ) ) {
-			return urlencode( $endpoint_translation );
+			return implode( '/', array_map( 'rawurlencode', explode( '/', $endpoint_translation ) ) );
 		} else {
 			return $endpoint;
 		}

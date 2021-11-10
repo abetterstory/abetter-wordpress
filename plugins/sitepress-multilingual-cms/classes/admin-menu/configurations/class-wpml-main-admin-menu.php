@@ -51,9 +51,8 @@ class WPML_Main_Admin_Menu {
 
 		$this->root->init_hooks();
 
-		$this->languages();
-
 		if ( $this->sitepress->is_setup_complete() ) {
+			$this->languages();
 			do_action( 'icl_wpml_top_menu_added' );
 
 			if ( $this->is_wpml_setup_completed() ) {
@@ -67,6 +66,8 @@ class WPML_Main_Admin_Menu {
 			$this->taxonomy_translation();
 
 			do_action( 'wpml_core_admin_menus_added' );
+		} else {
+			$this->wizard();
 		}
 
 		$this->support();
@@ -84,6 +85,16 @@ class WPML_Main_Admin_Menu {
 		$menu->set_menu_title( __( 'Languages', 'sitepress' ) );
 		$menu->set_capability( 'wpml_manage_languages' );
 		$menu->set_menu_slug( $this->languages_menu_slug );
+		$this->root->add_item( $menu );
+	}
+
+	private function wizard() {
+		$menu = new WPML_Admin_Menu_Item();
+		$menu->set_order( self::MENU_ORDER_LANGUAGES );
+		$menu->set_page_title( __( 'WPML Setup', 'sitepress' ) );
+		$menu->set_menu_title( __( 'Setup', 'sitepress' ) );
+		$menu->set_capability( 'wpml_manage_languages' );
+		$menu->set_menu_slug( WPML_PLUGIN_FOLDER . '/menu/setup.php' );
 		$this->root->add_item( $menu );
 	}
 

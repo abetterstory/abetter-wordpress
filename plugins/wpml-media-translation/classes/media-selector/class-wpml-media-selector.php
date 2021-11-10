@@ -1,5 +1,7 @@
 <?php
 
+use WPML\UIPage;
+
 class WPML_Media_Selector implements IWPML_Action {
 
 	/**
@@ -44,9 +46,7 @@ class WPML_Media_Selector implements IWPML_Action {
 	}
 
 	public function enqueue_res() {
-		$current_screen = get_current_screen();
-
-		if ( $current_screen->id === 'wpml_page_' . $this->sitepress->get_wp_api()->constant( 'WPML_TM_FOLDER' ) . '/menu/main' ) {
+		if ( UIPage::isTMDashboard( $_GET ) ) {
 			$wpml_media_url = $this->sitepress->get_wp_api()->constant( 'WPML_MEDIA_URL' );
 			wp_enqueue_script( 'wpml-media-selector', $wpml_media_url . '/res/js/media-selector.js', array( 'jquery' ), false, true );
 			wp_enqueue_style( 'wpml-media-selector', $wpml_media_url . '/res/css/media-selector.css', array() );

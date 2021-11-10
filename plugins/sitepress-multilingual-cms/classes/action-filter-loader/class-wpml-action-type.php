@@ -19,7 +19,7 @@ class Type {
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
-	private $backend_actions = [ 'IWPML_Backend_Action_Loader', 'IWPML_Backend_Action' ];
+	private $backend_actions  = [ 'IWPML_Backend_Action_Loader', 'IWPML_Backend_Action' ];
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
@@ -27,19 +27,19 @@ class Type {
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
-	private $ajax_actions = [ 'IWPML_AJAX_Action_Loader', 'IWPML_AJAX_Action' ];
+	private $ajax_actions     = [ 'IWPML_AJAX_Action_Loader', 'IWPML_AJAX_Action' ];
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
-	private $rest_actions = [ 'IWPML_REST_Action_Loader', 'IWPML_REST_Action' ];
+	private $rest_actions     = [ 'IWPML_REST_Action_Loader', 'IWPML_REST_Action' ];
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
-	private $cli_actions = [ 'IWPML_CLI_Action_Loader', 'IWPML_CLI_Action' ];
+	private $cli_actions      = [ 'IWPML_CLI_Action_Loader', 'IWPML_CLI_Action' ];
 	/**
 	 * @var string[] Resolved by \WPML\Action\Type::is
 	 */
-	private $dic_actions = [ 'IWPML_DIC_Action' ];
+	private $dic_actions      = [ 'IWPML_DIC_Action' ];
 
 	/** @var array */
 	private $implementations;
@@ -71,4 +71,5 @@ class Type {
 	private function has_implementation( $interfaces ) {
 		return count( array_intersect( $this->implementations, $interfaces ) ) > 0;
 	}
+
 }

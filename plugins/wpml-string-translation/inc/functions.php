@@ -9,6 +9,7 @@
 use WPML\ST\Gettext\Hooks;
 use WPML\ST\Gettext\HooksFactory;
 use function WPML\Container\make;
+use WPML\Element\API\Languages;
 
 add_action( 'plugins_loaded', 'icl_st_init' );
 
@@ -859,13 +860,15 @@ function icl_st_update_widget_title_actions( $old_options, $new_options ) {
 		unset( $buf );
 	}
 
+	$defaultLang = Languages::getDefaultCode();
+
 	foreach ( $new_options as $k => $o ) {
 		if ( isset( $o['title'] ) ) {
 			if ( isset( $old_options[ $k ]['title'] ) && $old_options[ $k ]['title'] ) {
 				icl_st_update_string_actions( WPML_ST_WIDGET_STRING_DOMAIN, 'widget title - ' . md5( $old_options[ $k ]['title'] ), $old_options[ $k ]['title'], $o['title'] );
 			} else {
 				if ( $new_options[ $k ]['title'] ) {
-					icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget title - ' . md5( $new_options[ $k ]['title'] ), $new_options[ $k ]['title'] );
+					icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget title - ' . md5( $new_options[ $k ]['title'] ), $new_options[ $k ]['title'], false, $defaultLang );
 				}
 			}
 		}
@@ -886,6 +889,8 @@ function icl_st_update_text_widgets_actions( $old_options, $new_options ) {
 
 	$widget_text = get_option( 'widget_text' );
 	if ( is_array( $widget_text ) ) {
+	    $defaultLang = Languages::getDefaultCode();
+
 		foreach ( $widget_text as $k => $w ) {
 			if ( isset( $old_options[ $k ]['text'] ) && trim( $old_options[ $k ]['text'] ) && $old_options[ $k ]['text'] != $w['text'] ) {
 				$old_md5 = md5( $old_options[ $k ]['text'] );
@@ -893,10 +898,10 @@ function icl_st_update_text_widgets_actions( $old_options, $new_options ) {
 				if ( $string ) {
 					icl_st_update_string_actions( WPML_ST_WIDGET_STRING_DOMAIN, 'widget body - ' . $old_md5, $old_options[ $k ]['text'], $w['text'] );
 				} else {
-					icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget body - ' . md5( $w['text'] ), $w['text'] );
+					icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget body - ' . md5( $w['text'] ), $w['text'], false, $defaultLang );
 				}
 			} elseif ( isset( $new_options[ $k ]['text'] ) && ( ! isset( $old_options[ $k ]['text'] ) || $old_options[ $k ]['text'] != $new_options[ $k ]['text'] ) ) {
-				icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget body - ' . md5( $new_options[ $k ]['text'] ), $new_options[ $k ]['text'] );
+				icl_register_string( WPML_ST_WIDGET_STRING_DOMAIN, 'widget body - ' . md5( $new_options[ $k ]['text'] ), $new_options[ $k ]['text'], false, $defaultLang );
 			}
 		}
 	}

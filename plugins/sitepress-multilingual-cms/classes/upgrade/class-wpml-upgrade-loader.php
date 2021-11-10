@@ -9,9 +9,12 @@ use WPML\Upgrade\Commands\AddContextIndexToStrings;
 use WPML\Upgrade\Commands\AddStatusIndexToStringTranslations;
 use WPML\Upgrade\Commands\AddStringPackageIdIndexToStrings;
 use WPML\Upgrade\Command\DisableOptionsAutoloading;
+use WPML\Upgrade\Commands\AddTranslationManagerCapToAdmin;
 use WPML\Upgrade\Commands\RemoveRestDisabledNotice;
 use WPML\Upgrade\Commands\DropCodeLocaleIndexFromLocaleMap;
 use WPML\Upgrade\Commands\AddPrimaryKeyToLocaleMap;
+use WPML\Upgrade\Commands\AddCountryColumnToLanguages;
+use WPML\Upgrade\Commands\AddAutomaticColumnToIclTranslateJob;
 
 /**
  * Class WPML_Upgrade_Loader
@@ -83,6 +86,8 @@ class WPML_Upgrade_Loader implements IWPML_Action {
 	 */
 	public function add_hooks() {
 		add_action( 'wpml_loaded', array( $this, 'wpml_upgrade' ) );
+		register_activation_hook( WPML_PLUGIN_PATH . '/' . WPML_PLUGIN_FILE, array( $this, 'wpml_upgrade' ) );
+
 	}
 
 	/**
@@ -118,6 +123,10 @@ class WPML_Upgrade_Loader implements IWPML_Action {
 			$this->factory->create_command_definition( RemoveRestDisabledNotice::class, [], [ 'admin' ] ),
 			$this->factory->create_command_definition( DropCodeLocaleIndexFromLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( AddPrimaryKeyToLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
+			$this->factory->create_command_definition( AddCountryColumnToLanguages::class, [ $this->upgrade_schema ], [ 'admin', 'ajax', 'front-end' ] ),
+			$this->factory->create_command_definition( AddAutomaticColumnToIclTranslateJob::class, [ $this->upgrade_schema ], [ 'admin', 'ajax', 'front-end' ] ),
+			$this->factory->create_command_definition( AddTMAllowedOption::class, [], [ 'admin', 'ajax', 'front-end' ] ),
+			$this->factory->create_command_definition( AddTranslationManagerCapToAdmin::class, [], [ 'admin', 'ajax', 'front-end' ] ),
 		];
 
 		$upgrade = new WPML_Upgrade( $commands, $this->sitepress, $this->factory );

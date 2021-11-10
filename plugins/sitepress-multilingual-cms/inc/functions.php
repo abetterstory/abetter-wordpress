@@ -198,14 +198,16 @@ function icl_get_settings() {
 /**
  * Add settings link to plugin page.
  *
+ * @param SitePress     $sitepress
  * @param array<string> $links
  * @param string        $file
  *
  * @return array
  */
-function icl_plugin_action_links( $links, $file ) {
+function icl_plugin_action_links( SitePress $sitepress, $links, $file ) {
 	if ( $file == WPML_PLUGIN_BASENAME ) {
-		$links[] = '<a href="admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php">' . __( 'Configure', 'sitepress' ) . '</a>';
+		$endpoint = $sitepress->is_setup_complete() ? 'languages.php' : 'setup.php';
+		$links[]  = '<a href="admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/' . $endpoint . '">' . __( 'Configure', 'sitepress' ) . '</a>';
 	}
 
 	return $links;
@@ -373,7 +375,6 @@ function icl_makes_duplicates_public( $master_post_id ) {
  * @uses       SitePress
  * @since      3.2
  * @uses       \SitePress::api_hooks
- * @deprecated This function will be removed in future releases.
  */
 function wpml_make_post_duplicates_action( $master_post_id ) {
 

@@ -3,8 +3,11 @@
 use OTGS\Installer\AdminNotices\Loader;
 use OTGS\Installer\AdminNotices\Notices\Account;
 use OTGS\Installer\AdminNotices\Notices\ApiConnection;
+use OTGS\Installer\AdminNotices\Notices\SiteKey;
 use OTGS\Installer\AdminNotices\Notices\Hooks;
 use OTGS\Installer\AdminNotices\Notices\Recommendation;
+use OTGS\Installer\Upgrade\AutoUpgrade;
+use OTGS\Installer\Upgrade\InstallerPlugins;
 
 class OTGS_Installer_Factory {
 
@@ -352,6 +355,18 @@ class OTGS_Installer_Factory {
 
 		Loader::addHooks( defined( 'DOING_AJAX' ) );
 
+		return $this;
+	}
+
+	public function load_auto_upgrade_hooks() {
+		$pluginFinder = $this->get_plugin_finder();
+		$autoUpgrade = new AutoUpgrade(
+			$this->installer,
+			$pluginFinder,
+			new InstallerPlugins($this->installer, $pluginFinder)
+		);
+
+		$autoUpgrade->addHooks();
 		return $this;
 	}
 

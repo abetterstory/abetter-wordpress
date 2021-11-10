@@ -73,17 +73,26 @@ class WPML_String_Translation_Table {
 			];
 		};
 
-		$makeFlag = function ( $langData ) {
+		$getFlagImg = function ($langData) {
+		    if ($langData['flagUrl'] !== '') {
+			    return '<img
+					src="'.esc_attr( $langData['flagUrl'] ).'"
+            alt="'.esc_attr( $langData['title'] ).'"
+            >';
+		    } else {
+		        return $langData['code'];
+		    }
+
+		};
+
+		$makeFlag = function ( $langData ) use ($getFlagImg) {
 			ob_start();
 			?>
 			<span
 				data-code="<?php esc_attr_e( $langData['code'] ); ?>"
 				title="<?php esc_attr_e( $langData['title'] ); ?>"
 			>
-				<img
-					src="<?php esc_attr_e( $langData['flagUrl'] ); ?>"
-					alt="<?php esc_attr_e( $langData['title'] ); ?>"
-				>
+				<?php echo $getFlagImg($langData) ?>
 			</span>
 			<?php
 			return ob_get_clean();

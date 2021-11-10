@@ -2,10 +2,10 @@
 
 class WPML_Change_String_Domain_Language_Dialog extends WPML_WPDB_And_SP_User {
 
-	/** @var WPML_Language_Of_Domain $language_of_domain */
+	/** @var  WPML_Language_Of_Domain $language_of_domain */
 	private $language_of_domain;
 
-	/** @var WPML_ST_String_Factory $string_factory */
+	/** @var  WPML_ST_String_Factory $string_factory */
 	private $string_factory;
 
 	public function __construct( &$wpdb, &$sitepress, &$string_factory ) {

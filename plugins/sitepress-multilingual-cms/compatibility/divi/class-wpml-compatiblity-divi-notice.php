@@ -34,7 +34,7 @@ class WPML_Compatibility_Divi_Notice extends WPML_Notice {
 				'Use Translation Editor notice 2/3',
 				'sitepress'
 			),
-			'<a href="https://wpml.org/errata/some-internal-taxonomies-will-be-missing-when-you-translate-divi-layouts/">Some internal taxonomies will be missing when you translate Divi layouts</a>'
+			'<a href="https://wpml.org/errata/some-internal-taxonomies-will-be-missing-when-you-translate-divi-layouts/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore">Some internal taxonomies will be missing when you translate Divi layouts</a>'
 		);
 
 		return $msg;

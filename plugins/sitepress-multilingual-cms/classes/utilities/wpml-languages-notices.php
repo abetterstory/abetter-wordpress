@@ -59,7 +59,7 @@ class WPML_Languages_Notices {
 			$text .= '</li>';
 			$text .= '</ul>';
 
-			$languages_edit_url   = admin_url( '?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php&trop=1' );
+			$languages_edit_url   = admin_url( 'admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php&trop=1' );
 			$languages_edit_link  = '<a href="' . $languages_edit_url . '">';
 			$languages_edit_link .= __( 'Edit Languages', 'sitepress' );
 			$languages_edit_link .= '</a>';

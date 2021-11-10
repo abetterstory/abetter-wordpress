@@ -11,7 +11,7 @@ class WPML_Integrations_Requirements {
 	const CORE_REQ_NOTICE_ID              = 'core-requirements';
 	const MISSING_REQ_NOTICE_ID           = 'missing-requirements';
 	const EDITOR_NOTICE_ID                = 'enable-translation-editor';
-	const DOCUMENTATION_LINK              = 'https://wpml.org/documentation/plugins-compatibility/page-builders/';
+	const DOCUMENTATION_LINK              = 'https://wpml.org/documentation/translating-your-contents/page-builders/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore';
 	const DOCUMENTATION_LINK_BLOCK_EDITOR = 'https://wpml.org/?page_id=2909360&utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-content-created-using-gutenberg-editor';
 
 	private $core_issues = array();
@@ -48,12 +48,7 @@ class WPML_Integrations_Requirements {
 		$this->third_party_dependencies  = $third_party_dependencies;
 		$this->requirements_notification = $requirements_notification;
 		$this->tm_settings               = $this->sitepress->get_setting( 'translation-management' );
-		$this->integrations              = $this->get_integrations();
-
-		if ( $integrations ) {
-			$this->integrations = $integrations;
-		}
-
+		$this->integrations              = $integrations ? $integrations : $this->get_integrations();
 	}
 
 	public function init_hooks() {

@@ -178,7 +178,7 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 	}
 
 	/**
-	 * @return \stdClass|null
+	 * @return string|null
 	 */
 	public function get_language_code() {
 		$language_code = null;

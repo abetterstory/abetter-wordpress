@@ -40,6 +40,8 @@ class RecommendationsManager {
 		add_action( 'activated_plugin', [ $this, 'activatedPluginRecommendation' ] );
 		add_action( 'deactivated_plugin', [ $this, 'deactivatedPluginRecommendation' ] );
 		add_action( 'wp_ajax_installer_recommendation_success', [ $this, 'recommendationSuccess' ] );
+
+		add_filter( 'wpml_installer_get_stored_recommendation_notices', [ $this, 'getRecommendationStoredNotices' ] );
 	}
 
 	public function activatedPluginRecommendation( $plugin ) {
@@ -96,15 +98,9 @@ class RecommendationsManager {
 						return null;
 					}
 
-					$url = $this->appendSiteKeyToDownloadUrl(
-						$pluginData['url'],
-						$subscription->get_site_key(),
-						$subscription->get_site_url() );
-
 					$downloadData = [
-						'url'           => $url,
+						'url'           => $pluginData['url'],
 						'slug'          => $pluginData['slug'],
-						'nonce'         => wp_create_nonce( 'install_plugin_' . $url ),
 						'repository_id' => $repositoryId,
 					];
 
@@ -138,6 +134,7 @@ class RecommendationsManager {
 	 */
 	public function getRepositoryPluginsRecommendations() {
 		$pluginsRecommendations = [];
+		$pluginsData = [];
 		$language               = $this->getCurrentLanguage();
 
 		foreach ( $this->repositoriesForRecommendation as $repositoryId ) {
@@ -178,8 +175,16 @@ class RecommendationsManager {
 							$isActive
 						);
 
+						$sectionPlugin  = $this->prepareSectionPlugin(
+							$language,
+							$pluginData,
+							$isInstalled,
+							$isActive
+						);
+
 						if ($pluginData['download_recommendation_section']) {
-							$pluginsRecommendations[ $pluginData['download_recommendation_section'] ]['plugins'][ $pluginData['slug'] ] = $recommendation;
+							$pluginsRecommendations[ $pluginData['download_recommendation_section'] ]['plugins'][ $pluginData['slug'] ] = $sectionPlugin;
+							$pluginsData[$pluginData['slug']] = $recommendation;
 						}
 					}
 				}
@@ -191,7 +196,11 @@ class RecommendationsManager {
 			}
 		}
 
-		return $pluginsRecommendations;
+		uasort( $pluginsRecommendations, function ( $a, $b ) {
+			return (int) $a['order'] - (int) $b['order'];
+		} );
+
+		return ['sections' => $pluginsRecommendations, 'plugins' => $pluginsData];
 	}
 
 	private function getCurrentLanguage() {
@@ -250,11 +259,24 @@ class RecommendationsManager {
 		];
 
 		return [
-			'name'              => $pluginData['name'],
-			'short_description' => isset( $pluginData['short_description'][ $language ] ) ? $pluginData['short_description'][ $language ] : '',
-			'is_installed'      => $isInstalled,
-			'is_active'         => $isActive,
-			'download_data'     => $downloadData,
+			'name'                    => $pluginData['name'],
+			'short_description'       => isset( $pluginData['short_description'][ $language ] ) ? $pluginData['short_description'][ $language ] : '',
+			'is_installed'            => $isInstalled,
+			'is_active'               => $isActive,
+			'slug'                    => $pluginData['slug'],
+			'recommendation_icon_url' => isset( $pluginData['recommendation_icon_url'] ) ? $pluginData['recommendation_icon_url'] : '',
+			'download_data'           => base64_encode( json_encode( $downloadData ) ),
+		];
+	}
+
+	private function prepareSectionPlugin( $language, $pluginData, $isInstalled, $isActive ) {
+		return [
+			'name'                    => $pluginData['name'],
+			'is_installed'            => $isInstalled,
+			'is_active'               => $isActive,
+			'slug'                    => $pluginData['slug'],
+			'short_description'       => isset( $pluginData['short_description'][ $language ] ) ? $pluginData['short_description'][ $language ] : '',
+			'recommendation_icon_url' => isset( $pluginData['recommendation_icon_url'] ) ? $pluginData['recommendation_icon_url'] : '',
 		];
 	}
 
@@ -280,6 +302,10 @@ class RecommendationsManager {
 			}
 		}
 
+		if ($pluginData['slug'] === 'wpml-translation-management') {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -298,5 +324,33 @@ class RecommendationsManager {
 			],
 			$url
 		);
+	}
+
+	public function getRecommendationStoredNotices( $existingNotices ) {
+		$storedRecommendations = Storage::getAll();
+		foreach ($storedRecommendations as $repositoryId => $recommendations) {
+			$repository = $this->repositories->get( $repositoryId );
+
+			$subscription = $repository->get_subscription();
+			if ( ! $subscription ) {
+				continue;
+			}
+
+			foreach ($recommendations as $recommendationSlug => $recommendation) {
+
+				$url = $this->appendSiteKeyToDownloadUrl( $recommendation['download_data']['url'], $subscription->get_site_key(), $subscription->get_site_url() );
+
+				$appendedDownloadData = [
+					'url' => $url,
+					'slug' => $recommendation['download_data']['slug'],
+					'repository_id' => $recommendation['download_data']['repository_id'],
+					'nonce'         => wp_create_nonce( 'install_plugin_' . $url ),
+				];
+
+				$storedRecommendations[$repositoryId][$recommendationSlug]['download_data'] = $appendedDownloadData;
+			}
+		}
+
+		return array_merge($existingNotices, $storedRecommendations);
 	}
 }

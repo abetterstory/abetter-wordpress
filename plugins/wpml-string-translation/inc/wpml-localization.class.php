@@ -22,7 +22,7 @@ class WPML_Localization {
 		return $this->get_domain_stats( $theme_localization_domains, 'theme' );
 	}
 
-	private function get_domain_stats( $localization_domains, $default, $no_wordpress = false ) {
+	public function get_domain_stats( $localization_domains, $default, $no_wordpress = false, $count_in_progress_as_completed = false ) {
 		$results = array();
 		if ( $localization_domains ) {
 			$domains = array();
@@ -41,7 +41,7 @@ class WPML_Localization {
 			}
 		}
 
-		return $this->results_to_array( $results );
+		return $this->results_to_array( $results, $count_in_progress_as_completed );
 	}
 
 	public function get_localization_stats( $component_type ) {
@@ -155,7 +155,7 @@ class WPML_Localization {
 
 		return $most_popular;
 	}
-	private function results_to_array( $results ) {
+	private function results_to_array( $results, $count_in_progress_as_completed = false ) {
 		$stats = array();
 
 		foreach ( $results as $r ) {
@@ -165,8 +165,11 @@ class WPML_Localization {
 			if ( ! isset( $stats[ $r->context ]['incomplete'] ) ) {
 				$stats[ $r->context ]['incomplete'] = 0;
 			}
-			if ( $r->status == ICL_TM_COMPLETE ) {
-				$stats[ $r->context ]['complete'] = $r->c;
+			if (
+				$r->status == ICL_TM_COMPLETE ||
+				( $count_in_progress_as_completed && $r->status == ICL_TM_IN_PROGRESS )
+			) {
+				$stats[ $r->context ]['complete'] += $r->c;
 			} else {
 				$stats[ $r->context ]['incomplete'] += $r->c;
 			}

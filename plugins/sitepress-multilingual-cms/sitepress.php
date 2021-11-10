@@ -2,10 +2,10 @@
 /**
  * Plugin Name: WPML Multilingual CMS
  * Plugin URI: https://wpml.org/
- * Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-4-4-12/">WPML 4.4.12 release notes</a>
+ * Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-4-5-0/">WPML 4.5.0 release notes</a>
  * Author: OnTheGoSystems
  * Author URI: http://www.onthegosystems.com/
- * Version: 4.4.12
+ * Version: 4.5.0
  * Plugin Slug: sitepress-multilingual-cms
  *
  * @package WPML\Core
@@ -13,6 +13,7 @@
 
 use WPML\Container\Config;
 use function WPML\Container\share;
+use function WPML\FP\partial;
 
 if ( preg_match( '#' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
 	die( 'You are not allowed to call this page directly.' );
@@ -28,11 +29,11 @@ if ( ! \WPML\Requirements\WordPress::checkMinimumRequiredVersion() ) {
 	return;
 }
 
-define( 'ICL_SITEPRESS_VERSION', '4.4.12' );
+define( 'ICL_SITEPRESS_VERSION', '4.5.0' );
 
 // Do not uncomment the following line!
-// If you need to use this constant, use it in the wp-config.php file.
-
+// If you need to use this constant, use it in the wp-config.php file
+// define('ICL_SITEPRESS_DEV_VERSION', '3.4-dev');
 define( 'WPML_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WPML_PLUGIN_FOLDER', dirname( WPML_PLUGIN_BASENAME ) );
 define( 'WPML_PLUGIN_PATH', __DIR__ );
@@ -164,6 +165,11 @@ WPML\Container\delegate( Config::getDelegated() );
 $sitepress = WPML\Container\make( '\SitePress' );
 
 $action_filter_loader = new WPML_Action_Filter_Loader();
+$action_filter_loader->load( [
+	\WPML\Ajax\Factory::class,
+	\WPML\Installer\AddSiteUrl::class,
+	\WPML\Core\BackgroundTask::class,
+] );
 
 if ( $sitepress->is_setup_complete() ) {
 	$actions = [
@@ -188,7 +194,6 @@ if ( $sitepress->is_setup_complete() ) {
 		'WPML_Display_As_Translated_Default_Lang_Messages_Factory',
 		'WPML_Absolute_Url_Persisted_Filters_Factory',
 		'WPML_Meta_Boxes_Post_Edit_Ajax_Factory',
-		'WPML_Wizard_Fetch_Content_Factory',
 		'WPML_Privacy_Content_Factory',
 		'WPML_Custom_Columns_Factory',
 		'WPML_Config_Shortcode_List',
@@ -202,12 +207,16 @@ if ( $sitepress->is_setup_complete() ) {
 		\WPML\Options\Reset::class,
 		'\WPML\Notices\DismissNotices',
 		'\WPML\Ajax\Locale',
-		'\WPML\Ajax\Factory',
 		\WPML\PostTranslation\SpecialPage\Hooks::class,
 		\WPML\LanguageSwitcher\AjaxNavigation\Hooks::class,
 		\WPML\BrowserLanguageRedirect\Dialog::class,
 		\WPML\UrlHandling\WPLoginUrlConverterFactory::class,
 		\WPML\Roles::class,
+		\WPML\Languages\UI::class,
+		\WPML\Settings\UI::class,
+		\WPML\AdminMenu\Redirect::class,
+		\WPML\Core\Menu\Translate::class,
+		\WPML\TaxonomyTermTranslation\AutoSync::class,
 	];
 	$action_filter_loader->load( $actions );
 
@@ -217,9 +226,11 @@ if ( $sitepress->is_setup_complete() ) {
 			'WPML_Media_Attachments_Duplication_Factory',
 			\WPML\Media\Duplication\HooksFactory::class,
 			'WPML_Deactivate_Old_Media_Factory',
-			'WPML_Set_Attachments_Language_Factory',
 			'WPML_Display_As_Translated_Attachments_Query_Factory',
 			'WPML_Media_Settings_Factory',
+			\WPML\Media\Loader::class,
+			\WPML\Media\Translate\LanguagesUpdated::class,
+			\WPML\Media\FrontendHooks::class,
 		];
 
 		$action_filter_loader->load( $media_actions );
@@ -228,9 +239,15 @@ if ( $sitepress->is_setup_complete() ) {
 	$rest_factories = [
 		'WPML_REST_Posts_Hooks_Factory',
 		'WPML\Core\REST\RewriteRules',
+		\WPML\REST\XMLConfig\Custom\Factory::class,
 	];
 
 	$action_filter_loader->load( $rest_factories );
+} else {
+	$action_filter_loader->load( [
+		\WPML\Setup\DisableNotices::class,
+		\WPML\Installer\DisableRegisterNow::class,
+	] );
 }
 
 $sitepress->load_core_tm();
@@ -300,10 +317,10 @@ if ( $sitepress->get_wp_api()->is_admin() ) {
 	wpml_get_admin_notices();
 }
 
-// activation hook.
+// activation hook
 register_deactivation_hook( WPML_PLUGIN_PATH . '/' . WPML_PLUGIN_FILE, 'icl_sitepress_deactivate' );
 
-add_filter( 'plugin_action_links', 'icl_plugin_action_links', 10, 2 );
+add_filter( 'plugin_action_links', partial( 'icl_plugin_action_links', $sitepress ), 10, 2 );
 
 $WPML_Users_Languages_Dependencies = new WPML_Users_Languages_Dependencies( $sitepress );
 
@@ -410,6 +427,15 @@ $wpml_whip_requirements = new WPML_Whip_Requirements();
 $wpml_whip_requirements->add_hooks();
 
 add_action( 'activated_plugin', [ 'WPML\Plugins', 'loadCoreFirst' ] );
-if ( defined( 'WCML_VERSION' ) ) {
+
+if ( ! defined('WPML_DO_NOT_LOAD_EMBEDDED_TM' ) || ! WPML_DO_NOT_LOAD_EMBEDDED_TM ) {
+	WPML\Plugins::loadEmbeddedTM( $sitepress->is_setup_complete() );
+}
+
+if ( defined( 'WCML_VERSION') ) {
 	WPML\Plugins::loadCoreFirst();
 }
+
+add_action( 'plugins_loaded', function() {
+	require_once WPML_PLUGIN_PATH . '/addons/wpml-page-builders/loader.php';
+}, PHP_INT_MAX );

@@ -21,7 +21,7 @@
                     <span class="{{ css_classes_native }}" lang="{{ language.code }}">{{- language.native_name -}}</span>
                 {%- endif -%}
 
-                {%- if language.display_name -%}
+                {%- if language.display_name and (language.display_name != language.native_name) -%}
                     <span class="{{ css_classes_display }}">
                     {%- if language.native_name -%}<span class="{{ css_classes_bracket }}"> (</span>{%- endif -%}
                         {{- language.display_name -}}

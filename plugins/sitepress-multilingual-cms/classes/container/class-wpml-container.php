@@ -1,4 +1,5 @@
 <?php
+
 namespace WPML\Container;
 
 use WPML\Auryn\Injector as AurynInjector;
@@ -8,7 +9,7 @@ class Container {
 	/** @var Container $instance */
 	private static $instance = null;
 
-	/** @var AurynInjector|null  */
+	/** @var AurynInjector|null */
 	private $injector = null;
 
 	private function __construct() {
@@ -97,4 +98,15 @@ class Container {
 		return self::get_instance()->injector->make( $class_name, $args );
 	}
 
+	/**
+	 * Invoke the specified callable or class::method string, provisioning dependencies along the way
+	 *
+	 * @param mixed $callableOrMethodStr A valid PHP callable or a provisionable ClassName::methodName string
+	 * @param array $args Optional array specifying params with which to invoke the provisioned callable
+	 * @throws \WPML\Auryn\InjectionException
+	 * @return mixed Returns the invocation result returned from calling the generated executable
+	 */
+	public static function execute( $callableOrMethodStr, array $args = [] ) {
+		return self::get_instance()->injector->execute( $callableOrMethodStr, $args );
+	}
 }

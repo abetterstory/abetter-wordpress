@@ -49,19 +49,30 @@ class WPML_SEO_HeadLangs {
 		$languages = apply_filters( 'wpml_head_langs', $languages );
 
 		if ( $this->must_render( $languages ) ) {
-			$hreflang_items = array();
-			foreach ( $languages as $lang ) {
-				/**
-				 * @since 3.3.7
-				 */
-				$alternate_hreflang = apply_filters( 'wpml_alternate_hreflang', $lang['url'], $lang['code'] );
+			$hreflang_items     = [];
+			$xdefault_href_lang = null;
 
-				$hreflang_code = $this->get_hreflang_code( $lang );
+            foreach ( $languages as $lang ) {
+                /**
+                 * @since 3.3.7
+                 */
+                $alternate_hreflang = apply_filters( 'wpml_alternate_hreflang', $lang['url'], $lang['code'] );
 
-				if ( $hreflang_code ) {
-					$hreflang_items[ $hreflang_code ] = str_replace( '&amp;', '&', $alternate_hreflang );
-				}
+                $hreflang_code = $this->get_hreflang_code( $lang );
+
+                if ( $hreflang_code ) {
+                    $hreflang_items[ $hreflang_code ] = str_replace( '&amp;', '&', $alternate_hreflang );
+
+                    if ( $this->sitepress->get_default_language() === $lang['code'] ) {
+                        $xdefault_href_lang = $hreflang_items[ $hreflang_code ];
+                    }
+                }
+            }
+
+			if ( $xdefault_href_lang ) {
+				$hreflang_items['x-default'] = $xdefault_href_lang;
 			}
+
 			$hreflang_items = apply_filters( 'wpml_hreflangs', $hreflang_items );
 
 			$hreflang = '';

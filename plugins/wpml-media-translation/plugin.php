@@ -2,10 +2,10 @@
 /**
  * Plugin Name: WPML Media
  * Plugin URI: https://wpml.org/
- * Description: Add multilingual support for Media files | <a href="https://wpml.org/?page_id=113610">Documentation</a> | <a href="https://wpml.org/version/media-translation-2-6-5/">WPML Media Translation 2.6.5 release notes</a>
+ * Description: Add multilingual support for Media files | <a href="https://wpml.org/documentation/getting-started-guide/media-translation/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlmedia">Documentation</a> | <a href="https://wpml.org/version/media-translation-2-7-0/">WPML Media Translation 2.7.0 release notes</a>
  * Author: OnTheGoSystems
  * Author URI: http://www.onthegosystems.com/
- * Version: 2.6.5
+ * Version: 2.7.0
  * Plugin Slug: wpml-media-translation
  *
  * @package wpml/media
@@ -15,7 +15,7 @@ if ( defined( 'WPML_MEDIA_VERSION' ) ) {
 	return;
 }
 
-define( 'WPML_MEDIA_VERSION', '2.6.5' );
+define( 'WPML_MEDIA_VERSION', '2.7.0' );
 define( 'WPML_MEDIA_PATH', dirname( __FILE__ ) );
 
 require_once WPML_MEDIA_PATH . '/vendor/autoload.php';

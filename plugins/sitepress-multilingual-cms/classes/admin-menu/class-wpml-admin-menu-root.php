@@ -204,6 +204,7 @@ class WPML_Admin_Menu_Root {
 	public function init_hooks() {
 		add_action( 'wpml_admin_menu_register_item', array( $this, 'register_menu_item' ) );
 		add_action( 'admin_menu', array( $this, 'build' ) );
+		add_action( 'set_wpml_root_menu_capability', [ $this, 'set_capability' ], 10, 1 );
 	}
 
 	/**

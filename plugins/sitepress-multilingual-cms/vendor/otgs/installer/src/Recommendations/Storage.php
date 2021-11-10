@@ -3,7 +3,7 @@
 namespace OTGS\Installer\Recommendations;
 
 class Storage {
-	const ADMIN_NOTICES_OPTION = 'otgs_installer_recommendations_admin_notices';
+	const ADMIN_NOTICES_OPTION = 'otgs_installer_recommendations_admin_notices_v2';
 
 	/**
 	 * @param string $key

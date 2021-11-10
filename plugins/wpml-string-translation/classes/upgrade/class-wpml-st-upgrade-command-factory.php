@@ -51,9 +51,6 @@ class WPML_ST_Upgrade_Command_Factory {
 			case 'WPML_ST_Upgrade_Migrate_Originals':
 				$result = new WPML_ST_Upgrade_Migrate_Originals( $this->wpdb, $this->sitepress );
 				break;
-			case 'WPML_ST_Upgrade_Db_Cache_Command':
-				$result = new WPML_ST_Upgrade_Db_Cache_Command( $this->wpdb );
-				break;
 			case 'WPML_ST_Upgrade_Display_Strings_Scan_Notices':
 				$themes_and_plugins_settings = new WPML_ST_Themes_And_Plugins_Settings();
 				$result                      = new WPML_ST_Upgrade_Display_Strings_Scan_Notices( $themes_and_plugins_settings );

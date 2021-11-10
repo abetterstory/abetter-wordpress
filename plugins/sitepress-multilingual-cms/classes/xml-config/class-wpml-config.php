@@ -1,5 +1,10 @@
 <?php
+
+use WPML\Settings\PostType\Automatic;
+
 class WPML_Config {
+	const PATH_TO_XSD = WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd';
+
 	static $wpml_config_files = array();
 	static $active_plugins    = array();
 
@@ -58,30 +63,34 @@ class WPML_Config {
 	}
 
 	static function parse_wpml_config_post_process( $config ) {
-		/* @var TranslationManagement $iclTranslationManagement */
-		global $sitepress, $iclTranslationManagement;
-
 		self::parse_custom_fields( $config );
-		$settings_helper = wpml_load_settings_helper();
-		foreach (
-			array(
-				array( 'taxonomy', 'taxonomies' ),
-				array( 'custom-type', 'custom-types' ),
-			) as $indexes
-		) {
-			$tm_settings = new WPML_TM_Settings_Update(
-				$indexes[0],
-				$indexes[1],
-				$iclTranslationManagement,
-				$sitepress,
-				$settings_helper
-			);
-			$tm_settings->update_from_config( $config['wpml-config'] );
-		}
+		self::parseTaxonomies( $config );
+		self::parsePostTypes( $config );
 
 		do_action( 'wpml_reset_ls_settings', $config['wpml-config']['language-switcher-settings'] );
 
 		return $config;
+	}
+
+	static function parseTaxonomies( $config ) {
+		self::parseTMSetting( 'taxonomy', 'taxonomies', $config );
+	}
+
+	static function parsePostTypes( $config ) {
+		self::parseTMSetting( 'custom-type', 'custom-types', $config );
+		Automatic::saveFromConfig( $config );
+	}
+
+	static function parseTMSetting( $singular, $plural, $config ) {
+		global $sitepress, $iclTranslationManagement;
+		$tm_settings = new WPML_TM_Settings_Update(
+			$singular,
+			$plural,
+			$iclTranslationManagement,
+			$sitepress,
+			wpml_load_settings_helper()
+		);
+		$tm_settings->update_from_config( $config['wpml-config'] );
 	}
 
 	static function load_config_post_process() {
@@ -208,11 +217,12 @@ class WPML_Config {
 			if ( $name == $item->name && isset( $config_files_arr[ $item->name ] ) ) {
 				if ( $item->override_local || ! file_exists( $config_file ) ) {
 					end( self::$wpml_config_files );
-					$key                                     = key( self::$wpml_config_files ) + 1;
-					self::$wpml_config_files[ $key ]         = new stdClass();
-					self::$wpml_config_files[ $key ]->config = icl_xml2array( $config_files_arr[ $item->name ] );
-					self::$wpml_config_files[ $key ]->type   = $type;
+					$key                                                 = key( self::$wpml_config_files ) + 1;
+					self::$wpml_config_files[ $key ]                     = new stdClass();
+					self::$wpml_config_files[ $key ]->config             = icl_xml2array( $config_files_arr[ $item->name ] );
+					self::$wpml_config_files[ $key ]->type               = $type;
 					self::$wpml_config_files[ $key ]->admin_text_context = basename( dirname( $config_file ) );
+
 					return false;
 				} else {
 					return true;
@@ -284,7 +294,7 @@ class WPML_Config {
 
 		$config_all_updated = false;
 
-		$validate  = new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' );
+		$validate  = new WPML_XML_Config_Validate(); // Validate with no XSD file (see wpmlcore-8444).
 		$transform = new WPML_XML2Array();
 
 		if ( ! empty( self::$wpml_config_files ) ) {
@@ -319,7 +329,7 @@ class WPML_Config {
 	 * @return array
 	 */
 	private static function append_custom_xml_config( $config_files, &$updated = null ) {
-		$validate      = new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' );
+		$validate      = new WPML_XML_Config_Validate( self::PATH_TO_XSD );
 		$transform     = new WPML_XML2Array();
 		$custom_config = self::get_custom_xml_config( $validate, $transform );
 		if ( $custom_config ) {
@@ -349,6 +359,7 @@ class WPML_Config {
 				);
 
 				do_action( 'wpml_parse_custom_config', $config_object );
+
 				return $custom_config;
 			}
 		}
@@ -376,6 +387,7 @@ class WPML_Config {
 			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'widget', 'elementor-widgets' );
 			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'widget', 'beaver-builder-widgets' );
 			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'widget', 'cornerstone-widgets' );
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'widget', 'siteorigin-widgets' );
 
 			// language-switcher-settings
 			if ( isset( $wpml_config['language-switcher-settings']['key'] ) ) {

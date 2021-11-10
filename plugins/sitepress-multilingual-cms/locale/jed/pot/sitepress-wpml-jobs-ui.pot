@@ -1,0 +1,16 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"X-Generator: babel-plugin-makepot\n"
+
+#: vendor/wpml/tm/src/js/ate/TranslationQueueFilters.js:34
+msgid "Insufficient funds"
+msgstr ""
+
+#: vendor/wpml/tm/src/js/ate/TranslationQueueFilters.js:61
+msgid "Complete"
+msgstr ""
+
+#: vendor/wpml/tm/src/js/ate/TranslationQueueFilters.js:63
+msgid "Pending review"
+msgstr ""

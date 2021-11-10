@@ -683,7 +683,7 @@ class WPML_LS_Settings {
 		$active_languages = $this->sitepress->get_active_languages();
 
 		foreach ( $active_languages as $code => $language ) {
-			$active_languages[ $code ]['flag_url'] = $this->sitepress->get_flag_url( $code );
+			$active_languages[ $code ]['flag_img'] = $this->sitepress->get_flag_image( $code );
 		}
 
 		return $this->sitepress->order_languages( $active_languages );

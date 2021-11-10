@@ -4,13 +4,17 @@ namespace WPML\Ajax;
 
 use WPML\Collect\Support\Collection;
 use WPML\FP\Either;
+use WPML\FP\Fns;
 use WPML\FP\Json;
 use WPML\FP\Logic;
+use WPML\FP\Lst;
 use WPML\FP\Maybe;
 use WPML\FP\System\System;
 use WPML\LIB\WP\Hooks;
 use WPML\LIB\WP\Nonce;
-use function WPML\FP\invoke;
+use function WPML\Container\execute;
+use function WPML\Container\make;
+use function WPML\FP\pipe;
 use function WPML\FP\System\getFilterFor as filter;
 use function WPML\FP\System\getValidatorFor as validate;
 
@@ -28,20 +32,24 @@ class Factory implements \IWPML_AJAX_Action {
 
 		// $handleRequest :: Collection -> Either::Left(string) | Either::Right(mixed)
 		$handleRequest = function ( Collection $postData ) {
-			return Maybe::of( $postData->get( 'endpoint' ) )
-						->map( 'WPML\Container\make' )
-						->map( invoke( 'run' )->with( $postData->get( 'data' ) ) )
-						->getOrElse( Either::left( 'End point not found' ) );
+			try {
+				return Maybe::of( $postData->get( 'endpoint' ) )
+				            ->map( pipe( make(), Lst::makePair( Fns::__, 'run' ) ) )
+				            ->map( execute( Fns::__, [ ':data' => $postData->get( 'data' ) ] ) )
+				            ->getOrElse( Either::left( 'End point not found' ) );
+			} catch ( \Exception $e ) {
+				return Either::left( $e->getMessage() );
+			}
 		};
 
 		Hooks::onAction( 'wp_ajax_wpml_action' )
-			->then( System::getPostData() ) // Either::right(Collection)
-			->then( $filterEndPoint )
-			->then( Nonce::verifyEndPoint() )
-			->then( $decodeData )
-			->then( $validateData )
-			->then( $handleRequest )
-			->then( 'wp_send_json_success' )
-			->onError( 'wp_send_json_error' );
+		     ->then( System::getPostData() ) // Either::right(Collection)
+		     ->then( $filterEndPoint )
+		     ->then( Nonce::verifyEndPoint() )
+		     ->then( $decodeData )
+		     ->then( $validateData )
+		     ->then( $handleRequest )
+		     ->then( 'wp_send_json_success' )
+		     ->onError( 'wp_send_json_error' );
 	}
 }

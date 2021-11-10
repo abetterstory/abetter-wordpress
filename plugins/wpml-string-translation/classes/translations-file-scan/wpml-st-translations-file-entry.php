@@ -11,7 +11,7 @@ class WPML_ST_Translations_File_Entry {
 	const PATTERN_SEARCH_LANG_MO   = '#[-]?([a-z]+[_A-Z]*)\.mo$#i';
 	const PATTERN_SEARCH_LANG_JSON = '#([a-z]+[_A-Z]*)-[-a-z0-9]+\.json$#i';
 
-	/** @var string */
+	/** @var  string */
 	private $path;
 
 	/** @var string */
@@ -152,8 +152,8 @@ class WPML_ST_Translations_File_Entry {
 	 * '/wp-content/languages/admin-pl_PL.mo' => 'pl'
 	 * '/wp-content/plugins/sitepress/sitepress-hr.mo' => 'hr'
 	 *
-	 * @throws RuntimeException
 	 * @return null|string
+	 * @throws RuntimeException
 	 */
 	public function get_file_locale() {
 		return \WPML\Container\make( WPML_ST_Translations_File_Locale::class )->get( $this->get_path(), $this->get_domain() );
@@ -191,7 +191,13 @@ class WPML_ST_Translations_File_Entry {
 	 * @param string $status
 	 */
 	private function validate_status( $status ) {
-		$allowed_statuses = array( self::NOT_IMPORTED, self::IMPORTED, self::PARTLY_IMPORTED, self::FINISHED, self::SKIPPED );
+		$allowed_statuses = array(
+			self::NOT_IMPORTED,
+			self::IMPORTED,
+			self::PARTLY_IMPORTED,
+			self::FINISHED,
+			self::SKIPPED,
+		);
 
 		if ( ! in_array( $status, $allowed_statuses, true ) ) {
 			throw new InvalidArgumentException( 'Status of MO file is invalid' );

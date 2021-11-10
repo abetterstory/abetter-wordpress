@@ -1,5 +1,7 @@
 <?php
 
+use WPML\Element\API\TranslationsRepository;
+
 /**
  * Class WPML_Custom_Columns
  */
@@ -62,13 +64,23 @@ class WPML_Custom_Columns implements IWPML_Action {
 
 		$flags_column = '<span class="screen-reader-text">' . esc_html__( 'Languages', 'sitepress' ) . '</span>';
 		foreach ( $active_languages as $language_data ) {
-			$flags_column .=
-				'<img src="' . esc_url( $this->sitepress->get_flag_url( $language_data['code'] ) ) .
-				'" width="18" height="12" alt="' . esc_attr( $language_data['display_name'] ) . '" title="' .
-				esc_attr( $language_data['display_name'] ) . '" style="margin:2px" />';
+			$flags_column .= $this->get_flag_img( $language_data );
 		}
 
 		return $flags_column;
+	}
+
+	private function get_flag_img( $language_data ) {
+		$url = $this->sitepress->get_flag_url( $language_data['code'] );
+
+		if ( $url !== '' ) {
+			return '<img src="' . esc_url( $url ) .
+			       '" width="18" height="12" alt="' . esc_attr( $language_data['display_name'] ) . '" title="' .
+			       esc_attr( $language_data['display_name'] ) . '" style="margin:2px" />';
+		} else {
+
+			return $language_data['code'];
+		}
 	}
 
 	/**
@@ -177,7 +189,25 @@ class WPML_Custom_Columns implements IWPML_Action {
 						'add_content_for_posts_management_column',
 					)
 				);
+
+				add_action( 'manage_posts_custom_column', [ $this, 'preloadTranslationData' ], 1, 0 );
+				add_action( 'manage_pages_custom_column', [ $this, 'preloadTranslationData' ], 1, 0 );
 			}
+		}
+	}
+
+	public function preloadTranslationData() {
+		static $loaded = false;
+		if ( $loaded ) {
+			return;
+		}
+
+		global $wp_query;
+		$posts = $wp_query->posts;
+
+		if ( is_array( $posts ) ) {
+			TranslationsRepository::preloadForPosts( $posts );
+			$loaded = true;
 		}
 	}
 

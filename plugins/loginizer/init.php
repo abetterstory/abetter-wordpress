@@ -5,7 +5,7 @@ if(!function_exists('add_action')){
 	exit;
 }
 
-define('LOGINIZER_VERSION', '1.6.7');
+define('LOGINIZER_VERSION', '1.6.8');
 define('LOGINIZER_DIR', dirname(LOGINIZER_FILE));
 define('LOGINIZER_URL', plugins_url('', LOGINIZER_FILE));
 define('LOGINIZER_PRO_URL', 'https://loginizer.com/features#compare');
@@ -227,6 +227,12 @@ function loginizer_load_plugin(){
 	$loginizer['lockouts_extend'] = empty($options['lockouts_extend']) ? 86400 : $options['lockouts_extend']; // 24 hours
 	$loginizer['reset_retries'] = empty($options['reset_retries']) ? 86400 : $options['reset_retries']; // 24 hours
 	$loginizer['notify_email'] = empty($options['notify_email']) ? 0 : $options['notify_email'];
+	$loginizer['notify_email_address'] = lz_is_multisite() ? get_site_option('admin_email') : get_option('admin_email');
+	
+	if(!empty($options['notify_email_address'])){
+		$loginizer['notify_email_address'] = $options['notify_email_address'];
+		$loginizer['custom_notify_email'] = 1;
+	}
 	
 	// Default messages
 	$loginizer['d_msg']['inv_userpass'] = __('Incorrect Username or Password', 'loginizer');
@@ -805,7 +811,7 @@ function loginizer_login_failed($username, $is_2fa = ''){
 				
 				$sitename = lz_is_multisite() ? get_site_option('site_name') : get_option('blogname');
 				$mail = array();
-				$mail['to'] = lz_is_multisite() ? get_site_option('admin_email') : get_option('admin_email');	
+				$mail['to'] = $loginizer['notify_email_address'];	
 				$mail['subject'] = 'Failed '.$fail_type.' Attempts from IP '.$loginizer['current_ip'].' ('.$sitename.')';
 				$mail['message'] = 'Hi,
 
@@ -1528,6 +1534,11 @@ function loginizer_page_brute_force(){
 		$lockouts_extend = (int) lz_optpost('lockouts_extend');
 		$reset_retries = (int) lz_optpost('reset_retries');
 		$notify_email = (int) lz_optpost('notify_email');
+		$notify_email_address = lz_optpost('notify_email_address');
+		
+		if(!empty($notify_email_address) && !lz_valid_email($notify_email_address)){
+			$error[] = __('Email address is invalid', 'loginizer');
+		}
 		
 		$lockout_time = $lockout_time * 60;
 		$lockouts_extend = $lockouts_extend * 60 * 60;
@@ -1541,6 +1552,7 @@ function loginizer_page_brute_force(){
 			$option['lockouts_extend'] = $lockouts_extend;
 			$option['reset_retries'] = $reset_retries;
 			$option['notify_email'] = $notify_email;
+			$option['notify_email_address'] = $notify_email_address;
 			
 			// Save the options
 			update_option('loginizer_options', $option);
@@ -1672,6 +1684,11 @@ function loginizer_page_brute_force(){
 		$start_ip = lz_optpost('start_ip');
 		$end_ip = lz_optpost('end_ip');
 		
+		// If no end IP we consider only 1 IP
+		if(empty($end_ip)){
+			$end_ip = $start_ip;
+		}
+		
 		// Validate the IP against all checks
 		loginizer_iprange_validate($start_ip, $end_ip, $loginizer['blacklist'], $error);
 		
@@ -1704,6 +1721,11 @@ function loginizer_page_brute_force(){
 
 		$start_ip = lz_optpost('start_ip_w');
 		$end_ip = lz_optpost('end_ip_w');
+		
+		// If no end IP we consider only 1 IP
+		if(empty($end_ip)){
+			$end_ip = $start_ip;
+		}
 		
 		// Validate the IP against all checks
 		loginizer_iprange_validate($start_ip, $end_ip, $loginizer['whitelist'], $error);
@@ -1923,7 +1945,7 @@ function loginizer_page_brute_force(){
 		function lz_export_ajax(lz_csv_type){
 	
 			var data = new Object();
-			data["action"] = "loginizer_export";
+			data["action"] = lz_csv_type != "failed_login" ? "loginizer_export" : "loginizer_failed_login_export";
 			data["lz_csv_type"] = lz_csv_type;
 			data["nonce"]	= "<?php echo wp_create_nonce('loginizer_admin_ajax'); ?>";
 			
@@ -1995,7 +2017,7 @@ function loginizer_page_brute_force(){
 		<div class="inside">
 		<table class="wp-list-table widefat fixed users" border="0">
 			<tr>
-				<th scope="row" valign="top" style="background:#EFEFEF;" width="20">#</th>
+				<th scope="row" valign="top" style="background:#EFEFEF;" width="20"><input type="checkbox" id="lz_check_all_logs" onchange="lz_multiple_check()" style="margin-left:-1px;"/></th>
 				<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('IP','loginizer'); ?></th>
 				<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Attempted Username','loginizer'); ?></th>
 				<th scope="row" valign="top" style="background:#EFEFEF;"><?php echo __('Last Failed Attempt  (DD/MM/YYYY)','loginizer'); ?></th>
@@ -2018,7 +2040,7 @@ function loginizer_page_brute_force(){
 					echo '
 					<tr>
 						<td>
-							<input type="checkbox" value="'.esc_attr($iv['ip']).'" name="lz_reset_ips[]" />
+							<input type="checkbox" value="'.esc_attr($iv['ip']).'" name="lz_reset_ips[]" class="lz_shift_select_logs lz_check_all_logs" />
 						</td>
 						<td>
 							<a href="https://ipinfo.io/'.esc_html($iv['ip']).'" target="_blank">'.esc_html($iv['ip']).'&nbsp;<span class="dashicons dashicons-external"></span></a>
@@ -2051,6 +2073,8 @@ function loginizer_page_brute_force(){
 		<input name="lz_reset_all_ip" class="button button-primary action" value="<?php echo __('Clear All Logs', 'loginizer'); ?>" type="submit" />
 		&nbsp; &nbsp; 
 		<input name="lz_blacklist_selected_ip" class="button button-primary action" value="<?php echo __('Blacklist Selected IPs', 'loginizer'); ?>" type="submit" />
+		&nbsp; &nbsp; 
+		<input name="lz_export_csv" onclick="lz_export_ajax('failed_login'); return false;" class="button button-primary action" value="<?php echo __('Export CSV', 'loginizer'); ?>" type="submit" />
 		</div>
 	</div>
 	</form>
@@ -2106,6 +2130,12 @@ function loginizer_page_brute_force(){
 					<input type="text" size="3" value="<?php echo (!empty($notify_email) ? $notify_email : $loginizer['notify_email']); ?>" name="notify_email" id="notify_email" /> <?php echo __('lockouts <br />0 to disable email notifications','loginizer'); ?>
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" valign="top"><label for="notify_email_address"><?php echo __('Email Address','loginizer'); ?></label></th>
+				<td>
+					<input type="text" value="<?php echo (!empty($notify_email_address) ? $notify_email_address : (!empty($loginizer['custom_notify_email']) ? $loginizer['notify_email_address'] : '')); ?>" name="notify_email_address" id="notify_email_address" size="30" /> <?php echo __('<br />failed login attempts notifications will be sent to this email','loginizer'); ?>
+				</td>
+			</tr>
 		</table><br />
 		<input name="save_lz" class="button button-primary action" value="<?php echo __('Save Settings','loginizer'); ?>" type="submit" />
 		<?php
@@ -2158,6 +2188,8 @@ color: #fff;
 jQuery(document).ready(function(){
 	jQuery('#lz_bl_table').paginate({ limit: 11, navigationWrapper: jQuery('#lz_bl_nav')});
 	jQuery('#lz_wl_table').paginate({ limit: 11, navigationWrapper: jQuery('#lz_wl_nav')});
+	lz_multiple_check();
+	lz_shift_check_all('lz_shift_select_logs');
 });
 
 // Delete a Blacklist / Whitelist IP Range
@@ -2185,6 +2217,40 @@ function del_confirm_all(msg){
 	return false;
 	
 }
+
+//Check all the failed log attempts
+function lz_multiple_check(){
+	jQuery("#lz_check_all_logs").on("click", function(event){
+		if(this.checked == true){
+			jQuery(".lz_check_all_logs").prop("checked", true);
+		}else{
+			jQuery(".lz_check_all_logs").prop("checked", false);
+		}
+	});
+}
+
+//To select the installations/backups using shift key
+function lz_shift_check_all(check_class){ 
+
+    var checkboxes = jQuery("."+check_class);
+    var lastChecked = null;
+
+    checkboxes.click(function(event){
+        if(!lastChecked){
+            lastChecked = this;
+            return;
+        }
+
+        if(event.shiftKey){
+            var start = checkboxes.index(this);
+            var end = checkboxes.index(lastChecked);
+			
+            checkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop("checked", this.checked);
+        }
+
+        lastChecked = this;
+    });
+};
 
 </script>
 	
@@ -2517,6 +2583,50 @@ function loginizer_export(){
 	
 	wp_die();
         
+}
+
+add_action('wp_ajax_loginizer_failed_login_export', 'loginizer_failed_login_export');
+
+//Export Failed Login Attempts
+function loginizer_failed_login_export(){
+	
+	global $wpdb;
+	// Some AJAX security
+	check_ajax_referer('loginizer_admin_ajax', 'nonce');
+	 
+	if(!current_user_can('manage_options')){
+		wp_die('Sorry, but you do not have permissions to change settings.');
+	}
+	
+	$csv_array = lz_selectquery("SELECT * FROM `".$wpdb->prefix."loginizer_logs` ORDER BY `time` DESC", 1);
+	$filename = 'loginizer-failed-login-attempts';
+	
+	if(empty($csv_array)){
+		echo -1;
+		echo __('No data to export', 'loginizer');
+		wp_die();
+	}
+		
+	header('Content-Type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename='.$filename.'.csv');
+	
+	$allowed_fields = array('ip' => 'IP', 'attempted_username' => 'Attempted Username', 'last_f_attemp' => 'Last Failed Attempt', 'f_attempts_count' => 'Failed Attempts Count', 'lockouts_count' => 'Lockouts Count', 'url_attacked' => 'URL Attacked');
+
+	$file = fopen("php://output","w");
+	
+	fputcsv($file, array_values($allowed_fields));
+	
+	foreach($csv_array as $failed_attempts){
+		
+		$row = array($failed_attempts['ip'], $failed_attempts['username'], date('d/M/Y H:i:s P', $failed_attempts['time']), $failed_attempts['count'], $failed_attempts['lockout'], $failed_attempts['url']);
+		fputcsv($file, $row);
+	}
+
+
+	fclose($file);
+	
+	wp_die();
+
 }
 	
 // IP range validations
@@ -4487,6 +4597,12 @@ function add_lz_bl_users(){
 					}
 					
 					foreach($usernames as $_user){
+						
+						// Disallow these special characters to avoid XSS or any other security vulnerability
+						if(preg_match('/[\<\>\"\']/', $_user)){
+							continue;
+						}
+						
 						echo '<input type="text" size="30" value="'.$_user.'" name="lz_bl_users[]" class="lz_bl_users" />';
 					}
 					
@@ -4545,6 +4661,12 @@ function add_lz_bl_domains(){
 					}
 					
 					foreach($domains as $_domain){
+						
+						// Disallow these special characters to avoid XSS or any other security vulnerability
+						if(preg_match('/[\<\>\"\']/', $_domain)){
+							continue;
+						}
+						
 						echo '<input type="text" size="30" value="'.$_domain.'" name="lz_bl_domains[]" class="lz_bl_domains" />';
 					}
 					

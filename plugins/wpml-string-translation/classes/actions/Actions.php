@@ -32,6 +32,7 @@ class Actions {
 			\WPML\ST\AdminTexts\UI::class,
 			\WPML\ST\PackageTranslation\Hooks::class,
 			\WPML\ST\Main\UI::class,
+			\WPML\ST\StringsCleanup\UI::class,
 			\WPML\ST\DisplayAsTranslated\CheckRedirect::class,
 		);
 	}

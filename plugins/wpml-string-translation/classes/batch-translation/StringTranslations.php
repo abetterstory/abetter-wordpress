@@ -2,13 +2,13 @@
 
 namespace WPML\ST\Batch\Translation;
 
-use phpDocumentor\Reflection\Types\Callable_;
 use WPML\Collect\Support\Traits\Macroable;
 use WPML\FP\Fns;
 use WPML\FP\Logic;
 use WPML\FP\Obj;
 use WPML\FP\Str;
 use WPML\FP\Wrapper;
+use WPML\Setup\Option;
 use WPML\ST\API\Fns as ST_API;
 use function WPML\Container\make;
 use function WPML\FP\curryN;
@@ -193,7 +193,9 @@ class StringTranslations {
 						$statuses = \wpml_collect( $getJobStatus( $post->post_id ) );
 
 						$addTranslationWithStatus = function ( $stringId, $targetLanguage ) use ( $statuses ) {
-							$status = $statuses->get( $targetLanguage, ICL_STRING_TRANSLATION_NOT_TRANSLATED );
+							$status = Option::shouldTranslateEverything()
+								? ICL_TM_IN_PROGRESS
+								: $statuses->get( $targetLanguage, ICL_STRING_TRANSLATION_NOT_TRANSLATED );
 							ST_API::updateStatus( $stringId, $targetLanguage, $status );
 						};
 

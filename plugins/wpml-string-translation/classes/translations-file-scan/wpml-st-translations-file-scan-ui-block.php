@@ -8,7 +8,7 @@ class WPML_ST_Translations_File_Scan_UI_Block {
 	private $notices;
 
 	/** @var string  */
-	private $link = 'https://wpml.org/faq/how-to-deal-with-error-messages-about-a-broken-table-that-needs-fixing/';
+	private $link = 'https://wpml.org/faq/how-to-deal-with-error-messages-about-a-broken-table-that-needs-fixing/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlst';
 
 	/**
 	 * @param WPML_Notices $notices

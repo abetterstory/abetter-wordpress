@@ -23,19 +23,19 @@ class WPML_Requirements {
 		'woocommerce-multilingual'    => array(
 			'version' => '4.7.0',
 			'name'    => 'WooCommerce Multilingual',
-			'url'     => 'https://wpml.org/download/woocommerce-multilingual/',
+			'url'     => 'https://wpml.org/download/woocommerce-multilingual/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 		),
 		'gravityforms-multilingual'   => array(
 			'name' => 'GravityForms Multilingual',
-			'url'  => 'https://wpml.org/download/gravityforms-multilingual/',
+			'url'  => 'https://wpml.org/download/gravityforms-multilingual/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 		),
 		'buddypress-multilingual'     => array(
 			'name' => 'BuddyPress Multilingual',
-			'url'  => 'https://wpml.org/download/buddypress-multilingual/',
+			'url'  => 'https://wpml.org/download/buddypress-multilingual/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 		),
 		'wp-seo-multilingual'         => array(
 			'name' => 'Yoast SEO Multilingual',
-			'url'  => 'https://wpml.org/download/yoast-seo-multilingual/',
+			'url'  => 'https://wpml.org/download/yoast-seo-multilingual/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 		),
 	);
 
@@ -48,7 +48,6 @@ class WPML_Requirements {
 			'url'          => 'https://wpml.org/?page_id=1129854',
 			'requirements' => array(
 				'wpml-string-translation',
-				'wpml-translation-management',
 			),
 		),
 		'gravityforms'                   => array(
@@ -56,7 +55,6 @@ class WPML_Requirements {
 			'requirements' => array(
 				'gravityforms-multilingual',
 				'wpml-string-translation',
-				'wpml-translation-management',
 			),
 		),
 		'buddypress'                     => array(

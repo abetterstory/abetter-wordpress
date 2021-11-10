@@ -152,15 +152,17 @@ class Fns {
 		} ) );
 
 		self::macro( 'map', curryN( 2, function ( $fn, $target ) {
+			if ( ! Logic::isMappable( $target ) ) {
+				throw( new \InvalidArgumentException( 'target should be an object with map method or an array' ) );
+			}
+
 			if ( is_object( $target ) ) {
 				return $target->map( $fn );
-			}
-			if ( is_array( $target ) ) {
+			} else {
 				$keys = array_keys( $target );
 
 				return array_combine( $keys, array_map( $fn, $target, $keys ) );
 			}
-			throw( new \InvalidArgumentException( 'target should be an object with map method or an array' ) );
 		} ) );
 
 		self::macro( 'each', curryN( 2, function ( $fn, $target ) {

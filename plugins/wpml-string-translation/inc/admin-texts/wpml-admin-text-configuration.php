@@ -102,7 +102,7 @@ class WPML_Admin_Text_Configuration extends WPML_Admin_Text_Functionality {
 	 */
 	private function wildcard_to_matcher( $wildcard ) {
 
-		return '#^' . str_replace( '*', '.+', $wildcard ) . '$#';
+		return '#^' . str_replace( '\*', '.+', preg_quote( $wildcard, '#' ) ) . '$#';
 	}
 
 	private function all_strings_array( array $top_level_filters ) {

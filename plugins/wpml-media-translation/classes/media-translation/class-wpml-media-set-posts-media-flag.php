@@ -34,18 +34,14 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PREPARE_ACTION, array( $this, 'clear_flags' ) );
-		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PROCESS_ACTION, array( $this, 'process_batch' ) );
-
+		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PREPARE_ACTION, [ $this, 'clear_flags_action' ] );
+		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PROCESS_ACTION, [ $this, 'process_batch_action' ] );
 		add_action( 'save_post', array( $this, 'update_post_flag' ) );
 	}
 
-	public function clear_flags() {
+	public function clear_flags_action() {
 		if ( $this->verify_nonce( WPML_Media_Posts_Media_Flag_Notice::PREPARE_ACTION ) ) {
-
-			if ( ! WPML_Media::has_setup_started() ) {
-				$this->wpdb->delete( $this->wpdb->postmeta, array( 'meta_key' => self::HAS_MEDIA_POST_FLAG ), array( '%s' ) );
-			}
+			$this->clear_flags();
 			wp_send_json_success( array( 'status' => __( 'Running setup...', 'wpml-media' ) ) );
 
 		} else {
@@ -53,19 +49,40 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 		}
 	}
 
-	public function process_batch() {
+	public function clear_flags() {
+		if ( ! WPML_Media::has_setup_started() ) {
+			$this->wpdb->delete( $this->wpdb->postmeta, array( 'meta_key' => self::HAS_MEDIA_POST_FLAG ), array( '%s' ) );
+		}
+	}
+
+	public function process_batch_action() {
 		if ( $this->verify_nonce( WPML_Media_Posts_Media_Flag_Notice::PROCESS_ACTION ) ) {
-			$this->mark_started();
 
-			$continue = false;
-			$status   = __( 'Setup complete!', 'wpml-media' );
-			$offset   = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+			$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+			list( $status, $offset, $continue ) = $this->process_batch( $offset );
 
-			if ( ! WPML_Media::has_setup_run() ) {
+			wp_send_json_success( array(
+				'status'   => $status,
+				'offset'   => $offset,
+				'continue' => $continue
+			) );
 
-				$sql = $this->wpdb->prepare( "
+		} else {
+			wp_send_json_error( array( 'status' => 'Invalid nonce' ) );
+		}
+	}
+
+	public function process_batch( $offset ) {
+		$this->mark_started();
+
+		$continue = false;
+		$status   = __( 'Setup complete!', 'wpml-media' );
+
+		if ( ! WPML_Media::has_setup_run() ) {
+
+			$sql = $this->wpdb->prepare( "
 			SELECT SQL_CALC_FOUND_ROWS ID, post_content FROM {$this->wpdb->posts} p
-			JOIN {$this->wpdb->prefix}icl_translations t 
+			JOIN {$this->wpdb->prefix}icl_translations t
 				ON t.element_id = p.ID AND t.element_type LIKE 'post_%'
 			LEFT JOIN {$this->wpdb->prefix}postmeta m ON p.ID = m.post_id AND m.meta_key='%s'
 			WHERE p.post_type NOT IN ( 'auto-draft', 'attachment', 'revision' )
@@ -74,31 +91,23 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 			LIMIT %d, %d
 		", self::HAS_MEDIA_POST_FLAG, $offset, self::BATCH_SIZE );
 
-				$posts = $this->wpdb->get_results( $sql );
+			$posts = $this->wpdb->get_results( $sql );
 
-				$total_posts_found = $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+			$total_posts_found = $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
 
-				if ( $continue = ( count( $posts ) > 0 ) ) {
-					$this->flag_posts( $posts );
-					$this->record_media_usage( $posts );
-					$progress = round( 100*min( $offset, $total_posts_found )/$total_posts_found );
-					$status   = sprintf( __( 'Setup in progress: %d%% complete...', 'wpml-media' ), $progress );
-				}
+			if ( $continue = ( count( $posts ) > 0 ) ) {
+				$this->flag_posts( $posts );
+				$this->record_media_usage( $posts );
+				$progress = round( 100 * min( $offset, $total_posts_found ) / $total_posts_found );
+				$status   = sprintf( __( 'Setup in progress: %d%% complete...', 'wpml-media' ), $progress );
 			}
-
-			if ( ! $continue ) {
-				$this->mark_complete();
-			}
-
-			wp_send_json_success( array(
-				'status'   => $status,
-				'offset'   => $offset + self::BATCH_SIZE,
-				'continue' => $continue
-			) );
-
-		} else {
-			wp_send_json_error( array( 'status' => 'Invalid nonce' ) );
 		}
+
+		if ( ! $continue ) {
+			$this->mark_complete();
+		}
+
+		return [ $status, $offset + self::BATCH_SIZE, $continue ];
 	}
 
 	private function verify_nonce( $action ) {

@@ -100,7 +100,7 @@ class WPML_TF_Backend_Options_View {
 			WPML_TF_Settings::BUTTON_MODE_CUSTOM   => array(
 				'value'    => WPML_TF_Settings::BUTTON_MODE_CUSTOM,
 				'label'    => __( 'I will add it manually (%1$sinstructions%2$s)', 'sitepress' ),
-				'link'     => 'https://wpml.org/wpml-hook/wpml_tf_feedback_open_link/',
+				'link'     => 'https://wpml.org/wpml-hook/wpml_tf_feedback_open_link/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 				'selected' => false,
 			),
 			WPML_TF_Settings::BUTTON_MODE_DISABLED => array(

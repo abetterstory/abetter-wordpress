@@ -41,6 +41,27 @@ msgstr ""
 msgid "Your site is using an expired %s account, which means you won't receive updates. This can lead to stability and security issues."
 msgstr ""
 
+# // translators: %s Product url
+# $headingHTML = '<h2>' . esc_html( sprintf( __( 'This site is registered on %s as a development site.', 'installer' ), static::$productURL ) ) . '</h2>';
+# // translators: %1$s is the text "update the site key" inside a link and %2$s is the text "Learn more" inside a link
+
+msgid "This site is registered on %s as a development site."
+msgstr ""
+
+# $bodyText,
+# self::getPublishLinkHTML( __( 'update the site key', 'installer' ) ),
+# self::getLearnMoveDevKeysLinkHTML( __( 'Learn more', 'installer' ) )
+
+msgid "update the site key"
+msgstr ""
+
+# self::getPublishLinkHTML( __( 'update the site key', 'installer' ) ),
+# self::getLearnMoveDevKeysLinkHTML( __( 'Learn more', 'installer' ) )
+# ) . '</p>';
+
+msgid "Learn more"
+msgstr ""
+
 # // translators: %s Product name
 # $headingHTML = self::getHeadingHTML( __( 'Remember to remove %s from this website', 'installer' ) );
 # // translators: %s Product name
@@ -53,6 +74,76 @@ msgstr ""
 # self::inButtonAreaHTML( self::getRefundedButtons() );
 
 msgid "This site is using the %s plugin, which has not been paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means you are not receiving stability and security updates and will ultimately lead to problems running the site."
+msgstr ""
+
+# // translators: %1$s Product name %2$s host name (ex. wpml.org)
+# $headingHTML = self::getConnectionIssueHeadingHTML( __( '%1$s plugin cannot connect to %2$s', 'installer' ) );
+#
+
+msgid "%1$s plugin cannot connect to %2$s"
+msgstr ""
+
+# // translators: %1$s Product name %2$s host name (ex. wpml.org)
+# $body = self::getConnectionIssueBodyHTML( __( '%1$s needs to connect to its server to check for new releases and security updates. Something in the network or security settings is preventing this. Please allow outgoing communication to %2$s to remove this notice.', 'installer' ) ) .
+# self::inLinksAreaHTML(
+
+msgid "%1$s needs to connect to its server to check for new releases and security updates. Something in the network or security settings is preventing this. Please allow outgoing communication to %2$s to remove this notice."
+msgstr ""
+
+# self::inLinksAreaHTML(
+# __( 'Need help?', 'installer' ),
+# // translators: %1$s is `communication error details` %2$s is ex. wpml.org technical support
+
+msgid "Need help?"
+msgstr ""
+
+# // translators: %1$s is `communication error details` %2$s is ex. wpml.org technical support
+# __( 'See the %1$s and let us know in %2$s.', 'installer' ),
+# self::getCommunicationDetailsLinkHTML( __( 'communication error details', 'installer' ) ),
+
+msgid "See the %1$s and let us know in %2$s."
+msgstr ""
+
+# __( 'See the %1$s and let us know in %2$s.', 'installer' ),
+# self::getCommunicationDetailsLinkHTML( __( 'communication error details', 'installer' ) ),
+# // translators: %s is host name (ex. wpml.org)
+
+msgid "communication error details"
+msgstr ""
+
+# // translators: %s is host name (ex. wpml.org)
+# self::getSupportLinkHTML( __( '%s technical support', 'installer' ) )
+# );
+
+msgid "%s technical support"
+msgstr ""
+
+# $body_text = sprintf(
+# __( 'Please install %s to allow translating %s.', 'installer' ),
+# strip_tags( $parameters['glue_plugin_name'] ),
+
+msgid "Please install %s to allow translating %s."
+msgstr ""
+
+# sprintf(
+# __( 'Site Moved or Copied - %s require your action', 'installer' ),
+# esc_html( static::$product )
+
+msgid "Site Moved or Copied - %s require your action"
+msgstr ""
+
+#
+# $installButton = __( "Install and activate", 'installer' );
+# $dismiss       = __( "Ignore and don't ask me again", 'installer' );
+
+msgid "Install and activate"
+msgstr ""
+
+# $installButton = __( "Install and activate", 'installer' );
+# $dismiss       = __( "Ignore and don't ask me again", 'installer' );
+#
+
+msgid "Ignore and don't ask me again"
 msgstr ""
 
 # $registerUrl = \WP_Installer::menu_url();
@@ -97,11 +188,179 @@ msgstr ""
 msgid "Bought again?"
 msgstr ""
 
-# return '<span class="installer-dismiss-nag notice-dismiss" ' . self::getDismissedAttributes( Account::NOT_REGISTERED ) . '>'
+# private static function getSiteUrlChangedActionSelection( $style ) {
+# return '<div class="otgs-site-url-changed-action-selection" ' . $style. '><p>' . __( 'It looks like this site is a copy of a different site, or it has moved to a different URL.', 'installer' ) . '</p>
+# <fieldset>
+
+msgid "It looks like this site is a copy of a different site, or it has moved to a different URL."
+msgstr ""
+
+# <input autocomplete="off" type="radio" name="otgs_siteurl_option" value="move">
+# <span>' . esc_html( __( 'I moved the site to this new URL', 'installer' ) ) . '</span>
+# </label>
+
+msgid "I moved the site to this new URL"
+msgstr ""
+
+# <input autocomplete="off" type="radio" name="otgs_siteurl_option" value="copy">
+# <span>' . esc_html( __( 'This is a copy of my original site', 'installer' ) ) . '</span>
+# </label>
+
+msgid "This is a copy of my original site"
+msgstr ""
+
+# <a class="otgs-site-key-notice__actions-btn otgs_siteurl_changed_type"
+# href="#">' . esc_html( __( 'Next', 'installer' ) ) . '</a>
+# <a class="otgs-site-key-notice__actions-link" href="">
+
+msgid "Next"
+msgstr ""
+
+# <a class="otgs-site-key-notice__actions-link" href="">
+# ' . esc_html( __( 'More details', 'installer' ) ) . '
+# </a>
+
+msgid "More details"
+msgstr ""
+
+# if ( $subscription->get_site_key_type() === \OTGS_Installer_Subscription::SITE_KEY_TYPE_DEVELOPMENT ) {
+# $isDevelopStep = '<p>' . __( 'Is this still a development site?', 'installer' ) . '</p>
+# <fieldset>
+
+msgid "Is this still a development site?"
+msgstr ""
+
+# <input autocomplete="off" type="radio" name="otgs_siteurl_should_site_stay_dev" value="yes">
+# <span>' . esc_html( __( 'Yes', 'installer' ) ) . '</span>
+# </label>
+
+msgid "Yes"
+msgstr ""
+
+# <input autocomplete="off" type="radio" name="otgs_siteurl_should_site_stay_dev" value="no">
+# <span>' . esc_html( __( 'No', 'installer' ) ) . '</span>
+# </label>
+
+msgid "No"
+msgstr ""
+
+# );
+# $isDevelopStep = '<p>' . sprintf( __( 'Please update the URL of currently used site key %1$sin your account%2$s.', 'installer' ),
+# '<a class="otgs-site-key-notice__actions-link" href="' . esc_url( $updateSiteUrlLink ) . '">',
+
+msgid "Please update the URL of currently used site key %1$sin your account%2$s."
+msgstr ""
+
+# $siteKeyRegistration = sprintf(
+# __( 'Enter the site key for %1$s.', 'installer' ),
+# str_replace( [ 'https://', 'http://' ], '', $actualSiteUrl )
+
+msgid "Enter the site key for %1$s."
+msgstr ""
+
+# $getASiteKey = sprintf(
+# __( '%1$sGet a key for this site%2$s', 'installer' ),
+# '<a class="otgs-site-key-notice__actions-link" target="_blank" rel="nofollow"
+
+msgid "%1$sGet a key for this site%2$s"
+msgstr ""
+
+# . '" style="height: 34px"/>'
+# . '<input class="otgs-site-key-notice__actions-btn otgs_siteurl_copied_action" type="submit" value="' . esc_html( __( 'Save', 'installer' ) ) . '" />'
+# . $getASiteKey
+
+msgid "Save"
+msgstr ""
+
+# $text = sprintf(
+# __( 'Please update your site key\'s URL and set it as a production site %1$sin your account%2$s.', 'installer' ),
+# '<a class="otgs-site-key-notice__actions-link" href="' . esc_url( $updateSiteAndTypeUrlLink ) . '">',
+
+msgid "Please update your site key's URL and set it as a production site %1$sin your account%2$s."
+msgstr ""
+
+# $text = sprintf(
+# __( 'Please update your site key\'s URL %1$sin your account%2$s.', 'installer' ),
+# '<a class="otgs-site-key-notice__actions-link" href="' . esc_url( $updateSiteUrlLink ) . '">',
+
+msgid "Please update your site key's URL %1$sin your account%2$s."
+msgstr ""
+
+# // translators: %1$s is the text "update the site key" inside a link and %2$s is the text "Learn more" inside a link
+# $bodyText = esc_html__( 'When this site goes live, remember to %1$s from "development" to "production" to remove this message. %2$s', 'installer' );
+# $bodyHTML = '<p>' . sprintf(
+
+msgid "When this site goes live, remember to %1$s from \"development\" to \"production\" to remove this message. %2$s"
+msgstr ""
+
+# return '<span class="installer-dismiss-nag notice-dismiss" ' . self::getDismissedAttributes( $notice_type ) . '>'
 # . '<span class="screen-reader-text">' . esc_html__( 'Dismiss', 'installer' ) . '</span></span>';
 # }
 
 msgid "Dismiss"
+msgstr ""
+
+# if ( OTGS_Installer()->plugin_is_embedded_version( $download['name'], $download['slug'] ) ) {
+# $upToDateClass .= '&nbsp;' . __( '(embedded)', 'installer' );
+# }
+
+msgid "(embedded)"
+msgstr ""
+
+# <td>
+# <span class="installer-status-installing">' . __( 'installing...', 'installer' ) . '</span>
+# <span class="installer-status-updating">' . __( 'updating...', 'installer' ) . '</span>
+
+msgid "installing..."
+msgstr ""
+
+# <span class="installer-status-installing">' . __( 'installing...', 'installer' ) . '</span>
+# <span class="installer-status-updating">' . __( 'updating...', 'installer' ) . '</span>
+# <span class="installer-status-installed" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'installed', 'installer' ) . '</span>
+
+msgid "updating..."
+msgstr ""
+
+# <span class="installer-status-updating">' . __( 'updating...', 'installer' ) . '</span>
+# <span class="installer-status-installed" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'installed', 'installer' ) . '</span>
+# <span class="installer-status-updated" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'updated', 'installer' ) . '</span>
+
+msgid "failed!"
+msgstr ""
+
+# <span class="installer-status-updating">' . __( 'updating...', 'installer' ) . '</span>
+# <span class="installer-status-installed" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'installed', 'installer' ) . '</span>
+# <span class="installer-status-updated" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'updated', 'installer' ) . '</span>
+
+msgid "installed"
+msgstr ""
+
+# <span class="installer-status-installed" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'installed', 'installer' ) . '</span>
+# <span class="installer-status-updated" data-fail="' . __( 'failed!', 'installer' ) . '">' . __( 'updated', 'installer' ) . '</span>
+# </td>
+
+msgid "updated"
+msgstr ""
+
+# <td>
+# <span class="installer-status-activating">' . __( 'activating', 'installer' ) . '</span>
+# <span class="installer-status-activated">' . __( 'activated', 'installer' ) . '</span>
+
+msgid "activating"
+msgstr ""
+
+# <span class="installer-status-activating">' . __( 'activating', 'installer' ) . '</span>
+# <span class="installer-status-activated">' . __( 'activated', 'installer' ) . '</span>
+# </td>
+
+msgid "activated"
+msgstr ""
+
+# if ( ! empty( $download['release-notes'] ) ) {
+# $releaseNotes = '<a class="js-release-notes handle" href="#">' . esc_html__( 'Release notes', 'installer' ) . '</a>';
+#
+
+msgid "Release notes"
 msgstr ""
 
 # private function handle_product_parsing_error( $products_url, $product_id ) {
@@ -139,16 +398,23 @@ msgstr ""
 msgid "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet. You can still use the plugin without registration, but you will not receive automated updates."
 msgstr ""
 
-# if ( ! $repository || ! $nonce || ! $site_key || ! wp_verify_nonce( $nonce, 'save_site_key_' . $repository ) ) {
-# wp_send_json_error( esc_html__( 'Invalid request!', 'installer' ) );
-# }
+# if ( ! $site_key ) {
+# wp_send_json_success( [ 'error' => esc_html__( 'Empty site key!', 'installer' ) ] );
+# return;
+
+msgid "Empty site key!"
+msgstr ""
+
+# if ( ! $repository || ! $nonce || ! wp_verify_nonce( $nonce, 'save_site_key_' . $repository ) ) {
+# wp_send_json_success( [ 'error' => esc_html__( 'Invalid request!', 'installer' ) ] );
+# return;
 
 msgid "Invalid request!"
 msgstr ""
 
-# return array(
-# 'title' => __( 'Installer Support', 'installer' ),
-# 'content' => __( 'For retrieving Installer debug information use the %s page.', 'installer' ),
+# 'commercial',
+# __( 'Installer Support', 'installer' ),
+# 'Installer Support',
 
 msgid "Installer Support"
 msgstr ""
@@ -279,46 +545,11 @@ msgstr ""
 msgid "Toolset API server"
 msgstr ""
 
-# case 'expired':
-# $message = __( 'You are using an expired account of %s. %sExtend your subscription%s', 'installer' );
-# break;
+# $linkText = __( 'Register', 'installer' );
+# $text     = __( ' to use auto-updates', 'installer' );
+#
 
-msgid "You are using an expired account of %s. %sExtend your subscription%s"
-msgstr ""
-
-# case 'refunded':
-# $message = __( 'Remember to remove %s from this website. %sCheck my order status%s', 'installer' );
-# $notice_classes .= ' notice-otgs-refund';
-
-msgid "Remember to remove %s from this website. %sCheck my order status%s"
-msgstr ""
-
-# default:
-# $message = __( 'You are using an unregistered version of %s and are not receiving compatibility and security updates. %sRegister now%s', 'installer' );
-# break;
-
-msgid "You are using an unregistered version of %s and are not receiving compatibility and security updates. %sRegister now%s"
-msgstr ""
-
-# 'strings'   => array(
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-
-msgid "You are using the complementary %1$s. For the %2$s, %3$s."
-msgstr ""
-
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-# ),
-
-msgid "complete set of features"
-msgstr ""
-
-# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
-# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
-# ),
-
-msgid "upgrade to Toolset"
+msgid " to use auto-updates"
 msgstr ""
 
 # public function win_paths_exception_message() {
@@ -361,6 +592,104 @@ msgstr ""
 # $theme_repo_name, '<a href="' . $registration_url . '">', '</a>', $theme_repo_name );
 
 msgid "To install and update %s, please %sregister%s %s for this site."
+msgstr ""
+
+# if ( ! $credentials ) {
+# $message = __( 'We were not able to copy some plugin files. This is usually due to issues with permissions for WordPress content or plugins folder.', 'installer' );
+# $this->error( new WP_Error( 'files_not_writable', $message, $context ) );
+
+msgid "We were not able to copy some plugin files. This is usually due to issues with permissions for WordPress content or plugins folder."
+msgstr ""
+
+# $message = $this->prepareMessage(
+# __( 'You are using an expired account of %s. %sExtend your subscription%s', 'installer' ),
+# $notice['product'],
+
+msgid "You are using an expired account of %s. %sExtend your subscription%s"
+msgstr ""
+
+# $message = $this->prepareMessage(
+# __( 'Remember to remove %s from this website. %sCheck my order status%s', 'installer' ),
+# $notice['product'],
+
+msgid "Remember to remove %s from this website. %sCheck my order status%s"
+msgstr ""
+
+# $message = sprintf(
+# __( 'You have an old Types-free subscription, which doesn\'t provide automatic updates. %sUpgrade your account%s', 'installer' ),
+# '<a href="' . $menu_url . '">',
+
+msgid "You have an old Types-free subscription, which doesn't provide automatic updates. %sUpgrade your account%s"
+msgstr ""
+
+# $message = $this->prepareMessage(
+# __( 'You are using an unregistered version of %s and are not receiving compatibility and security updates. %sRegister now%s', 'installer' ),
+# $notice['product'],
+
+msgid "You are using an unregistered version of %s and are not receiving compatibility and security updates. %sRegister now%s"
+msgstr ""
+
+# 'strings'   => array(
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
+# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+
+msgid "You are using the complementary %1$s. For the %2$s, %3$s."
+msgstr ""
+
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
+# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+# ),
+
+msgid "complete set of features"
+msgstr ""
+
+# 'valid_subscription' => sprintf( __( 'You are using the complementary %1$s. For the %2$s, %3$s.', 'installer' ),
+# $plugin_name, '<a href="https://wpml.org/documentation/developing-custom-multilingual-sites/types-and-views-lite/?utm_source=viewsplugin&utm_campaign=wpml-toolset-lite&utm_medium=plugins-page&utm_term=features-link">' . __( 'complete set of features', 'installer' ) . '</a>', '<a href="https://toolset.com/?add-to-cart=631305&buy_now=1&apply_coupon=eyJjb3Vwb25fbmFtZSI6IndwbWwgY291cG9uIGJhc2ljIiwiY291cG9uX2lkIjoiODAyMDE2In0=">' . __( 'upgrade to Toolset', 'installer' ) . '</a>' ),
+# ),
+
+msgid "upgrade to Toolset"
+msgstr ""
+
+# 'strings'                    => array(
+# 'heading'                 => __( 'Reporting to', 'installer' ),
+# 'report_to'               => __( 'Report to', 'installer' ),
+
+msgid "Reporting to"
+msgstr ""
+
+# 'heading'                 => __( 'Reporting to', 'installer' ),
+# 'report_to'               => __( 'Report to', 'installer' ),
+# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
+
+msgid "Report to"
+msgstr ""
+
+# 'report_to'               => __( 'Report to', 'installer' ),
+# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
+# 'installer' ),
+
+msgid "Send theme and plugins information, in order to get faster support and compatibility alerts"
+msgstr ""
+
+# 'installer' ),
+# 'radio_report_no'         => __( "Don't send this information and skip compatibility alerts",
+# 'installer' ),
+
+msgid "Don't send this information and skip compatibility alerts"
+msgstr ""
+
+# 'installer' ),
+# 'which_theme_and_plugins' => __( 'which theme and plugins you are using.', 'installer' ),
+# ),
+
+msgid "which theme and plugins you are using."
+msgstr ""
+
+# 'use_radio'                  => false,
+# 'privacy_policy_text'        => __( 'Privacy and data usage policy', 'installer' ),
+# 'plugin_site'                => null,
+
+msgid "Privacy and data usage policy"
 msgstr ""
 
 # if ( self::CHANNEL_DEVELOPMENT === $id ) {
@@ -482,6 +811,13 @@ msgstr ""
 msgid "No repositories defined."
 msgstr ""
 
+# if ( preg_match( '#Could not resolve host: (.*)#', $error, $matches ) || preg_match( '#Couldn\'t resolve host \'(.*)\'#', $error, $matches ) ) {
+# $error = sprintf( __( "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet.", 'installer' ),
+# '<strong><i>' . $this->get_generic_product_name( $repository_id ) . '</i></strong>',
+
+msgid "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet."
+msgstr ""
+
 # $days    = 30;
 # $message = __( 'You will have to renew your subscription in order to continue getting the updates and support.', 'installer' );
 #
@@ -543,286 +879,6 @@ msgstr ""
 # '<br />' . $message .
 
 msgid "Your subscription expires in %d days."
-msgstr ""
-
-# 'strings'                    => array(
-# 'heading'                 => __( 'Reporting to', 'installer' ),
-# 'report_to'               => __( 'Report to', 'installer' ),
-
-msgid "Reporting to"
-msgstr ""
-
-# 'heading'                 => __( 'Reporting to', 'installer' ),
-# 'report_to'               => __( 'Report to', 'installer' ),
-# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
-
-msgid "Report to"
-msgstr ""
-
-# 'report_to'               => __( 'Report to', 'installer' ),
-# 'radio_report_yes'        => __( 'Send theme and plugins information, in order to get faster support and compatibility alerts',
-# 'installer' ),
-
-msgid "Send theme and plugins information, in order to get faster support and compatibility alerts"
-msgstr ""
-
-# 'installer' ),
-# 'radio_report_no'         => __( "Don't send this information and skip compatibility alerts",
-# 'installer' ),
-
-msgid "Don't send this information and skip compatibility alerts"
-msgstr ""
-
-# 'installer' ),
-# 'which_theme_and_plugins' => __( 'which theme and plugins you are using.', 'installer' ),
-# ),
-
-msgid "which theme and plugins you are using."
-msgstr ""
-
-# 'use_radio'                  => false,
-# 'privacy_policy_text'        => __( 'Privacy and data usage policy', 'installer' ),
-# 'plugin_site'                => null,
-
-msgid "Privacy and data usage policy"
-msgstr ""
-
-# >
-# <?php printf( __( "Unregister %s from this site", 'installer' ), $model->productName ) ?>
-# </a>&nbsp;
-
-msgid "Unregister %s from this site"
-msgstr ""
-
-# $disabled = 'disabled';
-# $title    = 'title="' . sprintf( esc_attr__( "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister.", 'installer' ), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper( $model->repoId ) ) . '"';
-# }
-
-msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister."
-msgstr ""
-
-# >
-# <?php _e( 'Check for updates', 'installer' ); ?>
-# </a>
-
-msgid "Check for updates"
-msgstr ""
-
-# data-repository="<?php echo $model->repoId ?>"
-# data-confirmation="<?php esc_attr_e( 'Are you sure you want to unregister?', 'installer' ) ?>"
-# data-nonce="<?php echo $model->removeSiteKeyNonce ?>"
-
-msgid "Are you sure you want to unregister?"
-msgstr ""
-
-# public static function render( $model ) {
-# $title            = sprintf( __( 'Remember to remove %s from this website.', 'installer' ), $model->productName );
-# $into             = sprintf( __( 'This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site.', 'installer' ), $model->productName );
-
-msgid "Remember to remove %s from this website."
-msgstr ""
-
-# $title            = sprintf( __( 'Remember to remove %s from this website.', 'installer' ), $model->productName );
-# $into             = sprintf( __( 'This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site.', 'installer' ), $model->productName );
-# $buyQuestion      = __( 'Bought again?', 'installer' );
-
-msgid "This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site."
-msgstr ""
-
-# <?php if( !WP_Installer()->dependencies->is_uploading_allowed() ): ?>
-# <p><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'),
-# '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
-
-msgid "Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s."
-msgstr ""
-
-# <th>&nbsp;</th>
-# <th><?php _e('Plugin', 'installer') ?></th>
-# <th><?php _e('Installed', 'installer') ?></th>
-
-msgid "Plugin"
-msgstr ""
-
-# <th><?php _e('Plugin', 'installer') ?></th>
-# <th><?php _e('Installed', 'installer') ?></th>
-# <th><?php _e('Current', 'installer') ?></th>
-
-msgid "Installed"
-msgstr ""
-
-# <th><?php _e('Installed', 'installer') ?></th>
-# <th><?php _e('Current', 'installer') ?></th>
-# <th><?php _e('Released', 'installer') ?></th>
-
-msgid "Current"
-msgstr ""
-
-# <th><?php _e('Current', 'installer') ?></th>
-# <th><?php _e('Released', 'installer') ?></th>
-# <th>&nbsp;</th>
-
-msgid "Released"
-msgstr ""
-
-# <span class="<?php echo $class ?>"><?php echo $v; ?></span>
-# <?php if ( $this->plugin_is_embedded_version( $download['name'], $download['slug'] ) ): ?>&nbsp;<?php _e( '(embedded)', 'installer' ); ?><?php endif; ?>
-# <?php if(
-
-msgid "(embedded)"
-msgstr ""
-
-# <td>
-# <span class="installer-status-installing"><?php _e('installing...', 'installer') ?></span>
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-
-msgid "installing..."
-msgstr ""
-
-# <span class="installer-status-installing"><?php _e('installing...', 'installer') ?></span>
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-
-msgid "updating..."
-msgstr ""
-
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-# <span class="installer-status-updated" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('updated', 'installer') ?></span>
-
-msgid "failed!"
-msgstr ""
-
-# <span class="installer-status-updating"><?php _e('updating...', 'installer') ?></span>
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-# <span class="installer-status-updated" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('updated', 'installer') ?></span>
-
-msgid "installed"
-msgstr ""
-
-# <span class="installer-status-installed" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('installed', 'installer') ?></span>
-# <span class="installer-status-updated" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('updated', 'installer') ?></span>
-# </td>
-
-msgid "updated"
-msgstr ""
-
-# <td>
-# <span class="installer-status-activating"><?php _e('activating', 'installer') ?></span>
-# <span class="installer-status-activated"><?php _e('activated', 'installer') ?></span>
-
-msgid "activating"
-msgstr ""
-
-# <span class="installer-status-activating"><?php _e('activating', 'installer') ?></span>
-# <span class="installer-status-activated"><?php _e('activated', 'installer') ?></span>
-# </td>
-
-msgid "activated"
-msgstr ""
-
-# &nbsp;
-# <label><input name="activate" type="checkbox" value="1" disabled="disabled" />&nbsp;<?php _e('Activate after download', 'installer') ?></label>
-#
-
-msgid "Activate after download"
-msgstr ""
-
-#
-# <div class="installer-status-success"><?php _e('Operation complete!', 'installer') ?></div>
-#
-
-msgid "Operation complete!"
-msgstr ""
-
-#
-# <span class="installer-revalidate-message hidden"><?php _e("Download failed!\n\nPlease refresh the page and try again.", 'installer') ?></span>
-# </form>
-
-msgid "Download failed!\n\nPlease refresh the page and try again."
-msgstr ""
-
-#
-# <input type="submit" class="button-secondary" value="<?php esc_attr_e('Download', 'installer') ?>" disabled="disabled" />
-# &nbsp;
-
-msgid "Download"
-msgstr ""
-
-# <?php if ( !empty( $download['release-notes'] ) ): ?>
-# <a class="js-release-notes handle" href="#"><?php esc_html_e( 'Release notes', 'installer' ) ?></a></td>
-# <?php endif; ?>
-
-msgid "Release notes"
-msgstr ""
-
-# $message = $expires ?
-# sprintf( __( '%s is registered on this site. You will receive automatic updates until %s', 'installer' ), $model->productName, date_i18n( 'F j, Y', strtotime( $expires ) ) ) :
-# sprintf( __( '%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer' ), $model->productName );
-
-msgid "%s is registered on this site. You will receive automatic updates until %s"
-msgstr ""
-
-# sprintf( __( '%s is registered on this site. You will receive automatic updates until %s', 'installer' ), $model->productName, date_i18n( 'F j, Y', strtotime( $expires ) ) ) :
-# sprintf( __( '%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer' ), $model->productName );
-#
-
-msgid "%s is registered on this site. Your Lifetime account gives you updates for life."
-msgstr ""
-
-# <h2>
-# <?php echo esc_html( sprintf( __( 'Already purchased %s?', 'installer' ), $model->productName ) ); ?>
-# <a class="enter_site_key_js otgs-installer-notice-link-register"
-
-msgid "Already purchased %s?"
-msgstr ""
-
-# >
-# <?php printf( __( 'Register %s', 'installer' ), $model->productName ); ?>
-# </a>
-
-msgid "Register %s"
-msgstr ""
-
-# 1 => sprintf(
-# __( 'Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise, %3$s', 'installer' ),
-# self::removeScheme( $model->siteUrl ),
-
-msgid "Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise, %3$s"
-msgstr ""
-
-# self::getRegisterLink( $model ) ),
-# 2 => __( 'Insert your key and activate automatic updates:', 'installer' )
-# . '<span class="otgs-installer-register-inputs">'
-
-msgid "Insert your key and activate automatic updates:"
-msgstr ""
-
-# disabled
-# title="<?php printf( esc_attr__( "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register.", 'installer' ), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper( $model->repoId ) ) ?>"
-# <?php endif; ?>
-
-msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register."
-msgstr ""
-
-# . '<input class="button-primary" type="submit" value="'
-# . esc_attr__( 'OK', 'installer' )
-# . '" />'
-
-msgid "OK"
-msgstr ""
-
-# . '<input class="button-secondary cancel_site_key_js" type="button" value="'
-# . esc_attr__( 'Cancel registration', 'installer' )
-# . '" />'
-
-msgid "Cancel registration"
-msgstr ""
-
-# <a target="_blank" rel="nofollow"
-# href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'your account', 'installer' ); ?></a>
-# <?php
-
-msgid "your account"
 msgstr ""
 
 # echo esc_attr( sprintf(
@@ -895,6 +951,111 @@ msgstr ""
 msgid "Updates channel:"
 msgstr ""
 
+# <?php if( !WP_Installer()->dependencies->is_uploading_allowed() ): ?>
+# <p class="installer-error-box"><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'),
+# '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
+
+msgid "Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s."
+msgstr ""
+
+# <th>&nbsp;</th>
+# <th><?php _e('Plugin', 'installer') ?></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
+
+msgid "Plugin"
+msgstr ""
+
+# <td class="twelve">
+# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
+# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
+
+msgid "downloading..."
+msgstr ""
+
+# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
+# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
+# </td>
+
+msgid "downloaded"
+msgstr ""
+
+# &nbsp;
+# <label><input name="activate" type="checkbox" value="1" disabled="disabled" />&nbsp;<?php _e('Activate after download', 'installer') ?></label>
+#
+
+msgid "Activate after download"
+msgstr ""
+
+# <div class="installer-download-progress-status"></div>
+# <div class="installer-status-success"><?php _e('Operation complete!', 'installer') ?></div>
+#
+
+msgid "Operation complete!"
+msgstr ""
+
+#
+# <span class="installer-revalidate-message hidden"><?php _e("Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again.", 'installer') ?></span>
+# </form>
+
+msgid "Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again."
+msgstr ""
+
+# <th><?php _e('Plugin', 'installer') ?></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
+
+msgid "Available"
+msgstr ""
+
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
+
+msgid "Installed"
+msgstr ""
+
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
+
+msgid "Downloading"
+msgstr ""
+
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
+# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
+# </tr>
+
+msgid "Activate"
+msgstr ""
+
+# <br />
+# <input type="submit" class="button-secondary" value="<?php esc_attr_e('Download', 'installer') ?>" disabled="disabled" />
+# &nbsp;
+
+msgid "Download"
+msgstr ""
+
+# <th><?php _e( 'Installed', 'installer' ) ?></th>
+# <th><?php _e( 'Current', 'installer' ) ?></th>
+# <th><?php _e( 'Released', 'installer' ) ?></th>
+
+msgid "Current"
+msgstr ""
+
+# <th><?php _e( 'Current', 'installer' ) ?></th>
+# <th><?php _e( 'Released', 'installer' ) ?></th>
+# <th>&nbsp;</th>
+
+msgid "Released"
+msgstr ""
+
+#
+# <span class="installer-revalidate-message hidden"><?php _e( "Download failed!\n\nPlease refresh the page and try again.", 'installer' ) ?></span>
+# </form>
+
+msgid "Download failed!\n\nPlease refresh the page and try again."
+msgstr ""
+
 # if(empty($args['repository']) || empty($args['package']) || empty($args['product'])){
 # echo __('Incorrect setup', 'installer');
 # return;
@@ -958,6 +1119,20 @@ msgstr ""
 msgid "%s support on wpml.org"
 msgstr ""
 
+# disabled="disabled"
+# title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
+# <?php endif; ?>
+
+msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register."
+msgstr ""
+
+# disabled="disabled"
+# title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
+# <?php endif; ?>
+
+msgid "Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister."
+msgstr ""
+
 # >
 # <?php _e('Enter site key', 'installer') ?>
 # </a>&nbsp;&nbsp;
@@ -986,49 +1161,21 @@ msgstr ""
 msgid "Are you sure you want to remove this site key?"
 msgstr ""
 
-#
-# <p><i><?php printf(__('This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this.', 'installer'), '<a href="' . admin_url('plugins.php') . '">' , '</a>'); ?></i></p>
-#
-
-msgid "This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this."
-msgstr ""
-
-# <?php if($subpackages_expandable): ?>
-# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
-# <?php endif; ?>
-
-msgid "Individual components"
-msgstr ""
-
-# <?php if($subpackages_expandable): ?>
-# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
-# <?php endif; ?>
-
-msgid "Click to see individual components options."
-msgstr ""
-
-#
-# $title                  = $withProduct( __( 'You are using an expired account of %s.', 'installer' ) );
-# $into                   = __( 'It means you will not receive updates. This can lead to stability and even security issues.', 'installer' );
-
-msgid "You are using an expired account of %s."
-msgstr ""
-
-# $title                  = $withProduct( __( 'You are using an expired account of %s.', 'installer' ) );
-# $into                   = __( 'It means you will not receive updates. This can lead to stability and even security issues.', 'installer' );
-# $accountQuestion        = $withSiteName( __( 'Do you have an account on %s?' ) );
-
-msgid "It means you will not receive updates. This can lead to stability and even security issues."
-msgstr ""
-
-# $accountQuestion        = $withSiteName( __( 'Do you have an account on %s?' ) );
+# // translators: %s replaced with wpml.org or toolset.com
+# $accountQuestion        = $withSiteName( __( 'Do you have an account on %s?', 'installer' ) );
 # $extendInfo             = __( 'Great! You just need to extend your subscription.', 'installer' );
-# $extendAlternative      = $withProduct( __( 'You have a %s account. You just need to extend your subscription.', 'installer' ) );
+
+msgid "Do you have an account on %s?"
+msgstr ""
+
+# $accountQuestion        = $withSiteName( __( 'Do you have an account on %s?', 'installer' ) );
+# $extendInfo             = __( 'Great! You just need to extend your subscription.', 'installer' );
+# // translators: %s replaced with wpml.org or toolset.com
 
 msgid "Great! You just need to extend your subscription."
 msgstr ""
 
-# $extendInfo             = __( 'Great! You just need to extend your subscription.', 'installer' );
+# // translators: %s replaced with wpml.org or toolset.com
 # $extendAlternative      = $withProduct( __( 'You have a %s account. You just need to extend your subscription.', 'installer' ) );
 # $extendButton           = __( 'Extend Subscription', 'installer' );
 
@@ -1037,26 +1184,26 @@ msgstr ""
 
 # $extendAlternative      = $withProduct( __( 'You have a %s account. You just need to extend your subscription.', 'installer' ) );
 # $extendButton           = __( 'Extend Subscription', 'installer' );
-# $discountQuestion       = $withProduct( __( 'OK. You need to set up renewal for %s.', 'installer' ) );
+# // translators: %s replaced with wpml.org or toolset.com
 
 msgid "Extend Subscription"
 msgstr ""
 
-# $extendButton           = __( 'Extend Subscription', 'installer' );
+# // translators: %s replaced with wpml.org or toolset.com
 # $discountQuestion       = $withProduct( __( 'OK. You need to set up renewal for %s.', 'installer' ) );
-# $discountAlternative    = $withProductTwice( __( 'You do not have a %s account yet. You need to set up a renewal for %s.', 'installer' ) );
+# // translators: %1$s and %2$s replaced with wpml.org or toolset.com
 
 msgid "OK. You need to set up renewal for %s."
 msgstr ""
 
-# $discountQuestion       = $withProduct( __( 'OK. You need to set up renewal for %s.', 'installer' ) );
-# $discountAlternative    = $withProductTwice( __( 'You do not have a %s account yet. You need to set up a renewal for %s.', 'installer' ) );
-# $discountButton         = $withProduct( __( 'Set Up Renewal For %s', 'installer' ) );
+# // translators: %1$s and %2$s replaced with wpml.org or toolset.com
+# $discountAlternative    = $withProductTwice( __( 'You do not have a %1$s account yet. You need to set up a renewal for %2$s.', 'installer' ) );
+# // translators: %s replaced with wpml.org or toolset.com
 
-msgid "You do not have a %s account yet. You need to set up a renewal for %s."
+msgid "You do not have a %1$s account yet. You need to set up a renewal for %2$s."
 msgstr ""
 
-# $discountAlternative    = $withProductTwice( __( 'You do not have a %s account yet. You need to set up a renewal for %s.', 'installer' ) );
+# // translators: %s replaced with wpml.org or toolset.com
 # $discountButton         = $withProduct( __( 'Set Up Renewal For %s', 'installer' ) );
 # $findAccountInfo        = __( 'No worries. We can check that for you.', 'installer' );
 
@@ -1085,64 +1232,155 @@ msgid "Your Email Address"
 msgstr ""
 
 # href="">
-# <?php esc_html_e( 'Yes', 'installer' ); ?>
-# </a>
-
-msgid "Yes"
-msgstr ""
-
-# href="">
-# <?php esc_html_e( 'No', 'installer' ); ?>
-# </a>
-
-msgid "No"
-msgstr ""
-
-# <a class="js-dont-know otgs-installer-notice-status-item otgs-installer-notice-status-item-link" href="">
 # <?php esc_html_e( 'I do not remember', 'installer' ); ?>
 # </a>
 
 msgid "I do not remember"
 msgstr ""
 
-# <td class="twelve">
-# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
-# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
+#
+# $title                  = $withProduct( __( 'You are using an expired account of %s.', 'installer' ) );
+# $into                   = __( 'It means you will not receive updates. This can lead to stability and even security issues.', 'installer' );
 
-msgid "downloading..."
+msgid "You are using an expired account of %s."
 msgstr ""
 
-# <div class="installer-status-downloading"><?php _e('downloading...', 'installer') ?></div>
-# <div class="installer-status-downloaded" data-fail="<?php _e('failed!', 'installer') ?>"><?php _e('downloaded', 'installer') ?></div>
-# </td>
+# $title                  = $withProduct( __( 'You are using an expired account of %s.', 'installer' ) );
+# $into                   = __( 'It means you will not receive updates. This can lead to stability and even security issues.', 'installer' );
+# ?>
 
-msgid "downloaded"
+msgid "It means you will not receive updates. This can lead to stability and even security issues."
+msgstr ""
+
+# $url         = $model->productUrl . '/buy/';
+# $linkMessage = __( 'Upgrade your account', 'installer' );
+# $link        = '<a href="' . esc_url( $url ) . '">' . esc_html( $linkMessage ) . '</a>';
+
+msgid "Upgrade your account"
+msgstr ""
+
+# $link        = '<a href="' . esc_url( $url ) . '">' . esc_html( $linkMessage ) . '</a>';
+# $message     = sprintf( __( 'You have an old Types-free subscription, which doesn\'t provide automatic updates. %s', 'installer' ), $link );
+# ?>
+
+msgid "You have an old Types-free subscription, which doesn't provide automatic updates. %s"
 msgstr ""
 
 #
-# <span class="installer-revalidate-message hidden"><?php _e("Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again.", 'installer') ?></span>
-# </form>
+# <p><i><?php printf(__('This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this.', 'installer'), '<a href="' . admin_url('plugins.php') . '">' , '</a>'); ?></i></p>
+#
 
-msgid "Download failed!\n\nClick OK to revalidate your subscription or CANCEL to try again."
+msgid "This page lets you install plugins and update existing plugins. To remove any of these plugins, go to the %splugins%s page and if you have the permission to remove plugins you should be able to do this."
 msgstr ""
 
-# <th><?php _e('Plugin', 'installer') ?></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/globe.png" alt="<?php esc_attr_e('Available', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
+# <?php if($subpackages_expandable): ?>
+# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
+# <?php endif; ?>
 
-msgid "Available"
+msgid "Individual components"
 msgstr ""
 
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/computer.png" alt="<?php esc_attr_e('Installed', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
+# <?php if($subpackages_expandable): ?>
+# <h5><a class="installer_expand_button" href="#" title="<?php esc_attr_e('Click to see individual components options.', 'installer') ?>"><?php _e('Individual components', 'installer') ?></a></h5>
+# <?php endif; ?>
 
-msgid "Downloading"
+msgid "Click to see individual components options."
 msgstr ""
 
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/dn2.gif" alt="<?php esc_attr_e('Downloading', 'installer') ?>" width="16" height="16"></th>
-# <th><img src="<?php echo $this->plugin_url() ?>/res/img/on.png" alt="<?php esc_attr_e('Activate', 'installer') ?>" width="16" height="16"></th>
-# </tr>
+#
+# $title       = sprintf( __( 'Remember to remove %s from this website.', 'installer' ), $model->productName );
+# $into        = sprintf( __( 'This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site.', 'installer' ), $model->productName );
 
-msgid "Activate"
+msgid "Remember to remove %s from this website."
+msgstr ""
+
+# $title       = sprintf( __( 'Remember to remove %s from this website.', 'installer' ), $model->productName );
+# $into        = sprintf( __( 'This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site.', 'installer' ), $model->productName );
+# $buyQuestion = __( 'Bought again?', 'installer' );
+
+msgid "This site is using %s plugin, which is not paid for. After receiving a refund, you should remove this plugin from your sites. Using unregistered plugins means that you are not receiving stability and security updates and will ultimately lead to problems running the site."
+msgstr ""
+
+# <h2>
+# <?php echo esc_html( sprintf( __( 'Already purchased %s?', 'installer' ), $model->productName ) ); ?>
+# <a class="enter_site_key_js otgs-installer-notice-link-register"
+
+msgid "Already purchased %s?"
+msgstr ""
+
+# >
+# <?php printf( __( 'Register %s', 'installer' ), $model->productName ); ?>
+# </a>
+
+msgid "Register %s"
+msgstr ""
+
+# $registrationText = sprintf(
+# __( 'Enter the site key, from your %1$s account, to receive automatic updates for %2$s.', 'installer' ),
+# self::removeScheme( $model->productUrl ),
+
+msgid "Enter the site key, from your %1$s account, to receive automatic updates for %2$s."
+msgstr ""
+
+# <div class="otgs-installer-register-inputs">
+# <label for="site_key_' . esc_attr( $model->repoId ) . '">' . esc_html( __( 'Site key', 'installer' ) ) . '</label>
+# <input type="text" size="20" name="site_key_' . esc_attr( $model->repoId ) . '" id="site_key_' . esc_attr( $model->repoId ) . '"/>
+
+msgid "Site key"
+msgstr ""
+
+# </div>
+# <p class="otgs-installer-register-link"><a target="_blank" rel="nofollow" href="' . esc_url( self::getAccountUrl( $model ) ) . '">' . esc_html( __( 'Get a key for this site', 'installer' ) ) . '</a></p>
+#
+
+msgid "Get a key for this site"
+msgstr ""
+
+# >
+# <?php printf( __( "Unregister %s from this site", 'installer' ), $model->productName ) ?>
+# </a>&nbsp;
+
+msgid "Unregister %s from this site"
+msgstr ""
+
+# >
+# <?php _e( 'Check for updates', 'installer' ); ?>
+# </a>
+
+msgid "Check for updates"
+msgstr ""
+
+# data-repository="<?php echo $model->repoId ?>"
+# data-confirmation="<?php esc_attr_e( 'Are you sure you want to unregister?', 'installer' ) ?>"
+# data-nonce="<?php echo $model->removeSiteKeyNonce ?>"
+
+msgid "Are you sure you want to unregister?"
+msgstr ""
+
+# $message = $expires ?
+# sprintf( __( '%s is registered on this site. You will receive automatic updates until %s', 'installer' ), $model->productName, date_i18n( 'F j, Y', strtotime( $expires ) ) ) :
+# sprintf( __( '%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer' ), $model->productName );
+
+msgid "%s is registered on this site. You will receive automatic updates until %s"
+msgstr ""
+
+# sprintf( __( '%s is registered on this site. You will receive automatic updates until %s', 'installer' ), $model->productName, date_i18n( 'F j, Y', strtotime( $expires ) ) ) :
+# sprintf( __( '%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer' ), $model->productName );
+#
+
+msgid "%s is registered on this site. Your Lifetime account gives you updates for life."
+msgstr ""
+
+# $message = $repository_id === 'wpml'
+# ? __( 'This site is registered on WPML.org as a development site.', 'installer' )
+# : __( 'This site is registered on Toolset.com as a development site.', 'installer' );
+
+msgid "This site is registered on WPML.org as a development site."
+msgstr ""
+
+# ? __( 'This site is registered on WPML.org as a development site.', 'installer' )
+# : __( 'This site is registered on Toolset.com as a development site.', 'installer' );
+#
+
+msgid "This site is registered on Toolset.com as a development site."
 msgstr ""

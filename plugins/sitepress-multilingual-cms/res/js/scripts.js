@@ -37,8 +37,6 @@ jQuery(function ($) {
     /* needed for tagcloud */
     oldajaxurl = false;
 
-    jQuery(document).on('click', "#icl_make_translatable_submit", icl_make_translatable);
-
     jQuery('a.icl_user_notice_hide').click(icl_hide_user_notice);
 
     var slugTranslation = jQuery('#icl_slug_translation');
@@ -92,11 +90,14 @@ jQuery(function ($) {
 
     function click_on_lock() {
 		var radio_name = jQuery( this ).data( 'radio-name' ),
-			unlocked_name = jQuery( this ).data( 'unlocked-name' );
+            radio = jQuery( 'input[name="' + radio_name + '"]' ),
+			unlocked_name = jQuery( this ).data( 'unlocked-name' ),
+            slug = radio.data( 'slug' );
 
 		jQuery( this ).fadeOut();
-		jQuery( 'input[name="' + radio_name + '"]' ).prop( 'disabled', false );
+		radio.prop( 'disabled', false );
 		jQuery( 'input[name="' + unlocked_name + '"]' ).prop( 'value', '1' );
+        jQuery( 'input[name="automatic_post_type[' + slug + ']"]' ).prop( 'disabled', false );
 
 		return false;
 	}
@@ -114,6 +115,18 @@ jQuery(function ($) {
         'click',
         click_on_lock
     );
+
+    $('.js-custom-post-mode').on('change', function () {
+        var radio = $(this),
+            slug = radio.data('slug')
+            toggle = jQuery('input[name="automatic_post_type[' + slug + ']"]').closest('.otgs-toggle-group');
+
+        if (radio.val() === '1') {
+            toggle.show();
+        } else {
+            toggle.hide();
+        }
+    });
 
     $(function () {
         $('.js-type-translation-row').each(function () {
@@ -436,73 +449,6 @@ function wpml_copy_external_custom_fields_from_original(custom_fields) {
         meta_value_field.val(item.value);
         add_button.click();
     });
-}
-
-function icl_make_translatable(){
-    var that = jQuery(this);
-    jQuery(this).prop('disabled', true);
-    jQuery('#icl_div_config').find('.icl_form_success').hide();
-    var iclMakeTranslatable = jQuery('[name=icl_make_translatable]:checked');
-    var translate_input = WPML_core.sanitize( iclMakeTranslatable.val() ).split(',');
-    var translate = parseInt(translate_input[1]);
-    var custom_post = translate_input[0];
-    var custom_taxs_on = [];
-    var custom_taxs_off = [];
-    jQuery(".icl_mcs_custom_taxs").each(function(){
-        if(jQuery(this).prop('checked')){
-            custom_taxs_on.push(WPML_core.sanitize( jQuery(this).val() ));
-        }else{
-            custom_taxs_off.push(WPML_core.sanitize( jQuery(this).val() ));
-        }
-
-    });
-
-    var cfnames = [];
-    var cfvals = [];
-    jQuery('.icl_mcs_cfs:checked').each(function(){
-        if(!jQuery(this).prop('disabled')){
-            cfnames.push(jQuery(this).attr('name').replace(/^icl_mcs_cf_/,''));
-            cfvals.push(WPML_core.sanitize( jQuery(this).val() ));
-        }
-    });
-
-    jQuery.post(WPML_core.sanitize(location.href),
-        {
-                'post_id'       : WPML_core.sanitize( jQuery('#post_ID').val() ),
-                'icl_action'    : 'icl_mcs_inline',
-                'custom_post'   : custom_post,
-                'translate'     : translate,
-                'custom_taxs_on[]'   : custom_taxs_on,
-                'custom_taxs_off[]'   : custom_taxs_off,
-                'cfnames[]'   : cfnames,
-                'cfvals[]'   : cfvals,
-                '_icl_nonce' : WPML_core.sanitize( jQuery('#_icl_nonce_imi').val() )
-
-        },
-        function(data) {
-            that.prop('disabled', false);
-            if(translate){
-                var iclDiv = jQuery('#icl_div');
-                if (iclDiv.length > 0) {
-                    iclDiv.remove();
-                }
-                var prependTo = jQuery('#side-sortables');
-                prependTo = prependTo.html() ? prependTo : jQuery('#normal-sortables');
-                prependTo.prepend(
-                    '<div id="icl_div" class="postbox">' + WPML_core.purify(jQuery(data).find('#icl_div').html()) + '</div>'
-                );
-                jQuery('#icl_mcs_details').html(WPML_core.purify(jQuery(data).find('#icl_mcs_details').html()));
-            }else{
-                jQuery('#icl_div').hide();
-                jQuery('#icl_mcs_details').html('');
-            }
-            jQuery('#icl_div_config').find('.icl_form_success').fadeIn();
-
-			WPMLMetaBox.refresh.refreshMetaBox();
-        }
-    );
-
-    return false;
 }
 
 function icl_hide_user_notice(){

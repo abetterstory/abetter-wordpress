@@ -93,7 +93,7 @@ class WPML_Taxonomy_Translation_UI {
 			'translate the base taxonomy slugs with WPML',
 			'sitepress'
 		);
-		$translate_base_taxonomy_slug_link       = '<a href="https://wpml.org/faq/translate-taxonomy-slugs-wpml/" target="_blank">'
+		$translate_base_taxonomy_slug_link       = '<a href="https://wpml.org/faq/translate-taxonomy-slugs-wpml/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore" target="_blank">'
 												   . $translate_base_taxonomy_slug_link_title
 												   . '</a>';
 
@@ -102,7 +102,7 @@ class WPML_Taxonomy_Translation_UI {
 			'translating post categories and custom taxonomies',
 			'sitepress'
 		);
-		$translate_taxonomies_link       = '<a href="https://wpml.org/documentation/getting-started-guide/translating-post-categories-and-custom-taxonomies/" target="_blank">'
+		$translate_taxonomies_link       = '<a href="https://wpml.org/documentation/getting-started-guide/translating-post-categories-and-custom-taxonomies/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore" target="_blank">'
 										   . $translate_taxonomies_link_title
 										   . '</a>';
 

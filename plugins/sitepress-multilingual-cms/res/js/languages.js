@@ -7,18 +7,6 @@
     jQuery(function () {
         var icl_hide_languages;
 
-        var compatibilityNextButton = jQuery('#icl_setup_next_5');
-        var registrationNextButton = jQuery('#icl_setup_next_6');
-        var installerComponentSetting = jQuery('.otgs-installer-component-setting');
-        var hasCheckedValue = installerComponentSetting.find('input[type="radio"]:checked').length === 1;
-
-        compatibilityNextButton.prop('disabled', !hasCheckedValue);
-        installerComponentSetting
-            .find('input[type="radio"]')
-            .click(function () {
-                compatibilityNextButton.prop('disabled', false);
-            });
-
         jQuery('.toggle:checkbox').click(iclHandleToggle);
         jQuery('#icl_change_default_button').click(editingDefaultLanguage);
         jQuery('#icl_save_default_button').click(saveDefaultLanguage);
@@ -57,27 +45,7 @@
 
         jQuery('#icl_seo_options').submit(iclSaveForm);
         jQuery('#icl_seo_head_langs').on('click', update_seo_head_langs_priority);
-        jQuery('#icl_setup_back_1').click({step: '1'}, iclSetupStep);
-        jQuery('#icl_setup_back_2').click({step: '2'}, iclSetupStep);
-        jQuery('#icl_setup_back_3').click({step: "3"}, iclSetupStep);
-        compatibilityNextButton.click({step: "5"}, iclSetupStep);
-        registrationNextButton.click({step: "6"}, iclSetupStep);
 
-        function iclSetupStep(event) {
-            var step = event.data.step;
-            jQuery.ajax({
-                type: "POST",
-                url: icl_ajx_url,
-                data: "icl_ajx_action=setup_got_to_step" + step + "&_icl_nonce=" + jQuery('#_icl_nonce_gts' + step).val(),
-                success: function () {
-                    location.href = WPML_core.sanitize(location.href).replace(/#[\w\W]*/, '');
-                }
-            });
-
-            return false;
-        }
-
-        jQuery('#icl_setup_next_1').click(saveLanguageSelection);
 
         jQuery('#icl_avail_languages_picker').find('li input:checkbox').click(function () {
             const checkedBoxes = jQuery('#icl_avail_languages_picker').find('li input:checkbox:checked').length;
@@ -86,14 +54,11 @@
 
         jQuery('#icl_promote_form').submit(iclSaveForm);
 
-        jQuery('#icl_reset_languages').click(icl_reset_languages);
-
         jQuery(':radio[name=icl_translation_option]').change(function () {
             jQuery('#icl_enable_content_translation').prop('disabled', false);
         });
         jQuery('#icl_enable_content_translation, .icl_noenable_content_translation').click(iclEnableContentTranslation);
 
-        jQuery(document).on('submit', '#installer_registration_form', installer_registration_form_submit);
         jQuery(document).on('click', '#installer_registration_form :submit', function () {
             jQuery('#installer_registration_form').find('input[name=button_action]').val(jQuery(this).attr('name'));
         });
@@ -101,10 +66,6 @@
         jQuery(document).on('click', '#installer_recommendations_form :submit', function () {
             jQuery('#installer_recommendations_form').find('input[name=button_action]').val(jQuery(this).attr('name'));
         });
-        jQuery(document).on('submit', '#installer_recommendations_form', installer_recommendations_form_submit);
-        jQuery(document).on('change', '#installer_recommendations_form :checkbox', update_recommendation_form);
-
-        manageWizardButtonStatesSpinner();
 
         jQuery(document).on('click', '#sso_information', function (e) {
             e.preventDefault();
@@ -115,26 +76,6 @@
             });
         });
     });
-
-    function manageWizardButtonStatesSpinner() {
-        var buttons = jQuery('#icl_setup_back_1, #icl_setup_next_1, #icl_setup_back_2');
-        var submit_buttons = jQuery('#icl_initial_language .buttons-wrap .button-primary, #icl_setup_back_2, #icl_setup_nav_3 .button-primary, #installer_registration_form div .button-primary, #installer_recommendations_form div .button-primary');
-        var forms = jQuery('#icl_initial_language, #wpml-ls-settings-form, #installer_registration_form, #installer_recommendations_form');
-        var spinner = jQuery('<span class="spinner"></span>');
-        var spinner_location = '#icl_initial_language .buttons-wrap input, #icl_setup_back_1, #icl_setup_back_2, #icl_save_language_switcher_options, #installer_registration_form div .button-primary:visible, #installer_recommendations_form div .button-link:visible';
-
-        spinner.insertBefore(spinner_location);
-
-        jQuery( forms ).submit(function(){
-            spinner.addClass( 'is-active' );
-            jQuery( submit_buttons ).prop( 'disabled', true );
-        });
-
-        jQuery( buttons ).click(function(){
-            spinner.addClass( 'is-active' );
-            buttons.prop( 'disabled', true );
-        });
-    }
 
     function iclHandleToggle() {
         /* jshint validthis: true */
@@ -536,23 +477,6 @@
         });
     }
 
-    function icl_reset_languages(e) {
-        /* jshint validthis: true */
-        var this_b = jQuery(this);
-        if (confirm(this_b.next().html())) {
-            this_b.prop('disabled', true);
-            this_b.next().html(icl_ajxloaderimg).fadeIn();
-            jQuery.ajax({
-                type: "POST",
-                url: icl_ajx_url,
-                data: "icl_ajx_action=reset_languages&_icl_nonce=" + jQuery('#_icl_nonce_rl').val(),
-                success: function () {
-                    location.href = WPML_core.sanitize(location.pathname + location.search);
-                }
-            });
-        }
-    }
-
     function iclEnableContentTranslation() {
         var val = jQuery(':radio[name=icl_translation_option]:checked').val();
         /* jshint validthis:true */
@@ -570,196 +494,6 @@
                 }
             }
         });
-        return false;
-    }
-
-    function update_recommendation_form() {
-	    jQuery('#installer_recommendations_form :submit[name=install_recommendations]').prop(
-	    	'disabled',
-		    ! jQuery('#installer_recommendations_form :checkbox:checked').length
-	    );
-    }
-
-function installer_registration_form_submit(){
-    /* jshint validthis:true */
-    var thisf = jQuery(this);
-    var action = jQuery('#installer_registration_form').find('input[name=button_action]').val();
-    thisf.find('.status_msg').html('');
-    thisf.find(':submit').prop('disabled', true);
-
-        if (action === 'later') {
-            thisf.find('input[name=installer_site_key]').parent().remove();
-        }
-
-        if (action === 'register') {
-            thisf.find('.spinner').show();
-        }
-
-        jQuery.ajax({
-            type: "POST",
-            url: icl_ajx_url,
-            dataType: 'json',
-            data: "icl_ajx_action=registration_form_submit&" + thisf.serialize(),
-            success: function (msg) {
-                if (action === 'register') {
-                    thisf.find('.spinner').hide();
-                    if (msg.error) {
-                        thisf.find('.status_msg').html(msg.error).addClass('icl_error_text');
-                    } else {
-                        thisf.find('.status_msg').html(msg.success).addClass('icl_valid_text');
-                        thisf.find(':submit:visible').hide();
-                        thisf.find(':text[name=installer_site_key]').prop('disabled', true);
-                        jQuery('.no_site_key').hide();
-                        thisf.find(':submit[name=save]').show();
-                        thisf.find('.installer__reporting__switcher').removeClass('hidden');
-                    }
-                    thisf.find(':submit[name=save]').prop('disabled', false);
-                } else if (action === 'later') {
-                    thisf.find('.spinner').hide();
-                    if (msg.error) {
-                        thisf.find('.status_msg').html(msg.error).addClass('icl_error_text');
-
-                    } else {
-                        thisf.find('.status_msg').html(msg.success).addClass('icl_valid_text');
-                        jQuery('.no_site_key').hide();
-                        thisf.find(':submit:visible').hide();
-                        thisf.find(':submit[name=finish]').show();
-                    }
-                    thisf.find(':submit[name=finish]').prop('disabled', false);
-                } else {
-                    location.href = WPML_core.sanitize(location.href).replace(/#[\w\W]*/, '');
-                }
-            },
-            fail: function (xhr, status, error) {
-                var err = 'Request failed: ' + status;
-                thisf.find('.status_msg').html(err).addClass('icl_error_text');
-                thisf.find(':button[name=save]').prop('disabled', false);
-            }
-        });
-
-        return false;
-    }
-
-    function installer_recommendations_form_submit() {
-        /* jshint validthis:true */
-        var thisf = jQuery(this),
-            action = thisf.find('input[name=button_action]').val(),
-            activate = 1,
-            downloads = [],
-            idx = 0;
-
-        thisf.find(':submit').prop('disabled', true);
-        thisf.find('.spinner').show();
-        var selectedPlugins = jQuery(this).find(':checkbox:checked:enabled');
-
-        jQuery(this).find(':checkbox:checked:enabled').each(function () {
-            downloads[idx] = this;
-            idx++;
-        });
-
-        idx = 0;
-        if( typeof downloads[idx] != 'undefined' && action !== 'finish' ){
-            download_and_activate( downloads[idx] );
-        } else {
-	        jQuery.ajax( {
-		        type: "POST",
-		        url: icl_ajx_url,
-		        dataType: 'json',
-		        data: "icl_ajx_action=recommendations_form_submit&" + thisf.serialize(),
-		        success: function () {
-			        location.href = WPML_core.sanitize(location.href).replace( /#[\w\W]*/, '' );
-		        },
-		        fail: function ( xhr, status, error ) {
-			        var err = 'Request failed: ' + status;
-			        thisf.find( '.status_msg' ).html( err ).addClass( 'icl_error_text' );
-			        thisf.find(':submit[name=finish]').prop('disabled', false);
-		        }
-	        } );
-        }
-
-        function download_and_activate(element) {
-            var pluginStatus = thisf.find('span[id=' + element.id + ']');
-            pluginStatus.removeClass('js-wpml-tooltip-open');
-            pluginStatus.addClass('spinner');
-
-            var data = {
-                action: 'installer_download_plugin',
-                data: element.value,
-                activate: activate
-            };
-
-            jQuery.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function (ret) {
-                    if (ret.success) {
-                        jQuery.ajax({
-                            url: ajaxurl,
-                            type: 'POST',
-                            dataType: 'json',
-                            data: {
-                                action: 'installer_activate_plugin',
-                                plugin_id: ret.plugin_id,
-                                nonce: ret.nonce
-                            },
-                            success: function (ret) {
-                                pluginStatus.removeClass('spinner')
-                                            .addClass('dashicons dashicons-yes')
-                                            .parents('li').addClass('plugin-installed');
-	                            element.remove();
-
-                                idx++;
-                                if( typeof downloads[idx] != 'undefined' ){
-                                    download_and_activate( downloads[idx] );
-                                }else{
-                                    thisf.find('.spinner').hide();
-	                                thisf.find(':submit[name=install_recommendations]')
-	                                     .show()
-	                                     .prop('disabled', false);
-                                    thisf.find(':submit[name=finish]')
-                                         .prop('disabled', false)
-	                                     .removeClass('button-link')
-	                                     .addClass('button-secondary')
-		                                 .val(thisf.find(':submit[name=finish]').attr('data-finish-text'));
-                                }
-                            }
-                        });
-                    } else {
-                        pluginStatus.removeClass('spinner');
-
-                        thisf.find('.spinner').hide();
-                        thisf.find(':submit[name=install_recommendations]').hide();
-                        if ( ret.message ) {
-                            var currentMessage = thisf.find('.icl_error_text').html();
-                            if ( currentMessage.indexOf( ret.message ) === -1) {
-                                thisf.find('.icl_error_text').html(
-                                    currentMessage + '<br />' + ret.message
-                                );
-                            }
-                        }
-                        thisf.find('.icl_error_text').show();
-
-                        idx++;
-                        if( typeof downloads[idx] != 'undefined' ){
-                            download_and_activate( downloads[idx] );
-                        }else{
-                            thisf.find(':submit[name=finish]')
-                                 .prop('disabled', false)
-		                         .addClass('button-link')
-		                         .removeClass('button-secondary')
-		                         .val(thisf.find(':submit[name=finish]').attr('data-skip-text'));
-	                        thisf.find(':submit[name=install_recommendations]')
-	                             .show()
-	                             .prop('disabled', false);
-
-                        }
-                    }
-                }
-            });
-        }
-
         return false;
     }
 

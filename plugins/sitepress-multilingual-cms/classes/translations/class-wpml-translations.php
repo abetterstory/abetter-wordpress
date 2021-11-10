@@ -31,10 +31,11 @@ class WPML_Translations extends WPML_SP_User {
 	/**
 	 * @param int    $trid
 	 * @param string $wpml_element_type
+	 * @param bool $skipPrivilegeChecking
 	 *
 	 * @return array<string,\stdClass>
 	 */
-	public function get_translations( $trid, $wpml_element_type ) {
+	public function get_translations( $trid, $wpml_element_type, $skipPrivilegeChecking = false ) {
 		$cache_key_args = array_filter( array( $trid, $wpml_element_type, $this->skip_empty, $this->all_statuses, $this->skip_recursions ) );
 		$cache_key      = md5( wp_json_encode( $cache_key_args ) );
 		$cache_found    = false;
@@ -54,7 +55,7 @@ class WPML_Translations extends WPML_SP_User {
 		if ( $trid ) {
 
 			if ( $this->wpml_element_type_is_post( $wpml_element_type ) ) {
-				$sql_parts = $this->get_sql_parts_for_post( $wpml_element_type, $sql_parts );
+				$sql_parts = $this->get_sql_parts_for_post( $wpml_element_type, $sql_parts, $skipPrivilegeChecking );
 			} elseif ( $this->wpml_element_type_is_taxonomy( $wpml_element_type ) ) {
 				$sql_parts = $this->get_sql_parts_for_taxonomy( $sql_parts );
 			}
@@ -231,17 +232,18 @@ class WPML_Translations extends WPML_SP_User {
 	/**
 	 * @param string                     $element_type
 	 * @param array<string,array<string>> $sql_parts
+	 * @param bool $skipPrivilegeChecking
 	 *
 	 * @return array<string,array<string>>
 	 */
-	private function get_sql_parts_for_post( $element_type, $sql_parts ) {
+	private function get_sql_parts_for_post( $element_type, $sql_parts, $skipPrivilegeChecking = false ) {
 		$sql_parts['select'][] = ', p.post_title, p.post_status';
 		$sql_parts['join'][]   = " LEFT JOIN {$this->sitepress->get_wpdb()->posts} p ON wpml_translations.element_id=p.ID";
 
 		if ( ! $this->all_statuses && 'post_attachment' !== $element_type && ! is_admin() ) {
 			$public_statuses_where = $this->get_public_statuses();
 			// the current user may not be the admin but may have read private post/page caps!
-			if ( current_user_can( 'read_private_pages' ) || current_user_can( 'read_private_posts' ) ) {
+			if ( current_user_can( 'read_private_pages' ) || current_user_can( 'read_private_posts' ) || $skipPrivilegeChecking ) {
 				$sql_parts['where'][] = ' AND (p.post_status IN (' . $public_statuses_where . ", 'draft', 'private', 'pending' ))";
 			} else {
 				$sql_parts['where'][] = ' AND (';

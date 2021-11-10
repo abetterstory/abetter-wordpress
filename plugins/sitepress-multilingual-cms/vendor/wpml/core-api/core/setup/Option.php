@@ -2,6 +2,7 @@
 
 namespace WPML\Setup;
 
+use WPML\Element\API\Entity\LanguageMapping;
 use WPML\FP\Fns;
 use WPML\FP\Lst;
 use WPML\FP\Relation;
@@ -13,8 +14,11 @@ class Option {
 
 	const OPTION_GROUP = 'setup';
 	const CURRENT_STEP = 'current-step';
+
 	const ORIGINAL_LANG = 'original-lang';
 	const TRANSLATED_LANGS = 'translated-langs';
+	const LANGUAGES_MAPPING = 'languages-mapping';
+
 	const WHO_MODE = 'who-mode';
 	const TRANSLATE_EVERYTHING = 'translate-everything';
 	const TRANSLATE_EVERYTHING_COMPLETED = 'translate-everything-completed';
@@ -24,6 +28,7 @@ class Option {
 	const NO_REVIEW = 'no-review';
 	const PUBLISH_AND_REVIEW = 'publish-and-review';
 	const HOLD_FOR_REVIEW = 'before-publish';
+
 
 	public static function getCurrentStep() {
 		return self::get( self::CURRENT_STEP, 'languages' );
@@ -78,6 +83,13 @@ class Option {
 		self::set( self::TRANSLATE_EVERYTHING, $state );
 	}
 
+	/**
+	 * @return bool
+	 */
+	public static function getTranslateEverything() {
+		return self::get( self::TRANSLATE_EVERYTHING, false );
+	}
+
 	public static function setTranslateEverythingCompleted( $completed ) {
 		self::set( self::TRANSLATE_EVERYTHING_COMPLETED, $completed );
 	}
@@ -122,6 +134,19 @@ class Option {
 		return self::shouldTranslateEverything() && self::getReviewMode() !== self::NO_REVIEW;
 	}
 
+	/**
+	 * @return LanguageMapping[]
+	 */
+	public static function getLanguageMappings() {
+		return self::get( self::LANGUAGES_MAPPING, [] );
+	}
+
+	/**
+	 * @param LanguageMapping $languageMapping
+	 */
+	public static function addLanguageMapping( LanguageMapping $languageMapping) {
+		self::set( self::LANGUAGES_MAPPING, Lst::append( $languageMapping, self::getLanguageMappings() ) );
+	}
 
 	private static function get( $key, $default = null ) {
 		return ( new OptionManager() )->get( self::OPTION_GROUP, $key, $default );

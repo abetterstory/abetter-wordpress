@@ -1,6 +1,7 @@
 <?php
 
 use WPML\FP\Obj;
+use WPML\UIPage;
 
 class WPML_Admin_Language_Switcher {
 
@@ -108,6 +109,10 @@ class WPML_Admin_Language_Switcher {
 				break;
 		}
 
+		if( UIPage::isTMDashboard( $_GET ) ) {
+			$all_languages_enabled = false;
+		}
+
 		$active_languages        = $sitepress->get_active_languages();
 		$current_active_language = null;
 		if ( 'all' !== $this->current_language ) {
@@ -192,7 +197,7 @@ class WPML_Admin_Language_Switcher {
 				'url'     => $link_url . '&admin_bar=1',
 				'current' => $lang['code'] == $this->current_language,
 				'anchor'  => $lang['display_name'],
-				'flag'    => '<img class="icl_als_iclflag" src="' . esc_url( $flag_url ) . '" alt="' . esc_attr( $lang['code'] ) . '" width="18" height="12" />',
+				'flag'    => $sitepress->get_flag_image($lang['code'], [], '', [ 'icl_als_iclflag' ] ),
 			);
 
 		}

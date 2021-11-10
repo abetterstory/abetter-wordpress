@@ -20,6 +20,7 @@ use WPML\Collect\Support\Arr;
  * @method static callable|array zipObj( ...$a, ...$b ) - Curried :: [a] → [b] → [a => b]
  * @method static callable|array zipWith( ...$f, ...$a, ...$b ) - Curried :: ( ( a, b ) → c ) → [a] → [b] → [c]
  * @method static callable|string join( ...$glue, ...$array ) - Curried :: string → [a] → string
+ * @method static callable|string joinWithCommasAndAnd( ...$array ) - Curried :: [a] → string
  * @method static callable|array concat( ...$a, ...$b ) - Curried :: [a] → [a] → [a]
  * @method static callable|array|null find( ...$predicate, ...$array ) - Curried :: ( a → bool ) → [a] → a | null
  * @method static callable|array flattenToDepth( ...$depth, ...$array ) - Curried :: int → [[a]] → [a]
@@ -148,6 +149,21 @@ class Lst {
 
 		self::macro( 'join', curryN( 2, 'implode' ) );
 
+		self::macro( 'joinWithCommasAndAnd', curryN( 1, function ( $array ) {
+			$last = Lst::last( $array );
+			if ( $last ) {
+				if ( Lst::length( $array ) > 1 ) {
+					return str_replace( '  ', ' ', Lst::join( ', ', Lst::dropLast( 1, $array ) ) . ' ' . __( ' and ', 'sitepress' ) . ' ' . $last );
+					// TODO Replace above with following (after 4.5.0 release to get 'and' translated):
+					// return Lst::join( ', ', Lst::dropLast( 1, $array ) ) . ' ' . __( 'and', 'sitepress' ) . ' ' . $last;
+				} else {
+					return $last;
+				}
+			} else {
+				return '';
+			}
+		} ) );
+
 		self::macro( 'concat', curryN( 2, 'array_merge' ) );
 
 		self::macro( 'find', curryN( 2, function ( $predicate, $array ) {
@@ -267,6 +283,33 @@ class Lst {
 		};
 
 		return call_user_func_array( curryN( 2, $keyBy ), func_get_args() );
+	}
+
+	/**
+	 * Curried function that wraps each item in array with pair: [$key => $item1]
+	 *
+	 * keyWith :: string -> array -> array
+	 *
+	 * ```
+	 * $data = [ 1, 2.3, 'some data', - 2, 'a' ];
+	 *
+	 * Lst::keyWith('myKey', $data);
+	 * [ [ 'myKey' => 1 ], [ 'myKey' => 2.3 ], [ 'myKey' => 'some data' ], [ 'myKey' => - 2 ], [ 'myKey' => 'a' ] ]
+	 * ```
+	 *
+	 * @param string $key
+	 * @param mixed[] $array
+	 *
+	 * @return mixed[]|callable
+	 */
+	public static function keyWith( $key = null, $array = null ) {
+		$keyWith = function ( $key, $array ) {
+			return Fns::map( function ( $item ) use ( $key ) {
+				return [ $key => $item ];
+			}, $array );
+		};
+
+		return call_user_func_array( curryN( 2, $keyWith ), func_get_args() );
 	}
 
 	/**

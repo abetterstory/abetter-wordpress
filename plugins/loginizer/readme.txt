@@ -4,7 +4,7 @@ Tags: security, access, admin, Loginizer, login, logs, ban ip, failed login, ip,
 Requires at least: 3.0
 Tested up to: 5.8
 Requires PHP: 5.5
-Stable tag: 1.6.7
+Stable tag: 1.6.8
 License: LGPLv2.1
 License URI: http://www.gnu.org/licenses/lgpl-2.1.html
 
@@ -76,6 +76,13 @@ That's it. You're done!
 3. Loginizer Brute Force Settings page
 
 == Changelog ==
+
+= 1.6.8 =
+* [Feature] Added option to export failed login attempts to CSV file.
+* [Improvement] Added option to send failed login notifications to a custom email.
+* [Improvement] [Pro] Added support for 2FA for WooCommerce customers
+* [Bug Fix] [Pro] On WooCommerce customer login page the password field was not hidden when Passwordless login was enabled in Loginizer.
+* [Bug Fix] [Pro] Autofill enabled in the browser caused the OTP field on 2FA login to be prefilled.
 
 = 1.6.7 =
 * [Feature] Added Bulk Export/Import Blacklist and Whitelist IPs via CSV.

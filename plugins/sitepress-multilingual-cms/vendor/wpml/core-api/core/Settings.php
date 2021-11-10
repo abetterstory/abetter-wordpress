@@ -7,13 +7,16 @@ use WPML\FP\Obj;
 
 class Settings {
 
+	const WPML_DOWNLOADED_LOCALES_KEY = 'wpml_downloaded_locales';
+
 	/**
 	 * @param string $key
+	 * @param bool|mixed $default
 	 *
 	 * @return bool|mixed
 	 */
-	public static function get( $key ) {
-		return self::getOr( false, $key );
+	public static function get( $key, $default = false ) {
+		return self::getOr( $default, $key );
 	}
 
 	/**

@@ -1,4 +1,7 @@
 <?php
+
+use WPML\Settings\PostType\Automatic;
+
 /**
  * @package wpml-core
  * @used-by SitePress::ajax_setup
@@ -26,53 +29,6 @@ $iclsettings      = $this->get_settings();
 $default_language = $this->get_default_language();
 
 switch ( $request ) {
-	case 'registration_form_submit':
-		$ret['error']   = '';
-		$setup_instance = wpml_get_setup_instance();
-		if ( $_POST['button_action'] == 'finish' ) {
-			$setup_instance->finish_installation();
-		}
-
-		if ( $_POST['button_action'] == 'later' ) {
-			// success
-			$ret['success'] = sprintf(
-				__( 'WPML will work on your site, but you will not receive updates. WPML updates are essential for keeping your site running smoothly and secure. To receive automated updates, you need to complete the registration, in the %1$splugins admin%2$s page.', 'sitepress' ),
-				'<a href="' . admin_url( 'plugin-install.php?tab=commercial' ) . '">',
-				'</a>'
-			);
-		} else {
-			if ( empty( $_POST['installer_site_key'] ) ) {
-				$ret['error'] = __( 'Missing site key.' );
-			} else {
-				$site_key = filter_var( $_POST['installer_site_key'], FILTER_SANITIZE_STRING );
-				if ( class_exists( 'WP_Installer' ) ) {
-					$args['repository_id'] = 'wpml';
-					$args['nonce']         = wp_create_nonce( 'save_site_key_' . $args['repository_id'] );
-					$args['site_key']      = $site_key;
-					$args['return']        = 1;
-					$r                     = WP_Installer()->save_site_key( $args );
-					if ( ! empty( $r['error'] ) ) {
-						$ret['error'] = $r['error'];
-					} else {
-						// success
-						$ret['success'] = __( 'Thank you for registering WPML on this site. You will receive automatic updates when new versions are available.', 'sitepress' );
-					}
-				}
-				$setup_instance->store_site_key( $site_key );
-			}
-		}
-
-		echo json_encode( $ret );
-		break;
-	case 'recommendations_form_submit':
-		$setup_instance = wpml_get_setup_instance();
-		$ret['error']   = '';
-		if ( $_POST['button_action'] == 'finish' ) {
-			$setup_instance->finish_installation();
-			$ret['success'] = 'installation finished';
-		}
-		echo json_encode( $ret );
-		break;
 	case 'icl_admin_language_options':
 		$iclsettings['admin_default_language'] = $_POST['icl_admin_default_language'];
 		$this->save_settings( $iclsettings );
@@ -136,26 +92,6 @@ switch ( $request ) {
 		break;
 	case 'dismiss_upgrade_notice':
 		icl_set_setting( 'hide_upgrade_notice', implode( '.', array_slice( explode( '.', ICL_SITEPRESS_VERSION ), 0, 3 ) ) );
-		icl_save_settings();
-		break;
-	case 'setup_got_to_step1':
-		$setup_instance = wpml_get_setup_instance();
-		$setup_instance->go_to_setup1();
-		break;
-	case 'setup_got_to_step2':
-		icl_set_setting( 'setup_wizard_step', 2 );
-		icl_save_settings();
-		break;
-	case 'setup_got_to_step3':
-		icl_set_setting( 'setup_wizard_step', 3 );
-		icl_save_settings();
-		break;
-	case 'setup_got_to_step5':
-		icl_set_setting( 'setup_wizard_step', 5 );
-		icl_save_settings();
-		break;
-	case 'setup_got_to_step6':
-		icl_set_setting( 'setup_wizard_step', 6 );
 		icl_save_settings();
 		break;
 	case 'toggle_show_translations':
@@ -334,13 +270,19 @@ switch ( $request ) {
 		$settings_helper = wpml_load_settings_helper();
 		$settings_helper->update_cpt_unlocked_settings( $unlocked_options );
 		$settings_helper->update_cpt_sync_settings( $new_options );
+		$customPostTypes = ( new WPML_Post_Types( $sitepress ) )->get_translatable_and_readonly();
+		foreach ( array_keys( $customPostTypes ) as $postType ) {
+			if ( array_key_exists( $postType, $new_options ) ) {
+				Automatic::set( $postType, isset( $_POST['automatic_post_type'][ $postType ] ) );
+			}
+		}
 		echo '1|';
 		break;
 	case 'copy_from_original':
 		/*
 		 * apply filtering as to add further elements
 		 * filters will have to like as such
-		 * add_filter('wpml_copy_from_original_fields', 'my_copy_from_original_fields');
+		 * add_filter('wpml_copy_from_original_custom_fields', 'my_copy_from_original_fields');
 		 *
 		 * function my_copy_from_original_fields( $elements ) {
 		 *  $custom_field = 'editor1';

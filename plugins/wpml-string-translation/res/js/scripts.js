@@ -205,7 +205,7 @@ function icl_st_send_strings(){
 }
 
 function icl_st_update_languages() {
-    if (!jQuery('#icl_tm_languages').find('input:checked').length) {
+    if (!jQuery('#icl_tm_languages').find('input[type=checkbox]:checked:not(:disabled)').length) {
         jQuery('#icl_send_strings').prop('disabled', true);
     } else if (jQuery('.icl_st_row_cb:checked, .check-column input:checked').length && jQuery('.js-lang-not-active:checked').length === 0) {
         jQuery('#icl_send_strings').prop('disabled', false);

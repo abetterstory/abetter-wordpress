@@ -29,6 +29,7 @@
             <xs:element type="wpml-elementor-widgets" name="elementor-widgets" minOccurs="0"/>
             <xs:element type="wpml-beaver-builder-widgets" name="beaver-builder-widgets" minOccurs="0"/>
             <xs:element type="wpml-cornerstone-widgets" name="cornerstone-widgets" minOccurs="0"/>
+            <xs:element type="wpml-siteorigin-widgets" name="siteorigin-widgets" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
     <!-- Main: end -->
@@ -47,6 +48,14 @@
                     </xs:simpleType>
                 </xs:attribute>
                 <xs:attribute name="display-as-translated" use="optional">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:integer">
+                            <xs:enumeration value="0"/>
+                            <xs:enumeration value="1"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="automatic" use="optional">
                     <xs:simpleType>
                         <xs:restriction base="xs:integer">
                             <xs:enumeration value="0"/>
@@ -319,6 +328,12 @@
     </xs:complexType>
 
     <xs:complexType name="wpml-cornerstone-widgets">
+        <xs:sequence>
+            <xs:element type="wpml-pb-widget" name="widget" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wpml-siteorigin-widgets">
         <xs:sequence>
             <xs:element type="wpml-pb-widget" name="widget" maxOccurs="unbounded" minOccurs="1"/>
         </xs:sequence>

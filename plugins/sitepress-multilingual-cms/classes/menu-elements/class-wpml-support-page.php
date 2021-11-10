@@ -73,7 +73,7 @@ class WPML_Support_Page {
 		if ( $message ) {
 			$libxml_text      = '<strong>libxml</strong>';
 			$libxml_link      = '<a href="http://php.net/manual/en/book.libxml.php" target="_blank">http://php.net/manual/en/book.libxml.php</a>';
-			$libxml_php7_link = '<a href="https://wpml.org/errata/php-7-possible-issues-simplexml/" target="_blank">PHP 7: possible issues with simplexml</a>';
+			$libxml_php7_link = '<a href="https://wpml.org/errata/php-7-possible-issues-simplexml/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore" target="_blank">PHP 7: possible issues with simplexml</a>';
 			echo '<div class="icl-admin-message icl-admin-message-icl-admin-message-warning icl-admin-message-warning error">';
 			echo sprintf( $message, $libxml_text, $libxml_link, $libxml_php7_link );
 			echo '</div>';

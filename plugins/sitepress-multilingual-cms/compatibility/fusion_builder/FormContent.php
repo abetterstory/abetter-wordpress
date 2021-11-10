@@ -94,7 +94,7 @@ class FormContent implements \IWPML_Backend_Action, \IWPML_Frontend_Action {
 	public function convertForm( $atts ) {
 		// $convertId :: string|int -> int
 		$convertId = function( $id ) {
-			return apply_filters( 'wpml_object_id', $id, self::CPT_FORM );
+			return apply_filters( 'wpml_object_id', $id, self::CPT_FORM, true );
 		};
 
 		// $convertForm :: array -> array

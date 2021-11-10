@@ -76,8 +76,9 @@ class WPML_Media_Settings {
 						</tr>
 
 						<tr>
-							<td><a href="https://wpml.org/documentation/getting-started-guide/media-translation/" target="_blank"><?php esc_html_e( 'Media Translation Documentation', 'sitepress' ); ?></a></td>
+							<td><a href="https://wpml.org/documentation/getting-started-guide/media-translation/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore" target="_blank"><?php esc_html_e( 'Media Translation Documentation', 'sitepress' ); ?></a></td>
 							<td align="right">
+								<?php wp_nonce_field( 'wpml_media_settings_actions', 'wpml_media_settings_nonce' ); ?>
 								<input class="button-primary" name="start" type="submit" value="<?php esc_attr_e( 'Start', 'sitepress' ); ?> &raquo;"/>
 							</td>
 

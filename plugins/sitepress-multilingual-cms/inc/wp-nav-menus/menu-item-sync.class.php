@@ -1,11 +1,24 @@
 <?php
 
+use WPML\FP\Fns;
+use WPML\FP\Lst;
+use WPML\FP\Maybe;
+use WPML\FP\Obj;
+use WPML\FP\Relation;
+use function WPML\Container\make;
+use function WPML\FP\pipe;
+
 class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 
 	/** @var array $labels_to_add */
 	private $labels_to_add = array();
 	/** @var array $urls_to_add */
 	private $urls_to_add = array();
+
+	/**
+	 * @var string
+	 */
+	const MENU_ITEM_POST_TYPE = 'post_nav_menu_item';
 
 	/**
 	 * @return int the number of removed broken page items
@@ -323,6 +336,50 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param array $menus Registered menus.
+	 */
+	public function sync_custom_fields( $menus ) {
+
+		$syncMenuItem = function ( $menuItemId ) {
+			$this->sync_custom_fields_set_to_copy( $menuItemId );
+			$this->sync_custom_fields_set_to_copy_once( $menuItemId );
+		};
+
+		$syncMenu = pipe( Obj::prop( 'items' ), Obj::keys(), Fns::each( $syncMenuItem ) );
+
+		Fns::each( $syncMenu, $menus );
+	}
+
+	/**
+	 * @param int $menuItemId
+	 */
+	private function sync_custom_fields_set_to_copy( $menuItemId ) {
+		$copy = new WPML_Sync_Custom_Fields(
+			new WPML_Translation_Element_Factory( $this->sitepress ),
+			$this->sitepress->get_custom_fields_translation_settings( WPML_COPY_CUSTOM_FIELD )
+		);
+		$copy->sync_all_custom_fields( $menuItemId );
+	}
+
+	/**
+	 * @param int $menuItemId
+	 */
+	private function sync_custom_fields_set_to_copy_once( $menuItemId ) {
+		$getItemTranslations = function( $menuItemId ) {
+			return $this->sitepress->get_element_translations(
+				$this->sitepress->get_element_trid( $menuItemId, self::MENU_ITEM_POST_TYPE ),
+				self::MENU_ITEM_POST_TYPE
+			);
+		};
+
+		Maybe::of( $menuItemId )
+			->map( $getItemTranslations )
+			->map( Lst::pluck( 'element_id' ) )
+			->map( Fns::reject( Relation::equals( $menuItemId ) ) )
+			->map( Fns::map( [ make( WPML_Copy_Once_Custom_Field::class ), 'copy' ] ) );
 	}
 
 	private function fix_hierarchy_added_items( $added_data ) {

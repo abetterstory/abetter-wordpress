@@ -34,8 +34,14 @@ define( 'ICL_TM_TRANSLATION_READY_TO_DOWNLOAD', 4 ); // when translation is read
 define( 'ICL_TM_DUPLICATE', 9 );
 define( 'ICL_TM_COMPLETE', 10 );
 define( 'ICL_TM_IN_BASKET', 20 );
+define( 'ICL_TM_NEEDS_REVIEW', 30 ); // Virtual status - NOT STORE IN DB.
+define( 'ICL_TM_ATE_NEEDS_RETRY', 40 );
+
+
 // @since 3.2
 define( 'ICL_TM_PENDING_TP', 102 );
+
+define( 'ICL_TM_ATE_CANCELLED', 42 );
 
 /** @deprecated Use constants in WPML_TM_Emails_Settings instead */
 define( 'ICL_TM_NOTIFICATION_NONE', 0 );
@@ -149,10 +155,6 @@ define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER', 3 );
 define( 'WPML_ELEMENT_TRANSLATIONS_CACHE_GROUP', 'element_translations' );
 
 define( 'WEBSITE_DETAILS_TRANSIENT_KEY', 'wpml_icl_query_website_details' );
-
-if ( ! defined( 'WPML_COMPATIBILITY_ENDPOINT' ) ) {
-	define( 'WPML_COMPATIBILITY_ENDPOINT', 'https://wpml.org/account/wpml-compatibility/' );
-}
 
 define( 'WPML_CONTENT_TYPE_DONT_TRANSLATE', 0 );
 define( 'WPML_CONTENT_TYPE_TRANSLATE', 1 );

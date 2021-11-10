@@ -1,8 +1,13 @@
 <?php
+
 namespace WPML\Container;
+
+use function WPML\FP\curryN;
 
 if ( ! function_exists( 'make' ) ) {
 	/**
+	 * Curried function
+	 *
 	 * Make returns a new instance otherwise returns a shared instance if the
 	 * class_name or an instance is set as shared using the share function
 	 *
@@ -12,12 +17,16 @@ if ( ! function_exists( 'make' ) ) {
 	 * @return mixed
 	 * @throws \WPML\Auryn\InjectionException
 	 */
-	function make( $class_name, array $args = array() ) {
-		if ( class_exists( $class_name ) || interface_exists( $class_name ) ) {
-			return Container::make( $class_name, $args );
-		}
+	function make( $class_name = null, array $args = null ) {
+		$make = function ( $class_name, $args = [] ) {
+			if ( class_exists( $class_name ) || interface_exists( $class_name ) ) {
+				return Container::make( $class_name, $args );
+			}
 
-		return null;
+			return null;
+		};
+
+		return call_user_func_array( curryN( 1, $make ), func_get_args() );
 	}
 }
 
@@ -66,5 +75,23 @@ if ( ! function_exists( 'delegate' ) ) {
 	 */
 	function delegate( array $delegated ) {
 		Container::delegate( $delegated );
+	}
+}
+
+if ( ! function_exists( 'execute' ) ) {
+
+	/**
+	 * Curried function
+	 *
+	 * Invoke the specified callable or class::method string, provisioning dependencies along the way
+	 *
+	 * @param mixed $callableOrMethodStr A valid PHP callable or a provisionable ClassName::methodName string
+	 * @param array $args                array specifying params with which to invoke the provisioned callable
+	 *
+	 * @return mixed Returns the invocation result returned from calling the generated executable
+	 * @throws \WPML\Auryn\InjectionException
+	 */
+	function execute( $callableOrMethodStr = null, $args = null ) {
+		return call_user_func_array( curryN( 1, [ Container::class, 'execute' ] ), func_get_args() );
 	}
 }

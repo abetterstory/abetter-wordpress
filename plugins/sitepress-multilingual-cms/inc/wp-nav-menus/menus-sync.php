@@ -221,6 +221,9 @@ class ICLMenusSync extends WPML_Menu_Sync_Functionality {
 			$this->menu_item_sync->sync_urls_to_add( $data['url_missing'] );
 		}
 
+		$this->menu_item_sync->sync_custom_fields( $this->menus );
+
+
 		$this->menus = isset( $this->menus ) ? $this->menu_item_sync->sync_menu_order( $this->menus ) : $this->menus;
 		$this->menu_item_sync->cleanup_broken_page_items();
 

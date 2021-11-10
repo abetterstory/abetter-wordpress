@@ -14,17 +14,10 @@ class Styles implements \IWPML_Frontend_Action, \IWPML_Backend_Action {
 
 	const META_CUSTOM_CSS = '_wpb_shortcodes_custom_css';
 
-	/** @var WPML_PB_Last_Translation_Edit_Mode $lastEditMode */
-	private $lastEditMode;
-
 	/** @var WPML_Custom_Field_Setting_Factory $metaSettingFactory */
 	private $metaSettingFactory;
 
-	public function __construct(
-		WPML_PB_Last_Translation_Edit_Mode $lastEditMode,
-		WPML_Custom_Field_Setting_Factory $metaSettingFactory
-	) {
-		$this->lastEditMode       = $lastEditMode;
+	public function __construct( WPML_Custom_Field_Setting_Factory $metaSettingFactory ) {
 		$this->metaSettingFactory = $metaSettingFactory;
 	}
 
@@ -38,7 +31,7 @@ class Styles implements \IWPML_Frontend_Action, \IWPML_Backend_Action {
 	 */
 	public function copyCssFromOriginal( $postId ) {
 		// $ifUsingTranslationEditor :: int -> bool
-		$ifUsingTranslationEditor = [ $this->lastEditMode, 'is_translation_editor' ];
+		$ifUsingTranslationEditor = [ WPML_PB_Last_Translation_Edit_Mode::class, 'is_translation_editor' ];
 
 		// $ifUsingWpBakery :: int -> bool
 		$ifUsingWpBakery = partialRight( 'get_post_meta', '_wpb_vc_js_status', true );

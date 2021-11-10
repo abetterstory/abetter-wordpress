@@ -37,13 +37,14 @@ if ( ! $is_cron_request && ! $is_wp_cli_request && ! is_admin() && ! otgs_is_res
 		 */
 		function WP_Installer_Setup( $wp_installer_instance, $args = [] ) {
 			if ( isset( $args['site_key_nags'][0]['repository_id'] ) ) {
-
 				require_once __DIR__ . '/includes/class-otgs-installer-settings.php';
+				require_once __DIR__ . '/includes/class-otgs-installer-subscription.php';
+
+				$settings = OTGS\Installer\Settings::load();
 
 				$repository_id = $args['site_key_nags'][0]['repository_id'];
-				$getSiteKey    = function () use ( $repository_id ) {
-					$settings = OTGS\Installer\Settings::load();
 
+				$getSiteKey    = function () use ( $repository_id, $settings ) {
 					if ( in_array( $repository_id, [ 'wpml', 'toolset' ] )
 					     && isset( $settings['repositories'][ $repository_id ]['subscription']['key'] )
 					) {
@@ -54,6 +55,49 @@ if ( ! $is_cron_request && ! $is_wp_cli_request && ! is_admin() && ! otgs_is_res
 				};
 
 				add_filter( 'otgs_installer_get_sitekey_'.$repository_id, $getSiteKey );
+
+				if ( in_array( $repository_id, [ 'wpml', 'toolset' ] )
+				     && isset( $settings['repositories'][ $repository_id ]['subscription']['key_type'] )
+				     && $settings['repositories'][ $repository_id ]['subscription']['key_type'] === OTGS_Installer_Subscription::SITE_KEY_TYPE_DEVELOPMENT
+				) {
+
+					$showFrontendBanner = function () use ( $repository_id ) {
+					    $wpmlText = sprintf(
+                            __( 'This site is registered on %s as a development site.', 'installer' ),
+                            '<a href="https://wpml.org">wpml.org</a>'
+                        );
+						$message = $repository_id === 'wpml'
+							? $wpmlText
+							: __( 'This site is registered on Toolset.com as a development site.', 'installer' );
+
+						?>
+						<style>
+                            .otgs-development-site-front-end a { color: white; }
+                            .otgs-development-site-front-end .icon {
+                                background: url(<?php echo plugins_url( '/', __FILE__ ) . '/res/img/icon-wpml-info-white.svg'; ?>) no-repeat;
+                                width: 20px;
+                                height: 20px;
+                                display: inline-block;
+                                position: absolute;
+                                margin-left: -23px;
+                            }
+                            .otgs-development-site-front-end {
+                                background-size: 32px;
+                                padding: 22px 0px;
+                                font-size: 12px;
+                                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+                                line-height: 18px;
+                                text-align: center;
+                                color: white;
+                                background-color: #33879E;
+                            }
+						</style>
+						<?php
+						echo '<div class="otgs-development-site-front-end"><span class="icon"></span>' . $message . '</div >';
+					};
+
+					add_action( 'wp_footer', $showFrontendBanner, 999 );
+				}
 			}
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
@@ -71,7 +115,6 @@ $wp_installer_instances[ $wp_installer_instance ] = [
 	'bootfile' => $wp_installer_instance,
 	'version'  => '2.6.2'
 ];
-
 
 /**
  * Exception: When WPML prior 3.2 is used, that instance must be used regardless of another newer instance.

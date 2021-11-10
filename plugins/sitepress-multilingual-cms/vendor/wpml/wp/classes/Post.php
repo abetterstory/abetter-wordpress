@@ -22,8 +22,11 @@ use function WPML\FP\pipe;
  * @method static callable|\WP_Post|null get( ...$postId ) - Curried :: int → \WP_Post|null
  * @method static callable|string|false getStatus( ...$postId ) - Curried :: int → string|bool
  * @method static callable|int update(...$data) - Curried :: array -> int
+ * @method static callable|int insert(...$data) - Curried :: array -> int
  * @method static callable|int setStatus(...$id, ...$status) - Curried :: int -> string -> int
  * @method static callable|int setStatusWithoutFilters(...$id, ...$status) - Curried :: int -> string -> int
+ * @method static callable|\WP_Post|false|null delete(...$id) - Curried :: int -> \WP_Post|false|null
+ * @method static callable|\WP_Post|false|null trash(...$id) - Curried :: int -> \WP_Post|false|null
  */
 class Post {
 
@@ -53,6 +56,8 @@ class Post {
 
 		self::macro( 'update', curryN( 1, Fns::unary( 'wp_update_post' ) ) );
 
+		self::macro( 'insert', curryN( 1, Fns::unary( 'wp_insert_post' ) ) );
+
 		self::macro( 'setStatus', curryN(2, gatherArgs( pipe( Lst::zipObj( [ 'ID', 'post_status' ] ), self::update() ) ) ) );
 
 		self::macro( 'setStatusWithoutFilters', curryN( 2, function ( $id, $newStatus ) {
@@ -60,6 +65,10 @@ class Post {
 
 			return $wpdb->update( $wpdb->posts, [ 'post_status' => $newStatus ], [ 'ID' => $id ] ) ? $id : 0;
 		} ) );
+
+		self::macro( 'delete', curryN( 1, partialRight( 'wp_delete_post', true ) ) );
+
+		self::macro( 'trash', curryN( 1, partialRight( 'wp_delete_post', false ) ) );
 	}
 }
 

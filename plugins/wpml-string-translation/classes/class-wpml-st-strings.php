@@ -193,7 +193,7 @@ class WPML_ST_Strings {
 			array( '{column}', '{value}' ),
 			array(
 				esc_sql( $column ),
-				esc_sql( $search_filter ),
+				esc_sql( str_replace( "'", "&#039;", $search_filter ) ),
 			),
 			$pattern
 		);
@@ -265,7 +265,7 @@ class WPML_ST_Strings {
 	 */
 	private function get_search_filter() {
 		if ( array_key_exists( 'search', $_GET ) ) {
-			return $_GET['search'];
+			return stripcslashes( $_GET['search'] );
 		}
 
 		return false;

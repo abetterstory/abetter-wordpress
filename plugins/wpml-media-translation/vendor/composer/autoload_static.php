@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit90210816c257f653fe7a19c2b371a3e4
+class ComposerStaticInitc5e56ec5dc878250480373475cddeb1b
 {
     public static $classMap = array (
         'WPML\\Media\\Widgets\\Block\\DisplayTranslation' => __DIR__ . '/../..' . '/classes/Widgets/Block/DisplayTranslation.php',
@@ -88,7 +88,7 @@ class ComposerStaticInit90210816c257f653fe7a19c2b371a3e4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit90210816c257f653fe7a19c2b371a3e4::$classMap;
+            $loader->classMap = ComposerStaticInitc5e56ec5dc878250480373475cddeb1b::$classMap;
 
         }, null, ClassLoader::class);
     }

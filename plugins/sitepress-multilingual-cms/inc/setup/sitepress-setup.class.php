@@ -83,6 +83,7 @@ class SitePress_Setup {
 					  `default_locale` VARCHAR( 35 ),
 					  `tag` VARCHAR( 35 ),
 					  `encode_url` TINYINT( 1 ) NOT NULL DEFAULT 0,
+					  `country` VARCHAR(10) NULL DEFAULT NULL,
 					  UNIQUE KEY `code` (`code`),
 					  UNIQUE KEY `english_name` (`english_name`)
 				  ) ";

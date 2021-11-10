@@ -119,6 +119,8 @@ class WPML_Installation extends WPML_WPDB_And_SP_User {
 	}
 
 	public function finish_installation( ) {
+		icl_set_setting( 'store_frontend_cookie', 1 );
+
 		icl_set_setting( 'setup_complete', 1, true );
 
 		update_option( self::WPML_START_VERSION_KEY, ICL_SITEPRESS_VERSION );

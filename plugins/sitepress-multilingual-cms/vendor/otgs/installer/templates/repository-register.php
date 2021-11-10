@@ -7,7 +7,7 @@ class Register {
 	public static function render( $model ) {
 		?>
 		<div class="otgs-installer-registered clearfix">
-			<div class="enter_site_key_wrap_js notice inline otgs-installer-notice otgs-installer-notice-<?php echo $model->repoId; ?>"
+			<div class="enter_site_key_wrap_js otgs-installer-notice-info inline otgs-installer-notice otgs-installer-notice-<?php echo $model->repoId; ?>"
 				 xmlns="http://www.w3.org/1999/html">
 				<div class="otgs-installer-notice-content">
 					<h2>
@@ -49,7 +49,7 @@ class Register {
                 <input class="button-primary" type="submit" value="' . esc_attr__( 'Register', 'installer' ) . '" />
             </div>
             <p class="otgs-installer-register-link"><a target="_blank" rel="nofollow" href="' . esc_url( self::getAccountUrl( $model ) ) . '">' . esc_html( __( 'Get a key for this site', 'installer' ) ) . '</a></p>
-                                   
+
             <div class="installer-error-box hidden"></div>
 		</form>';
 	}
@@ -64,7 +64,11 @@ class Register {
 	 * @return string
 	 */
 	private static function getAccountUrl( $model ) {
-		return $model->siteKeysManagementUrl . '?add=' . urlencode( $model->siteUrl );
+		return apply_filters(
+			'otgs_installer_add_site_url',
+			$model->siteKeysManagementUrl . '?add=' . urlencode( $model->siteUrl ),
+			$model->repoId
+		);
 	}
 
 	/**

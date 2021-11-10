@@ -5,6 +5,7 @@ namespace WPML;
 use WPML\Collect\Support\Traits\Macroable;
 use WPML\FP\Fns;
 use WPML\FP\Logic;
+use WPML\FP\Obj;
 use WPML\FP\Relation;
 use function WPML\FP\curryN;
 
@@ -84,6 +85,52 @@ class UIPage {
 		};
 
 		return call_user_func_array( curryN( 1, $isSettings ), func_get_args() );
+	}
+
+	/**
+	 * @param array|null $get
+	 *
+	 * @return bool
+	 */
+	public static function isMainSettingsTab( array $get = null ) {
+		return self::isSettingTab( 'mcsetup', $get );
+	}
+
+	/**
+	 * @param array|null $get
+	 *
+	 * @return bool
+	 */
+	public static function isNotificationSettingsTab( array $get = null ) {
+		return self::isSettingTab( 'notifications', $get );
+	}
+
+	/**
+	 * @param array|null $get
+	 *
+	 * @return bool
+	 */
+	public static function isCustomXMLConfigSettingsTab( array $get = null ) {
+		return self::isSettingTab( 'custom-xml-config', $get );
+	}
+
+
+	/**
+	 * @param string|null $tab
+	 * @param array|null $get
+	 *
+	 * @return bool
+	 */
+	public static function isSettingTab( $tab = null, array $get = null ) {
+		$fn = function ( $tab, $get ) {
+			if ( self::isSettings( $get ) ) {
+				return Obj::propOr( 'mcsetup', 'sm', $get ) === $tab;
+			}
+
+			return false;
+		};
+
+		return call_user_func_array( curryN( 2, $fn ), func_get_args() );
 	}
 
 	public static function getSettings() {

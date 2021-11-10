@@ -9,6 +9,7 @@ class Config {
 
 	public static function getSharedClasses() {
 		return [
+			\WPML\ST\StringsCleanup\UntranslatedStrings::class,
 			\WPML\ST\Gettext\AutoRegisterSettings::class,
 			\WPML\ST\Gettext\Hooks::class,
 			\WPML\ST\Gettext\Settings::class,

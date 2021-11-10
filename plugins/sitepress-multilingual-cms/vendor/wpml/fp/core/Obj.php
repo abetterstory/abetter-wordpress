@@ -21,6 +21,8 @@ use WPML\FP\Functor\IdentityFunctor;
  * @method static callable lens( ...$getter, ...$setter ) - Curried :: callable->callable->callable
  * @method static callable lensProp( ...$prop ) - Curried :: string->callable
  * @method static callable lensPath( ...$path ) - Curried :: array->callable
+ * @method static callable lensMapped( ...$toFunctorFn ) - Curried :: callable->callable
+ * @method static callable lensMappedProp( ...$prop ) - Curried :: string->callable
  * @method static callable view( ...$lens, ...$obj ) - Curried :: callable->Collection|array|object->mixed
  * @method static callable set( ...$lens, ...$value, ...$obj ) - Curried :: callable->mixed->Collection|array|object->mixed
  * @method static callable over( ...$lens, ...$transformation, ...$obj ) - Curried :: callable->callable->Collection|array|object->mixed
@@ -209,6 +211,20 @@ class Obj {
 
 		self::macro( 'lensPath', curryN( 1, function ( $path ) {
 			return self::lens( self::path( $path ), self::assocPath( $path ) );
+		} ) );
+
+		self::macro( 'lensMapped', curryN( 1, function ( $toFunctorFn ) {
+			return function ( $target ) use ( $toFunctorFn ) {
+				return IdentityFunctor::of(
+					Logic::isMappable( $target )
+						? Fns::map( pipe( $toFunctorFn, invoke( 'get' ) ), $target )
+						: $target
+				);
+			};
+		} ) );
+
+		self::macro( 'lensMappedProp', curryN( 1, function ( $prop ) {
+			return compose( Obj::lensProp( $prop ), Obj::lensMapped() );
 		} ) );
 
 		self::macro( 'view', curryN( 2, function ( $lens, $obj ) {

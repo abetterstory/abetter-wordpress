@@ -24,7 +24,7 @@ class WPML_Verify_SitePress_Settings {
 		$default_settings = [
 			'interview_translators'              => 1,
 			'existing_content_language_verified' => 0,
-			'language_negotiation_type'          => 3,
+			'language_negotiation_type'          => 1,
 			'icl_lso_link_empty'                 => 0,
 			'sync_page_ordering'                 => 1,
 			'sync_page_parent'                   => 1,

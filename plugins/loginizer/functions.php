@@ -397,3 +397,10 @@ function loginizer_feature_available($feature = '', $return = 0){
 	}
 	
 }
+
+// Checks if the email is valid
+function lz_valid_email($email){
+
+	return filter_var($email, FILTER_VALIDATE_EMAIL);
+
+}

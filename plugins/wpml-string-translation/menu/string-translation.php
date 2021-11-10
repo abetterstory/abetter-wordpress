@@ -472,7 +472,7 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
 											$track_strings_checked = checked( true, $track_strings, false );
 											$track_strings_display = ' style="color: red;' . ( ! $track_strings ? 'display: none;' : '' ) . '""';
 
-											$url               = 'https://wpml.org/documentation/getting-started-guide/string-translation/finding-strings-that-dont-appear-on-the-string-translation-page/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlst#track-where-strings-appear-on-the-site';
+											$url               = 'https://wpml.org/documentation/getting-started-guide/string-translation/finding-strings-that-dont-appear-on-the-string-translation-page/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlst';
 											$message_sentences = array();
 
 											$anchor_text         = esc_attr_x( 'String Tracking', 'String Tracking warning: sentence 1, anchor text', 'wpml-string-translation' );
@@ -489,7 +489,7 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
 											<p class="js-track-strings-note" <?php echo $track_strings_display; ?>>
 												<?php echo $message; ?>
 											</p>
-											<p><a href="https://wpml.org/faq/prevent-performance-issues-with-wpml/?utm_source=wpmlplugin&utm_campaign=product&utm_medium=plugin&utm_term=performance" target="_blank"><?php esc_html_e( 'Performance considerations', 'wpml-string-translation' ); ?>&nbsp;&raquo;</a></p>
+											<p><a href="https://wpml.org/faq/prevent-performance-issues-with-wpml/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlst" target="_blank"><?php esc_html_e( 'Performance considerations', 'wpml-string-translation' ); ?>&nbsp;&raquo;</a></p>
 										</li>
 										<li>
 											<?php
@@ -520,6 +520,7 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
 
 							</div>
 						</div>
+						<div id="dashboard_wpml_cleanup_strings" class="postbox"></div>
 
 						<div id="dashboard_wpml_stsel_1.5" class="postbox wpml-st-auto-register-strings">
 							<?php

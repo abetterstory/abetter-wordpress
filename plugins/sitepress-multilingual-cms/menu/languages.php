@@ -31,8 +31,6 @@ if ( isset( $_GET['trop'] ) ) {
 }
 
 	$sitepress_settings                 = get_option( 'icl_sitepress_settings' );
-	$setup_wizard_step                  = (int) $sitepress->get_setting( 'setup_wizard_step' );
-	$setup_complete                     = $sitepress->get_setting( 'setup_complete' );
 	$active_languages                   = $sitepress->get_active_languages();
 	$hidden_languages                   = $sitepress->get_setting( 'hidden_languages' );
 	$show_untranslated_blog_posts       = $sitepress->get_setting( 'show_untranslated_blog_posts' );
@@ -98,13 +96,8 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 ?>
 <?php $sitepress->noscript_notice(); ?>
 
-<?php if ( $setup_complete || SitePress_Setup::languages_table_is_complete() ) { ?>
-<div class="wrap wpml-settings-container
-	<?php
-	if ( empty( $setup_complete ) ) :
-		?>
-	 wpml-wizard<?php endif; ?>">
-	<h2><?php esc_html_e( 'Setup WPML', 'sitepress' ); ?></h2>
+<div class="wrap wpml-settings-container">
+	<h2><?php esc_html_e( 'Setup WPML', 'sitepress' ) ?></h2>
 
 	<?php
 	$compatibility_reports_args = array(
@@ -112,43 +105,18 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 		'plugin_uri'         => 'http://wpml.org',
 		'plugin_site'        => 'wpml.org',
 		'use_styles'         => true,
-		'privacy_policy_url' => 'https://wpml.org/documentation/privacy-policy-and-gdpr-compliance/?utm_source=wpmlplugin&utm_campaign=compatibility-reporting&utm_medium=wpml-setup&utm_term=privacy-policy-and-gdpr-compliance',
+		'privacy_policy_url' => 'https://wpml.org/documentation/privacy-policy-and-gdpr-compliance/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore',
 		'plugin_repository'  => 'wpml',
 	);
 
-	if ( ! $sitepress->is_setup_complete() ) {
-		$wizard_progress = new WPML_Setup_Wizard_Progress(
-			$setup_wizard_step,
-			array(
-				1 => __( '1. Content language', 'sitepress' ),
-				2 => __( '2. Translation languages', 'sitepress' ),
-				3 => __( '3. Language switcher', 'sitepress' ),
-				4 => __( '4. Compatibility', 'sitepress' ),
-				5 => __( '5. Registration', 'sitepress' ),
-				6 => __( '6. Recommendations', 'sitepress' ),
-			)
-		);
-		$wizard_progress->render();
-	}
 
-	if ( ! $existing_content_language_verified || $setup_wizard_step <= 1 ) :
-		?>
-		<?php
-		$setup_step = new WPML_Setup_Step_One_Menu( $sitepress );
-		echo $setup_step->render();
-		?>
-	<?php else : ?>
-		<?php
-		if ( ! empty( $setup_complete ) || $setup_wizard_step == 2 ) :
-			?>
-			<?php if ( count( $active_languages ) > 1 ) : ?>
+		if ( count( $active_languages ) > 1 ): ?>
 				<p>
 					<strong><?php esc_html_e( 'This screen contains the language settings for your site.', 'sitepress' ); ?></strong>
 				</p>
 				<ul class="wpml-navigation-links js-wpml-navigation-links">
 					<?php
 					$navigation_items = array(
-						'#lang-sec-11'  => __( 'Theme and plugins reporting', 'sitepress' ),
 						'#lang-sec-1'   => __( 'Site Languages', 'sitepress' ),
 						'#lang-sec-2'   => __( 'Language URL format', 'sitepress' ),
 						'#lang-sec-4'   => __( 'Admin language', 'sitepress' ),
@@ -156,6 +124,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 						'#lang-sec-8'   => __( 'Make themes work multilingual', 'sitepress' ),
 						'#lang-sec-9'   => __( 'Browser language redirect', 'sitepress' ),
 						'#lang-sec-9-5' => __( 'SEO Options', 'sitepress' ),
+						'#lang-sec-9-6'  => __( 'Theme and plugins reporting', 'sitepress' ),
 						'#cookie'       => __( 'Language filtering for AJAX operations', 'sitepress' ),
 						'#lang-sec-10'  => __( 'WPML love', 'sitepress' ),
 					);
@@ -176,27 +145,6 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 				</ul>
 			<?php endif; ?>
 
-			<?php
-			if ( $setup_complete ) {
-				?>
-					<div class="wpml-section wpml-section-wpml-theme-and-plugins-reporting" id="lang-sec-11">
-						<div class="wpml-section-header">
-							<h3><?php esc_html_e( 'Reporting to wpml.org', 'sitepress' ); ?></h3>
-						</div>
-						<div class="wpml-section-content">
-				<?php
-				$compatibility_reports_after_setup_args                   = $compatibility_reports_args;
-				$compatibility_reports_after_setup_args['custom_heading'] = '';
-				$compatibility_reports_after_setup_args['use_radio']      = false;
-
-				do_action( 'otgs_installer_render_local_components_setting', $compatibility_reports_after_setup_args );
-				?>
-						</div>
-					</div>
-				<?php
-			}
-			?>
-
 			<div id="lang-sec-1" class="wpml-section wpml-section-languages">
 				<div class="wpml-section-header">
 					<h3><?php _e( 'Site Languages', 'sitepress' ); ?></h3>
@@ -204,8 +152,8 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 
 				<div class="wpml-section-content">
 					<div class="wpml-section-content-inner">
-						<?php if ( ! empty( $setup_complete ) ) : ?>
-							<h4><?php _e( 'These languages are enabled for this site:', 'sitepress' ); ?></h4>
+
+							<h4><?php _e('These languages are enabled for this site:','sitepress'); ?></h4>
 
 							<?php do_action( 'wpml_before_active_languages_display' ); ?>
 
@@ -222,7 +170,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 										}
 										?>
 
-								<li 
+								<li
 										<?php
 										if ( $is_default ) :
 											?>
@@ -240,38 +188,26 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 								</li>
 								<?php endforeach ?>
 							</ul>
-							<?php do_action( 'wpml_after_active_languages_display' ); ?>
-						<?php else : ?>
-							<p class="wpml-wizard-instruction">
-								<?php esc_html_e( 'Select the languages to enable for your site (you can also add and remove languages later).', 'sitepress' ); ?>
-							</p>
-						<?php endif; ?>
-						<?php wp_nonce_field( 'wpml_set_default_language', 'set_default_language_nonce' ); ?>
+						<?php do_action( 'wpml_after_active_languages_display' ); ?>
+
+						<?php wp_nonce_field('wpml_set_default_language', 'set_default_language_nonce'); ?>
 						<p class="buttons-wrap">
 							<button id="icl_cancel_default_button" class="button-secondary action"><?php esc_html_e( 'Cancel', 'sitepress' ); ?></button>
 							<button id="icl_save_default_button" class="button-primary action"><?php esc_html_e( 'Save', 'sitepress' ); ?></button>
 						</p>
-						<?php if ( ! empty( $setup_complete ) ) : ?>
-							<p>
-								<button id="icl_change_default_button" class="button-secondary action 
-								<?php
-								if ( count( $active_languages ) < 2 ) :
-									?>
-									hidden<?php endif ?>">
-									<?php esc_html_e( 'Change default language', 'sitepress' ); ?>
-								</button>
-								<button id="icl_add_remove_button" class="button-secondary action">
-									<?php esc_html_e( 'Add / Remove languages', 'sitepress' ); ?>
-								</button>
-							</p>
-							<p class="icl_ajx_response" id="icl_ajx_response"></p>
-						<?php endif; ?>
-						<div id="icl_avail_languages_picker" class="
-						<?php
-						if ( ! empty( $setup_complete ) ) {
-							echo 'hidden';}
-						?>
-						">
+
+                        <p>
+                            <button id="icl_change_default_button"
+                                    class="button-secondary action <?php if ( count( $active_languages ) < 2 ): ?>hidden<?php endif ?>">
+								<?php esc_html_e( 'Change default language', 'sitepress' ) ?>
+                            </button>
+                            <button id="icl_add_remove_button" class="button-secondary action">
+								<?php esc_html_e( 'Add / Remove languages', 'sitepress' ) ?>
+                            </button>
+                        </p>
+                        <p class="icl_ajx_response" id="icl_ajx_response"></p>
+
+						<div id="icl_avail_languages_picker" class="hidden">
 							<ul class="available-languages">
 								<?php
 								foreach ( $languages as $lang ) {
@@ -287,7 +223,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 										<label for="wpml-language-<?php echo $lang['code']; ?>">
 											<input type="checkbox" id="wpml-language-<?php echo esc_attr( $lang['code'] ); ?>"
 												   value="<?php echo esc_attr( $lang['code'] ); ?>" <?php echo $checked . ' ' . $disabled; ?>/>
-											<img src="<?php echo $sitepress->get_flag_url( $lang['code'] ); ?>" width="18" height="12">
+											<?php echo $sitepress->get_flag_image($lang['code']) ?>
 											<?php echo esc_html( $lang['display_name'] ); ?>
 										</label>
 									</li>
@@ -295,27 +231,29 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 								}
 								?>
 							</ul>
-							<?php if ( ! empty( $setup_complete ) ) : ?>
-							<p class="buttons-wrap">
+
+							<div class="buttons-wrap">
 								<input id="icl_cancel_language_selection" type="button" class="button-secondary action"
 									   value="<?php esc_attr_e( 'Cancel', 'sitepress' ); ?>" />
 								<input id="icl_save_language_selection" type="button" class="button-primary action"
-									   value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>" />
-							</p>
-							<?php endif; ?>
-							<?php wp_nonce_field( 'wpml_set_active_languages', 'set_active_languages_nonce' ); ?>
+									   value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>" style="display:none"/>
+								<div id="wpml_language_selection_save" style="display: inline-block"></div>
+
+							</div>
+
+							<?php wp_nonce_field('wpml_set_active_languages', 'set_active_languages_nonce'); ?>
 						</div>
 
-						<?php if ( ! empty( $setup_complete ) ) : ?>
-							<p>
-								<a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER; ?>/menu/languages.php&amp;trop=1">
-									<?php esc_html_e( 'Edit Languages', 'sitepress' ); ?>
-								</a>
-							</p>
-						<?php endif; ?>
+
+                        <p>
+                            <a href="admin.php?page=<?php echo WPML_PLUGIN_FOLDER ?>/menu/languages.php&amp;trop=1">
+								<?php esc_html_e( 'Edit Languages', 'sitepress' ) ?>
+                            </a>
+                        </p>
+
 					</div> <!-- wpml-section-content-inner -->
 
-					<?php if ( $setup_complete && $inactive_content && $inactive_content->has_entries() ) : ?>
+					<?php if ( $inactive_content && $inactive_content->has_entries() ) : ?>
 						<div class="wpml-section-content-inner">
 							<?php
 							$render_inactive_content = new WPML_Inactive_Content_Render(
@@ -328,279 +266,9 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 						</div> <!-- wpml-section-content-inner -->
 					<?php endif; ?>
 
-					<?php if ( 2 === (int) $setup_wizard_step ) : ?>
-						<footer class="clearfix text-right">
-							<input id="icl_setup_back_1" class="button-secondary alignleft" name="save" value="<?php esc_attr_e( 'Back', 'sitepress' ); ?>" type="button" />
-							<?php wp_nonce_field( 'setup_got_to_step1_nonce', '_icl_nonce_gts1' ); ?>
-							<input id="icl_setup_next_1" class="button-primary alignright" name="save"
-								   value="<?php esc_attr_e( 'Next', 'sitepress' ); ?>" type="button"
-								<?php disabled( count( $active_languages ) < 2 ); ?> />
-						</footer>
-					<?php endif; ?>
-
 				</div> <!-- .wcml-section-content -->
 			</div> <!-- .wpml-section-languages -->
 
-	<?php elseif ( $setup_wizard_step === 4 ) : ?>
-
-			<div class="wpml-section wpml-section-wpml-theme-and-plugins-reporting" id="lang-sec-compatibility">
-				<div class="wpml-section-header">
-					<h3>
-			  <?php esc_html_e( 'Compatibility reporting', 'sitepress' ); ?>
-					</h3>
-				</div>
-				<div class="wpml-section-content">
-						  <?php
-							esc_html_e(
-								'The WPML plugin can send a list of active plugins and theme used in your site to wpml.org. This allows our support team to help you much faster and to contact you in advance about potential compatibility problems and their solutions.',
-								'sitepress'
-							);
-							?>
-					</p>
-			<?php
-			$compatibility_reports_before_setup_args              = $compatibility_reports_args;
-			$compatibility_reports_before_setup_args['use_radio'] = true;
-			do_action( 'otgs_installer_render_local_components_setting', $compatibility_reports_before_setup_args );
-			?>
-				</div>
-
-				<footer class="clearfix text-right">
-					<input id="icl_setup_back_3"
-						   class="button-secondary alignleft"
-						   name="save"
-						   value="<?php esc_attr_e( 'Back', 'sitepress' ); ?>"
-						   type="button"/>
-			<?php wp_nonce_field( 'setup_got_to_step3_nonce', '_icl_nonce_gts3' ); ?>
-					<input id="icl_setup_next_5" class="button-primary alignright" name="save"
-						   value="<?php esc_attr_e( 'Next', 'sitepress' ); ?>" type="button"
-					/>
-			<?php wp_nonce_field( 'setup_got_to_step5_nonce', '_icl_nonce_gts5' ); ?>
-				</footer>
-			</div>
-
-		<?php
-		elseif ( $setup_wizard_step === 5 ) :
-			?>
-			<?php $site_key = WP_Installer()->get_site_key( 'wpml' ); ?>
-			<div class="wpml-section" id="lang-sec-0">
-				<div class="wpml-section-header">
-					<h3><?php esc_html_e( 'Registration', 'sitepress' ); ?></h3>
-				</div>
-				<div class="wpml-section-content">
-
-					<?php if ( is_multisite() && ! empty( $site_key ) ) : ?>
-
-						<p class="wpml-wizard-instruction"><?php esc_html_e( 'WPML is already registered network-wide.', 'sitepress' ); ?></p>
-						<footer class="clearfix text-right">
-							<form id="installer_registration_form">
-								<input type="hidden" name="action" value="installer_save_key"/>
-								<input type="hidden" name="button_action" value="installer_save_key"/>
-								<input id="icl_setup_next_6"
-									   <?php
-										if ( empty( $site_key ) ) :
-											?>
-											style="display: none;"<?php endif; ?>
-									   class="button-primary alignright" name="save"
-									   value="<?php esc_attr_e( 'Next', 'sitepress' ); ?>" type="button"/>
-								<?php wp_nonce_field( 'setup_got_to_step6_nonce', '_icl_nonce_gts6' ); ?>
-							</form>
-						</footer>
-
-					<?php else : ?>
-
-						<p class="wpml-wizard-instruction">
-							<?php esc_html_e( 'Enter the site key, from your wpml.org account, to receive automatic updates for WPML on this site.', 'sitepress' ); ?>
-						</p>
-						<form id="installer_registration_form">
-							<input type="hidden" name="action" value="installer_save_key"/>
-							<input type="hidden" name="button_action" value="installer_save_key"/>
-							<label for="installer_site_key">
-								<?php esc_html_e( 'Site key:', 'sitepress' ); ?>
-								<input type="text" name="installer_site_key"
-									   value="<?php echo esc_attr( $site_key ); ?>" <?php disabled( ! empty( $site_key ) ); ?> />
-							</label>
-
-							<div class="status_msg
-							<?php
-							if ( ! empty( $site_key ) ) :
-								?>
-								 icl_valid_text<?php endif; ?>">
-								<?php
-								if ( $site_key ) {
-									esc_html_e( 'Thank you for registering WPML on this site. You will receive automatic updates when new versions are available.', 'sitepress' );
-								}
-								?>
-							</div>
-
-							<div class="text-right">
-								<?php if ( empty( $site_key ) ) : ?>
-									<input class="button-primary" name="register"
-										   value="<?php esc_attr_e( 'Register', 'sitepress' ); ?>" type="submit"/>
-									<input class="button-secondary" name="later"
-										   value="<?php esc_attr_e( 'Remind me later', 'sitepress' ); ?>" type="submit"/>
-									<?php wp_nonce_field( 'registration_form_submit_nonce', '_icl_nonce' ); ?>
-								<?php endif; ?>
-
-								<input id="icl_setup_next_6"
-									   <?php
-										if ( empty( $site_key ) ) :
-											?>
-											style="display: none;"<?php endif; ?>
-									   class="button-primary alignright" name="save"
-									   value="<?php esc_attr_e( 'Next', 'sitepress' ); ?>" type="submit"/>
-
-								<input class="button-primary" name="finish" style="display: none;"
-									   value="<?php esc_attr_e( 'Finish', 'sitepress' ); ?>" type="submit"/>
-
-								<?php wp_nonce_field( 'setup_got_to_step6_nonce', '_icl_nonce_gts6' ); ?>
-							</div>
-
-						</form>
-
-					<?php endif; ?>
-
-					<?php if ( empty( $site_key ) ) : ?>
-						<div class="no_site_key">
-							<hr class="wpml-margin-top-base">
-							<p>
-								<?php
-								printf(
-									esc_html__( "Don't have a key for this site? %1\$sGenerate a key for this site%2\$s", 'sitepress' ),
-									'<a class="button-primary" href="https://wpml.org/my-account/sites/?add=' . urlencode( get_site_url() ) . '" target="_blank">',
-									'</a>'
-								)
-								?>
-							</p>
-							<p>
-								<?php
-								printf(
-									esc_html__( "If you don't have a WPML.org account or a valid subscription, you can %1\$spurchase%2\$s one and get later upgrades, full support and 30 days money-back guarantee.", 'sitepress' ),
-									'<a href="http://wpml.org/purchase/" target="_blank">',
-									'</a>'
-								)
-								?>
-							</p>
-						</div>
-					<?php endif; ?>
-				</div>
-			</div>
-
-		<?php elseif ( $setup_wizard_step === 6 ) : ?>
-
-	<div class="wpml-section">
-		<div class="wpml-section-header">
-			<h3>
-				<?php esc_html_e( 'Complete WPML’s Installation', 'sitepress' ); ?>
-			</h3>
-		</div>
-			<?php
-			$recommendation_groups = WP_Installer()->get_recommendations( 'wpml' );
-			if ( $recommendation_groups ) {
-				?>
-			<div class="wpml-section-content">
-				<p class="wpml-wizard-instruction">
-					<?php
-					esc_html_e(
-						'Based on your theme and other plugins running on your site, we recommend that you enable the following WPML components on this site.',
-						'sitepress'
-					);
-					?>
-				</p>
-
-				<form id="installer_recommendations_form">
-						<?php
-						uasort(
-							$recommendation_groups,
-							function ( $a, $b ) {
-								return (int) $a['order'] - (int) $b['order'];
-							}
-						);
-
-						foreach ( $recommendation_groups as $group_slug => $recommendation_group ) {
-							echo '<h3>' . $recommendation_group['title'] . '</h3>';
-							echo '<ul class="wpml-recommendations-list">';
-							foreach ( $recommendation_group['plugins'] as $slug => $plugin ) {
-								if ( $group_slug !== 'plugins-for-developing-custom-sites-with-wpml' ) {
-									$checked = 'checked';
-								} else {
-									$checked = '';
-								}
-								if ( $plugin['is_active'] ) {
-									$plugin_disabled = 'disabled="disabled" ';
-								} else {
-									$plugin_disabled = ' ';
-								}
-
-								echo '<li class="' . $plugin['download_data']['slug'] . '">
-				                <input ' . $plugin_disabled . $checked . ' type="checkbox" value="' . base64_encode( json_encode( $plugin['download_data'] ) ) . '" id="opt-' . $plugin['download_data']['slug'] . '" />
-				                <label for="opt-' . $plugin['download_data']['slug'] . '">' . $plugin['name'] . '</label>
-		                        <span class="js-wpml-tooltip-open" id="opt-' . $plugin['download_data']['slug'] . '" title="' . $plugin['short_description'] . '"></span>
-				                </li>';
-							}
-							echo '</ul>';
-						}
-						?>
-
-					<input type="hidden" name="button_action" value="install_recommendations"/>
-
-					<div class="text-left">
-						<p class="icl_error_text hidden">
-							<?php
-							esc_html_e(
-								'There was an error during plugin installation.',
-								'sitepress'
-							);
-							?>
-						</p>
-					</div>
-
-					<div class="text-right">
-						<input class="button-link" name="finish"
-							   data-finish-text="<?php esc_attr_e( 'Finish', 'sitepress' ); ?>"
-							   data-skip-text="<?php esc_attr_e( 'Skip and Finish', 'sitepress' ); ?>"
-							   value="<?php esc_attr_e( 'Skip and Finish', 'sitepress' ); ?>" type="submit"/>
-
-						<input id="save_recommendations" class="button-primary" name="install_recommendations"
-
-							   value="<?php esc_attr_e( 'Install and activate selected plugins', 'sitepress' ); ?>"
-							   type="submit"/>
-
-
-					</div>
-						<?php wp_nonce_field( 'recommendations_form_submit_nonce', '_icl_nonce' ); ?>
-
-				</form>
-			</div>
-				<?php
-			} else {
-				?>
-			<div class="wpml-section-content">
-				<p class="wpml-wizard-instruction">
-					<?php
-					esc_html_e(
-						'At this moment, we could not find any recommendation for your site.',
-						'sitepress'
-					);
-					?>
-				</p>
-				<form id="installer_recommendations_form">
-					<input type="hidden" name="button_action" value="finish"/>
-					<input class="button-secondary" name="finish"
-						   value="<?php esc_attr_e( 'Finish', 'sitepress' ); ?>" type="submit"/>
-						<?php wp_nonce_field( 'recommendations_form_submit_nonce', '_icl_nonce' ); ?>
-
-				</form>
-			</div>
-				<?php
-
-			}
-			?>
-
-
-		<?php endif; ?>
-
-
-		<?php if ( ! empty( $setup_complete ) ) : ?>
 			<?php
 			if ( ! class_exists( 'WP_Http' ) ) {
 				include_once ABSPATH . WPINC . '/class-http.php';
@@ -611,7 +279,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 			 */
 			global $wpml_url_converter, $wpml_request_handler;
 
-			$validator = wpml_get_langs_in_dirs_val( new WP_Http(), $wpml_url_converter );
+			$validator = wpml_get_langs_in_dirs_val( $wpml_url_converter );
 			?>
 			<?php if ( count( $active_languages ) > 1 ) : ?>
 				<div class="wpml-section wpml-section-url-format" id="lang-sec-2">
@@ -625,8 +293,8 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 							<ul>
 								<?php
 
-								$abs_home                = $wpml_url_converter->get_abs_home();
-								$icl_folder_url_disabled = $validator->validate_langs_in_dirs( $sample_lang['code'] );
+								$abs_home = $wpml_url_converter->get_abs_home();
+								$icl_folder_url_enabled = $validator->validate_langs_in_dirs();
 								?>
 								<li>
 									<label>
@@ -655,7 +323,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 											</label>
 										</p>
 
-										<div id="icl_use_directory_details" class="sub-section" 
+										<div id="icl_use_directory_details" class="sub-section"
 										<?php
 										if ( empty( $setting_urls['directory_for_default_language'] ) ) {
 											echo ' style="display:none"';}
@@ -695,7 +363,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 
 														<span style="display: none;" id="wpml_show_page_on_root_x"><?php esc_html_e( 'Please save the settings first by clicking Save.', 'sitepress' ); ?></span>
 
-														<span id="wpml_show_page_on_root_details" 
+														<span id="wpml_show_page_on_root_details"
 														<?php
 														if ( $setting_urls['show_on_root'] !== 'page' ) :
 															?>
@@ -719,7 +387,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 															</a>
 														<?php endif; ?>
 														</span>
-														<p id="icl_hide_language_switchers" class="sub-section" 
+														<p id="icl_hide_language_switchers" class="sub-section"
 														<?php
 														if ( $setting_urls['show_on_root'] !== 'page' ) :
 															?>
@@ -740,7 +408,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 										</div>
 									</div>
 
-									<?php if ( $icl_folder_url_disabled ) : ?>
+									<?php if ( ! $icl_folder_url_enabled ): ?>
 									<div class="icl_error_text" style="margin:10px;">
 										<p>
 											<?php esc_html_e( 'It looks like languages per directories will not function.', 'sitepress' ); ?>
@@ -757,17 +425,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 											<li><?php esc_html_e( 'The web server cannot write to the .htaccess file', 'sitepress' ); ?></li>
 										</ul>
 										<a href="https://wpml.org/?page_id=1010"><?php esc_html_e( 'How to fix', 'sitepress' ); ?></a>
-											<p>
-												<?php printf( __( 'When WPML accesses <a target="_blank" href="%1$s">%2$s</a> it gets:', 'sitepress' ), $__url = $validator->get_validation_url( $sample_lang['code'] ), $__url ); ?>
-												<br/>
-												<?php
-												echo $validator->print_error_response();
-												?>
-											</p>
-											<p>
-												<?php printf( esc_html__( 'The expected value is: %s', 'sitepress' ), '<br /><strong>&lt;!--' . get_home_url() . '--&gt;</strong>' ); ?>
-											</p>
-										</div>
+									</div>
 									<?php endif; ?>
 								</li>
 								<?php
@@ -800,7 +458,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 										endif;
 										?>
 									</div>
-									<div id="language_domain_xdomain_options" class="sub-section" 
+									<div id="language_domain_xdomain_options" class="sub-section"
 									<?php
 									if ( $language_negotiation_type != 2 ) {
 										echo ' style="display:none"';}
@@ -872,11 +530,10 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 					</div>
 				</div> <!-- .wpml-section-url-format -->
 			<?php endif; ?>
-		<?php endif; ?>
 
 		<?php do_action( 'wpml_admin_after_languages_url_format' ); ?>
 
-		<?php if ( ! empty( $setup_complete ) && count( $all_languages ) > 1 && ! $should_hide_admin_language ) : ?>
+		<?php if ( count( $all_languages ) > 1 && ! $should_hide_admin_language ): ?>
 			<div class="wpml-section wpml-section-admin-language" id="lang-sec-4">
 				<div class="wpml-section-header">
 					<h3><?php esc_html_e( 'Admin language', 'sitepress' ); ?></h3>
@@ -931,7 +588,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 			</div>
 		<?php endif; ?>
 
-		<?php if ( ! empty( $setup_complete ) && count( $active_languages ) > 1 ) : ?>
+		<?php if ( count( $active_languages ) > 1 ): ?>
 
 			<div class="wpml-section wpml-section-hide-languages" id="lang-sec-7">
 				<div class="wpml-section-header">
@@ -1007,7 +664,6 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 									<?php esc_html_e( 'Adjust IDs for multilingual functionality', 'sitepress' ); ?>
 								</label>
 							</p>
-							<p class="explanation-text"><?php esc_html_e( 'Note: auto-adjust IDs will increase the number of database queries for your site.', 'sitepress' ); ?></p>
 							<p class="buttons-wrap">
 								<span class="icl_ajx_response" id="icl_ajx_response_ai"></span>
 								<input class="button button-primary" name="save" value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>" type="submit" />
@@ -1067,7 +723,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 							<?php
 							$redirect_warning_1 = esc_html__( "Browser language redirect may affect your site's indexing", 'sitepress' );
 							$redirect_warning_2 = esc_html__( 'learn more', 'sitepress' );
-							$url                = 'https://wpml.org/documentation/getting-started-guide/language-setup/automatic-redirect-based-on-browser-language/how-browser-language-redirect-affects-google-indexing/';
+							$url                = 'https://wpml.org/documentation/getting-started-guide/language-setup/automatic-redirect-based-on-browser-language/how-browser-language-redirect-affects-google-indexing/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlcore';
 							echo $redirect_warning_1 . '- <a href="' . $url . '" target="_blank">' . $redirect_warning_2 . '</a>';
 							?>
 						</div>
@@ -1079,38 +735,52 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 				</div>
 			</div>
 		<?php endif; ?>
-	<?php endif; ?>
 
 
-	<?php if ( ! empty( $setup_complete ) ) : ?>
 
-		<?php
-		$request_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
-		do_action( 'icl_extra_options_' . $request_get_page );
+	<?php
+	$request_get_page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
+	do_action( 'icl_extra_options_' . $request_get_page );
 
-		$seo_ui = new WPML_SEO_HeadLangs( $sitepress, new WPML_Queried_Object_Factory() );
-		$seo_ui->render_menu();
-		?>
-		<div class="wpml-section wpml-section-wpml-love" id="lang-sec-10">
-			<div class="wpml-section-header">
-				<h3><?php esc_html_e( 'WPML love', 'sitepress' ); ?></h3>
-			</div>
-			<div class="wpml-section-content">
-				<form id="icl_promote_form" name="icl_promote_form" action="">
-					<?php wp_nonce_field( 'icl_promote_form_nonce', '_icl_nonce' ); ?>
-					<p>
-						<label><input type="checkbox" name="icl_promote" <?php checked( $sitepress->get_setting( 'promote_wpml' ) ); ?> value="1" />
-						<?php printf( __( "Tell the world your site is running multilingual with WPML (places a message in your site's footer) - <a href=\"%s\">read more</a>", 'sitepress' ), 'https://wpml.org/?page_id=4560' ); ?></label>
-					</p>
-					<p class="buttons-wrap">
-						<span class="icl_ajx_response" id="icl_ajx_response_lv"></span>
-						<input class="button button-primary" name="save" value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>" type="submit" />
-					</p>
-				</form>
-			</div>
+	$seo_ui = new WPML_SEO_HeadLangs( $sitepress, new WPML_Queried_Object_Factory() );
+	$seo_ui->render_menu();
+	?>
+
+	<div class="wpml-section wpml-section-wpml-theme-and-plugins-reporting" id="lang-sec-9-6">
+		<div class="wpml-section-header">
+			<h3><?php esc_html_e( 'Reporting to wpml.org', 'sitepress' ) ?></h3>
 		</div>
+		<div class="wpml-section-content">
+			<?php
+			$compatibility_reports_after_setup_args                   = $compatibility_reports_args;
+			$compatibility_reports_after_setup_args['custom_heading'] = '';
+			$compatibility_reports_after_setup_args['use_radio']      = false;
 
-	<?php endif; ?>
+			do_action( 'otgs_installer_render_local_components_setting', $compatibility_reports_after_setup_args );
+			?>
+		</div>
+	</div>
+
+	<div class="wpml-section wpml-section-wpml-love" id="lang-sec-10">
+        <div class="wpml-section-header">
+            <h3><?php esc_html_e( 'WPML love', 'sitepress' ) ?></h3>
+        </div>
+        <div class="wpml-section-content">
+            <form id="icl_promote_form" name="icl_promote_form" action="">
+				<?php wp_nonce_field( 'icl_promote_form_nonce', '_icl_nonce' ); ?>
+                <p>
+                    <label><input type="checkbox" name="icl_promote" <?php checked( $sitepress->get_setting( 'promote_wpml' ) ) ?> value="1"/>
+						<?php printf( __( "Tell the world your site is running multilingual with WPML (places a message in your site's footer) - <a href=\"%s\">read more</a>", 'sitepress' ), 'https://wpml.org/?page_id=4560' ); ?>
+                    </label>
+                </p>
+                <p class="buttons-wrap">
+                    <span class="icl_ajx_response" id="icl_ajx_response_lv"></span>
+                    <input class="button button-primary" name="save" value="<?php esc_attr_e( 'Save', 'sitepress' ) ?>" type="submit"/>
+                </p>
+            </form>
+        </div>
+    </div>
+
 
 	<?php
 	do_action( 'wpml_after_settings', $theme_wpml_config_file );
@@ -1128,7 +798,6 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 	?>
 
 </div> <!-- .wrap -->
-	<?php
-}
+<?php
 // Save any changed setting
 $sitepress->save_settings();

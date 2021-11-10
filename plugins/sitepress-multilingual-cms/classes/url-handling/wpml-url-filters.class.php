@@ -1,7 +1,7 @@
 <?php
 
-use WPML\FP\Str;
-use WPML\SuperGlobals\Server;
+use \WPML\FP\Str;
+use \WPML\SuperGlobals\Server;
 
 /**
  * Class WPML_URL_Filters
@@ -66,8 +66,9 @@ class WPML_URL_Filters {
 
 	public function add_global_hooks() {
 		add_filter( 'home_url', [ $this, 'home_url_filter' ], - 10, 4 );
-		// posts and pages links filters
+		// posts, pages & attachments links filters
 		add_filter( 'post_link', [ $this, 'permalink_filter' ], 1, 2 );
+		add_filter( 'attachment_link', [ $this, 'permalink_filter' ], 1, 2 );
 		add_filter( 'post_type_link', [ $this, 'permalink_filter' ], 1, 2 );
 		add_filter( 'wpml_filter_link', [ $this, 'permalink_filter' ], 1, 2 );
 		add_filter( 'get_edit_post_link', [ $this, 'get_edit_post_link' ], 1, 3 );
@@ -83,6 +84,7 @@ class WPML_URL_Filters {
 		remove_filter( 'get_edit_post_link', [ $this, 'get_edit_post_link' ], 1 );
 		remove_filter( 'wpml_filter_link', [ $this, 'permalink_filter' ], 1 );
 		remove_filter( 'post_type_link', [ $this, 'permalink_filter' ], 1 );
+		remove_filter( 'attachment_link', [ $this, 'permalink_filter' ], 1 );
 		remove_filter( 'post_link', [ $this, 'permalink_filter' ], 1 );
 
 		remove_filter( 'home_url', [ $this, 'home_url_filter' ], - 10 );
@@ -377,8 +379,8 @@ class WPML_URL_Filters {
 		$force_translate_permalink = apply_filters( 'wpml_force_translated_permalink', false );
 
 		if ( ( ! is_admin() || wp_doing_ajax() || wpml_is_ajax() || $force_translate_permalink )
-		     && ( ! $this->sitepress->get_wp_api()->is_a_REST_request() || $force_translate_permalink )
-		     && $this->should_use_permalink_of_post_translation( $post_element )
+			 && ( ! $this->sitepress->get_wp_api()->is_a_REST_request() || $force_translate_permalink )
+			 && $this->should_use_permalink_of_post_translation( $post_element )
 		) {
 			$link = get_permalink( $this->get_translated_post_id_for_current_language( $post_element ) );
 		} else {

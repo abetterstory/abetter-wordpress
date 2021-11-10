@@ -48,11 +48,7 @@ class WPML_Media_Submitted_Basket_Notice implements IWPML_Action {
 
 		/* translators: media file string used in "if you want to use a different media file for each language..." */
 		$media_file_string = __( 'media file', 'wpml-media' );
-		$redirect_url      = '#';
-
-		if ( defined( 'WPML_TM_FOLDER' ) ) {
-			$redirect_url = add_query_arg( 'page', WPML_TM_FOLDER . '/menu/main.php', admin_url( 'admin.php' ) );
-		}
+		$redirect_url = add_query_arg( 'page', \WPML\UIPage::TM_PAGE, admin_url( 'admin.php' ) );
 
 		$model = array(
 			'strings'        => array(
@@ -69,7 +65,7 @@ class WPML_Media_Submitted_Basket_Notice implements IWPML_Action {
 				'media_translation'       => _x( 'Media Translation', 'wpml addon name', 'wpml-media' ),
 			),
 
-			'learn_more_url' => 'https://wpml.org/?page_id=113610',
+			'learn_more_url' => 'https://wpml.org/documentation/getting-started-guide/media-translation/?utm_source=plugin&utm_medium=gui&utm_campaign=wpmlmedia',
 			'redirect_url'   => $redirect_url,
 		);
 

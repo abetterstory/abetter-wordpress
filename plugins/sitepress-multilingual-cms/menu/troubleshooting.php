@@ -13,6 +13,11 @@ global $wpdb;
 function get_term_taxonomy_id_from_term_object( $term_object ) {
 	return $term_object->term_taxonomy_id;
 }
+
+function get_ATE_account_data() {
+	return get_option( WPML_TM_ATE_Authentication::AMS_DATA_KEY, [] );
+}
+
 $action = filter_input( INPUT_GET, 'debug_action', FILTER_SANITIZE_STRING );
 $nonce  = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 if ( ! $action ) {
@@ -583,6 +588,29 @@ echo '</textarea>';
 
 			});
 		});
+
+		<?php
+		$icl_ajax_url = wpml_get_admin_url(
+			[
+				'path'  => 'admin.php',
+				'query' => [ 'page' => WPML_PLUGIN_FOLDER . '/menu/languages.php' ],
+			]
+		);
+		?>
+
+		jQuery('#icl_reset_languages').click(function () {
+			var icl_ajx_url = '<?php echo esc_url( $icl_ajax_url ); ?>';
+			var self = jQuery(this);
+			self.prop('disabled', true);
+			self.after(icl_ajxloaderimg);
+
+			jQuery.post(icl_ajx_url + "&icl_ajx_action=reset_languages&_icl_nonce=" + jQuery('#_icl_nonce_rl').val(), function () {
+				self.prop('disabled', false);
+				alert('<?php echo esc_js( __( 'Done', 'sitepress' ) ); ?>');
+				self.next().fadeOut();
+
+			});
+		});
 	})
 </script>
 <div class="icl_cyan_box">
@@ -602,6 +630,22 @@ echo '</textarea>';
 	</p>
 
 </div><br clear="all"/>
+<?php
+	$registration_data = get_ATE_account_data();
+	$shared            = array_key_exists( 'shared', $registration_data ) ? $registration_data['shared'] : null;
+	$uuid              = get_option( WPML_Site_ID::SITE_ID_KEY . ':' . WPML_TM_ATE::SITE_ID_SCOPE, null );
+
+if ( $shared ) {
+	?>
+		<div class="icl_cyan_box">
+			<h3><?php _e( 'Your Automatic Translation account id is', 'sitepress' ); ?></h3>
+			<p>
+			<?php echo $uuid . '#' . $registration_data['shared']; ?>
+			</p>
+		</div><br clear="all"/>
+	<?php
+}
+?>
 
 <div class="icl_cyan_box">
 	<h3><?php _e( 'Clean up', 'sitepress' ); ?></h3>
@@ -646,6 +690,8 @@ echo '</textarea>';
 
 		<?php do_action( 'wpml_troubleshooting_after_fix_element_type_collation' ); ?>
 
+		<?php do_action( 'wpml_tm_mcs_troubleshooting' ); ?>
+
 		<?php if ( class_exists( 'TranslationManagement' ) ) { ?>
 	<p>
 		<input id="assign_translation_status_to_duplicates" type="button" class="button-secondary" value="<?php _e( 'Assign translation status to duplicated content', 'sitepress' ); ?>"/><span id="assign_translation_status_to_duplicates_resp"></span><br/>
@@ -655,6 +701,12 @@ echo '</textarea>';
 	<p>
 		<input id="icl_add_missing_lang" type="button" class="button-secondary" value="<?php _e( 'Set language information', 'sitepress' ); ?>"/><br/>
 		<small style="margin-left:10px;"><?php _e( 'Adds language information to posts and taxonomies that are missing this information.', 'sitepress' ); ?></small>
+	</p>
+
+	<p>
+		<?php wp_nonce_field( 'reset_languages_nonce', '_icl_nonce_rl' ); ?>
+		<input class="button-secondary" type="button" id="icl_reset_languages" value="<?php esc_html_e( 'Reset languages', 'sitepress' ); ?>"/>
+		<small style="margin-left:10px;"><?php esc_html_e( 'WPML will reset all language information to its default values. Any languages that you added or edited will be lost.', 'sitepress' ); ?></small>
 	</p>
 	<p>
 		<input id="icl_fix_terms_count" type="button" class="button-secondary" value="<?php _e( 'Fix terms count', 'sitepress' ); ?>"/><br/>

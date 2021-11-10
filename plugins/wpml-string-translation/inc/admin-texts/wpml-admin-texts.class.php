@@ -10,7 +10,6 @@ use function \WPML\FP\flip;
 
 class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 	const DOMAIN_NAME_PREFIX = 'admin_texts_';
-	const FIND_KEYS_REGEX    = '#\[([^\]]+)\]#';
 
 	/** @var array $cache - A cache for each option translation */
 	private $cache = [];
@@ -57,15 +56,10 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 				$context = $this->get_context( $key, $k );
 				if ( $v === '' ) {
 					icl_unregister_string( $context, $key . $k );
-				} elseif ( isset( $option[ $k ] ) && ( $key === '' || preg_match_all(
-					self::FIND_KEYS_REGEX,
-					(string) $key,
-					$opt_key_matches
-				) > 0 )
-				) {
+				} elseif ( isset( $option[ $k ] ) && ( $key === '' || $opt_keys = self::findKeys( (string) $key ) ) ) {
 					icl_register_string( $context, $key . $k, $option[ $k ], true );
 					$vals     = array( $k => 1 );
-					$opt_keys = isset( $opt_key_matches ) ? array_reverse( $opt_key_matches[1] ) : array();
+					$opt_keys = isset( $opt_keys ) ? array_reverse( $opt_keys ) : [];
 					foreach ( $opt_keys as $opt ) {
 						$vals = array( $opt => $vals );
 					}
@@ -175,10 +169,11 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 	}
 
 	private function is_sub_key_fixed( $sub_key ) {
-		if ( $fixed = ( preg_match_all( self::FIND_KEYS_REGEX, $sub_key, $matches ) > 0 ) ) {
-
+		$fixed = false;
+		if ( $keys = self::findKeys( $sub_key ) ) {
+			$fixed          = true;
 			$fixed_settings = $this->tm_instance->admin_texts_to_translate;
-			foreach ( $matches[1] as $m ) {
+			foreach ( $keys as $m ) {
 				if ( $fixed = isset( $fixed_settings[ $m ] ) ) {
 					$fixed_settings = $fixed_settings[ $m ];
 				} else {
@@ -191,7 +186,9 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 	}
 
 	private function get_context( $option_key, $option_name ) {
-		return self::DOMAIN_NAME_PREFIX . ( preg_match( self::FIND_KEYS_REGEX, (string) $option_key, $matches ) === 1 ? $matches[1] : $option_name );
+		$keys = self::findKeys( (string) $option_key );
+
+		return self::DOMAIN_NAME_PREFIX . ( $keys ? reset( $keys ) : $option_name );
 	}
 
 	public function getOptions() {
@@ -203,12 +200,20 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 	function icl_st_set_admin_options_filters() {
 		$option_names = $this->getOptionNames();
 
+		$isAdmin = is_admin() && ! wpml_is_ajax();
+
 		foreach ( $option_names as $option_key => $option ) {
 			if ( $this->is_blacklisted( $option_key ) ) {
 				unset( $option_names[ $option_key ] );
 				update_option( '_icl_admin_option_names', $option_names );
 			} elseif ( $option_key != 'theme' && $option_key != 'plugin' ) { // theme and plugin are an obsolete format before 3.2
-				add_filter( 'option_' . $option_key, array( $this, 'icl_st_translate_admin_string' ) );
+				/**
+				 * We don't want to translate admin strings in admin panel because it causes a lot of confusion
+				 * when a value is displayed inside the form input.
+				 */
+				if ( ! $isAdmin ) {
+					add_filter( 'option_' . $option_key, array( $this, 'icl_st_translate_admin_string' ) );
+				}
 				add_action( 'update_option_' . $option_key, array( $this, 'on_update_original_value' ), 10, 3 );
 			}
 		}
@@ -273,8 +278,16 @@ class WPML_Admin_Texts extends WPML_Admin_Text_Functionality {
 	 * @return Collection
 	 */
 	public static function getKeysParts( $option ) {
-		$found = preg_match_all( self::FIND_KEYS_REGEX, $option, $matches );
-		return $found !== false ? wpml_collect( $matches[1] ) : wpml_collect();
+		return wpml_collect( self::findKeys( $option ) );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return array
+	 */
+	private static function findKeys( $string ) {
+		return array_filter( explode( '][', preg_replace( '/^\[(.*)\]$/', '$1', $string ) ) );
 	}
 
 	function clear_cache_for_option( $option_name ) {

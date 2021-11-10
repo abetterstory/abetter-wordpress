@@ -13,7 +13,6 @@ class WPML_User_Language {
 
 	private $language_changes_history       = array();
 	private $admin_language_changes_history = array();
-	private $language_switched              = false;
 
 	/**
 	 * @var \wpdb|null
@@ -33,9 +32,6 @@ class WPML_User_Language {
 			global $wpdb;
 		}
 		$this->wpdb = $wpdb;
-
-		$this->language_changes_history[]       = $sitepress->get_current_language();
-		$this->admin_language_changes_history[] = $this->sitepress->get_admin_language();
 
 		$this->register_hooks();
 	}
@@ -81,13 +77,17 @@ class WPML_User_Language {
 		$language = apply_filters( 'wpml_user_language', null, $email );
 
 		if ( $language ) {
-			$this->language_switched                = true;
-			$this->language_changes_history[]       = $language;
-			$this->admin_language_changes_history[] = $language;
+			$user_language  = $this->sitepress->get_current_language();
+			$admin_language = $this->sitepress->get_admin_language();
 
-			$this->sitepress->switch_lang( $language, true );
+			if ( $language !== $user_language || $language !== $admin_language ) {
+				$this->language_changes_history[]       = $user_language;
+				$this->admin_language_changes_history[] = $admin_language;
 
-			$this->sitepress->set_admin_language( $language );
+				$this->sitepress->switch_lang( $language, true );
+
+				$this->sitepress->set_admin_language( $language );
+			}
 		}
 	}
 
@@ -96,12 +96,11 @@ class WPML_User_Language {
 	}
 
 	private function wpml_restore_language_from_email() {
-		if ( $this->language_switched ) {
-			$this->language_switched = false;
-
-			$this->sitepress->switch_lang( $this->language_changes_history[0], true );
-
-			$this->sitepress->set_admin_language( $this->admin_language_changes_history[0] );
+		if ( count( $this->language_changes_history ) > 0 ) {
+			$this->sitepress->switch_lang( array_pop( $this->language_changes_history ), true );
+		}
+		if ( count( $this->admin_language_changes_history ) > 0 ) {
+			$this->sitepress->set_admin_language( array_pop( $this->admin_language_changes_history ) );
 		}
 	}
 

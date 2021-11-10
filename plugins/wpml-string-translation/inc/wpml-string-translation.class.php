@@ -104,7 +104,6 @@ class WPML_String_Translation {
 
 		$factory = new WPML_ST_Upgrade_Command_Factory( $wpdb, $sitepress );
 		$upgrade = new WPML_ST_Upgrade( $sitepress, $factory );
-		$upgrade->add_hooks();
 		$upgrade->run();
 
 		$this->init_active_languages();

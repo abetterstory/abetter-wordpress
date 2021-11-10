@@ -41,7 +41,7 @@ class WPML_LS_Dependencies_Factory {
 	 * @param SitePress $sitepress
 	 * @param array     $parameters
 	 */
-	public function __construct( SitePress $sitepress, array $parameters ) {
+	public function __construct( SitePress $sitepress, array $parameters = [] ) {
 		$this->sitepress  = $sitepress;
 		$this->parameters = $parameters;
 	}

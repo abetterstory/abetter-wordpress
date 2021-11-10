@@ -2,10 +2,10 @@
 Contributors: ShortPixel
 Donate link: https://www.paypal.me/resizeImage
 Tags: replace, attachment, media, files, replace image, replace jpg, change media, replace media, image, file
-Requires at least: 4.9
-Tested up to: 5.7
+Requires at least: 4.9.7
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 3.5.0
+Stable tag: 3.6.2
 
 Easily replace any attached image/file by simply uploading a new file in the Media Library edit view - a real time saver!
 
@@ -46,6 +46,34 @@ If you want more control over the format used to display the time, you can use t
 * [Regenerate Thumbnails Advanced](https://wordpress.org/plugins/regenerate-thumbnails-advanced/) - Fast, free and simple to use plugin to regenerate the thumbnails for your site after changing a theme (for example). Supported & maintained by [ShortPixel](https://ShortPixel.com)
 
 == Changelog ==
+
+= 3.6.2 =
+
+Release date: November 8th, 2021
+* Fix: there was an issue in file.php with checking mime-type, resulting in weird mime-type values in certain cases (thanks @dougaxe1 for the PR);
+* Fix: if target mime type returns empty, don't store that;
+* Tweak: removed old notification about SPIO.
+
+= 3.6.1 =
+
+Release date: October 27th, 2021
+* Fix: there was a broken image in one of the plugin notices;
+* Fix: added a check for the function `mime_content_type`, which doesn't seem to always be available on various hosts;
+* Fix: the plugin checks if the current user has rights to install/activate plugins and only then displays the 1-click installers and also a filter is available now;
+
+= 3.6.0 =
+
+Release date: October 11th, 2021
+* New: Constant EMR_CAPABILITY can define extra user roles to allow and deny replacements;
+* New: Replacing an usual image with an SVG file will just replace all thumbnails by the main file;
+* New: Also replaces caption when set in Exif data (when replacing with updating all links);
+* Tweak: Added Now and Original options to Custom Date for usability;
+* Tweak: changes/updates to the banners from the EMR screen;
+* Fix: EMR now respects edit_other_posts permissions using default permissions;
+* Fix: EMR with ALLOW_UNFILTERED_UPLOADS enabled (and allowed role) will not limit non-allowed uploads;
+* Fix: some missing and wrong text-domains are now corrected (thanks @alexclassroom);
+* Fix: a missing dot in the plugin description was preventing the transaltions to properly work;
+* Fix: the plugin can now be uninstalled/deleted on PHP 8.
 
 = 3.5.0 =
 

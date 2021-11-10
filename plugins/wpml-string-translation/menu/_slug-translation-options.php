@@ -1,5 +1,5 @@
 <?php
-$slug_translation_settings = new WPML_ST_Slug_Translation_Settings();
+	$slug_translation_settings = new WPML_ST_Slug_Translation_Settings();
 ?>
 <div class="wpml-section" id="ml-content-setup-sec-4">
 

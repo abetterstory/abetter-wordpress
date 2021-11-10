@@ -20,6 +20,7 @@ use WPML\Collect\Support\Traits\Macroable;
  * @method static callable|mixed until ( ...$predicate, ...$transform, ...$data ) - Curried :: ( a → bool ) → ( a → a ) → a → a
  * @method static callable|bool propSatisfies( ...$predicate, ...$prop, ...$data ) - Curried :: ( a → bool ) → String → [String => a] → bool
  * @method static callable|bool isArray ( ...$a ) - Curried :: a → bool
+ * @method static callable|bool isMappable ( ...$a ) - Curried :: a → bool
  * @method static callable|bool isEmpty( ...$a ) - Curried:: a → bool
  * @method static callable|mixed firstSatisfying( ...$predicate, ...$functions, ...$data ) - Curried:: callable->callable[]->mixed->mixed
  * @method static callable|bool isTruthy( ...$data ) - Curried:: mixed->bool
@@ -100,6 +101,10 @@ class Logic {
 
 		self::macro( 'isArray', curryN( 1, function( $a ) {
 			return is_array( $a );
+		}));
+
+		self::macro( 'isMappable', curryN( 1, function( $a ) {
+			return self::isArray( $a ) || ( is_object( $a ) && method_exists( $a, 'map' ) );
 		}));
 
 		self::macro( 'isEmpty', curryN( 1, function ( $arg ) {

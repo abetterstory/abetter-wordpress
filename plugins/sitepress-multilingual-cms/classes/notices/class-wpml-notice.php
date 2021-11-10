@@ -4,7 +4,7 @@
  * @author OnTheGo Systems
  */
 class WPML_Notice {
-	private $display_callbacks = array();
+	private $display_callbacks      = array();
 	private $id;
 	private $text;
 	private $collapsed_text;
@@ -107,7 +107,7 @@ class WPML_Notice {
 	/** @return bool */
 	public function is_for_current_user() {
 		return ! $this->restricted_to_user_ids
-			   || array_key_exists( get_current_user_id(), $this->restricted_to_user_ids );
+		       || array_key_exists( get_current_user_id(), $this->restricted_to_user_ids );
 	}
 
 	/**
@@ -250,6 +250,7 @@ class WPML_Notice {
 			'group' => $this->get_group(),
 		);
 		$this->text = apply_filters( 'wpml_notice_text', $this->text, $notice );
+
 		return $this->text;
 	}
 
@@ -277,12 +278,12 @@ class WPML_Notice {
 	 * @see https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices for more details
 	 *
 	 * @param string|array $types Accepts either a space separated values string, or an array of values.
+	 * @return WPML_Notice
 	 */
 	public function set_css_class_types( $types ) {
-		if ( ! is_array( $types ) ) {
-			$types = explode( ' ', $types );
-		}
-		$this->css_class_types = $types;
+		$this->css_class_types = is_array( $types ) ? $types : explode( ' ', $types );
+
+		return $this;
 	}
 
 	/**
@@ -352,11 +353,17 @@ class WPML_Notice {
 	}
 
 	/**
+	 * Set notice to only display once.
+	 *
 	 * @param bool $flash
+	 *
+	 * @return WPML_Notice
 	 * @since 4.1.0
 	 */
 	public function set_flash( $flash = true ) {
 		$this->flash = (bool) $flash;
+
+		return $this;
 	}
 
 	/**
@@ -379,5 +386,16 @@ class WPML_Notice {
 	 */
 	public function set_text_only( $text_only ) {
 		$this->text_only = $text_only;
+	}
+
+	/**
+	 * @param int|string $id
+	 * @param string     $text
+	 * @param string     $group
+	 *
+	 * @return WPML_Notice
+	 */
+	public static function make( $id, $text, $group = 'default' ) {
+		return new WPML_Notice( $id, $text, $group );
 	}
 }

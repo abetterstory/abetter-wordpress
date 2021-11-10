@@ -1,5 +1,8 @@
 <?php
 
+use WPML\FP\Obj;
+use WPML\TM\ATE\Review\PreviewLink;
+
 /**
  * Class WPML_Languages
  *
@@ -70,7 +73,16 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 			$pid          = ! empty( $saved_query->post->ID ) ? $saved_query->post->ID : ( ! empty( $saved_query->query['p'] ) ? $saved_query->query['p'] : 0 );
 			$trid         = $this->post_translation->get_element_trid( $pid );
 			$post_type    = get_post_type( $pid );
-			$translations = $this->sitepress->get_element_translations( $trid, 'post_' . $post_type );
+
+			// Check for preview_nonce - it's added to the url of a "Translation Review" page.
+			// When the nonce passes we want to skip privilege check for the translations, because also a
+			// Subscriber Translator does currently preview a draft post (translation preview) and the related language
+			// should appear in the Language Switcher. See wpmlcore-8602 for more details.
+			$previewNonce          = Obj::propOr( '', 'preview_nonce', $_GET );
+			$previewNonceName      = PreviewLink::getNonceName( (int) Obj::propOr( 0, 'preview_id', $_GET ) );
+			$skipPrivilegeChecking = \wp_verify_nonce( $previewNonce, $previewNonceName );
+
+			$translations = $this->sitepress->get_element_translations( $trid, 'post_' . $post_type, false, false, false, false, $skipPrivilegeChecking );
 		} else {
 			$wp_query->is_singular = false;
 			$wp_query->is_archive  = false;
