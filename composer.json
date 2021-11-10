@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-		"abetter/toolkit": "^1.6",
+		"abetter/toolkit": "^1.6.18",
 		"intervention/image": "^2.5",
 		"vlucas/phpdotenv": "^3.6"
 	},
