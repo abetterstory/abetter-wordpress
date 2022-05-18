@@ -103,19 +103,29 @@ add_filter('content_save_pre', function($content){
 // Filter @components and images in post_content
 add_filter('content_save_pre', function($content) {
 	if (preg_match('/@/',$content)) {
+		// Reverse any wrong end statements
 		$content = preg_replace('/@(component|slot|block)end/', "@end$1", $content);
-		$content = preg_replace('/<p class[^>]+--(component|slot|block|var)[^>]+>/', '<p>', $content);
-		$content = preg_replace('/<p>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+		// Remove editor classes
+		$content = preg_replace('/<p class[^>]+--(component|slot|block|var)[^>]+>/', '<p>', $content); 
+		// Split any double on line
+		//$content = preg_replace('/<p>@endcomponent @component/', "<p>@endcomponent</p>\n<p>@component", $content);
+		// Remove wrapping p
+		$content = preg_replace('/<p>@(component|slot|classname|dateline|byline|block)\(([^\)]+)\)<\/p>/', "\n@$1($2)\n", $content); // With argument
+		$content = preg_replace('/<p>@(component|slot|classname|dateline|byline|block)<\/p>/', "\n@$1\n", $content); // Without argument
 		$content = preg_replace('/<p>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
-		$content = preg_replace('/<p>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
-		$content = preg_replace('/<p>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
-		//$content = preg_replace('/<p[^>]*>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
-		//$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
-		//$content = preg_replace('/<p[^>]*>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
-		//$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
+		// Old Remove wrapping p
+		//$content = preg_replace('/<p>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+		//$content = preg_replace('/<p>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
+		//$content = preg_replace('/<p>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
+		//$content = preg_replace('/<p>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
+		// Older
+		// //$content = preg_replace('/<p[^>]*>@(component|slot|classname|dateline|byline|block)([^<]*)<\/p>/', "\n@$1$2\n", $content);
+		// //$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)<\/p>/', "\n@$1\n", $content);
+		// //$content = preg_replace('/<p[^>]*>@(component|slot|block)([^<]*)(<img|a)/', "\n@$1$2\n<p>$3", $content);
+		// //$content = preg_replace('/<p[^>]*>@(endcomponent|endslot|endblock)\s*@(component|block)([^<]*)<\/p>/', "\n@$1\n@$2\n", $content);
 	}
 	$content = preg_replace('/<p>\s*(<img[^<]+)\s*<\/p>/', "\n$1\n", $content);
-	//$content = preg_replace('/<p[^>]*>\s*(<img[^<]+)\s*<\/p>/', "\n$1\n", $content);
+	// //$content = preg_replace('/<p[^>]*>\s*(<img[^<]+)\s*<\/p>/', "\n$1\n", $content);
 	$content = preg_replace('/></', ">\n<", $content);
 	return $content;
 });
