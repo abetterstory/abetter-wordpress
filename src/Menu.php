@@ -124,6 +124,7 @@ class Menu {
 	}
 
 	public static function buildTerm($term) {
+		$nav = get_post($term->db_id);
 		$item = new \StdClass();
 		$item->id = (int) $term->db_id; // (int) $term->ID;
 		$item->term = $term;
@@ -134,6 +135,7 @@ class Menu {
 		$item->page_status = $item->page->post_status;
 		$item->title = (string) self::getTitle($item->page);
 		$item->label = (string) (!empty($term->post_title)) ? htmlspecialchars_decode($term->post_title) : $item->title;
+		$item->label = (!empty($nav->post_title)) ? htmlspecialchars_decode($nav->post_title) : $item->label;
 		$item->url = ($term->type == 'custom') ? (string) $term->url : (string) self::getUrl($item->page);
 		$item->description = (string) $term->description;
 		$item->order = (int) $term->menu_order;
