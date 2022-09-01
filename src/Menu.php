@@ -173,7 +173,7 @@ class Menu {
 		if ($page === NULL) $page = Post::$post;
 		if (empty($page->ID)) {
 			if (is_numeric($page)) {
-				$page = get_page($page);
+				$page = get_post($page);
 			} else if (is_string($page)) {
 				$page = get_page_by_path($page);
 			}
@@ -213,7 +213,7 @@ class Menu {
 
 	public static function getLanguage($term) {
 		$language = self::getDefaultLanguage();
- 		if (function_exists('icl_object_id')) {
+ 		if (!empty($term->term_id) && function_exists('icl_object_id')) {
  			$language = ($lc = $GLOBALS['wpdb']->get_var("SELECT language_code FROM wp_icl_translations WHERE (element_id = \"{$term->term_id}\" AND element_type = \"tax_{$term->taxonomy}\")")) ? $lc : $language;
  		}
 		return $language;
@@ -221,7 +221,7 @@ class Menu {
 
 	public static function getTranslations($term) {
 		$translations = [];
-		if (function_exists('icl_object_id')) {
+		if (!empty($term->term_id) && function_exists('icl_object_id')) {
 			$trid = $GLOBALS['wpdb']->get_var("SELECT trid FROM wp_icl_translations WHERE (element_id = \"{$term->term_id}\" AND element_type = \"tax_{$term->taxonomy}\")");
 			$results = ($tr = $GLOBALS['wpdb']->get_results("SELECT language_code,element_id FROM wp_icl_translations WHERE (trid = \"{$trid}\" AND element_type = \"tax_{$term->taxonomy}\")",ARRAY_N)) ? $tr : $translations;
 			foreach ($results AS $row) $translations[(string)$row[0]] = (integer)$row[1];
