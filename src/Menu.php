@@ -125,9 +125,10 @@ class Menu {
 
 	public static function buildTerm($term) {
 		$item = new \StdClass();
-		$item->id = (int) $term->ID;
+		$item->id = (int) $term->db_id; // (int) $term->ID;
 		$item->term = $term;
 		$item->term_id = (int) $term->ID;
+		$item->object_id = (int) $term->object_id;
 		$item->page = self::getPage($term->object_id);
 		$item->page_id = $item->page->ID;
 		$item->page_status = $item->page->post_status;
